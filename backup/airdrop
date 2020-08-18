@@ -1,0 +1,25 @@
+
+  Future<void> airDrop(SelfFileEntity file) async {
+    IO.Socket socket = _commonProvider.socket;
+    if (socket != null && socket.connected) {
+      if (!_isSendingFile) {
+        _isSendingFile = true;
+        socket.emit('will-upload-file', {'filename': file.filename});
+        BotToast.showText(text: '正在发送');
+        File(file.entity.path).openRead().listen((bytes) {
+          socket.emitWithBinary(UPLOAD_FILE, bytes);
+        }, onDone: () {
+          _isSendingFile = false;
+          socket.emit('upload-file-done' /* , {'filename': file.filename} */);
+          if (_willSendFileQueue.isNotEmpty) {
+            airDrop(_willSendFileQueue.removeAt(0));
+          }
+        });
+      } else {
+        BotToast.showText(text: '任务已被加入队列');
+        _willSendFileQueue.add(file);
+      }
+    } else {
+      BotToast.showText(text: '请连接后在试');
+    }
+  }

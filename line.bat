@@ -1,0 +1,1 @@
+cloc ./lib --exclude-dir external

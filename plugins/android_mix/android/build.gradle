@@ -1,0 +1,40 @@
+group 'com.sewerganger.android_mix'
+version '1.0'
+
+buildscript {
+  repositories {
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/jcenter' }
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+  }
+
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.5.0'
+  }
+}
+
+rootProject.allprojects {
+  repositories {
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/jcenter' }
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+  }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+  compileSdkVersion 28
+
+  defaultConfig {
+    minSdkVersion 19
+  }
+  lintOptions {
+    disable 'InvalidPackage'
+  }
+
+  dependencies {
+    implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.6.1'
+    implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.20'
+  }
+}

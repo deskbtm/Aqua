@@ -1,0 +1,70 @@
+{
+  "name": "",
+  "isOrdered": true,
+  "folders": {
+    "android": {
+      "name": "android",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "assets": {
+      "name": "assets",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "backup": {
+      "name": "backup",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "build": {
+      "name": "build",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "ios": {
+      "name": "ios",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "lib": {
+      "name": "lib",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "mirrors": {
+      "name": "mirrors",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "plugins": {
+      "name": "plugins",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "test": {
+      "name": "test",
+      "isOrdered": true,
+      "folders": {
+        "public": {
+          "name": "public",
+          "isOrdered": true,
+          "folders": {},
+          "files": {}
+        }
+      },
+      "files": {}
+    }
+  },
+  "files": {
+    "README": 0
+  }
+}

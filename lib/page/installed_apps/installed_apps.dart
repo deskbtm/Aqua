@@ -28,15 +28,15 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
   ShareProvider _shareProvider;
   bool _showSystemApps = false;
   List<Application> apps = [];
-  bool locker = true;
+  bool _mutex = true;
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeProvider = Provider.of<ThemeProvider>(context);
     _shareProvider = Provider.of<ShareProvider>(context);
-    if (locker) {
-      locker = false;
+    if (_mutex) {
+      _mutex = false;
       apps = await DeviceApps.getInstalledApplications(
         includeAppIcons: true,
         includeSystemApps: _showSystemApps,
@@ -84,7 +84,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                   includeSystemApps: _showSystemApps,
                   onlyAppsWithLaunchIntent: false,
                 );
-                if (mounted) { 
+                if (mounted) {
                   setState(() {});
                 }
               }

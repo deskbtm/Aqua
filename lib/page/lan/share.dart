@@ -1,12 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:android_mix/android_mix.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:lan_express/common/widget/show_modal.dart';
-import 'package:lan_express/constant/constant.dart';
 import 'package:provider/provider.dart';
 import 'package:f_logs/model/flog/flog.dart';
 import 'package:lan_express/common/socket/socket.dart';
@@ -24,9 +22,10 @@ import 'package:lan_express/provider/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
 import 'package:lan_express/web/web_handler.dart';
+import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
+import 'package:shelf_body_parser/shelf_body_parser.dart';
 import 'package:storage_mount_listener/storage_mount_listener.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class StaticSharePage extends StatefulWidget {
   @override
@@ -43,7 +42,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
   HttpServer _server;
   bool _shareSwitch;
   bool _vscdeSwitch;
-  bool _locker;
+  bool _mutex;
 
   @override
   void initState() {
@@ -59,7 +58,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
     StorageMountListener.onMediaEject(() {
       print("demo");
     });
-    _locker = true;
+    _mutex = true;
     _shareSwitch = false;
     _vscdeSwitch = false;
   }
@@ -74,8 +73,8 @@ class _StaticSharePageState extends State<StaticSharePage> {
     if (mounted) {
       setState(() {});
     }
-    if (_locker) {
-      _locker = false;
+    if (_mutex) {
+      _mutex = false;
     }
   }
 
@@ -93,21 +92,41 @@ class _StaticSharePageState extends State<StaticSharePage> {
 
   Future<void> createStaticServer() async {
     try {
-      var handler;
+      String ip = _commonProvider?.internalIp;
+      int port = int.parse(_commonProvider?.filePort ?? '20201');
+      String savePath = _commonProvider?.staticUploadSavePath;
+      FutureOr<Response> Function(Request) handlerFunc;
+
       if (_shareProvider.selectedFiles.isNotEmpty) {
         SelfFileEntity first = _shareProvider.selectedFiles.first;
+
         if (first.isDir) {
-          handler = createWebHandler(first.entity.path,
-              isDark: _themeProvider.isDark);
+          handlerFunc = createWebHandler(
+            first.entity.path,
+            isDark: _themeProvider.isDark,
+            uploadSavePath: savePath,
+            serverUrl: '$ip:$port',
+          );
         } else {
-          handler = createFilesHandler(
-              _shareProvider.selectedFiles.map((e) => e.entity.path).toList(),
-              isDark: _themeProvider.isDark);
+          handlerFunc = createFilesHandler(
+            _shareProvider.selectedFiles.map((e) => e.entity.path).toList(),
+            isDark: _themeProvider.isDark,
+            serverUrl: '$ip:$port',
+            uploadSavePath: savePath,
+          );
         }
       } else {
-        handler = createWebHandler(_commonProvider.storageRootPath,
-            isDark: _themeProvider.isDark);
+        handlerFunc = createWebHandler(
+          _commonProvider.storageRootPath,
+          isDark: _themeProvider.isDark,
+          serverUrl: '$ip:$port',
+          uploadSavePath: savePath,
+        );
       }
+
+      var handler = const Pipeline()
+          .addMiddleware(bodyParser(storeOriginalBuffer: false))
+          .addHandler(handlerFunc);
 
       if (_shareSwitch) {
         LocalNotification.showNotification(
@@ -116,9 +135,12 @@ class _StaticSharePageState extends State<StaticSharePage> {
           title: '静态文件共享中.....',
           ongoing: true,
         );
-        _server = await shelf.serve(handler, _commonProvider?.internalIp,
-            int.parse(_commonProvider?.filePort ?? '20201'),
-            shared: true);
+        _server = await shelf.serve(
+          handler,
+          ip,
+          port,
+          shared: true,
+        );
         debugPrint('Serving at http://${_server.address.host}:${_server.port}');
       } else {
         _server?.close();
@@ -263,7 +285,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                         contentPadding: EdgeInsets.only(left: 15, right: 10),
                         // ignore: null_aware_in_condition
                         trailing: (_commonProvider.socket?.connected != null &&
-                                _commonProvider.socket?.connected == true)
+                                _commonProvider.socket.connected == true)
                             ? Container(width: 1, height: 1)
                             : CupertinoButton(
                                 child: NoResizeText('连接'),
@@ -271,34 +293,35 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                   LocalNotification.showNotification(
                                       name: 'SEARCH_DEVICE', title: '搜寻设备中...');
                                   await SocketConnecter(_commonProvider)
-                                      .searchDeviceAndConnect(
-                                    onDisconnect: () {
-                                      setState(() {});
-                                    },
-                                  );
+                                      .searchDeviceAndConnect();
                                 },
                               ),
                       ),
                       CupertinoButton(
                         child: Text('click'),
                         onPressed: () async {
-                          // CodeSrvUtils cutils = await CodeSrvUtils().init();
+                          CodeSrvUtils cutils = await CodeSrvUtils().init();
+                          ProcessResult a = await Process.run(
+                              '${cutils.filesPath}/busybox', []);
+
+                          print(a.stdout.toString());
+                          print(a.stderr.toString());
                           // ProcessResult a = await cutils.installNodeJs();
                           // print(a.stdout.toString());
                           // print(a.stderr.toString());
-                          showScopeModal(
-                            context,
-                            _themeProvider,
-                            title: '请仔细阅读教程',
-                            tip: '该界面无返返回, 需前往教程, 后方可消失',
-                            withCancel: false,
-                            defaultOkText: '前往教程',
-                            onOk: () async {
-                              if (await canLaunch(TUTORIAL_URL)) {
-                                await launch(TUTORIAL_URL);
-                              }
-                            },
-                          );
+                          // showScopeModal(
+                          //   context,
+                          //   _themeProvider,
+                          //   title: '请仔细阅读教程',
+                          //   tip: '该界面无返返回, 需前往教程, 后方可消失',
+                          //   withCancel: false,
+                          //   defaultOkText: '前往教程',
+                          //   onOk: () async {
+                          //     if (await canLaunch(TUTORIAL_URL)) {
+                          //       await launch(TUTORIAL_URL);
+                          //     }
+                          //   },
+                          // );
                         },
                       )
                     ],

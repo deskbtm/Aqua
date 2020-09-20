@@ -1,11 +1,12 @@
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:android_mix/android_mix.dart';
 import 'package:device_info/device_info.dart';
-import 'package:flutter/widgets.dart';
 import 'package:lan_express/provider/common.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ping_discover_network/ping_discover_network.dart';
+import 'package:path/path.dart' as pathLib;
 
 class MixUtils {
   /// 判断开发环境
@@ -52,17 +53,6 @@ class MixUtils {
     }
   }
 
-  // static String openFile(BuildContext context, String path) {
-  //   String ext = pathLib.extension(path);
-  //   switch (ext) {
-  //     case '.txt':
-  //     case '.md':
-
-  //     default:
-  //       OpenFile.open(path);
-  //   }
-  // }
-
   static Future scanSubnet(CommonProvider settingProvider) async {
     String port = settingProvider?.filePort;
     String internalIp = settingProvider?.internalIp;
@@ -71,18 +61,10 @@ class MixUtils {
     final stream = NetworkAnalyzer.discover2(subnet, int.parse(port));
     await for (var addr in stream) {
       if (addr.exists) {
-        print(addr.ip);
         settingProvider.pushAliveIps(addr.ip, notify: false);
         return;
       }
     }
-
-    // stream.listen((NetworkAddress addr) {
-    //   if (addr.exists) {
-    //     debugPrint(addr.ip);
-    //     settingProvider.pushAliveIps(addr.ip, notify: false);
-    //   }
-    // });
   }
 
   static safePop(BuildContext context) {
@@ -113,6 +95,14 @@ class MixUtils {
   static bool isHttpUrl(String input) {
     RegExp url = RegExp(r'^((https|http)?:\/\/)[^\s]+');
     return input != null ? url.hasMatch(input) : true;
+  }
+
+  static Future<String> getPrimaryStaticUploadSavePath(String root) async {
+    String tmp = pathLib.join(root, 'Lan_File_More/upload');
+    if (!(await Directory(tmp).exists())) {
+      await Directory(tmp).create(recursive: true);
+    }
+    return tmp;
   }
 
   static Future<String> getExternalPath() async {

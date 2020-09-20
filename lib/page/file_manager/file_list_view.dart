@@ -8,7 +8,6 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_item.dart';
-import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/provider/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +15,7 @@ import 'package:provider/provider.dart';
 class FileListView extends StatefulWidget {
   final List<SelfFileEntity> fileList;
   final Function(int) itemOnLongPress;
-  final Function(LongPressStartDetails) emptyOnLongPress;
+  final Function(LongPressStartDetails) onLongPressEmpty;
   final Function(int, double) onHozDrag;
   final Function(int) onItemTap;
   final Function onUpdateView;
@@ -27,7 +26,7 @@ class FileListView extends StatefulWidget {
       this.itemOnLongPress,
       @required this.onHozDrag,
       this.onItemTap,
-      this.emptyOnLongPress,
+      this.onLongPressEmpty,
       this.onUpdateView})
       : super(key: key);
 
@@ -42,22 +41,22 @@ class _FileListViewState extends State<FileListView>
   ThemeProvider _themeProvider;
   // CommonProvider _commonProvider;
   ScrollController _scrollController;
-  bool locker;
+  bool _mutex;
 
   @override
   void initState() {
     super.initState();
-    locker = false;
+    _mutex = false;
     _scrollController = ScrollController()
       ..addListener(() {
         if (_scrollController.offset < -140) {
-          locker = true;
+          _mutex = true;
         }
         if (_scrollController.offset >= 0 && _scrollController.offset <= 10) {
-          if (locker) {
+          if (_mutex) {
             if (widget.onUpdateView != null) widget.onUpdateView();
           }
-          locker = false;
+          _mutex = false;
         }
       });
   }
@@ -80,13 +79,16 @@ class _FileListViewState extends State<FileListView>
     dynamic themeData = _themeProvider.themeData;
     return widget.fileList.isEmpty
         ? GestureDetector(
-            onLongPressStart: widget.emptyOnLongPress,
-            child: Center(
-              child: NoResizeText('空'),
+            onLongPressStart: widget.onLongPressEmpty,
+            child: Container(
+              color: Colors.transparent,
+              child: Center(
+                child: NoResizeText('空'),
+              ),
             ),
           )
         : GestureDetector(
-            onLongPressStart: widget.emptyOnLongPress,
+            onLongPressStart: widget.onLongPressEmpty,
             child: Scrollbar(
               child: ListView.builder(
                 controller: _scrollController,

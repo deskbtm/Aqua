@@ -50,13 +50,13 @@ class _LanExpressWrapperState extends State {
   ThemeProvider _themeProvider;
   CommonProvider _commonProvider;
 
-  bool _locker;
+  bool _mutex;
   bool _settingLocker;
 
   @override
   void initState() {
     super.initState();
-    _locker = true;
+    _mutex = true;
     _settingLocker = true;
     LocalNotification.initLocalNotification(onSelected: (String payload) {
       debugPrint(payload);
@@ -104,9 +104,8 @@ class _LanExpressWrapperState extends State {
       await _preLoadMsg();
     }
 
-    print(_commonProvider.enableConnect);
-    if (_locker && _commonProvider.enableConnect != null) {
-      _locker = false;
+    if (_mutex && _commonProvider.enableConnect != null) {
+      _mutex = false;
       String internalIp = await AndroidMix.wifi.ip;
       _commonProvider.setInternalIp(internalIp);
       if (_commonProvider.enableConnect) {

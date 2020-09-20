@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:android_mix/android_mix.dart';
+import 'package:android_mix/storage/enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lan_express/constant/constant.dart';
@@ -14,6 +18,14 @@ class CommonProvider extends ChangeNotifier {
 
   Future<void> setShowHidden(bool arg) async {
     _isShowHidden = arg;
+    notifyListeners();
+  }
+
+  String _staticUploadSavePath;
+  String get staticUploadSavePath => _staticUploadSavePath;
+  Future<void> setStaticUploadSavePath(String arg) async {
+    _staticUploadSavePath = arg;
+    await Store.setString(STATIC_UPLOAD_SAVEPATH, arg);
     notifyListeners();
   }
 
@@ -255,7 +267,8 @@ class CommonProvider extends ChangeNotifier {
     _username = await Store.getString(LOGIN_USERNMAE);
     _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;
     _enableConnect = (await Store.getBool(ENABLE_CONNECT)) ?? true;
-
     _storageRootPath = await MixUtils.getExternalPath();
+    _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
+        await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
   }
 }

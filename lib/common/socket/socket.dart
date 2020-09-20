@@ -75,7 +75,8 @@ class SocketConnecter {
     });
 
     socket.on('connect_error', (error) {
-      FLog.error(text: error.toString(), methodName: 'createMySocketClient');
+      FLog.error(text: error.toString(), methodName: 'createClient');
+      socket.destroy();
     });
   }
 
@@ -94,7 +95,7 @@ class SocketConnecter {
       if (commonProvider.aliveIps.isNotEmpty) {
         createClient(onConnected: onConnected);
       } else {
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(Duration(milliseconds: 600));
         await searchDeviceAndConnect(limit: limit);
       }
     }

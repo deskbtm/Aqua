@@ -79,6 +79,7 @@ dependencies:
     path: plugins/storage_mount_listener
   android_mix_recorder:
     path: plugins/android_mix_recorder
+  shelf_body_parser: ^1.0.6
   # wifi:
   #   path: plugins/wifi  
   

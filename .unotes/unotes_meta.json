@@ -53,18 +53,12 @@
     "test": {
       "name": "test",
       "isOrdered": true,
-      "folders": {
-        "public": {
-          "name": "public",
-          "isOrdered": true,
-          "folders": {},
-          "files": {}
-        }
-      },
+      "folders": {},
       "files": {}
     }
   },
   "files": {
-    "README": 0
+    "TODO": 0,
+    "README": 1
   }
 }

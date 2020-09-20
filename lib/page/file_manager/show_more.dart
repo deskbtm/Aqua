@@ -44,7 +44,7 @@ Future<void> showMoreModal(
     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
     builder: (BuildContext context) {
       return SplitSelectionModal(
-        onDispose: () {},
+        // onDispose: () {},
         leftChildren: [
           ActionButton(
             content: '复制至沙盒',

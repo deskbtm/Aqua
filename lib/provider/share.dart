@@ -8,7 +8,6 @@ class ShareProvider extends ChangeNotifier {
   Future<void> addFile(SelfFileEntity value) async {
     if (!_selectedFiles.any((ele) => ele.entity.path == value.entity.path))
       _selectedFiles.add(value);
-
     notifyListeners();
   }
 

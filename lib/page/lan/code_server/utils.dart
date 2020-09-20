@@ -202,12 +202,13 @@ ff02::3     ipv6-allhosts
 
   Future<Process> startProot(List<String> cmds,
       {Map<String, String> env}) async {
+    print(env);
     return Process.start(
       '$filesPath/proot',
       getArguments(cmds),
       workingDirectory: '/',
-      environment: {'PROOT_TMP_DIR': '$filesPath/tmp', ...?env},
       includeParentEnvironment: true,
+      environment: {'PROOT_TMP_DIR': '$filesPath/tmp', ...?env},
     );
   }
 
@@ -305,6 +306,7 @@ ff02::3     ipv6-allhosts
   }) async {
     if (_existsNodeJs()) {
       List<String> arg = [
+        if (pwd != null) 'PASSWORD=$pwd',
         'node',
         '/root/code-server/out/node/entry.js',
         '--bind-addr',
@@ -326,7 +328,7 @@ ff02::3     ipv6-allhosts
         arg.add('--disable-updates');
       }
 
-      return startProot(arg, env: pwd != null ? {'PASSWORD': pwd} : null);
+      return startProot(arg);
     } else {
       throw 'not found nodejs';
     }

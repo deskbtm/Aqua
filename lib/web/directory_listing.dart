@@ -7,8 +7,8 @@ import 'package:lan_express/page/file_manager/file_utils.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:shelf/shelf.dart';
 
-String _getHeader(String sanitizedHeading, String logo,
-    {bool isShareFiles = false, bool isDark}) {
+Future<String> _getHeader(String sanitizedHeading, String logo,
+    {bool isShareFiles = false, bool isDark}) async {
   return '''<!DOCTYPE html>
 <html>
 <head>
@@ -16,6 +16,8 @@ String _getHeader(String sanitizedHeading, String logo,
   <title>$sanitizedHeading</title>
   <link rel="shortcut icon" href="data:image/png;base64,$logo">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  </script>
   <style>
 
   *{
@@ -26,6 +28,7 @@ String _getHeader(String sanitizedHeading, String logo,
   button{
     border: none;
     outline: none;
+    white-space: nowrap;
   }
 
   html, body {
@@ -39,13 +42,13 @@ String _getHeader(String sanitizedHeading, String logo,
   }
 
   .click-scale{
-    transition: transform 500ms ease;
+    transition: transform 300ms ease;
   }
 
   .click-scale:hover{}
 
   .click-scale:active{
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
 
   section{
@@ -59,7 +62,7 @@ String _getHeader(String sanitizedHeading, String logo,
     padding: 0;
   }
 
-  ul >  .heading-item{
+  ul > .heading-item{
     background-color: #2196f3;
     justify-content: space-between
   }
@@ -67,6 +70,13 @@ String _getHeader(String sanitizedHeading, String logo,
   ul > .func-item{
     padding: 5px 10px;
     transition: unset;
+    box-sizing: border-box;
+    height: 65px;
+  }
+
+  ul > .func-item.dashed{
+    border: 3px dashed #000;
+    box-sizing: border-box;
   }
   
   ul > .func-item:active{
@@ -77,10 +87,10 @@ String _getHeader(String sanitizedHeading, String logo,
     border-radius: 5px;
     background-color: #2196f3;
     margin: 10px;
-    padding: 6px;
+    height: 36px;
   }
 
-  ul .item div{
+  ul .item .file-name{
     width: 80%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -113,6 +123,73 @@ String _getHeader(String sanitizedHeading, String logo,
   .download-tip{
     position: absolute;
     right: 30px;
+  }
+
+  .drag-txt{
+    color: #aaa;
+    transform: rotate(-25deg);
+    position: absolute;right: 15px;
+  }
+  
+  #select-file{
+    position: relative;
+  }
+
+  #select-file input{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 40px;
+    height: 35px;
+    opacity: 0;
+  }
+
+  .chip {
+    display: flex;
+    align-items: center;
+  }
+
+  .close-btn{
+    width: 15px;
+    height: 15px;
+    border-radius: 10px;
+    background-color: #fff;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .close-btn::before{
+    position: absolute;
+    content: ' ';
+    width: 2px;
+    height: 9px;
+    background-color: #505050;
+    display: block;
+    transform: rotate(45deg);
+  }
+
+  .close-btn::after{
+    position: absolute;
+    content: ' ';
+    width: 2px;
+    height: 8px;
+    background-color: #505050;
+    display: block;
+    transform: rotate(-45deg);
+  }
+
+  #chip-wrapper{
+    width: 70%;
+    height: 65px;
+    display:flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: center;
   }
 
   @keyframes admittance{
@@ -151,26 +228,106 @@ String _getHeader(String sanitizedHeading, String logo,
     <img class="icon" src="data:image/png;base64, $logo"/>
   </li>
 
-  ${isShareFiles ? """
-    <li class='item func-item'>
-    <button class='click-scale download-all'>下载全部</button>
-    <button class='click-scale upload'>发送</button>
-  </li>
-  """ : """
   <li class='item func-item'>
-    <button class='click-scale upload'>发送</button>
+  ${isShareFiles ? "<button class='click-scale download-all'>下载全部</button>" : ""}
+    <button id='upload' class='click-scale'>上传</button>
+    <button id='select-file' class='click-scale'>选择<input id="input-file" type='file' multiple/></button>
+    <span id='chip-wrapper'></span>
+    <h2 class="drag-txt">可拖拽到此</h2>
   </li>
-  """}
-  
 ''';
 }
 
-String _trailer({bool isShareFiles = false}) {
+String _trailer({bool isShareFiles = false, String serverUrl}) {
   return '''
 </ul>
 </section>
 <script>
 
+var willUploadFiles = [];
+
+var delFileFromWrapper  = function(name){
+  removeFile(name);
+  renderFileChips();
+}
+
+var fileChip = fileName =>  "<button class='click-scale chip'><span>" + fileName + 
+"</span><div class='close-btn' onclick='delFileFromWrapper(" + '"' + fileName + '"' + ")'></div></button>";
+
+var selectFileBtn = document.getElementById('select-file');
+var inputFile = document.getElementById('input-file');
+var chipWrapper = document.getElementById('chip-wrapper');
+var uploadBtn = document.getElementById('upload');
+
+var toast = function(msg, duration){
+  duration=isNaN(duration)?3000:duration;
+  var m = document.createElement('div');
+  m.innerHTML = msg;
+  m.style.cssText="max-width:60%;min-width: 150px;padding:0 14px;height: 40px;color: rgb(255, 255, 255);line-height: 40px;text-align: center;border-radius: 4px;position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);z-index: 999999;background: rgba(0, 0, 0,.7);font-size: 16px;";
+  document.body.appendChild(m);
+  setTimeout(function() {
+    var d = 0.5;
+    m.style.webkitTransition = '-webkit-transform ' + d + 's ease-in, opacity ' + d + 's ease-in';
+    m.style.opacity = '0';
+    setTimeout(function() { document.body.removeChild(m) }, d * 1000);
+  }, duration);
+}
+
+uploadBtn.onclick = function(e){
+  e.preventDefault();
+  var formData = new FormData();
+  willUploadFiles.forEach((file, index)=>{
+    formData.append('file' + index,  file, file.name);
+  })
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST','/upload_file');
+  xhr.send(formData)
+  xhr.onreadystatechange = function(){
+    if(xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 404)){
+      try{
+        var a = JSON.parse(xhr.responseText);
+        toast(a.msg,  2000);
+      }catch(e){
+        toast('出现位置错误',  2000);
+      }
+    }
+  };
+}
+
+inputFile.onchange = function(e){
+  e.preventDefault();
+  Object.values(inputFile.files).forEach((file)=>{addFile(file);});
+  renderFileChips();
+}
+
+var renderFileChips = function(){
+  chipWrapper.innerHTML = willUploadFiles.map((file)=>{
+    return fileChip(file.name);
+  }).join('');
+}
+
+var existsFile = function (name){
+  return willUploadFiles.some((file)=>{
+    return file.name === name;
+  })
+}
+
+var addFile = function(file){
+  if(existsFile(file.name)){
+    alert(file.name + '已存在');
+  }else{
+    willUploadFiles.push(file);
+  }
+}
+
+var removeFile = function(name){
+  var offset = willUploadFiles.findIndex((f, i)=>{
+    return f.name === name;
+  });
+  
+  inputFile.value = '';
+  willUploadFiles.splice(offset, 1);
+}
 
 if($isShareFiles){
   var files = document.getElementsByClassName('file-path');
@@ -181,6 +338,27 @@ if($isShareFiles){
     }
   }
 }
+
+if("$serverUrl" != "null"){
+  var funcItem = document.getElementsByClassName('func-item')[0];
+  funcItem.ondragover = function(e){
+    e.preventDefault();
+    funcItem.classList.add('dashed');
+  }
+
+  funcItem.ondragleave = function(e){
+    e.preventDefault();
+    funcItem.classList.remove('dashed');
+  }
+
+  funcItem.ondrop = function(e){
+    e.preventDefault();
+    funcItem.classList.remove('dashed');
+    Object.values(e.dataTransfer.files).forEach((file)=>{addFile(file);});
+    renderFileChips();
+  }
+}
+
 </script>
 </body>
 </html>
@@ -314,7 +492,7 @@ String matchIcon(String ext, Map icons) {
 }
 
 Future<Response> listDirectory(String fileSystemPath, String dirPath,
-    {bool isDark}) async {
+    {bool isDark, String serverUrl}) async {
   StreamController<List<int>> controller = new StreamController<List<int>>();
   Encoding encoding = new Utf8Codec();
   HtmlEscape sanitizer = const HtmlEscape();
@@ -331,7 +509,8 @@ Future<Response> listDirectory(String fileSystemPath, String dirPath,
     heading = '/$heading/';
   }
 
-  add(_getHeader(sanitizer.convert(heading), icons['logo'], isDark: isDark));
+  add(await _getHeader(sanitizer.convert(heading), icons['logo'],
+      isDark: isDark));
 
   // Return a sorted listing of the directory contents asynchronously.
   Directory(dirPath).list().toList().then((entities) {
@@ -359,13 +538,13 @@ Future<Response> listDirectory(String fileSystemPath, String dirPath,
       <a href="$sanitizedName" ${isDir ? '' : 'download="$sanitizedName"'}>
         <li class="item click-scale">
           <img  class="icon" src="data:image/png;base64, ${matchIcon(ext, icons)}"/>
-          <div>$sanitizedName</div>
+          <div class="file-name">$sanitizedName</div>
           ${isDir ? '' : '<span class="download-tip">下载</span>'}
         </li>
       </a>""");
     }
 
-    add(_trailer());
+    add(_trailer(serverUrl: serverUrl));
     controller.close();
   });
 
@@ -374,7 +553,8 @@ Future<Response> listDirectory(String fileSystemPath, String dirPath,
       headers: {HttpHeaders.contentTypeHeader: 'text/html'});
 }
 
-Future<Response> listFiles(List<String> paths, {bool isDark}) async {
+Future<Response> listFiles(List<String> paths,
+    {bool isDark, String serverUrl}) async {
   // ignore: close_sinks
   StreamController<List<int>> controller = new StreamController<List<int>>();
   HtmlEscape sanitizer = const HtmlEscape();
@@ -385,7 +565,8 @@ Future<Response> listFiles(List<String> paths, {bool isDark}) async {
 
   Map icons = await _loadIcons();
 
-  add(_getHeader('共享列表', icons['logo'], isShareFiles: true, isDark: isDark));
+  add(await _getHeader('共享列表', icons['logo'],
+      isShareFiles: true, isDark: isDark));
 
   for (var path in paths) {
     String name = pathLib.basename(path);
@@ -403,12 +584,12 @@ Future<Response> listFiles(List<String> paths, {bool isDark}) async {
       <a class="${isDir ? 'dir-path' : 'file-path'}" href="$path" ${isDir ? '' : 'download="$sanitizedName"'}>
         <li class="item click-scale">
           <img class="icon" src="data:image/png;base64, ${matchIcon(ext, icons)}"/>
-          <div>$sanitizedName</div>
+          <div class="file-name">$sanitizedName</div>
           ${isDir ? '' : '<span class="download-tip">下载</span>'}
         </li>
       </a>""");
   }
-  add(_trailer(isShareFiles: true));
+  add(_trailer(isShareFiles: true, serverUrl: serverUrl));
   controller.close();
   return new Response.ok(controller.stream,
       encoding: encoding,

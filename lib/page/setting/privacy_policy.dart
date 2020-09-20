@@ -44,13 +44,13 @@ class PrivacyPolicyPage extends StatefulWidget {
 class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   ThemeProvider _themeProvider;
   CommonProvider _commonProvider;
-  bool _locker;
+  bool _mutex;
   String _html;
 
   @override
   void initState() {
     super.initState();
-    _locker = true;
+    _mutex = true;
   }
 
   @override
@@ -58,7 +58,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
     super.didChangeDependencies();
     _themeProvider = Provider.of<ThemeProvider>(context);
     _commonProvider = Provider.of<CommonProvider>(context);
-    if (_locker) {
+    if (_mutex) {
       try {
         dio.Response res =
             await req().get(_commonProvider.baseUrl + '/assets/privacy.html');

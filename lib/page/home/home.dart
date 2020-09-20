@@ -32,13 +32,13 @@ class _HomePageState extends State<HomePage> {
   ThemeProvider _themeProvider;
   CupertinoTabController _tabController;
   CommonProvider _commonProvider;
-  bool _locker;
+  bool _mutex;
 
   @override
   void initState() {
     super.initState();
     _tabController = CupertinoTabController();
-    _locker = true;
+    _mutex = true;
   }
 
   void showText(String content) {
@@ -128,8 +128,8 @@ class _HomePageState extends State<HomePage> {
     _commonProvider = Provider.of<CommonProvider>(context);
     Map data = _commonProvider.gWebData;
 
-    if (_locker && data.isNotEmpty) {
-      _locker = false;
+    if (_mutex && data.isNotEmpty) {
+      _mutex = false;
 
       await showUpdateModal(data);
 

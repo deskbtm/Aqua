@@ -13,7 +13,7 @@ class SplitSelectionModal extends StatefulWidget {
   final List<Widget> rightChildren;
   final Widget topPanel;
   final bool isChangeView;
-  final Function onDispose;
+  // final Function onDispose;
   final topFlex;
   final bottomFlex;
 
@@ -23,7 +23,7 @@ class SplitSelectionModal extends StatefulWidget {
     this.rightChildren = const [],
     this.isChangeView,
     this.topPanel,
-    this.onDispose,
+    // this.onDispose,
     this.topFlex = 1,
     this.bottomFlex = 3,
   }) : super(key: key);
@@ -92,11 +92,11 @@ class SplitSelectionModalState extends State<SplitSelectionModal> {
     _rightChildren = widget.rightChildren;
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    if (widget.onDispose != null) widget.onDispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   if (widget.onDispose != null) widget.onDispose();
+  // }
 
   @override
   Widget build(BuildContext context) {

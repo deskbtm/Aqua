@@ -644,6 +644,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.7.7"
+  shelf_body_parser:
+    dependency: "direct main"
+    description:
+      name: shelf_body_parser
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.6"
   sky_engine:
     dependency: transitive
     description: flutter

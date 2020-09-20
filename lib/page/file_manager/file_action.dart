@@ -87,7 +87,7 @@ class FileAction {
         FileStat stat = await content.stat();
 
         String filename = pathLib.basename(content.path);
-        String ext = pathLib.extension(content.path).toLowerCase();
+        String ext = pathLib.extension(content.path).trim().toLowerCase();
         Uint8List icon;
 
         if (ext == '.apk') {

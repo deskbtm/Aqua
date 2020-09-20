@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +38,9 @@ String repoChineseName(String mirror) {
 }
 
 class CodeSettingPage extends StatefulWidget {
+  final CodeSrvUtils cutils;
+
+  const CodeSettingPage({Key key, this.cutils}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return CodeSettingPageState();
@@ -46,7 +51,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
   ThemeProvider _themeProvider;
   CommonProvider _commonProvider;
 
-  CodeSrvUtils _cutils;
+  CodeSrvUtils get cutils => widget.cutils;
 
   @override
   void initState() {
@@ -58,8 +63,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
     super.didChangeDependencies();
     _themeProvider = Provider.of<ThemeProvider>(context);
     _commonProvider = Provider.of<CommonProvider>(context);
-
-    _cutils = await CodeSrvUtils().init();
   }
 
   void showText(String content) {
@@ -80,6 +83,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
   Widget build(BuildContext context) {
     dynamic themeData = _themeProvider?.themeData;
     String repo = _commonProvider.linuxRepo;
+    Directory rootfs = Directory('${cutils.filesPath}/rootfs');
 
     List<Widget> settingList = [
       Column(
@@ -141,7 +145,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           ),
           InkWell(
             onTap: () async {
-              await _cutils.killNodeServer();
+              await cutils.killNodeServer();
             },
             child: ListTile(
               title: LanText('结束code server进程'),
@@ -168,13 +172,19 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           blockTitle('沙盒', subtitle: 'alpine linux'),
           SizedBox(height: 15),
           InkWell(
-            onTap: () async {
-              // setStorageRootPath
-              showText('切换完成');
-            },
+            // onTap: () async {
+            //   Directory rootfs = Directory('${cutils.filesPath}/rootfs');
+            //   if (await rootfs.exists()) {
+            //     _commonProvider.setStorageRootPath(rootfs.path);
+            //     showText('切换完成');
+            //   } else {
+            //     showText('沙盒不存在');
+            //   }
+            // },
             child: ListTile(
               title: LanText('沙盒目录'),
-              subtitle: LanText('文件管理器切换到沙盒根目录', small: true),
+              subtitle: LanText(rootfs.existsSync() ? rootfs.path : '沙盒不存在',
+                  small: true),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
@@ -194,28 +204,28 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('清华'),
                     onPressed: () async {
-                      await _cutils.setChineseRepo(TSINGHUA_REPO);
+                      await cutils.setChineseRepo(TSINGHUA_REPO);
                       await _commonProvider.setLinuxRepo(TSINGHUA_REPO);
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('阿里云'),
                     onPressed: () async {
-                      await _cutils.setChineseRepo(ALIYUN_REPO);
+                      await cutils.setChineseRepo(ALIYUN_REPO);
                       await _commonProvider.setLinuxRepo(ALIYUN_REPO);
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('中科大'),
                     onPressed: () async {
-                      await _cutils.setChineseRepo(USTC_REPO);
+                      await cutils.setChineseRepo(USTC_REPO);
                       await _commonProvider.setLinuxRepo(USTC_REPO);
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('Alpine(不推荐)'),
                     onPressed: () async {
-                      await _cutils.setChineseRepo(ALPINE_REPO);
+                      await cutils.setChineseRepo(ALPINE_REPO);
                       await _commonProvider.setLinuxRepo(ALPINE_REPO);
                     }),
                 FocusedMenuItem(
@@ -234,7 +244,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           ),
           InkWell(
             onTap: () async {
-              await _cutils.clearProotTmp();
+              await cutils.clearProotTmp();
               showText('删除完成');
             },
             child: ListTile(
@@ -254,7 +264,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                 tip: '确定删除沙盒以及code server?',
                 confirmedView: loadingIndicator(context, _themeProvider),
                 onOk: () async {
-                  await _cutils.rmAllResource().catchError((err) {
+                  await cutils.rmAllResource().catchError((err) {
                     showText('删除出现异常');
                     FLog.error(text: 'rm all resource', stacktrace: err);
                   });

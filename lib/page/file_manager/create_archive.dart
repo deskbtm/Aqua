@@ -15,6 +15,7 @@ import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/provider/share.dart';
 import 'package:lan_express/provider/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
+import 'package:lan_express/utils/notification.dart';
 import 'package:path/path.dart' as pathLib;
 
 Future<void> createArchiveModal(
@@ -298,4 +299,17 @@ Future<void> createArchiveModal(
       },
     );
   }
+}
+
+Future<void> showWaitForArchiveNotification(String val) async {
+  await LocalNotification.showNotification(
+    id: ARCHIVE_CHANNEL,
+    index: 0,
+    name: 'extract_archive',
+    title: val,
+    onlyAlertOnce: true,
+    ongoing: true,
+    showProgress: true,
+    indeterminate: true,
+  );
 }

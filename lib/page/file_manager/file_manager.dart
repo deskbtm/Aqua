@@ -27,6 +27,7 @@ import 'package:lan_express/page/file_manager/file_list_view.dart';
 import 'package:lan_express/page/file_manager/file_utils.dart';
 import 'package:lan_express/page/file_manager/create_rename.dart';
 import 'package:lan_express/page/installed_apps/installed_apps.dart';
+import 'package:lan_express/page/lan/code_server/utils.dart';
 import 'package:lan_express/page/photo_viewer/photo_viewer.dart';
 import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/provider/share.dart';
@@ -63,8 +64,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Directory _currentDir;
   Directory _parentDir;
   Directory _rootDir;
-  String _rootPath;
-
+  bool _useSandboxDir;
   bool _initMutex;
   double _totalSize;
   double _validSize;
@@ -72,12 +72,12 @@ class _FileManagerPageState extends State<FileManagerPage>
   @override
   void initState() {
     super.initState();
-    _rootPath = '';
     _leftFileList = [];
     _rightFileList = [];
     _currentDir = null;
     _parentDir = null;
     _initMutex = true;
+    _useSandboxDir = false;
     _totalSize = 0;
     _validSize = 0;
 
@@ -92,14 +92,9 @@ class _FileManagerPageState extends State<FileManagerPage>
     _themeProvider = Provider.of<ThemeProvider>(context);
     _commonProvider = Provider.of<CommonProvider>(context);
     _shareProvider = Provider.of<ShareProvider>(context);
-    _rootPath = _commonProvider.storageRootPath;
     if (_initMutex) {
       _initMutex = false;
-      _rootDir = Directory(_rootPath);
-      _currentDir = _rootDir;
-      _parentDir = _currentDir.parent;
-      _leftFileList = await readdir(_currentDir);
-      setState(() {});
+      await _changeRootPath(_commonProvider.storageRootPath);
       await getValidAndTotalStorageSize();
     }
   }
@@ -149,11 +144,17 @@ class _FileManagerPageState extends State<FileManagerPage>
     }
   }
 
+  Future<void> _changeRootPath(String path) async {
+    _rootDir = Directory(path);
+    _currentDir = _rootDir;
+    _parentDir = _currentDir.parent;
+    _leftFileList = await readdir(_currentDir);
+    _rightFileList = [];
+    if (mounted) setState(() {});
+  }
+
   Future<void> clearAllSelected(BuildContext context) async {
     await _shareProvider.clearSelectedFiles();
-    // await _commonProvider.setArchiveTarget(null);
-    // await _commonProvider.setCopyTarget(null);
-    // await _commonProvider.setMoveTarget(null);
 
     if (mounted) {
       setState(() {});
@@ -190,6 +191,10 @@ class _FileManagerPageState extends State<FileManagerPage>
                     MixUtils.safePop(context);
                   }
                 },
+              ),
+              ActionButton(
+                content: _useSandboxDir ? '切换系统目录' : '切换沙盒目录',
+                onTap: changeSandboxDir,
               ),
               ActionButton(
                 content: '排序方式',
@@ -565,25 +570,40 @@ class _FileManagerPageState extends State<FileManagerPage>
     update2Side(updateView: false);
   }
 
+  Future<void> changeSandboxDir() async {
+    CodeSrvUtils cutils = await CodeSrvUtils().init();
+    Directory rootfs = Directory('${cutils.filesPath}/rootfs');
+    _useSandboxDir = !_useSandboxDir;
+    if (_useSandboxDir) {
+      if (await rootfs.exists()) {
+        _commonProvider.setStorageRootPath(rootfs.path);
+      } else {
+        showText('沙盒不存在');
+        return;
+      }
+    } else {
+      String path = await MixUtils.getExternalPath();
+      _commonProvider.setStorageRootPath(path);
+    }
+    showText('切换完成');
+
+    await _changeRootPath(_commonProvider.storageRootPath);
+
+    _modalKey.currentState.replaceLeft(2, [
+      ActionButton(
+        content: _useSandboxDir ? '切换沙盒目录' : '切换系统目录',
+        onTap: () async {
+          if (mounted) {
+            await changeSandboxDir();
+          }
+        },
+      )
+    ]);
+    MixUtils.safePop(context);
+  }
+
   Future<void> handleExtractArchive(BuildContext context) async {
     bool result = false;
-
-    // Future<void> unArchiveDone() async {
-
-    // }
-
-    Future<void> showWaitForUnzipNotification() async {
-      await LocalNotification.showNotification(
-        id: ARCHIVE_CHANNEL,
-        index: 0,
-        name: 'extract_archive',
-        title: '解压中...',
-        onlyAlertOnce: true,
-        ongoing: true,
-        showProgress: true,
-        indeterminate: true,
-      );
-    }
 
     if (_shareProvider.selectedFiles.length > 1) {
       showText('只允许操作单个文件');
@@ -591,21 +611,20 @@ class _FileManagerPageState extends State<FileManagerPage>
       SelfFileEntity first = _shareProvider.selectedFiles.first;
       String archivePath = first.entity.path;
       String name = FileAction.getName(archivePath);
-
       if (Directory(pathLib.join(_currentDir.path, name)).existsSync()) {
         showText('目录重名, 请更换');
         return;
       }
 
       switch (first.ext) {
-        case 'zip':
+        case '.zip':
           if (await AndroidMix.archive.isZipEncrypted(archivePath)) {
             await showSingleTextFieldModal(
               context,
               _themeProvider,
               title: '输入密码',
               onOk: (val) async {
-                showWaitForUnzipNotification();
+                showWaitForArchiveNotification('解压中...');
                 result = await AndroidMix.archive
                     .unzip(archivePath, _currentDir.path, pwd: val);
               },
@@ -614,22 +633,22 @@ class _FileManagerPageState extends State<FileManagerPage>
               },
             );
           } else {
-            showWaitForUnzipNotification();
+            showWaitForArchiveNotification('解压中...');
             result =
                 await AndroidMix.archive.unzip(archivePath, _currentDir.path);
           }
           break;
-        case 'tar':
-          showWaitForUnzipNotification();
+        case '.tar':
+          showWaitForArchiveNotification('解压中...');
           await AndroidMix.archive.extractArchive(
             archivePath,
             _currentDir.path,
             ArchiveFormat.tar,
           );
           break;
-        case 'tar.gz':
-        case 'tgz':
-          showWaitForUnzipNotification();
+        case '.gz':
+        case '.tgz':
+          showWaitForArchiveNotification('解压中...');
           result = await AndroidMix.archive.extractArchive(
             archivePath,
             _currentDir.path,
@@ -637,9 +656,9 @@ class _FileManagerPageState extends State<FileManagerPage>
             compressionType: CompressionType.gzip,
           );
           break;
-        case 'tar.bz2':
-        case 'tz2':
-          showWaitForUnzipNotification();
+        case '.bz2':
+        case '.tz2':
+          showWaitForArchiveNotification('解压中...');
           result = await AndroidMix.archive.extractArchive(
             archivePath,
             _currentDir.path,
@@ -647,9 +666,9 @@ class _FileManagerPageState extends State<FileManagerPage>
             compressionType: CompressionType.bzip2,
           );
           break;
-        case 'tar.xz':
-        case 'txz':
-          showWaitForUnzipNotification();
+        case '.xz':
+        case '.txz':
+          showWaitForArchiveNotification('解压中...');
           result = await AndroidMix.archive.extractArchive(
             archivePath,
             _currentDir.path,
@@ -657,8 +676,8 @@ class _FileManagerPageState extends State<FileManagerPage>
             compressionType: CompressionType.xz,
           );
           break;
-        case 'jar':
-          showWaitForUnzipNotification();
+        case '.jar':
+          showWaitForArchiveNotification('解压中...');
           result = await AndroidMix.archive.extractArchive(
             archivePath,
             _currentDir.path,
@@ -705,6 +724,50 @@ class _FileManagerPageState extends State<FileManagerPage>
     }
   }
 
+  Future<void> showOptionsWhenPressedEmpty(BuildContext context,
+      {bool left = false}) async {
+    bool sharedNotEmpty = _shareProvider.selectedFiles.isNotEmpty;
+    showCupertinoModal(
+      context: context,
+      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+      builder: (BuildContext context) {
+        return SplitSelectionModal(
+          leftChildren: <Widget>[
+            if (sharedNotEmpty)
+              ActionButton(
+                content: '归档到此',
+                onTap: () async {
+                  await showCreateArchiveModal(context);
+                },
+              ),
+            if (sharedNotEmpty)
+              ActionButton(
+                content: '移动到此',
+                onTap: () async {
+                  await handleMove(context);
+                },
+              ),
+          ],
+          rightChildren: <Widget>[
+            if (sharedNotEmpty)
+              ActionButton(
+                content: '复制到此',
+                onTap: () {
+                  copyModal(context);
+                },
+              ),
+            ActionButton(
+              content: '新建',
+              onTap: () {
+                showCreateFileModal(context, left: left);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> showFileOptionsModal({SelfFileEntity file}) async {
     bool showSize = false;
     bool sharedNotEmpty = _shareProvider.selectedFiles.isNotEmpty;
@@ -715,7 +778,7 @@ class _FileManagerPageState extends State<FileManagerPage>
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, changeState) {
           return SplitSelectionModal(
-            onDispose: () {},
+            // onDispose: () {},
             topPanel: FileInfoCard(file: file, showSize: showSize),
             leftChildren: [
               if (!(file.entity is Directory))
@@ -741,14 +804,6 @@ class _FileManagerPageState extends State<FileManagerPage>
                   showRenameModal(context, file);
                 },
               ),
-              if (sharedNotEmpty &&
-                  ARCHIVE_EXTS.contains(_shareProvider.selectedFiles.first.ext))
-                ActionButton(
-                  content: '提取到此',
-                  onTap: () async {
-                    await handleExtractArchive(context);
-                  },
-                ),
               if (sharedNotEmpty)
                 ActionButton(
                   content: '归档到此',
@@ -779,6 +834,13 @@ class _FileManagerPageState extends State<FileManagerPage>
                   // _commonProvider.setCopyTargetPath(file.entity.path);
                 },
               ),
+              if (sharedNotEmpty)
+                ActionButton(
+                  content: '复制到此',
+                  onTap: () {
+                    copyModal(context);
+                  },
+                ),
               ActionButton(
                 content: '详情',
                 onTap: () {
@@ -787,11 +849,12 @@ class _FileManagerPageState extends State<FileManagerPage>
                   });
                 },
               ),
-              if (sharedNotEmpty)
+              if (sharedNotEmpty &&
+                  ARCHIVE_EXTS.contains(_shareProvider.selectedFiles.first.ext))
                 ActionButton(
-                  content: '复制到此',
-                  onTap: () {
-                    copyModal(context);
+                  content: '提取到此',
+                  onTap: () async {
+                    await handleExtractArchive(context);
                   },
                 ),
               if (file.isFile)
@@ -892,11 +955,11 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<bool> willPop(stopDefaultButtonEvent, routeInfo) async {
-    if (_currentDir.path == _rootPath) {
+    if (_currentDir.path == _rootDir.path) {
       return false;
     }
 
-    if (_parentDir.path == _rootPath) {
+    if (_parentDir.path == _rootDir.path) {
       _leftFileList = await readdir(_rootDir);
       _rightFileList = [];
       _currentDir = _rootDir;
@@ -914,7 +977,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<void> update2Side({updateView = true}) async {
     if (mounted) {
       /// 只有curentPath 存在的时候才读取
-      if (_currentDir.path == _rootPath) {
+      if (_currentDir.path == _rootDir.path) {
         _leftFileList = await readdir(_currentDir);
       } else {
         _leftFileList = await readdir(_parentDir);
@@ -955,7 +1018,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   size: 25,
                 ),
               ),
-              leading: _rootPath != _currentDir.path
+              leading: _rootDir.path != _currentDir.path
                   ? GestureDetector(
                       onTap: () => {willPop(1, 1)},
                       child: Icon(
@@ -988,9 +1051,8 @@ class _FileManagerPageState extends State<FileManagerPage>
                         await update2Side();
                       },
                       fileList: _leftFileList,
-                      emptyOnLongPress: (d) async {
-                        // await createFileModal(context,
-                        //     left: _currentDir.path != _rootPath);
+                      onLongPressEmpty: (d) async {
+                        await showOptionsWhenPressedEmpty(context, left: true);
                       },
                       onHozDrag: (index, dir) {
                         SelfFileEntity file = _leftFileList[index];
@@ -1026,15 +1088,17 @@ class _FileManagerPageState extends State<FileManagerPage>
                       },
                     ),
                   ),
-                  if (_rootPath != _currentDir.path)
+                  if (_rootDir.path != _currentDir.path)
                     Expanded(
                       flex: 1,
                       child: FileListView(
                         onUpdateView: () async {
                           await update2Side();
                         },
-                        emptyOnLongPress: (d) async {
-                          // await createFileModal(context);
+                        onLongPressEmpty: (d) async {
+                          print('demo');
+                          await showOptionsWhenPressedEmpty(context,
+                              left: false);
                         },
                         fileList: _rightFileList,
                         onHozDrag: (index, dir) {

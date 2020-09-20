@@ -34,21 +34,21 @@ class _FileInfoCardState extends State<FileInfoCard> {
   StreamSubscription<FileSystemEntity> _listener;
   int _totalSize;
   int _fileCount;
-  bool _locker;
+  bool _mutex;
 
   @override
   void initState() {
     super.initState();
     _totalSize = 0;
     _fileCount = 0;
-    _locker = true;
+    _mutex = true;
   }
 
   @override
   void dispose() {
     super.dispose();
     _listener?.cancel();
-    _locker = true;
+    _mutex = true;
   }
 
   @override
@@ -67,7 +67,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
             });
           }
         }, onDone: () {
-          _locker = false;
+          _mutex = false;
         });
       } else {
         setState(() {
@@ -94,9 +94,9 @@ class _FileInfoCardState extends State<FileInfoCard> {
     }
 
     if (showSize) {
-      if (_locker) {
+      if (_mutex) {
         didChangeDependencies();
-        _locker = false;
+        _mutex = false;
       }
       info.addAll([
         ['文件大小', MixUtils.humanStorageSize(_totalSize.toDouble())],

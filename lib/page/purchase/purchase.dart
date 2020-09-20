@@ -30,7 +30,7 @@ class PurchasePageState extends State<PurchasePage> {
   ThemeProvider _themeProvider;
   CommonProvider _commonProvider;
   Map _qrcodeData = {};
-  bool _locker = true;
+  bool _mutex = true;
 
   @override
   void didChangeDependencies() async {
@@ -41,8 +41,8 @@ class PurchasePageState extends State<PurchasePage> {
       if (mounted) {
         _qrcodeData = await fetchQrcode();
         if (_qrcodeData.isNotEmpty) {
-          if (_locker) {
-            _locker = false;
+          if (_mutex) {
+            _mutex = false;
             // await _commonProvider.setPurchase(true);
           }
         }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:android_mix/android_mix.dart';
 import 'package:f_logs/model/flog/flog.dart';
 import 'package:flutter/cupertino.dart';
@@ -199,6 +201,11 @@ class SettingPageState extends State<SettingPage> {
           blockTitle('传输'),
           SizedBox(height: 15),
           ListTile(
+            title: LanText('本机IP'),
+            subtitle: LanText('${_commonProvider?.internalIp}'),
+            contentPadding: EdgeInsets.only(left: 15, right: 10),
+          ),
+          ListTile(
             title: LanText('传输服务'),
             subtitle: LanText('关闭后 需要与pc连接的服务将无法使用', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -231,11 +238,6 @@ class SettingPageState extends State<SettingPage> {
               },
             ),
           ),
-          ListTile(
-            title: LanText('当前IP'),
-            subtitle: LanText('${_commonProvider?.internalIp}'),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
-          ),
         ],
       ),
       Column(
@@ -261,17 +263,36 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
+          blockTitle('静态服务'),
+          SizedBox(height: 15),
+          InkWell(
+            onTap: () {},
+            child: ListTile(
+              title: LanText('保存路径'),
+              subtitle: LanText('路径'),
+              contentPadding: EdgeInsets.only(left: 15, right: 10),
+            ),
+          )
+        ],
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 30),
           blockTitle('Code Server&沙盒'),
           SizedBox(height: 15),
           InkWell(
             onTap: () async {
               CodeSrvUtils cutils = CodeSrvUtils();
               await cutils.init();
+
               Navigator.of(context, rootNavigator: true).push(
                 CupertinoPageRoute<void>(
                   maintainState: false,
                   builder: (BuildContext context) {
-                    return CodeSettingPage();
+                    return CodeSettingPage(
+                      cutils: cutils,
+                    );
                   },
                 ),
               );

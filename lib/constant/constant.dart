@@ -35,6 +35,7 @@ const LOGIN_USERNMAE = 'login-username';
 
 const FILE_PORT = 'file-port';
 const CODE_SERVER_PORT = 'code-server-port';
+const STATIC_UPLOAD_SAVEPATH = 'static_upload_savepath';
 
 const SANDBOX_NO_SECCOMP = 'sandbox-seccomp';
 const CODE_SERVER_TELEMETRY = 'code-server-telemetry';

@@ -31,15 +31,15 @@ class Store {
     return prefs.remove(key);
   }
 
-  // static Future<bool> setStringList(String key, List<String> content) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   return prefs.setStringList(key, content);
-  // }
+  static Future<bool> setStringList(String key, List<String> content) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setStringList(key, content);
+  }
 
-  // static Future<List<String>> getStringList(String key) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   return prefs.getStringList(key);
-  // }
+  static Future<List<String>> getStringList(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(key);
+  }
 
   // static Future<void> saveToList(String key, String val,
   //     {int limit = 20}) async {

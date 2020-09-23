@@ -21,6 +21,7 @@ Handler createWebHandler(
   bool isDark = true,
   @required String serverUrl,
   @required String uploadSavePath,
+  Function(bool) onUploadResult,
 }) {
   var rootDir = Directory(fileSystemPath);
   if (!rootDir.existsSync()) {
@@ -97,6 +98,7 @@ Handler createWebHandler(
                   await pFile.part.pipe(fileSink);
                   await fileSink.close();
                   debugPrint('${pFile.filename} upload done');
+                  if (onUploadResult != null) onUploadResult(true);
                   return Response.ok(
                     jsonEncode({'msg': '上传成功', 'code': 1}),
                     encoding: Utf8Codec(),
@@ -105,6 +107,7 @@ Handler createWebHandler(
                 }
               }
             } catch (e) {
+              if (onUploadResult != null) onUploadResult(false);
               return Response.notFound(
                 jsonEncode({'msg': '上传失败 $e', 'code': 0}),
               );
@@ -124,12 +127,13 @@ Handler createWebHandler(
 
 Response _redirectToAddTrailingSlash(Uri uri) {
   var location = Uri(
-      scheme: uri.scheme,
-      userInfo: uri.userInfo,
-      host: uri.host,
-      port: uri.port,
-      path: uri.path + '/',
-      query: uri.query);
+    scheme: uri.scheme,
+    userInfo: uri.userInfo,
+    host: uri.host,
+    port: uri.port,
+    path: uri.path + '/',
+    query: uri.query,
+  );
   return Response.movedPermanently(location.toString());
 }
 
@@ -151,9 +155,41 @@ Handler createFilesHandler(
   String contentType,
   bool isDark = true,
   @required String uploadSavePath,
+  Function(bool) onUploadResult,
 }) {
-  return (request) {
+  return (request) async {
     var file = File(request.url.path);
+
+    if (request.method == 'POST') {
+      switch (request.url.toString()) {
+        case 'upload_file':
+          Map files = request.context['postFileParams'];
+          try {
+            await for (var item in Stream.fromIterable(files.values)) {
+              FileParams pFile = item[0];
+              if (pFile != null) {
+                File file = File(pathLib.join(uploadSavePath, pFile.filename));
+                IOSink fileSink = file.openWrite();
+                await pFile.part.pipe(fileSink);
+                await fileSink.close();
+                debugPrint('${pFile.filename} upload done');
+                if (onUploadResult != null) onUploadResult(true);
+                return Response.ok(
+                  jsonEncode({'msg': '上传成功', 'code': 1}),
+                  encoding: Utf8Codec(),
+                  headers: {HttpHeaders.contentTypeHeader: 'text/html'},
+                );
+              }
+            }
+          } catch (e) {
+            if (onUploadResult != null) onUploadResult(false);
+            return Response.notFound(
+              jsonEncode({'msg': '上传失败 $e', 'code': 0}),
+            );
+          }
+      }
+    }
+
     if (file.existsSync()) {
       return _handleFile(request, file, () => contentType);
     }

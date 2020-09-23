@@ -1,7 +1,3 @@
-import 'dart:io';
-
-import 'package:android_mix/android_mix.dart';
-import 'package:android_mix/storage/enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lan_express/constant/constant.dart';
@@ -150,6 +146,32 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _enableAutoConnectCommonIp;
+  bool get enableAutoConnectCommonIp => _enableAutoConnectCommonIp;
+
+  Future<void> setEnableAutoConnectCommonIp(bool arg) async {
+    await Store.setBool(AUTO_CONNECT_COMMON_IP, arg);
+
+    _enableAutoConnectCommonIp = arg;
+    notifyListeners();
+  }
+
+  // 常用IP
+  Set<String> _commonIps = Set();
+  Set<String> get commonIps => _commonIps;
+
+  Future<void> addToCommonIps(String ip) async {
+    _commonIps.add(ip);
+    await Store.setStringList(COMMON_IPS, _commonIps.toList());
+    notifyListeners();
+  }
+
+  Future<void> removeFromCommonIps(String ip) async {
+    _commonIps.remove(ip);
+    await Store.setStringList(COMMON_IPS, _commonIps.toList());
+    notifyListeners();
+  }
+
   /// vscode 服务密码
   String _codeSrvPwd;
   String get codeSrvPwd => _codeSrvPwd;
@@ -267,6 +289,9 @@ class CommonProvider extends ChangeNotifier {
     _username = await Store.getString(LOGIN_USERNMAE);
     _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;
     _enableConnect = (await Store.getBool(ENABLE_CONNECT)) ?? true;
+    _commonIps = (await Store.getStringList(COMMON_IPS)) ?? Set();
+    _enableAutoConnectCommonIp =
+        (await Store.getBool(AUTO_CONNECT_COMMON_IP)) ?? true;
     _storageRootPath = await MixUtils.getExternalPath();
     _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
         await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);

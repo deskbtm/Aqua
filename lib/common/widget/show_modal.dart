@@ -485,3 +485,109 @@ Future<dynamic> showTipTextModal(
     },
   );
 }
+
+Future<dynamic> showSelectModal(
+  BuildContext context,
+  ThemeProvider provider, {
+  bool popPreWindow = false,
+  String title = '',
+  List<String> options,
+  bool transparent = false,
+  String defaultOkText,
+  String defaultCancelText,
+  List<Widget> additionList,
+  bool action = false,
+  Function(int) onSelected,
+  Function onOk,
+  Function onCancel,
+}) async {
+  if (popPreWindow) MixUtils.safePop(context);
+  dynamic themeData = provider.themeData;
+
+  return showCupertinoModal(
+    context: context,
+    filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder:
+            (BuildContext context, void Function(void Function()) changeState) {
+          return LanDialog(
+            actionPos: MainAxisAlignment.end,
+            fontColor: themeData.itemFontColor,
+            bgColor: themeData.dialogBgColor,
+            title: NoResizeText(title),
+            action: action,
+            children: [
+              ListView.builder(
+                padding: EdgeInsets.all(0),
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        onSelected(index);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(top: 8, bottom: 8),
+                        decoration: BoxDecoration(
+                          color: themeData.itemColor,
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        margin: EdgeInsets.only(top: 4, bottom: 4),
+                        child: NoResizeText(
+                          options[index],
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                itemCount: options?.length,
+              )
+            ],
+            defaultOkText: defaultOkText,
+            defaultCancelText: defaultCancelText,
+            onOk: () async {
+              await onOk();
+              MixUtils.safePop(context);
+            },
+            onCancel: () {
+              onCancel();
+              MixUtils.safePop(context);
+            },
+          );
+        },
+      );
+    },
+  );
+}
+
+// options
+//                 .asMap()
+//                 .map(
+//                   (key, value) => MapEntry(
+//                     key,
+//                     GestureDetector(
+//                       onTap: () {
+//                         onSelected(key);
+//                       },
+//                       child: Container(
+//                         padding: EdgeInsets.only(
+//                             top: 8, bottom: 8, left: 30, right: 30),
+//                         decoration: BoxDecoration(
+//                           color: Color(0x00000000),
+//                           borderRadius: BorderRadius.all(Radius.circular(5)),
+//                         ),
+//                         margin: EdgeInsets.only(top: 4, bottom: 4),
+//                         child: NoResizeText(
+//                           value,
+//                           style: TextStyle(fontSize: 16),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 )
+//                 .values
+//                 .toList(),

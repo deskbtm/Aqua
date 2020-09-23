@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:lan_express/common/widget/function_widget.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/provider/theme.dart';
@@ -12,27 +11,6 @@ import 'package:lan_express/utils/req.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:url_launcher/url_launcher.dart';
-
-String repoChineseName(String mirror) {
-  String name;
-  switch (mirror) {
-    case TSINGHUA_REPO:
-      name = '清华';
-      break;
-    case ALIYUN_REPO:
-      name = '阿里云';
-      break;
-    case USTC_REPO:
-      name = '中科大';
-      break;
-    case ALPINE_REPO:
-      name = 'alpine 官方';
-      break;
-    default:
-      name = mirror;
-  }
-  return name;
-}
 
 class PrivacyPolicyPage extends StatefulWidget {
   @override

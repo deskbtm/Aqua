@@ -1,16 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-// const SOCKET_CHANNEL = '1';
-// const STATIC_CHANNEL = '2';
 const COMMON_CHANNEL = '0';
 const ARCHIVE_CHANNEL = '1';
-
-// const String SOCKET_UNCONNECT_ID = '1';
-// const String SOCKET_DISCONNECT_ID = '2';
-// const String SOCKET_CONNECT_ID = '3';
-// const String STATIC_OPEN_ID = '4';
-// const String STATIC_CLOSE_ID = '5';
 
 class LocalNotification {
   static FlutterLocalNotificationsPlugin plugin;
@@ -36,6 +28,7 @@ class LocalNotification {
     bool onlyAlertOnce = false,
     bool showProgress = false,
     bool indeterminate = false,
+    bool autoCancel = false,
   }) async {
     var android = AndroidNotificationDetails(
       id,
@@ -44,6 +37,7 @@ class LocalNotification {
       priority: Priority.High,
       importance: Importance.Max,
       ongoing: ongoing,
+      autoCancel: autoCancel,
       onlyAlertOnce: onlyAlertOnce,
       showProgress: showProgress,
       indeterminate: indeterminate,

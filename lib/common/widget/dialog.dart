@@ -111,7 +111,9 @@ class LanDialog extends Dialog {
                                   children: <Widget>[
                                     DefaultTextStyle(
                                       style: TextStyle(
-                                          fontSize: 18, color: fontColor),
+                                        fontSize: 18,
+                                        color: fontColor,
+                                      ),
                                       child: title,
                                     ),
                                   ],
@@ -120,7 +122,8 @@ class LanDialog extends Dialog {
                               SizedBox(height: 15),
                               ...children,
                               if (action is List<Widget>) ...action,
-                              if (action is bool)
+                              if (!action) SizedBox(height: 30),
+                              if (action)
                                 Row(
                                   mainAxisAlignment: actionPos,
                                   children: <Widget>[

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lan_express/common/socket/socket.dart';
 import 'package:lan_express/common/widget/checkbox.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
@@ -131,15 +132,27 @@ class _HomePageState extends State<HomePage> {
     if (_mutex && data.isNotEmpty) {
       _mutex = false;
 
+      // 显示更新弹窗
       await showUpdateModal(data);
 
       PermissionStatus status = await PermissionHandler()
           .checkPermissionStatus(PermissionGroup.microphone);
       if (_commonProvider.isAppInit) {
         if (PermissionStatus.granted != status) {
+          // 提示用户 需要麦克风 权限 否则 无法进入
           await _requestMicphonePermissionModal(context);
         }
         // await _forceReadTutorialModal(context);
+      }
+
+      if (_commonProvider.enableConnect) {
+        SocketConnecter(_commonProvider).searchDeviceAndConnect(
+          context,
+          provider: _themeProvider,
+          onNotExpected: (String msg) {
+            showText(msg);
+          },
+        );
       }
     }
   }
@@ -170,8 +183,8 @@ class _HomePageState extends State<HomePage> {
       withCancel: false,
       defaultOkText: '前往教程',
       onOk: () async {
-        if (await canLaunch(TUTORIAL_URL)) {
-          await launch(TUTORIAL_URL);
+        if (await canLaunch(TUTORIAL_BASIC_URL)) {
+          await launch(TUTORIAL_BASIC_URL);
         }
       },
     );

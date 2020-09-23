@@ -1,7 +1,6 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -90,6 +89,22 @@ class _StaticSharePageState extends State<StaticSharePage> {
     );
   }
 
+  void _uploadNotification(bool result) {
+    result
+        ? LocalNotification.showNotification(
+            index: 0,
+            name: 'STATIC_UPLOAD',
+            title: '文件接收成功',
+            autoCancel: true,
+          )
+        : LocalNotification.showNotification(
+            index: 0,
+            name: 'STATIC_UPLOAD',
+            title: '文件接收失败',
+            autoCancel: true,
+          );
+  }
+
   Future<void> createStaticServer() async {
     try {
       String ip = _commonProvider?.internalIp;
@@ -106,6 +121,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
             isDark: _themeProvider.isDark,
             uploadSavePath: savePath,
             serverUrl: '$ip:$port',
+            onUploadResult: _uploadNotification,
           );
         } else {
           handlerFunc = createFilesHandler(
@@ -113,6 +129,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
             isDark: _themeProvider.isDark,
             serverUrl: '$ip:$port',
             uploadSavePath: savePath,
+            onUploadResult: _uploadNotification,
           );
         }
       } else {
@@ -121,6 +138,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
           isDark: _themeProvider.isDark,
           serverUrl: '$ip:$port',
           uploadSavePath: savePath,
+          onUploadResult: _uploadNotification,
         );
       }
 
@@ -206,7 +224,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                         ),
                       ),
                       ListTile(
-                        title: LanText('VScode Server'),
+                        title: LanText('Vscode Server'),
                         subtitle:
                             LanText('$internalIp:$codeSrvPort', small: true),
                         contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -293,37 +311,37 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                   LocalNotification.showNotification(
                                       name: 'SEARCH_DEVICE', title: '搜寻设备中...');
                                   await SocketConnecter(_commonProvider)
-                                      .searchDeviceAndConnect();
+                                      .searchDeviceAndConnect(
+                                    context,
+                                    provider: _themeProvider,
+                                  );
                                 },
                               ),
                       ),
-                      CupertinoButton(
-                        child: Text('click'),
-                        onPressed: () async {
-                          CodeSrvUtils cutils = await CodeSrvUtils().init();
-                          ProcessResult a = await Process.run(
-                              '${cutils.filesPath}/busybox', []);
-
-                          print(a.stdout.toString());
-                          print(a.stderr.toString());
-                          // ProcessResult a = await cutils.installNodeJs();
-                          // print(a.stdout.toString());
-                          // print(a.stderr.toString());
-                          // showScopeModal(
-                          //   context,
-                          //   _themeProvider,
-                          //   title: '请仔细阅读教程',
-                          //   tip: '该界面无返返回, 需前往教程, 后方可消失',
-                          //   withCancel: false,
-                          //   defaultOkText: '前往教程',
-                          //   onOk: () async {
-                          //     if (await canLaunch(TUTORIAL_URL)) {
-                          //       await launch(TUTORIAL_URL);
-                          //     }
-                          //   },
-                          // );
-                        },
-                      )
+                      // CupertinoButton(
+                      //   child: Text('click'),
+                      //   onPressed: () async {
+                      //     CodeSrvUtils cutils = await CodeSrvUtils().init();
+                      //     ProcessResult a = await Process.run(
+                      //         '${cutils.filesPath}/busybox', []);
+                      //     // ProcessResult a = await cutils.installNodeJs();
+                      //     // print(a.stdout.toString());
+                      //     // print(a.stderr.toString());
+                      //     // showScopeModal(
+                      //     //   context,
+                      //     //   _themeProvider,
+                      //     //   title: '请仔细阅读教程',
+                      //     //   tip: '该界面无返返回, 需前往教程, 后方可消失',
+                      //     //   withCancel: false,
+                      //     //   defaultOkText: '前往教程',
+                      //     //   onOk: () async {
+                      //     //     if (await canLaunch(TUTORIAL_URL)) {
+                      //     //       await launch(TUTORIAL_URL);
+                      //     //     }
+                      //     //   },
+                      //     // );
+                      //   },
+                      // )
                     ],
                   );
                 },

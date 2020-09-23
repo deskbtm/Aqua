@@ -51,6 +51,7 @@ class _LanExpressWrapperState extends State {
   CommonProvider _commonProvider;
 
   bool _mutex;
+  bool _connectionMutex;
   bool _settingLocker;
 
   @override
@@ -108,16 +109,13 @@ class _LanExpressWrapperState extends State {
       _mutex = false;
       String internalIp = await AndroidMix.wifi.ip;
       _commonProvider.setInternalIp(internalIp);
-      if (_commonProvider.enableConnect) {
-        await SocketConnecter(_commonProvider)
-            .searchDeviceAndConnect(limit: 10);
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     dynamic themeData = _themeProvider.themeData;
+
     return themeData == null
         ? Container()
         : CupertinoApp(

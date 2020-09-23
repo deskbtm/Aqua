@@ -6,8 +6,6 @@ import 'package:lan_express/page/lan/share.dart';
 import 'package:lan_express/provider/theme.dart';
 import 'package:provider/provider.dart';
 
-// import 'package:sqflite_sqlcipher/sqflite.dart';
-
 class LanPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -75,24 +73,27 @@ class LanPageState extends State<LanPage> {
               StaticSharePage(),
               Container(
                 child: Center(
-                    child: LanText(
-                  '远程控制, 远程游戏手柄, 敬请期待',
-                  alignX: 0,
-                )),
+                  child: LanText(
+                    '远程控制, 远程游戏手柄, 敬请期待',
+                    alignX: 0,
+                  ),
+                ),
               ),
               Container(
                 child: Center(
-                    child: LanText(
-                  '远程控制, 远程游戏手柄, 敬请期待',
-                  alignX: 0,
-                )),
+                  child: LanText(
+                    '远程控制, 远程游戏手柄, 敬请期待',
+                    alignX: 0,
+                  ),
+                ),
               ),
               Container(
                 child: Center(
-                    child: LanText(
-                  '远程控制, 远程游戏手柄, 敬请期待',
-                  alignX: 0,
-                )),
+                  child: LanText(
+                    '远程控制, 远程游戏手柄, 敬请期待',
+                    alignX: 0,
+                  ),
+                ),
               ),
             ],
           ),

@@ -54,11 +54,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
   CodeSrvUtils get cutils => widget.cutils;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeProvider = Provider.of<ThemeProvider>(context);
@@ -70,14 +65,14 @@ class CodeSettingPageState extends State<CodeSettingPage> {
         text: content, contentColor: _themeProvider.themeData?.toastColor);
   }
 
-  Future<String> copyResolveClipboard() async {
-    String pkg = PackageInfo().packageName;
-    return """
-    adb -d shell appops set $pkg SYSTEM_ALERT_WINDOW allow
-    adb -d shell pm grant $pkg android.permission.READ_LOGS
-    adb shell am force-stop $pkg
-    """;
-  }
+  // Future<String> copyResolveClipboard() async {
+  //   String pkg = PackageInfo().packageName;
+  //   return """
+  //   adb -d shell appops set $pkg SYSTEM_ALERT_WINDOW allow
+  //   adb -d shell pm grant $pkg android.permission.READ_LOGS
+  //   adb shell am force-stop $pkg
+  //   """;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -172,15 +167,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           blockTitle('沙盒', subtitle: 'alpine linux'),
           SizedBox(height: 15),
           InkWell(
-            // onTap: () async {
-            //   Directory rootfs = Directory('${cutils.filesPath}/rootfs');
-            //   if (await rootfs.exists()) {
-            //     _commonProvider.setStorageRootPath(rootfs.path);
-            //     showText('切换完成');
-            //   } else {
-            //     showText('沙盒不存在');
-            //   }
-            // },
             child: ListTile(
               title: LanText('沙盒目录'),
               subtitle: LanText(rootfs.existsSync() ? rootfs.path : '沙盒不存在',

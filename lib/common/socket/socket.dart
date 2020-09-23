@@ -4,8 +4,10 @@ import 'package:clipboard_listener/clipboard_listener.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/provider/common.dart';
+import 'package:lan_express/provider/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -28,9 +30,13 @@ class SocketConnecter {
     }
   }
 
-  void createClient({Function onConnected, Function onDisconnect}) {
+  void createClient(
+    targetIp, {
+    Function onConnected,
+    Function onDisconnected,
+    Function(String) onNotExpected,
+  }) {
     String port = commonProvider.filePort;
-    String targetIp = commonProvider.aliveIps.first;
     String internalIp = commonProvider.internalIp;
 
     String url = 'http://$targetIp:$port';
@@ -65,7 +71,7 @@ class SocketConnecter {
         title: '已与设备断开连接',
       );
       ClipboardListener.removeListener(_clipboardListener);
-      if (onDisconnect != null) onDisconnect();
+      if (onDisconnected != null) onDisconnected();
     });
 
     socket.on('clipboard-to-client', (data) async {
@@ -75,13 +81,25 @@ class SocketConnecter {
     });
 
     socket.on('connect_error', (error) {
-      FLog.error(text: error.toString(), methodName: 'createClient');
+      FLog.error(text: '$error', methodName: 'createClient');
+      if (onNotExpected != null) onNotExpected("连接出现错误");
       socket.destroy();
+    });
+
+    socket.on('connect_timeout', (error) {
+      FLog.error(text: '$error', methodName: 'createClient');
+      if (onNotExpected != null) onNotExpected("连接超时");
     });
   }
 
   Future<void> searchDeviceAndConnect(
-      {int limit = 10, Function onConnected, Function onDisconnect}) async {
+    BuildContext context, {
+    int limit = 10,
+    ThemeProvider provider,
+    Function(String) onNotExpected,
+    Function(String) onSelectedWhenMultiIps,
+    bool wannaConnect = true,
+  }) async {
     _counter++;
     if (_counter >= limit) {
       _counter = 0;
@@ -92,11 +110,32 @@ class SocketConnecter {
       );
     } else {
       await MixUtils.scanSubnet(commonProvider);
+      commonProvider.pushAliveIps('192.168.43.19');
+      commonProvider.pushAliveIps('192.168.43.18');
+      commonProvider.pushAliveIps('192.168.43.20');
       if (commonProvider.aliveIps.isNotEmpty) {
-        createClient(onConnected: onConnected);
+        if (commonProvider.aliveIps.length > 1) {
+          List<String> list = commonProvider.aliveIps.toList();
+          showSelectModal(
+            context,
+            provider,
+            options: list,
+            title: '选择连接IP',
+            onSelected: (index) {
+              MixUtils.safePop(context);
+              if (onSelectedWhenMultiIps != null)
+                onSelectedWhenMultiIps(list[index]);
+              if (wannaConnect)
+                createClient(list[index], onNotExpected: onNotExpected);
+            },
+          );
+        } else {
+          createClient(commonProvider.aliveIps.first,
+              onNotExpected: onNotExpected);
+        }
       } else {
         await Future.delayed(Duration(milliseconds: 600));
-        await searchDeviceAndConnect(limit: limit);
+        await searchDeviceAndConnect(context, limit: limit);
       }
     }
   }

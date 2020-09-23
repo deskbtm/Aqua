@@ -36,6 +36,8 @@ const LOGIN_USERNMAE = 'login-username';
 const FILE_PORT = 'file-port';
 const CODE_SERVER_PORT = 'code-server-port';
 const STATIC_UPLOAD_SAVEPATH = 'static_upload_savepath';
+const AUTO_CONNECT_COMMON_IP = 'auto_connect_common_ip';
+const COMMON_IPS = 'common_ips';
 
 const SANDBOX_NO_SECCOMP = 'sandbox-seccomp';
 const CODE_SERVER_TELEMETRY = 'code-server-telemetry';
@@ -53,5 +55,6 @@ const WEBDAV_PWD = 'webdav-pwd';
 const REMEMBER_NO_UPDATE_TIP = 'remember-no-update-tip';
 
 const TUTORIAL_URL = 'http://sewerganger.gitee.io/lan-file-more/archives';
+const TUTORIAL_BASIC_URL = 'http://sewerganger.gitee.io/lan-file-more/archives';
 const FIX_CLIPBOARD_URL =
     'http://sewerganger.gitee.io/lan-file-more/2020/08/31/安卓10以上剪贴板监听/';

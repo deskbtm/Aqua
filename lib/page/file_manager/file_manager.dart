@@ -3,11 +3,11 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:f_logs/model/flog/flog.dart';
 import 'package:android_mix/android_mix.dart';
 import 'package:android_mix/archive/enums.dart';
-import 'package:f_logs/model/flog/flog.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:lan_express/common/widget/action_button.dart';
 import 'package:lan_express/common/widget/dialog.dart';
@@ -153,7 +153,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     if (mounted) setState(() {});
   }
 
-  Future<void> clearAllSelected(BuildContext context) async {
+  Future<void> _clearAllSelected(BuildContext context) async {
     await _shareProvider.clearSelectedFiles();
 
     if (mounted) {
@@ -179,7 +179,7 @@ class _FileManagerPageState extends State<FileManagerPage>
               ActionButton(
                 content: '取消全部选中',
                 onTap: () async {
-                  await clearAllSelected(context);
+                  await _clearAllSelected(context);
                 },
               ),
               ActionButton(

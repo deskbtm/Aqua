@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:android_mix/android_mix.dart';
 import 'package:f_logs/model/flog/flog.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +12,8 @@ import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
 import 'package:lan_express/page/purchase/purchase.dart';
 import 'package:lan_express/page/setting/code_setting.dart';
+import 'package:lan_express/page/setting/control_setting.dart';
+import 'package:lan_express/page/setting/express_setting.dart';
 import 'package:lan_express/page/setting/privacy_policy.dart';
 import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/provider/theme.dart';
@@ -71,7 +71,7 @@ class SettingPageState extends State<SettingPage> {
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider?.themeData?.toastColor);
+        text: content, contentColor: _themeProvider.themeData?.toastColor);
   }
 
   Future setTheme(bool val) async {
@@ -257,6 +257,28 @@ class SettingPageState extends State<SettingPage> {
               },
             ),
           ),
+          InkWell(
+            onTap: () async {
+              Navigator.of(context, rootNavigator: true).push(
+                CupertinoPageRoute<void>(
+                  maintainState: false,
+                  builder: (BuildContext context) {
+                    return ExpressSettingPage();
+                  },
+                ),
+              );
+            },
+            child: ListTile(
+              leading: Icon(OMIcons.share, color: themeData?.itemFontColor),
+              title: LanText('详细设置', alignX: -1.15),
+              contentPadding: EdgeInsets.only(left: 15, right: 25),
+              trailing: Icon(
+                OMIcons.chevronRight,
+                color: themeData?.itemFontColor,
+                size: 16,
+              ),
+            ),
+          ),
         ],
       ),
       Column(
@@ -268,9 +290,24 @@ class SettingPageState extends State<SettingPage> {
           InkWell(
             onTap: () {},
             child: ListTile(
-              title: LanText('保存路径'),
-              subtitle: LanText('路径'),
+              title: LanText('上传保存路径'),
+              subtitle: LanText('${_commonProvider.staticUploadSavePath}'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
+              trailing: CupertinoButton(
+                child: NoResizeText('更换'),
+                onPressed: () {
+                  showSingleTextFieldModal(
+                    context,
+                    _themeProvider,
+                    title: '静态上传保存路径',
+                    onOk: (String val) async {
+                      await _commonProvider
+                          .setStaticUploadSavePath(val?.trim());
+                    },
+                    onCancel: () {},
+                  );
+                },
+              ),
             ),
           )
         ],
@@ -281,6 +318,14 @@ class SettingPageState extends State<SettingPage> {
           SizedBox(height: 30),
           blockTitle('Code Server&沙盒'),
           SizedBox(height: 15),
+          InkWell(
+            onTap: () async {},
+            child: ListTile(
+              title: LanText('手动安装'),
+              subtitle: LanText('手动添加下载好的压缩包', small: true),
+              contentPadding: EdgeInsets.only(left: 15, right: 10),
+            ),
+          ),
           InkWell(
             onTap: () async {
               CodeSrvUtils cutils = CodeSrvUtils();
@@ -296,8 +341,7 @@ class SettingPageState extends State<SettingPage> {
                   },
                 ),
               );
-              if (await cutils.existsAllResource()) {
-              } else {
+              if (!(await cutils.existsAllResource())) {
                 gTabController.index = 1;
                 // 确保删除干净了
                 await cutils.rmAllResource();
@@ -315,14 +359,6 @@ class SettingPageState extends State<SettingPage> {
               ),
             ),
           ),
-          InkWell(
-            onTap: () async {},
-            child: ListTile(
-              title: LanText('手动安装'),
-              subtitle: LanText('手动添加下载好的压缩包', small: true),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
-            ),
-          )
         ],
       ),
       Column(
@@ -356,6 +392,37 @@ class SettingPageState extends State<SettingPage> {
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           )
+        ],
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 30),
+          blockTitle('控制'),
+          SizedBox(height: 15),
+          InkWell(
+            onTap: () async {
+              Navigator.of(context, rootNavigator: true).push(
+                CupertinoPageRoute<void>(
+                  maintainState: false,
+                  builder: (BuildContext context) {
+                    return ControlSettingPage();
+                  },
+                ),
+              );
+            },
+            child: ListTile(
+              leading:
+                  Icon(OMIcons.settingsRemote, color: themeData?.itemFontColor),
+              title: LanText('详细设置', alignX: -1.15),
+              contentPadding: EdgeInsets.only(left: 15, right: 25),
+              trailing: Icon(
+                OMIcons.chevronRight,
+                color: themeData?.itemFontColor,
+                size: 16,
+              ),
+            ),
+          ),
         ],
       ),
       Column(
@@ -527,9 +594,6 @@ class SettingPageState extends State<SettingPage> {
             onTap: () async {
               await FLog.clearLogs();
               showText('删除完成');
-              // String externalDir = await AndroidMix.storage.getStorageDirectory;
-              // Directory('$externalDir/FLogs');
-              // showText('日志导出至: $externalDir');
             },
             child: ListTile(
               title: LanText('删除日志'),

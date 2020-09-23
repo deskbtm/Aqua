@@ -9,6 +9,11 @@ import 'package:shelf/shelf.dart';
 
 Future<String> _getHeader(String sanitizedHeading, String logo,
     {bool isShareFiles = false, bool isDark}) async {
+  // String cmJsString =
+  //     await rootBundle.loadString('lib/web/assets/contextmenu.js');
+  // String cmCssString =
+  //     await rootBundle.loadString('lib/web/assets/contextmenu.css');
+
   return '''<!DOCTYPE html>
 <html>
 <head>
@@ -16,10 +21,7 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   <title>$sanitizedHeading</title>
   <link rel="shortcut icon" href="data:image/png;base64,$logo">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>
-  </script>
   <style>
-
   *{
     color: ${isDark ? '#fff' : '#242424'}; 
     font-size: 14px; 
@@ -34,6 +36,10 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   html, body {
     margin: 0;
     padding: 0;
+  }
+
+  li{
+    list-style: none;
   }
 
   body {
@@ -253,7 +259,6 @@ var delFileFromWrapper  = function(name){
 
 var fileChip = fileName =>  "<button class='click-scale chip'><span>" + fileName + 
 "</span><div class='close-btn' onclick='delFileFromWrapper(" + '"' + fileName + '"' + ")'></div></button>";
-
 var selectFileBtn = document.getElementById('select-file');
 var inputFile = document.getElementById('input-file');
 var chipWrapper = document.getElementById('chip-wrapper');
@@ -288,7 +293,7 @@ uploadBtn.onclick = function(e){
         var a = JSON.parse(xhr.responseText);
         toast(a.msg,  2000);
       }catch(e){
-        toast('出现位置错误',  2000);
+        toast('出现未知错误',  2000);
       }
     }
   };

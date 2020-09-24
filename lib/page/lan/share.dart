@@ -314,34 +314,36 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                       .searchDeviceAndConnect(
                                     context,
                                     provider: _themeProvider,
+                                    initiativeConnect: false,
                                   );
                                 },
                               ),
                       ),
-                      // CupertinoButton(
-                      //   child: Text('click'),
-                      //   onPressed: () async {
-                      //     CodeSrvUtils cutils = await CodeSrvUtils().init();
-                      //     ProcessResult a = await Process.run(
-                      //         '${cutils.filesPath}/busybox', []);
-                      //     // ProcessResult a = await cutils.installNodeJs();
-                      //     // print(a.stdout.toString());
-                      //     // print(a.stderr.toString());
-                      //     // showScopeModal(
-                      //     //   context,
-                      //     //   _themeProvider,
-                      //     //   title: '请仔细阅读教程',
-                      //     //   tip: '该界面无返返回, 需前往教程, 后方可消失',
-                      //     //   withCancel: false,
-                      //     //   defaultOkText: '前往教程',
-                      //     //   onOk: () async {
-                      //     //     if (await canLaunch(TUTORIAL_URL)) {
-                      //     //       await launch(TUTORIAL_URL);
-                      //     //     }
-                      //     //   },
-                      //     // );
-                      //   },
-                      // )
+                      CupertinoButton(
+                        child: Text('click'),
+                        onPressed: () async {
+                          // await Store.setStringList('demo')
+                          // CodeSrvUtils cutils = await CodeSrvUtils().init();
+                          // ProcessResult a = await Process.run(
+                          //     '${cutils.filesPath}/busybox', []);
+                          // ProcessResult a = await cutils.installNodeJs();
+                          // print(a.stdout.toString());
+                          // print(a.stderr.toString());
+                          // showScopeModal(
+                          //   context,
+                          //   _themeProvider,
+                          //   title: '请仔细阅读教程',
+                          //   tip: '该界面无返返回, 需前往教程, 后方可消失',
+                          //   withCancel: false,
+                          //   defaultOkText: '前往教程',
+                          //   onOk: () async {
+                          //     if (await canLaunch(TUTORIAL_URL)) {
+                          //       await launch(TUTORIAL_URL);
+                          //     }
+                          //   },
+                          // );
+                        },
+                      )
                     ],
                   );
                 },

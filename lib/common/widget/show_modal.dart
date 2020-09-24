@@ -500,9 +500,11 @@ Future<dynamic> showSelectModal(
   Function(int) onSelected,
   Function onOk,
   Function onCancel,
+  Function(BuildContext) doAction,
 }) async {
   if (popPreWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;
+  if (doAction != null) doAction(context);
 
   return showCupertinoModal(
     context: context,

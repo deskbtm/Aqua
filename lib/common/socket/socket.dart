@@ -10,6 +10,7 @@ import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/provider/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
+import 'package:path/path.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketConnecter {
@@ -97,8 +98,8 @@ class SocketConnecter {
     int limit = 10,
     ThemeProvider provider,
     Function(String) onNotExpected,
-    Function(String) onSelectedWhenMultiIps,
-    bool wannaConnect = true,
+    // Function(String) onSelectedWhenMultiIps,
+    bool initiativeConnect = true,
   }) async {
     _counter++;
     if (_counter >= limit) {
@@ -110,26 +111,46 @@ class SocketConnecter {
       );
     } else {
       await MixUtils.scanSubnet(commonProvider);
-      commonProvider.pushAliveIps('192.168.43.19');
-      commonProvider.pushAliveIps('192.168.43.18');
-      commonProvider.pushAliveIps('192.168.43.20');
+      // commonProvider.pushAliveIps('192.168.43.19');
+      // commonProvider.pushAliveIps('192.168.43.18');
+      // commonProvider.pushAliveIps('192.168.43.20');
       if (commonProvider.aliveIps.isNotEmpty) {
         if (commonProvider.aliveIps.length > 1) {
           List<String> list = commonProvider.aliveIps.toList();
+          Timer timer;
+
           showSelectModal(
             context,
             provider,
             options: list,
             title: '选择连接IP',
             onSelected: (index) {
+              timer?.cancel();
               MixUtils.safePop(context);
-              if (onSelectedWhenMultiIps != null)
-                onSelectedWhenMultiIps(list[index]);
-              if (wannaConnect)
-                createClient(list[index], onNotExpected: onNotExpected);
+              commonProvider.addToCommonIps(list[index]);
+              createClient(list[index], onNotExpected: onNotExpected);
+            },
+            doAction: (context) {
+              if (initiativeConnect) {
+                if (commonProvider.enableAutoConnectCommonIp) {
+                  timer = Timer(
+                    Duration(milliseconds: 2500),
+                    () {
+                      MixUtils.safePop(context);
+                      String commonIp = commonProvider.getMostCommonIp();
+                      print(commonIp);
+                      if (commonIp != null) {
+                        commonProvider.addToCommonIps(commonIp);
+                        createClient(commonIp);
+                      }
+                    },
+                  );
+                }
+              }
             },
           );
         } else {
+          commonProvider.addToCommonIps(commonProvider.aliveIps.first);
           createClient(commonProvider.aliveIps.first,
               onNotExpected: onNotExpected);
         }

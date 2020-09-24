@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lan_express/constant/constant.dart';
@@ -157,19 +159,37 @@ class CommonProvider extends ChangeNotifier {
   }
 
   // 常用IP
-  Set<String> _commonIps = Set();
-  Set<String> get commonIps => _commonIps;
+  Map _commonIps = Map();
+  Map get commonIps => _commonIps;
 
   Future<void> addToCommonIps(String ip) async {
-    _commonIps.add(ip);
-    await Store.setStringList(COMMON_IPS, _commonIps.toList());
+    var count = _commonIps[ip];
+    if (count != null) {
+      _commonIps[ip] = count + 1;
+    } else {
+      _commonIps[ip] = 1;
+    }
+    await Store.setString(COMMON_IPS, json.encode(_commonIps));
     notifyListeners();
   }
 
   Future<void> removeFromCommonIps(String ip) async {
     _commonIps.remove(ip);
-    await Store.setStringList(COMMON_IPS, _commonIps.toList());
+    await Store.setString(COMMON_IPS, json.encode(_commonIps));
     notifyListeners();
+  }
+
+  String getMostCommonIp() {
+    List<MapEntry<dynamic, dynamic>> al = _commonIps.entries.toList();
+    int max = 0;
+    String ip;
+    for (var i = 0; i < al.length; i++) {
+      if (al[i].value > max) {
+        max = al[i].value;
+        ip = al[i].key;
+      }
+    }
+    return ip;
   }
 
   /// vscode 服务密码
@@ -289,7 +309,10 @@ class CommonProvider extends ChangeNotifier {
     _username = await Store.getString(LOGIN_USERNMAE);
     _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;
     _enableConnect = (await Store.getBool(ENABLE_CONNECT)) ?? true;
-    _commonIps = (await Store.getStringList(COMMON_IPS)) ?? Set();
+
+    String tmpCommonIps = await Store.getString(COMMON_IPS);
+    _commonIps = tmpCommonIps == null ? Map() : json.decode(tmpCommonIps);
+
     _enableAutoConnectCommonIp =
         (await Store.getBool(AUTO_CONNECT_COMMON_IP)) ?? true;
     _storageRootPath = await MixUtils.getExternalPath();

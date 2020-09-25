@@ -92,12 +92,6 @@ class SplitSelectionModalState extends State<SplitSelectionModal> {
     _rightChildren = widget.rightChildren;
   }
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   if (widget.onDispose != null) widget.onDispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     Widget colListView(List<Widget> children) => Expanded(
@@ -491,20 +485,22 @@ Future<dynamic> showSelectModal(
   ThemeProvider provider, {
   bool popPreWindow = false,
   String title = '',
-  List<String> options,
+  List<dynamic> options,
   bool transparent = false,
   String defaultOkText,
   String defaultCancelText,
-  List<Widget> additionList,
   bool action = false,
   Function(int) onSelected,
   Function onOk,
   Function onCancel,
   Function(BuildContext) doAction,
+  Function(int) onLongPressItem,
 }) async {
   if (popPreWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;
   if (doAction != null) doAction(context);
+
+  print(themeData.dialogBgColor);
 
   return showCupertinoModal(
     context: context,
@@ -528,21 +524,27 @@ Future<dynamic> showSelectModal(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        onSelected(index);
+                        if (onSelected != null) onSelected(index);
                       },
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.only(top: 8, bottom: 8),
-                        decoration: BoxDecoration(
-                          color: themeData.itemColor,
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                        ),
-                        margin: EdgeInsets.only(top: 4, bottom: 4),
-                        child: NoResizeText(
-                          options[index],
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
+                      onLongPress: () {
+                        if (onLongPressItem != null) onLongPressItem(index);
+                      },
+                      child: options[index] is String
+                          ? Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.only(top: 8, bottom: 8),
+                              decoration: BoxDecoration(
+                                color: themeData.itemColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                              ),
+                              margin: EdgeInsets.only(top: 4, bottom: 4),
+                              child: NoResizeText(
+                                options[index],
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            )
+                          : options[index],
                     ),
                   );
                 },
@@ -565,31 +567,3 @@ Future<dynamic> showSelectModal(
     },
   );
 }
-
-// options
-//                 .asMap()
-//                 .map(
-//                   (key, value) => MapEntry(
-//                     key,
-//                     GestureDetector(
-//                       onTap: () {
-//                         onSelected(key);
-//                       },
-//                       child: Container(
-//                         padding: EdgeInsets.only(
-//                             top: 8, bottom: 8, left: 30, right: 30),
-//                         decoration: BoxDecoration(
-//                           color: Color(0x00000000),
-//                           borderRadius: BorderRadius.all(Radius.circular(5)),
-//                         ),
-//                         margin: EdgeInsets.only(top: 4, bottom: 4),
-//                         child: NoResizeText(
-//                           value,
-//                           style: TextStyle(fontSize: 16),
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 )
-//                 .values
-//                 .toList(),

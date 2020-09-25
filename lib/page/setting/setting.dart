@@ -198,7 +198,7 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('传输'),
+          blockTitle('内网传输'),
           SizedBox(height: 15),
           ListTile(
             title: LanText('本机IP'),
@@ -206,19 +206,8 @@ class SettingPageState extends State<SettingPage> {
             contentPadding: EdgeInsets.only(left: 15, right: 10),
           ),
           ListTile(
-            title: LanText('传输服务'),
-            subtitle: LanText('关闭后 需要与pc连接的服务将无法使用', small: true),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
-            trailing: LanSwitch(
-              value: _commonProvider.enableConnect,
-              onChanged: (val) async {
-                await _commonProvider.setEnableConnect(val);
-              },
-            ),
-          ),
-          ListTile(
             title: LanText('服务端口'),
-            subtitle: LanText('内网快递, 静态服务端口', small: true),
+            subtitle: LanText('内网快递 静态服务端口', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: CupertinoButton(
               child: NoResizeText('${_commonProvider.filePort}'),
@@ -238,17 +227,20 @@ class SettingPageState extends State<SettingPage> {
               },
             ),
           ),
-        ],
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 30),
-          blockTitle('内网快递'),
-          SizedBox(height: 15),
+          ListTile(
+            title: LanText('传输服务'),
+            subtitle: LanText('关闭后 需要与PC连接的服务将无法使用', small: true),
+            contentPadding: EdgeInsets.only(left: 15, right: 10),
+            trailing: LanSwitch(
+              value: _commonProvider.enableConnect,
+              onChanged: (val) async {
+                await _commonProvider.setEnableConnect(val);
+              },
+            ),
+          ),
           ListTile(
             title: LanText('自动连接'),
-            subtitle: LanText('App开启时 自动至连接pc', small: true),
+            subtitle: LanText('一台PC设备 自动连接 无弹窗', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
               value: _commonProvider.autoConnectExpress,
@@ -270,7 +262,7 @@ class SettingPageState extends State<SettingPage> {
             },
             child: ListTile(
               leading: Icon(OMIcons.share, color: themeData?.itemFontColor),
-              title: LanText('详细设置', alignX: -1.15),
+              title: LanText('更多设置', alignX: -1.15),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
               trailing: Icon(
                 OMIcons.chevronRight,
@@ -365,6 +357,37 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
+          blockTitle('控制'),
+          SizedBox(height: 15),
+          InkWell(
+            onTap: () async {
+              Navigator.of(context, rootNavigator: true).push(
+                CupertinoPageRoute<void>(
+                  maintainState: false,
+                  builder: (BuildContext context) {
+                    return ControlSettingPage();
+                  },
+                ),
+              );
+            },
+            child: ListTile(
+              leading:
+                  Icon(OMIcons.settingsRemote, color: themeData?.itemFontColor),
+              title: LanText('详细设置', alignX: -1.15),
+              contentPadding: EdgeInsets.only(left: 15, right: 25),
+              trailing: Icon(
+                OMIcons.chevronRight,
+                color: themeData?.itemFontColor,
+                size: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: 30),
           blockTitle('剪贴板'),
           SizedBox(height: 15),
           ListTile(
@@ -392,37 +415,6 @@ class SettingPageState extends State<SettingPage> {
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           )
-        ],
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 30),
-          blockTitle('控制'),
-          SizedBox(height: 15),
-          InkWell(
-            onTap: () async {
-              Navigator.of(context, rootNavigator: true).push(
-                CupertinoPageRoute<void>(
-                  maintainState: false,
-                  builder: (BuildContext context) {
-                    return ControlSettingPage();
-                  },
-                ),
-              );
-            },
-            child: ListTile(
-              leading:
-                  Icon(OMIcons.settingsRemote, color: themeData?.itemFontColor),
-              title: LanText('详细设置', alignX: -1.15),
-              contentPadding: EdgeInsets.only(left: 15, right: 25),
-              trailing: Icon(
-                OMIcons.chevronRight,
-                color: themeData?.itemFontColor,
-                size: 16,
-              ),
-            ),
-          ),
         ],
       ),
       Column(
@@ -561,6 +553,19 @@ class SettingPageState extends State<SettingPage> {
                       child: NoResizeText('最新'), onPressed: () {}),
               contentPadding:
                   EdgeInsets.only(left: 15, right: _willUpdate ? 25 : 10),
+            ),
+          ),
+          InkWell(
+            onTap: () {},
+            child: ListTile(
+              leading: Icon(OMIcons.listAlt, color: themeData?.itemFontColor),
+              title: LanText('日志', alignX: -1.15),
+              contentPadding: EdgeInsets.only(left: 15, right: 25),
+              trailing: Icon(
+                OMIcons.chevronRight,
+                color: themeData?.itemFontColor,
+                size: 16,
+              ),
             ),
           ),
         ],

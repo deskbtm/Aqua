@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
       defaultOkText: '获取权限',
       onOk: () async {
         await PermissionHandler()
-            .checkPermissionStatus(PermissionGroup.microphone);
+            .requestPermissions(<PermissionGroup>[PermissionGroup.microphone]);
       },
       onCancel: () {
         MixUtils.safePop(context);

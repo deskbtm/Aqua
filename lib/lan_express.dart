@@ -1,9 +1,11 @@
 import 'dart:async';
 
-import 'package:android_mix/android_mix.dart';
-import 'package:catcher/core/catcher.dart';
+import 'generated/l10n.dart';
 import 'package:f_logs/f_logs.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:catcher/core/catcher.dart';
+import 'package:android_mix/android_mix.dart';
 import 'package:lcfarm_flutter_umeng/lcfarm_flutter_umeng.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'external/bot_toast/src/toast_navigator_observer.dart';
@@ -19,9 +21,6 @@ import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/store.dart';
 import 'package:lan_express/utils/req.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
-import 'common/socket/socket.dart';
-import 'generated/l10n.dart';
 
 class LanExpress extends StatefulWidget {
   @override

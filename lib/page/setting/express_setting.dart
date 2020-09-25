@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
+import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/common/widget/switch.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/provider/common.dart';
@@ -44,8 +45,8 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
         children: <Widget>[
           SizedBox(height: 30),
           ListTile(
-            title: LanText('自动连接常用IP'),
-            subtitle: LanText('发现多个IP 不会弹出选择框'),
+            title: LanText('自动搜索常用IP'),
+            subtitle: LanText('多台PC设备 3s后自动选择 弹窗消失'),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
               value: _commonProvider.enableAutoConnectCommonIp,
@@ -54,10 +55,48 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
               },
             ),
           ),
-          ListTile(
-            title: LanText('常用IP列表'),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
-          ),
+          InkWell(
+            onTap: () async {
+              List<Widget> ipStatistics = _commonProvider.commonIps.entries
+                  .toList()
+                  .map(
+                    (e) => Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: themeData.itemColor,
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
+                      margin: EdgeInsets.only(top: 4, bottom: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          NoResizeText(
+                            '${e.key}',
+                            style: TextStyle(color: themeData.itemFontColor),
+                          ),
+                          NoResizeText(
+                            '${e.value}',
+                            style: TextStyle(color: themeData.itemFontColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList();
+
+              showSelectModal(
+                context,
+                _themeProvider,
+                title: '长按删除',
+                options: ipStatistics,
+                onLongPressItem: (index) {},
+              );
+            },
+            child: ListTile(
+              title: LanText('常用IP列表'),
+              contentPadding: EdgeInsets.only(left: 15, right: 10),
+            ),
+          )
         ],
       ),
     ];
@@ -66,7 +105,7 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          '控制',
+          '内网传输更多',
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,

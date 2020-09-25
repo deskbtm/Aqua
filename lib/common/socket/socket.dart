@@ -10,7 +10,6 @@ import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/provider/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
-import 'package:path/path.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketConnecter {
@@ -127,8 +126,10 @@ class SocketConnecter {
             onSelected: (index) {
               timer?.cancel();
               MixUtils.safePop(context);
-              commonProvider.addToCommonIps(list[index]);
-              createClient(list[index], onNotExpected: onNotExpected);
+              createClient(list[index], onNotExpected: onNotExpected,
+                  onConnected: () {
+                commonProvider.addToCommonIps(list[index]);
+              });
             },
             doAction: (context) {
               if (initiativeConnect) {
@@ -140,8 +141,10 @@ class SocketConnecter {
                       String commonIp = commonProvider.getMostCommonIp();
                       print(commonIp);
                       if (commonIp != null) {
-                        commonProvider.addToCommonIps(commonIp);
-                        createClient(commonIp);
+                        createClient(commonIp, onNotExpected: onNotExpected,
+                            onConnected: () {
+                          commonProvider.addToCommonIps(commonIp);
+                        });
                       }
                     },
                   );
@@ -150,9 +153,10 @@ class SocketConnecter {
             },
           );
         } else {
-          commonProvider.addToCommonIps(commonProvider.aliveIps.first);
           createClient(commonProvider.aliveIps.first,
-              onNotExpected: onNotExpected);
+              onNotExpected: onNotExpected, onConnected: () {
+            commonProvider.addToCommonIps(commonProvider.aliveIps.first);
+          });
         }
       } else {
         await Future.delayed(Duration(milliseconds: 600));

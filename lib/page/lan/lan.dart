@@ -25,8 +25,8 @@ class LanPageState extends State<LanPage> {
 
     _tabs = [
       Tab(child: LanText('传输', alignX: 0)),
+      Tab(child: LanText('记录', alignX: 0)),
       Tab(child: LanText('控制', alignX: 0)),
-      Tab(child: LanText('剪贴板', alignX: 0)),
       Tab(child: LanText('清理', alignX: 0)),
     ];
     _controller = TabController(

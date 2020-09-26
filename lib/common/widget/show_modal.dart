@@ -312,6 +312,7 @@ Future<dynamic> showSingleTextFieldModal(
   bool popPreWindow = false,
   String title = '',
   String placeholder,
+  String initText,
   @required Function(String) onOk,
   @required Function onCancel,
   bool transparent = false,
@@ -320,6 +321,8 @@ Future<dynamic> showSingleTextFieldModal(
   if (popPreWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;
   TextEditingController textEditingController = TextEditingController();
+
+  if (initText != null) textEditingController.text = initText;
 
   return showCupertinoModal(
     context: context,
@@ -485,6 +488,7 @@ Future<dynamic> showSelectModal(
   ThemeProvider provider, {
   bool popPreWindow = false,
   String title = '',
+  String subTitle = '',
   List<dynamic> options,
   bool transparent = false,
   String defaultOkText,
@@ -494,13 +498,13 @@ Future<dynamic> showSelectModal(
   Function onOk,
   Function onCancel,
   Function(BuildContext) doAction,
-  Function(int) onLongPressItem,
+  Function(int, List<dynamic> tmp) onLongPressDeleteItem,
+  List<Widget> leadingList,
 }) async {
   if (popPreWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;
   if (doAction != null) doAction(context);
-
-  print(themeData.dialogBgColor);
+  List<dynamic> tmpOptions = options;
 
   return showCupertinoModal(
     context: context,
@@ -513,9 +517,20 @@ Future<dynamic> showSelectModal(
             actionPos: MainAxisAlignment.end,
             fontColor: themeData.itemFontColor,
             bgColor: themeData.dialogBgColor,
-            title: NoResizeText(title),
+            title: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.end,
+              children: <Widget>[
+                NoResizeText(title),
+                SizedBox(width: 5),
+                NoResizeText(
+                  subTitle,
+                  style: TextStyle(fontSize: 10),
+                ),
+              ],
+            ),
             action: action,
             children: [
+              if (leadingList != null) ...leadingList,
               ListView.builder(
                 padding: EdgeInsets.all(0),
                 shrinkWrap: true,
@@ -527,9 +542,13 @@ Future<dynamic> showSelectModal(
                         if (onSelected != null) onSelected(index);
                       },
                       onLongPress: () {
-                        if (onLongPressItem != null) onLongPressItem(index);
+                        tmpOptions.removeAt(index);
+                        if (onLongPressDeleteItem != null) {
+                          onLongPressDeleteItem(index, tmpOptions);
+                        }
+                        changeState(() {});
                       },
-                      child: options[index] is String
+                      child: tmpOptions[index] is String
                           ? Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -540,15 +559,15 @@ Future<dynamic> showSelectModal(
                               ),
                               margin: EdgeInsets.only(top: 4, bottom: 4),
                               child: NoResizeText(
-                                options[index],
+                                tmpOptions[index],
                                 style: TextStyle(fontSize: 16),
                               ),
                             )
-                          : options[index],
+                          : tmpOptions[index],
                     ),
                   );
                 },
-                itemCount: options?.length,
+                itemCount: tmpOptions?.length,
               )
             ],
             defaultOkText: defaultOkText,

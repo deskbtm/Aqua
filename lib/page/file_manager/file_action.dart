@@ -255,14 +255,6 @@ class FileAction {
     }
   }
 
-  Future<void> preview() async {}
-  Future<void> move() async {
-    // FileUtils.
-  }
-  Future<void> checkDetail() async {}
-  Future<void> share() async {}
-  Future<void> shareLan() async {}
-
   static String trimSlash(String name) {
     return name.trim().replaceAll(RegExp(r"^(\/+)|(\/+)$"), '');
   }
@@ -275,13 +267,13 @@ class FileAction {
     return newPath;
   }
 
-  static Map getType(File file) {
-    return {
-      'isDir': file.statSync().type == FileSystemEntityType.directory,
-      'isLink': file.statSync().type == FileSystemEntityType.link,
-      'isFile': file.statSync().type == FileSystemEntityType.file,
-    };
-  }
+  // static Map getType(File file) {
+  //   return {
+  //     'isDir': file.statSync().type == FileSystemEntityType.directory,
+  //     'isLink': file.statSync().type == FileSystemEntityType.link,
+  //     'isFile': file.statSync().type == FileSystemEntityType.file,
+  //   };
+  // }
 
   static String getName(String name) {
     if (name.contains('.')) {

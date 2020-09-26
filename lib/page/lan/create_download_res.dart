@@ -98,7 +98,8 @@ Future<void> createProotEnv(
                     .prepareResource(
                         resourceUrl: resourceUrl, busyboxUrl: busyBoxUrl)
                     .catchError((err) {
-                  showText('资源安装出现错误 $err');
+                  // showText('资源安装出现错误 $err');
+
                   FLog.error(
                     methodName: 'prepareResource',
                     text: 'resource',

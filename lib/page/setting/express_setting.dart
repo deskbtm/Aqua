@@ -7,6 +7,7 @@ import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
 import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/utils/mix_utils.dart';
 import 'package:provider/provider.dart';
 
 class ExpressSettingPage extends StatefulWidget {
@@ -57,39 +58,74 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
           ),
           InkWell(
             onTap: () async {
-              List<Widget> ipStatistics = _commonProvider.commonIps.entries
-                  .toList()
-                  .map(
-                    (e) => Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: themeData.itemColor,
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                      ),
-                      margin: EdgeInsets.only(top: 4, bottom: 4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          NoResizeText(
-                            '${e.key}',
-                            style: TextStyle(color: themeData.itemFontColor),
+              List<MapEntry<dynamic, dynamic>> ipStatistics =
+                  _commonProvider.commonIps.entries.toList();
+              List<Widget> ipStatisticsWidget = ipStatistics.isEmpty
+                  ? [
+                      Container(
+                          margin: EdgeInsets.only(top: 5, bottom: 5),
+                          alignment: Alignment.center,
+                          child: NoResizeText('暂无连接',
+                              style: TextStyle(color: Color(0xFF007AFF))))
+                    ]
+                  : ipStatistics
+                      .map(
+                        (e) => Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: themeData.itemColor,
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
                           ),
-                          NoResizeText(
-                            '${e.value}',
-                            style: TextStyle(color: themeData.itemFontColor),
+                          margin: EdgeInsets.only(top: 5, bottom: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              NoResizeText(
+                                '${e.key}',
+                                style:
+                                    TextStyle(color: themeData.itemFontColor),
+                              ),
+                              NoResizeText(
+                                '${e.value}',
+                                style:
+                                    TextStyle(color: themeData.itemFontColor),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  )
-                  .toList();
+                        ),
+                      )
+                      .toList();
 
               showSelectModal(
                 context,
                 _themeProvider,
-                title: '长按删除',
-                options: ipStatistics,
-                onLongPressItem: (index) {},
+                title: '常用IP列表',
+                subTitle: '长按移除',
+                options: ipStatisticsWidget,
+                leadingList: ipStatistics.isEmpty
+                    ? null
+                    : <Widget>[
+                        Container(
+                          padding:
+                              EdgeInsets.only(top: 10, bottom: 10, left: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              NoResizeText(
+                                'IP',
+                                style: TextStyle(color: Color(0xFF007AFF)),
+                              ),
+                              NoResizeText(
+                                '连接次数',
+                                style: TextStyle(color: Color(0xFF007AFF)),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                onLongPressDeleteItem: (index, tmpOptions) {
+                  _commonProvider.removeFromCommonIps(ipStatistics[index].key);
+                },
               );
             },
             child: ListTile(

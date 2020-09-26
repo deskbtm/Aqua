@@ -69,7 +69,6 @@ class CommonProvider extends ChangeNotifier {
   Future<void> setAppInit(bool arg) async {
     _isAppInit = arg;
     await Store.setBool(APP_INIT, arg);
-    // notifyListeners();
   }
 
   bool _enableClipboard = true;
@@ -115,10 +114,10 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeAliveIps(String arg, {notify = true}) async {
-    _aliveIps.remove(arg);
-    if (notify) notifyListeners();
-  }
+  // Future<void> removeFromAliveIps(String arg, {notify = true}) async {
+  //   _aliveIps.remove(arg);
+  //   if (notify) notifyListeners();
+  // }
 
   Future<void> setShowOnlyType(ShowOnlyType arg) async {
     _showOnlyType = arg;

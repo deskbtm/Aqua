@@ -1,8 +1,7 @@
-import 'package:android_mix/android_mix.dart';
-import 'package:f_logs/model/flog/flog.dart';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:lan_express/common/widget/function_widget.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
@@ -14,6 +13,7 @@ import 'package:lan_express/page/purchase/purchase.dart';
 import 'package:lan_express/page/setting/code_setting.dart';
 import 'package:lan_express/page/setting/control_setting.dart';
 import 'package:lan_express/page/setting/express_setting.dart';
+import 'package:lan_express/page/setting/logger_setting.dart';
 import 'package:lan_express/page/setting/privacy_policy.dart';
 import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/provider/theme.dart';
@@ -22,6 +22,7 @@ import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
+import 'package:path/path.dart' as pathLib;
 
 class SettingPage extends StatefulWidget {
   final CupertinoTabController gTabController;
@@ -208,7 +209,7 @@ class SettingPageState extends State<SettingPage> {
           ListTile(
             title: LanText('服务端口'),
             subtitle: LanText('内网快递 静态服务端口', small: true),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
+            contentPadding: EdgeInsets.only(left: 15, right: 5),
             trailing: CupertinoButton(
               child: NoResizeText('${_commonProvider.filePort}'),
               onPressed: () async {
@@ -292,9 +293,16 @@ class SettingPageState extends State<SettingPage> {
                     context,
                     _themeProvider,
                     title: '静态上传保存路径',
+                    initText: _commonProvider.storageRootPath + '/',
+                    placeholder: '以 ${_commonProvider.storageRootPath}/ 开头',
                     onOk: (String val) async {
-                      await _commonProvider
-                          .setStaticUploadSavePath(val?.trim());
+                      try {
+                        if (!Directory(val).existsSync()) {
+                          await Directory(val).create(recursive: true);
+                        }
+                        await _commonProvider
+                            .setStaticUploadSavePath(val?.trim());
+                      } catch (e) {}
                     },
                     onCancel: () {},
                   );
@@ -342,7 +350,7 @@ class SettingPageState extends State<SettingPage> {
             },
             child: ListTile(
               leading: Icon(OMIcons.code, color: themeData?.itemFontColor),
-              title: LanText('详细设置', alignX: -1.15),
+              title: LanText('更多设置', alignX: -1.15),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
               trailing: Icon(
                 OMIcons.chevronRight,
@@ -373,7 +381,7 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
               leading:
                   Icon(OMIcons.settingsRemote, color: themeData?.itemFontColor),
-              title: LanText('详细设置', alignX: -1.15),
+              title: LanText('更多设置', alignX: -1.15),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
               trailing: Icon(
                 OMIcons.chevronRight,
@@ -556,7 +564,15 @@ class SettingPageState extends State<SettingPage> {
             ),
           ),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(
+                CupertinoPageRoute(
+                  builder: (BuildContext context) {
+                    return LoggerSettingPage();
+                  },
+                ),
+              );
+            },
             child: ListTile(
               leading: Icon(OMIcons.listAlt, color: themeData?.itemFontColor),
               title: LanText('日志', alignX: -1.15),
@@ -566,54 +582,6 @@ class SettingPageState extends State<SettingPage> {
                 color: themeData?.itemFontColor,
                 size: 16,
               ),
-            ),
-          ),
-        ],
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 30),
-          blockTitle('日志'),
-          SizedBox(height: 15),
-          InkWell(
-            onTap: () async {
-              final MailOptions mailOptions = MailOptions(
-                body: (await FLog.getAllLogs())
-                    .map((e) => e.text)
-                    .toList()
-                    .join(''),
-                subject: '局域网.文件.更多 日志',
-                recipients: ['wanghan9423@outlook.com'],
-                isHTML: false,
-              );
-
-              await FlutterMailer.send(mailOptions);
-            },
-            child: ListTile(
-              title: LanText('发送日志'),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              await FLog.clearLogs();
-              showText('删除完成');
-            },
-            child: ListTile(
-              title: LanText('删除日志'),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              await FLog.exportLogs();
-              String externalDir = await AndroidMix.storage.getStorageDirectory;
-              showText('日志导出至: $externalDir');
-            },
-            child: ListTile(
-              title: LanText('导出日志'),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
           SizedBox(height: 30)

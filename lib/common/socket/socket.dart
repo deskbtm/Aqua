@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:clipboard_listener/clipboard_listener.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lan_express/utils/mix_utils.dart';
+import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/utils/notification.dart';
+import 'package:lan_express/provider/common.dart';
+import 'package:clipboard_listener/clipboard_listener.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
-import 'package:lan_express/provider/common.dart';
-import 'package:lan_express/provider/theme.dart';
-import 'package:lan_express/utils/mix_utils.dart';
-import 'package:lan_express/utils/notification.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketConnecter {
@@ -97,7 +97,6 @@ class SocketConnecter {
     int limit = 10,
     ThemeProvider provider,
     Function(String) onNotExpected,
-    // Function(String) onSelectedWhenMultiIps,
     bool initiativeConnect = true,
   }) async {
     _counter++;
@@ -110,20 +109,17 @@ class SocketConnecter {
       );
     } else {
       await MixUtils.scanSubnet(commonProvider);
-      // commonProvider.pushAliveIps('192.168.43.19');
-      // commonProvider.pushAliveIps('192.168.43.18');
-      // commonProvider.pushAliveIps('192.168.43.20');
       if (commonProvider.aliveIps.isNotEmpty) {
         if (commonProvider.aliveIps.length > 1) {
           List<String> list = commonProvider.aliveIps.toList();
           Timer timer;
-
           showSelectModal(
             context,
             provider,
             options: list,
             title: '选择连接IP',
             onSelected: (index) {
+              // 点击了就取消 2.5s 后自动消失的任务
               timer?.cancel();
               MixUtils.safePop(context);
               createClient(list[index], onNotExpected: onNotExpected,
@@ -132,6 +128,7 @@ class SocketConnecter {
               });
             },
             doAction: (context) {
+              // 手动连接 不自动消失
               if (initiativeConnect) {
                 if (commonProvider.enableAutoConnectCommonIp) {
                   timer = Timer(
@@ -139,7 +136,6 @@ class SocketConnecter {
                     () {
                       MixUtils.safePop(context);
                       String commonIp = commonProvider.getMostCommonIp();
-                      print(commonIp);
                       if (commonIp != null) {
                         createClient(commonIp, onNotExpected: onNotExpected,
                             onConnected: () {

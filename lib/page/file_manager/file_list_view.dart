@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lan_express/common/widget/draggable_scrollbar.dart';
 import 'package:lan_express/common/widget/images.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
@@ -89,7 +90,9 @@ class _FileListViewState extends State<FileListView>
           )
         : GestureDetector(
             onLongPressStart: widget.onLongPressEmpty,
-            child: Scrollbar(
+            child: DraggableScrollbar.rrect(
+              controller: _scrollController,
+              scrollbarTimeToFade: const Duration(seconds: 5),
               child: ListView.builder(
                 controller: _scrollController,
                 physics: BouncingScrollPhysics(),
@@ -140,8 +143,7 @@ class _FileListViewState extends State<FileListView>
                   );
                 },
               ),
-            ),
-          );
+            ));
   }
 
   @override

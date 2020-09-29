@@ -26,6 +26,11 @@ void main() async {
     if (MixUtils.isDev) {
       FlutterError.dumpErrorToConsole(details);
     } else {
+      FLog.error(
+        methodName: "FlutterError",
+        text: details.toString(),
+        stacktrace: details.stack,
+      );
       // 重定向到runZone中处理
       Zone.current.handleUncaughtError(details.exception, details.stack);
     }
@@ -38,18 +43,23 @@ void main() async {
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
 
-  runZoned<Future<void>>(() async {
-    await Future.wait([
-      MixUtils.checkPermissionAndRequest(PermissionGroup.storage),
-    ]);
+  runZoned<Future<void>>(
+    () async {
+      await Future.wait([
+        MixUtils.checkPermissionAndRequest(PermissionGroup.storage),
+      ]);
 
-    runApp(LanExpress());
-    // Catcher(LanExpress(),
-    //     debugConfig: debugOptions, releaseConfig: releaseOptions);
-  }, onError: (error, stackTrace) async {
-    FLog.error(
-      methodName: "main",
-      text: "$error",
-    );
-  });
+      runApp(LanExpress());
+      // Catcher(LanExpress(),
+      //     debugConfig: debugOptions, releaseConfig: releaseOptions);
+    },
+    zoneSpecification: ZoneSpecification(
+      print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
+        FLog.error(
+          methodName: "zoneSpecification",
+          text: "line",
+        );
+      },
+    ),
+  );
 }

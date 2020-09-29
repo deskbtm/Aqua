@@ -50,14 +50,13 @@ class _LanExpressWrapperState extends State {
   CommonProvider _commonProvider;
 
   bool _mutex;
-  bool _connectionMutex;
-  bool _settingLocker;
+  bool _settingMutex;
 
   @override
   void initState() {
     super.initState();
     _mutex = true;
-    _settingLocker = true;
+    _settingMutex = true;
     LocalNotification.initLocalNotification(onSelected: (String payload) {
       debugPrint(payload);
     });
@@ -71,6 +70,8 @@ class _LanExpressWrapperState extends State {
 
   Future<void> _preLoadMsg() async {
     String baseUrl = _commonProvider?.baseUrl;
+    print("============");
+    print(baseUrl);
     if (baseUrl != null) {
       await req().get(baseUrl + '/assets/index.json').then((receive) async {
         dynamic data = receive.data;
@@ -92,8 +93,8 @@ class _LanExpressWrapperState extends State {
     super.didChangeDependencies();
     _themeProvider = Provider.of<ThemeProvider>(context);
     _commonProvider = Provider.of<CommonProvider>(context);
-    if (_settingLocker) {
-      _settingLocker = false;
+    if (_settingMutex) {
+      _settingMutex = false;
       String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
       await _themeProvider.setTheme(theme).catchError((err) {
         FLog.error(text: '$err', methodName: 'setTheme');

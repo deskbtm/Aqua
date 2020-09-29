@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lan_express/constant/constant.dart';
+import 'package:lan_express/isolate/search_devices.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/provider/theme.dart';
 import 'package:lan_express/utils/notification.dart';
@@ -15,7 +18,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class SocketConnecter {
   final CommonProvider commonProvider;
   dynamic _cachedClipboard;
-  int _counter = 0;
+  bool _resourceLocker = false;
 
   SocketConnecter(this.commonProvider);
 
@@ -92,72 +95,98 @@ class SocketConnecter {
     });
   }
 
-  Future<void> searchDeviceAndConnect(
+  Future<void> searchDevicesAndConnect(
     BuildContext context, {
     int limit = 10,
-    ThemeProvider provider,
+    ThemeProvider themeProvider,
     Function(String) onNotExpected,
     bool initiativeConnect = true,
   }) async {
-    _counter++;
-    if (_counter >= limit) {
-      _counter = 0;
+    if (_resourceLocker) {
       LocalNotification.showNotification(
         name: 'SOCKET_UNCONNECT',
-        title: '未找到可用设备',
-        subTitle: '请在更多中 手动连接',
+        title: '资源占用中....',
       );
     } else {
-      await MixUtils.scanSubnet(commonProvider);
-      if (commonProvider.aliveIps.isNotEmpty) {
-        if (commonProvider.aliveIps.length > 1) {
-          List<String> list = commonProvider.aliveIps.toList();
-          Timer timer;
-          showSelectModal(
-            context,
-            provider,
-            options: list,
-            title: '选择连接IP',
-            onSelected: (index) {
-              // 点击了就取消 2.5s 后自动消失的任务
-              timer?.cancel();
-              MixUtils.safePop(context);
-              createClient(list[index], onNotExpected: onNotExpected,
+      Map data = {
+        'limit': limit,
+        'filePort': commonProvider.filePort,
+        'internalIp': commonProvider.internalIp,
+      };
+
+      ReceivePort recPort = ReceivePort();
+      SendPort sendPort = recPort.sendPort;
+      Isolate isolate = await Isolate.spawn(searchDevice, [sendPort, data]);
+      _resourceLocker = true;
+      recPort.listen(
+        (message) {
+          if (message == NOT_FOUND_DEVICES) {
+            isolate?.kill();
+            _resourceLocker = false;
+            LocalNotification.showNotification(
+              name: 'SOCKET_UNCONNECT',
+              title: '未找到可用设备',
+              subTitle: '请在更多中 手动连接',
+            );
+          }
+
+          if (message is List<String> && message.isNotEmpty) {
+            isolate?.kill();
+            _resourceLocker = false;
+            message
+                .addAll(['122.123.123.12', '122.123.123.11', '122.123.123.10']);
+            if (message.length > 1) {
+              Timer timer;
+              showSelectModal(
+                context,
+                themeProvider,
+                options: message,
+                title: '选择连接IP',
+                onSelected: (index) {
+                  // 点击了就取消 2.5s 后自动消失的任务
+                  timer?.cancel();
+                  MixUtils.safePop(context);
+                  createClient(message[index], onNotExpected: onNotExpected,
+                      onConnected: () {
+                    commonProvider.setCurrentConnectIp(message[index]);
+                    commonProvider.addToCommonIps(message[index]);
+                  });
+                },
+                // 不点击自动执行 手动连接 不自动消失
+                doAction: (context) {
+                  if (initiativeConnect) {
+                    if (commonProvider.enableAutoConnectCommonIp) {
+                      timer = Timer(
+                        Duration(milliseconds: 2500),
+                        () {
+                          MixUtils.safePop(context);
+                          String commonIp = commonProvider.getMostCommonIp();
+                          if (commonIp != null) {
+                            commonProvider.setCurrentConnectIp(commonIp);
+                            createClient(
+                              commonIp,
+                              onNotExpected: onNotExpected,
+                              onConnected: () {
+                                commonProvider.addToCommonIps(commonIp);
+                              },
+                            );
+                          }
+                        },
+                      );
+                    }
+                  }
+                },
+              );
+            } else {
+              createClient(message.first, onNotExpected: onNotExpected,
                   onConnected: () {
-                commonProvider.addToCommonIps(list[index]);
+                commonProvider.setCurrentConnectIp(message.first);
+                commonProvider.addToCommonIps(message.first);
               });
-            },
-            doAction: (context) {
-              // 手动连接 不自动消失
-              if (initiativeConnect) {
-                if (commonProvider.enableAutoConnectCommonIp) {
-                  timer = Timer(
-                    Duration(milliseconds: 2500),
-                    () {
-                      MixUtils.safePop(context);
-                      String commonIp = commonProvider.getMostCommonIp();
-                      if (commonIp != null) {
-                        createClient(commonIp, onNotExpected: onNotExpected,
-                            onConnected: () {
-                          commonProvider.addToCommonIps(commonIp);
-                        });
-                      }
-                    },
-                  );
-                }
-              }
-            },
-          );
-        } else {
-          createClient(commonProvider.aliveIps.first,
-              onNotExpected: onNotExpected, onConnected: () {
-            commonProvider.addToCommonIps(commonProvider.aliveIps.first);
-          });
-        }
-      } else {
-        await Future.delayed(Duration(milliseconds: 600));
-        await searchDeviceAndConnect(context, limit: limit);
-      }
+            }
+          }
+        },
+      );
     }
   }
 }

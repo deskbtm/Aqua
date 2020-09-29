@@ -66,7 +66,6 @@ class _FileListViewState extends State<FileListView>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeProvider = Provider.of<ThemeProvider>(context);
-    // _commonProvider = Provider.of<CommonProvider>(context);
   }
 
   void showText(String content) {

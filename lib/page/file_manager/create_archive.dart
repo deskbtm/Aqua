@@ -268,9 +268,6 @@ Future<void> createArchiveModal(
                         break;
                     }
 
-                    print(paths.first);
-                    print(currentDir.path);
-                    print(FileAction.getName(generatedArchivePath));
                     try {
                       bool result = await AndroidMix.archive
                           .createArchive(

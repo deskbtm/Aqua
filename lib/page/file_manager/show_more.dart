@@ -13,6 +13,7 @@ import 'package:lan_express/provider/common.dart';
 import 'package:lan_express/provider/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/webdav.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as pathLib;
 
 Future<void> uploadToWebDAV(SelfFileEntity file) async {
@@ -81,7 +82,9 @@ Future<void> showMoreModal(
         rightChildren: <Widget>[
           ActionButton(
             content: '打开方式',
-            onTap: () async {},
+            onTap: () async {
+              OpenFile.open(filesPath);
+            },
           ),
         ],
       );

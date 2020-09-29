@@ -1,9 +1,13 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:isolate';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:lan_express/common/widget/show_modal.dart';
+import 'package:lan_express/constant/constant.dart';
+import 'package:lan_express/isolate/search_devices.dart';
 import 'package:provider/provider.dart';
 import 'package:f_logs/model/flog/flog.dart';
 import 'package:lan_express/common/socket/socket.dart';
@@ -24,13 +28,33 @@ import 'package:lan_express/web/web_handler.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
 import 'package:shelf_body_parser/shelf_body_parser.dart';
-import 'package:storage_mount_listener/storage_mount_listener.dart';
 
 class StaticSharePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return _StaticSharePageState();
   }
+}
+
+void isolateAirDrop(List msg) async {
+  // 把它的sendPort发送给宿主isolate，以便宿主可以给它发送消息
+  // ReceivePort recPort = ReceivePort();
+  SendPort sendPort = msg[0];
+
+  // String port = data['port'],
+  //     ip = data['ip'],
+  //     filename = data['filename'],
+  //     filepath = data['filepath'];
+
+  Timer(Duration(seconds: 1), () {
+    sendPort.send("demo");
+  });
+  Timer(Duration(seconds: 2), () {
+    sendPort.send("demo1");
+  });
+  Timer(Duration(seconds: 3), () {
+    sendPort.send("demo2");
+  });
 }
 
 class _StaticSharePageState extends State<StaticSharePage> {
@@ -46,17 +70,6 @@ class _StaticSharePageState extends State<StaticSharePage> {
   @override
   void initState() {
     super.initState();
-    StorageMountListener.onMediaMounted(() {
-      print("demo");
-    });
-
-    StorageMountListener.onMediaRemove(() {
-      print("demo");
-    });
-
-    StorageMountListener.onMediaEject(() {
-      print("demo");
-    });
     _mutex = true;
     _shareSwitch = false;
     _vscdeSwitch = false;
@@ -184,10 +197,10 @@ class _StaticSharePageState extends State<StaticSharePage> {
 
     String firstAliveIp =
         // ignore: null_aware_in_logical_operator
-        _commonProvider.aliveIps.isNotEmpty &&
+        _commonProvider.currentConnectIp != null &&
                 (_commonProvider.socket?.connected != null ||
                     _commonProvider.socket?.connected == true)
-            ? '${_commonProvider.aliveIps.first}:${_commonProvider.filePort}'
+            ? '${_commonProvider.currentConnectIp}:${_commonProvider.filePort}'
             : '暂未连接';
 
     return CupertinoPageScaffold(
@@ -311,9 +324,9 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                   LocalNotification.showNotification(
                                       name: 'SEARCH_DEVICE', title: '搜寻设备中...');
                                   await SocketConnecter(_commonProvider)
-                                      .searchDeviceAndConnect(
+                                      .searchDevicesAndConnect(
                                     context,
-                                    provider: _themeProvider,
+                                    themeProvider: _themeProvider,
                                     initiativeConnect: false,
                                   );
                                 },
@@ -321,28 +334,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                       ),
                       CupertinoButton(
                         child: Text('click'),
-                        onPressed: () async {
-                          // await Store.setStringList('demo')
-                          // CodeSrvUtils cutils = await CodeSrvUtils().init();
-                          // ProcessResult a = await Process.run(
-                          //     '${cutils.filesPath}/busybox', []);
-                          // ProcessResult a = await cutils.installNodeJs();
-                          // print(a.stdout.toString());
-                          // print(a.stderr.toString());
-                          // showScopeModal(
-                          //   context,
-                          //   _themeProvider,
-                          //   title: '请仔细阅读教程',
-                          //   tip: '该界面无返返回, 需前往教程, 后方可消失',
-                          //   withCancel: false,
-                          //   defaultOkText: '前往教程',
-                          //   onOk: () async {
-                          //     if (await canLaunch(TUTORIAL_URL)) {
-                          //       await launch(TUTORIAL_URL);
-                          //     }
-                          //   },
-                          // );
-                        },
+                        onPressed: () async {},
                       )
                     ],
                   );

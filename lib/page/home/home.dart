@@ -146,9 +146,9 @@ class _HomePageState extends State<HomePage> {
       }
 
       if (_commonProvider.enableConnect) {
-        SocketConnecter(_commonProvider).searchDeviceAndConnect(
+        SocketConnecter(_commonProvider).searchDevicesAndConnect(
           context,
-          provider: _themeProvider,
+          themeProvider: _themeProvider,
           onNotExpected: (String msg) {
             showText(msg);
           },

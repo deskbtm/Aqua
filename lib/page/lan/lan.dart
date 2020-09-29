@@ -25,9 +25,9 @@ class LanPageState extends State<LanPage> {
 
     _tabs = [
       Tab(child: LanText('传输', alignX: 0)),
-      Tab(child: LanText('记录', alignX: 0)),
-      Tab(child: LanText('控制', alignX: 0)),
-      Tab(child: LanText('清理', alignX: 0)),
+      // Tab(child: LanText('记录', alignX: 0)),
+      // Tab(child: LanText('控制', alignX: 0)),
+      // Tab(child: LanText('清理', alignX: 0)),
     ];
     _controller = TabController(
       length: _tabs.length,
@@ -71,30 +71,30 @@ class LanPageState extends State<LanPage> {
             controller: _controller,
             children: <Widget>[
               StaticSharePage(),
-              Container(
-                child: Center(
-                  child: LanText(
-                    '远程控制, 远程游戏手柄, 敬请期待',
-                    alignX: 0,
-                  ),
-                ),
-              ),
-              Container(
-                child: Center(
-                  child: LanText(
-                    '远程控制, 远程游戏手柄, 敬请期待',
-                    alignX: 0,
-                  ),
-                ),
-              ),
-              Container(
-                child: Center(
-                  child: LanText(
-                    '远程控制, 远程游戏手柄, 敬请期待',
-                    alignX: 0,
-                  ),
-                ),
-              ),
+              // Container(
+              //   child: Center(
+              //     child: LanText(
+              //       '远程控制, 远程游戏手柄, 敬请期待',
+              //       alignX: 0,
+              //     ),
+              //   ),
+              // ),
+              // Container(
+              //   child: Center(
+              //     child: LanText(
+              //       '远程控制, 远程游戏手柄, 敬请期待',
+              //       alignX: 0,
+              //     ),
+              //   ),
+              // ),
+              // Container(
+              //   child: Center(
+              //     child: LanText(
+              //       '远程控制, 远程游戏手柄, 敬请期待',
+              //       alignX: 0,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

@@ -98,11 +98,11 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Set<String> _aliveIps = Set();
-  Set<String> get aliveIps => _aliveIps;
+  String _currentConnectIp;
+  String get currentConnectIp => _currentConnectIp;
 
-  Future<void> pushAliveIps(String arg, {notify = true}) async {
-    _aliveIps.add(arg);
+  Future<void> setCurrentConnectIp(String arg, {notify = true}) async {
+    _currentConnectIp = arg;
     if (notify) notifyListeners();
   }
 
@@ -138,6 +138,7 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 开启 与PC连接
   bool _enableConnect;
   bool get enableConnect => _enableConnect;
 

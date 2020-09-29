@@ -53,19 +53,19 @@ class MixUtils {
     }
   }
 
-  static Future scanSubnet(CommonProvider settingProvider) async {
-    String port = settingProvider?.filePort;
-    String internalIp = settingProvider?.internalIp;
-    String subnet =
-        internalIp?.substring(0, internalIp?.lastIndexOf('.')) ?? '';
-    final stream = NetworkAnalyzer.discover2(subnet, int.parse(port));
-    await for (var addr in stream) {
-      if (addr.exists) {
-        settingProvider.pushAliveIps(addr.ip, notify: false);
-        return;
-      }
-    }
-  }
+  // static Future scanSubnet(CommonProvider settingProvider) async {
+  //   String port = settingProvider?.filePort;
+  //   String internalIp = settingProvider?.internalIp;
+  //   String subnet =
+  //       internalIp?.substring(0, internalIp?.lastIndexOf('.')) ?? '';
+  //   final stream = NetworkAnalyzer.discover2(subnet, int.parse(port));
+  //   await for (var addr in stream) {
+  //     if (addr.exists) {
+  //       settingProvider.pushAliveIps(addr.ip, notify: false);
+  //       return;
+  //     }
+  //   }
+  // }
 
   static safePop(BuildContext context) {
     if (Navigator.canPop(context)) {

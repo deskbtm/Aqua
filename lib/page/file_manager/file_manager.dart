@@ -188,7 +188,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   if (mounted) {
                     changeFilesVisible();
                     changeState(() {});
-                    MixUtils.safePop(context);
+                    // MixUtils.safePop(context);
                   }
                 },
               ),
@@ -567,7 +567,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       )
     ]);
-    update2Side(updateView: false);
+    update2Side();
   }
 
   Future<void> changeSandboxDir() async {
@@ -704,7 +704,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     if (socket != null && socket.connected) {
       Map data = {
         'port': _commonProvider.filePort,
-        'ip': _commonProvider.aliveIps.first,
+        'ip': _commonProvider.currentConnectIp,
         'filepath': file.entity.path,
         'filename': file.filename,
       };

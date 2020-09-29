@@ -83,14 +83,20 @@ Future<void> createProotEnv(
                 String busyboxName = 'busybox-$arch';
 
                 if (MixUtils.isDev) {
-                  resourceUrl = '$DEV_CODE_SERVER_URL/$resourceName';
-                  busyBoxUrl = '$DEV_CODE_SERVER_URL/$busyboxName';
+                  // resourceUrl = '$DEV_CODE_SERVER_URL/$resourceName';
+                  // busyBoxUrl = '$DEV_CODE_SERVER_URL/$busyboxName';
+                  Map s = commonProvider.gWebData['sandbox'];
+                  Map b = commonProvider.gWebData['busybox'];
+                  if (s != null && b != null) {
+                    resourceUrl = s[resourceName]['url'];
+                    busyBoxUrl = b[busyboxName]['url'];
+                  }
                 } else {
                   Map s = commonProvider.gWebData['sandbox'];
                   Map b = commonProvider.gWebData['busybox'];
                   if (s != null && b != null) {
                     resourceUrl = s[resourceName]['url'];
-                    busyBoxUrl = b[resourceName]['url'];
+                    busyBoxUrl = b[busyboxName]['url'];
                   }
                 }
 

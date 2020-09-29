@@ -58,3 +58,6 @@ const TUTORIAL_URL = 'http://sewerganger.gitee.io/lan-file-more/archives';
 const TUTORIAL_BASIC_URL = 'http://sewerganger.gitee.io/lan-file-more/archives';
 const FIX_CLIPBOARD_URL =
     'http://sewerganger.gitee.io/lan-file-more/2020/08/31/安卓10以上剪贴板监听/';
+
+// isolate_socket.dart
+const NOT_FOUND_DEVICES = 'NOT_FOUND_DEVICES';

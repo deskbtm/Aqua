@@ -108,7 +108,7 @@ class _LanExpressWrapperState extends State {
     if (_mutex && _commonProvider.enableConnect != null) {
       _mutex = false;
       String internalIp = await AndroidMix.wifi.ip;
-      _commonProvider.setInternalIp(internalIp);
+      await _commonProvider.setInternalIp(internalIp);
     }
   }
 

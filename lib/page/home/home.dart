@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_express/common/socket/socket.dart';
@@ -142,17 +144,21 @@ class _HomePageState extends State<HomePage> {
           // 提示用户 需要麦克风 权限 否则 无法进入
           await _requestMicphonePermissionModal(context);
         }
+        // 强制阅读使用教程 跳转后取消
         // await _forceReadTutorialModal(context);
       }
 
       if (_commonProvider.enableConnect) {
-        SocketConnecter(_commonProvider).searchDevicesAndConnect(
-          context,
-          themeProvider: _themeProvider,
-          onNotExpected: (String msg) {
-            showText(msg);
-          },
-        );
+        // 延迟一秒 不阻塞UI
+        Timer(Duration(seconds: 1), () async {
+          await SocketConnecter(_commonProvider).searchDevicesAndConnect(
+            context,
+            themeProvider: _themeProvider,
+            onNotExpected: (String msg) {
+              showText(msg);
+            },
+          );
+        });
       }
     }
   }

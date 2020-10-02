@@ -1,6 +1,6 @@
-import 'package:lan_express/provider/common.dart';
-import 'package:lan_express/provider/share.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/share.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:provider/provider.dart';
 
 class InitProvider {

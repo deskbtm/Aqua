@@ -490,6 +490,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.4.0"
+  photo_manager:
+    dependency: "direct main"
+    description:
+      name: photo_manager
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.8"
   photo_view:
     dependency: "direct main"
     description:

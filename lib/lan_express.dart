@@ -10,13 +10,13 @@ import 'package:lcfarm_flutter_umeng/lcfarm_flutter_umeng.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'external/bot_toast/src/toast_navigator_observer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:lan_express/provider/init_provider.dart';
+import 'package:lan_express/model/init_provider.dart';
 import 'package:lan_express/constant/constant.dart';
 import 'external/bot_toast/src/bot_toast_init.dart';
-import 'package:lan_express/provider/common.dart';
+import 'package:lan_express/model/common.dart';
 import 'package:lan_express/page/home/home.dart';
 import 'package:lan_express/utils/notification.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/store.dart';
 import 'package:lan_express/utils/req.dart';
@@ -32,7 +32,18 @@ class LanExpress extends StatefulWidget {
 class _LanExpressState extends State<LanExpress> {
   @override
   Widget build(BuildContext context) {
-    return InitProvider.init(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (_) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider<CommonProvider>(
+          create: (_) => CommonProvider(),
+        ),
+        // ChangeNotifierProvider<ShareProvider>(
+        //   create: (_) => ShareProvider(),
+        // ),
+      ],
       child: LanExpressWrapper(),
     );
   }
@@ -70,8 +81,6 @@ class _LanExpressWrapperState extends State {
 
   Future<void> _preLoadMsg() async {
     String baseUrl = _commonProvider?.baseUrl;
-    print("============");
-    print(baseUrl);
     if (baseUrl != null) {
       await req().get(baseUrl + '/assets/index.json').then((receive) async {
         dynamic data = receive.data;

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/dialog.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/text_field.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 
 class SplitSelectionModal extends StatefulWidget {

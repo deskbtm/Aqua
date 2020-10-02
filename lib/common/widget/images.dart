@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_utils.dart';
@@ -92,7 +94,7 @@ class AppImages {
           width: width, height: height, fit: BoxFit.cover);
 }
 
-Widget getPreViewIcon(SelfFileEntity file) {
+Widget getPreviewIconSync(SelfFileEntity file) {
   Widget previewIcon;
   if (file.ext == '.apk') {
     try {
@@ -127,4 +129,14 @@ Widget getPreViewIcon(SelfFileEntity file) {
     previewIcon = matchFileIcon(file.isDir ? 'folder' : file.ext);
   }
   return previewIcon;
+}
+
+class ErrorImageOccupy extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints.expand(),
+      color: Colors.red,
+    );
+  }
 }

@@ -80,6 +80,10 @@ dependencies:
   android_mix_recorder:
     path: plugins/android_mix_recorder
   shelf_body_parser: ^1.0.6
+  # flutter_image_compress: ^0.7.0
+  # flutter_native_image: ^0.0.5+2
+  photo_manager: ^0.5.8
+  # image: ^2.1.12
   # wifi:
   #   path: plugins/wifi  
   

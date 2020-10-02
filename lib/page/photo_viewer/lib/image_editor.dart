@@ -11,7 +11,7 @@
 // import 'package:lan_express/page/photo_viewer/lib/modules/emoji.dart';
 // import 'package:lan_express/page/photo_viewer/lib/modules/text.dart';
 // import 'package:lan_express/page/photo_viewer/lib/modules/textview.dart';
-// import 'package:lan_express/provider/theme.dart';
+// import 'package:lan_express/model/theme.dart';
 // import 'package:outline_material_icons/outline_material_icons.dart';
 
 // import 'package:path_provider/path_provider.dart';

@@ -19,9 +19,9 @@ import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_item.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
 import 'package:lan_express/page/lan/create_download_res.dart';
-import 'package:lan_express/provider/common.dart';
-import 'package:lan_express/provider/share.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/share.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
 import 'package:lan_express/web/web_handler.dart';
@@ -42,9 +42,9 @@ void isolateAirDrop(List msg) async {
   SendPort sendPort = msg[0];
 
   // String port = data['port'],
-  //     ip = data['ip'],
-  //     filename = data['filename'],
-  //     filepath = data['filepath'];
+  // ip = data['ip'],
+  // filename = data['filename'],
+  // filepath = data['filepath'];
 
   Timer(Duration(seconds: 1), () {
     sendPort.send("demo");
@@ -364,8 +364,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                       SelfFileEntity file =
                           _shareProvider.selectedFiles.elementAt(index);
 
-                      Widget previewIcon = getPreViewIcon(file);
-
+                      Widget previewIcon = getPreviewIconSync(file);
                       return Dismissible(
                         key: ObjectKey(file),
                         onDismissed: (direction) {

@@ -4,8 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/provider/share.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/share.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:provider/provider.dart';
 
 enum FileItemType { folder, file }

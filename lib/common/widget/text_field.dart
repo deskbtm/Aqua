@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:provider/provider.dart';
 
 export 'package:flutter/services.dart'

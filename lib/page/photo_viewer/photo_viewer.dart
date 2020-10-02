@@ -11,7 +11,7 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:photo_view/photo_view_gallery.dart';

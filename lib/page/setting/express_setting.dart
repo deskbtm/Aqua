@@ -4,9 +4,9 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/common/widget/switch.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
-import 'package:lan_express/provider/common.dart';
+import 'package:lan_express/model/common.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:provider/provider.dart';
 

@@ -29,9 +29,9 @@ import 'package:lan_express/page/file_manager/create_rename.dart';
 import 'package:lan_express/page/installed_apps/installed_apps.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
 import 'package:lan_express/page/photo_viewer/photo_viewer.dart';
-import 'package:lan_express/provider/common.dart';
-import 'package:lan_express/provider/share.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/share.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
 import 'package:lan_express/utils/store.dart';
@@ -778,7 +778,6 @@ class _FileManagerPageState extends State<FileManagerPage>
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, changeState) {
           return SplitSelectionModal(
-            // onDispose: () {},
             topPanel: FileInfoCard(file: file, showSize: showSize),
             leftChildren: [
               if (!(file.entity is Directory))
@@ -1096,7 +1095,6 @@ class _FileManagerPageState extends State<FileManagerPage>
                           await update2Side();
                         },
                         onLongPressEmpty: (d) async {
-                          print('demo');
                           await showOptionsWhenPressedEmpty(context,
                               left: false);
                         },

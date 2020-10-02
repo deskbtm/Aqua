@@ -4,12 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lan_express/common/widget/draggable_scrollbar.dart';
+import 'package:lan_express/common/widget/function_widget.dart';
 import 'package:lan_express/common/widget/images.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_item.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -98,7 +99,7 @@ class _FileListViewState extends State<FileListView>
                 itemCount: widget.fileList.length,
                 itemBuilder: (BuildContext context, int index) {
                   SelfFileEntity file = widget.fileList[index];
-                  Widget previewIcon = getPreViewIcon(file);
+                  Widget previewIcon = getPreviewIconSync(file);
 
                   return FileItem(
                     type: file.isDir ? FileItemType.folder : FileItemType.file,
@@ -130,10 +131,6 @@ class _FileListViewState extends State<FileListView>
                     },
                     onTap: () {
                       if (widget.onItemTap != null) widget.onItemTap(index);
-
-                      // if (!file.isDir) {
-                      //   openFileActionByExt(file.entity.path);
-                      // }
                     },
                     onHozDrag: (dir) {
                       /// [index] 位数 [dir] 方向 1 向右 -1 左
@@ -142,9 +139,42 @@ class _FileListViewState extends State<FileListView>
                   );
                 },
               ),
-            ));
+            ),
+          );
   }
 
   @override
   bool get wantKeepAlive => true;
 }
+
+// FutureBuilder<Widget>(
+//                       future: getPreviewIcon(file),
+//                       builder: (BuildContext context, AsyncSnapshot snapshot) {
+//                         if (snapshot.connectionState == ConnectionState.done) {
+//                           if (snapshot.hasError) {
+//                             return loadingIndicator(context, _themeProvider);
+//                           } else {
+//                             return file.isDir
+//                                 ? snapshot.data
+//                                 : Column(
+//                                     crossAxisAlignment:
+//                                         CrossAxisAlignment.center,
+//                                     mainAxisAlignment: MainAxisAlignment.center,
+//                                     children: <Widget>[
+//                                       snapshot.data,
+//                                       SizedBox(height: 6),
+//                                       NoResizeText(
+//                                         file.humanSize,
+//                                         style: TextStyle(
+//                                           fontSize: 8,
+//                                           color: themeData?.itemFontColor,
+//                                         ),
+//                                       )
+//                                     ],
+//                                   );
+//                           }
+//                         } else {
+//                           return loadingIndicator(context, _themeProvider);
+//                         }
+//                       },
+//                     ),

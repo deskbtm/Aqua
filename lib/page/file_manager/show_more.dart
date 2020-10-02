@@ -9,8 +9,8 @@ import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
 import 'package:lan_express/external/webdav/webdav.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/provider/common.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/webdav.dart';
 import 'package:open_file/open_file.dart';
@@ -37,7 +37,6 @@ Future<void> showMoreModal(
         text: content, contentColor: themeProvider.themeData?.toastColor);
   }
 
-  // dynamic themeData = themeProvider.themeData;
   String filesPath = await AndroidMix.storage.getFilesDir;
 
   showCupertinoModal(
@@ -52,8 +51,6 @@ Future<void> showMoreModal(
             onTap: () async {
               Directory sandbox = Directory('$filesPath/rootfs/root');
               if (sandbox.existsSync()) {
-                // String targetPath = pathLib.join(
-                //     _currentDir.path, pathLib.basename(item.entity.path));
                 showText('复制中, 请等待');
                 await FileAction.copy(file, sandbox.path);
                 showText('复制完成');
@@ -83,7 +80,9 @@ Future<void> showMoreModal(
           ActionButton(
             content: '打开方式',
             onTap: () async {
-              OpenFile.open(filesPath);
+              try {
+                OpenFile.open(file.entity.path);
+              } catch (e) {}
             },
           ),
         ],

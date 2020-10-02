@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/point_tab.dart';
 import 'package:lan_express/page/lan/share.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:provider/provider.dart';
 
 class LanPage extends StatefulWidget {

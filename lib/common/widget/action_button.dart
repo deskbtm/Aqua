@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:provider/provider.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 
 class ActionButton extends StatefulWidget {
   final Color color;

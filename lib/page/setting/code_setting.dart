@@ -10,9 +10,9 @@ import 'package:lan_express/common/widget/switch.dart';
 import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/external/menu/menu.dart';
-import 'package:lan_express/provider/common.dart';
+import 'package:lan_express/model/common.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
-import 'package:lan_express/provider/theme.dart';
+import 'package:lan_express/model/theme.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 

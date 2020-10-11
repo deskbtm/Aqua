@@ -20,6 +20,7 @@ import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/external/back_button_interceptor/back_button_interceptor.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
 import 'package:lan_express/isolate/airdrop.dart';
+import 'package:lan_express/model/file_model.dart';
 import 'package:lan_express/page/file_manager/create_archive.dart';
 import 'package:lan_express/page/file_manager/create_fiile.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
@@ -29,12 +30,10 @@ import 'package:lan_express/page/file_manager/create_rename.dart';
 import 'package:lan_express/page/installed_apps/installed_apps.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
 import 'package:lan_express/page/photo_viewer/photo_viewer.dart';
-import 'package:lan_express/model/common.dart';
-import 'package:lan_express/model/share.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/common_model.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
-import 'package:lan_express/utils/store.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:file_utils/file_utils.dart';
@@ -54,10 +53,10 @@ class FileManagerPage extends StatefulWidget {
 
 class _FileManagerPageState extends State<FileManagerPage>
     with WidgetsBindingObserver {
-  ThemeProvider _themeProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
+  FileModel _fileModel;
 
-  CommonProvider _commonProvider;
-  ShareProvider _shareProvider;
   GlobalKey<SplitSelectionModalState> _modalKey;
   List<SelfFileEntity> _leftFileList;
   List<SelfFileEntity> _rightFileList;
@@ -89,12 +88,14 @@ class _FileManagerPageState extends State<FileManagerPage>
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
-    _shareProvider = Provider.of<ShareProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
+    _fileModel = Provider.of<FileModel>(context);
+
     if (_initMutex) {
       _initMutex = false;
-      await _changeRootPath(_commonProvider.storageRootPath);
+      await _fileModel.init();
+      await _changeRootPath(_commonModel.storageRootPath);
       await getValidAndTotalStorageSize();
     }
   }
@@ -123,14 +124,14 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<List<SelfFileEntity>> readdir(Directory path) async {
     SelfFileList result = await FileAction.readdir(
       path,
-      sortType: _commonProvider.sortType,
-      showHidden: _commonProvider.isShowHidden,
-      reversed: _commonProvider.sortReversed,
+      sortType: _fileModel.sortType,
+      showHidden: _fileModel.isDisplayHidden,
+      reversed: _fileModel.sortReversed,
     ).catchError((err) {
       FLog.error(text: '$err', methodName: 'readdir', className: 'FileManager');
     });
 
-    switch (_commonProvider.showOnlyType) {
+    switch (_fileModel.showOnlyType) {
       case ShowOnlyType.all:
         return result?.allList ?? [];
       case ShowOnlyType.file:
@@ -154,7 +155,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<void> _clearAllSelected(BuildContext context) async {
-    await _shareProvider.clearSelectedFiles();
+    await _commonModel.clearSelectedFiles();
 
     if (mounted) {
       setState(() {});
@@ -183,12 +184,14 @@ class _FileManagerPageState extends State<FileManagerPage>
                 },
               ),
               ActionButton(
-                content: _commonProvider.isShowHidden ? '显示隐藏文件' : '不显示隐藏',
-                onTap: () {
+                content: _fileModel.isDisplayHidden ? '不显示隐藏' : '显示隐藏文件',
+                onTap: () async {
                   if (mounted) {
-                    changeFilesVisible();
+                    await _fileModel
+                        .setDisplayHidden(!_fileModel.isDisplayHidden);
                     changeState(() {});
-                    // MixUtils.safePop(context);
+                    await update2Side();
+                    MixUtils.safePop(context);
                   }
                 },
               ),
@@ -216,7 +219,9 @@ class _FileManagerPageState extends State<FileManagerPage>
               ),
               ActionButton(
                 content: '过滤类型',
-                onTap: filterType,
+                onTap: () {
+                  filterType(context);
+                },
               ),
             ],
           );
@@ -225,34 +230,38 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  Future<void> filterType() async {
+  Future<void> filterType(BuildContext context) async {
     _modalKey.currentState?.insertRightCol([
       ActionButton(
         content: '显示全部',
         onTap: () {
-          _commonProvider.setShowOnlyType(ShowOnlyType.all);
+          _fileModel.setShowOnlyType(ShowOnlyType.all);
           update2Side();
+          MixUtils.safePop(context);
         },
       ),
       ActionButton(
         content: '只显示文件夹',
         onTap: () {
-          _commonProvider.setShowOnlyType(ShowOnlyType.folder);
+          _fileModel.setShowOnlyType(ShowOnlyType.folder);
           update2Side();
+          MixUtils.safePop(context);
         },
       ),
       ActionButton(
         content: '只显示文件',
         onTap: () {
-          _commonProvider.setShowOnlyType(ShowOnlyType.file);
+          _fileModel.setShowOnlyType(ShowOnlyType.file);
           update2Side();
+          MixUtils.safePop(context);
         },
       ),
       ActionButton(
         content: '只显示链接',
         onTap: () {
-          _commonProvider.setShowOnlyType(ShowOnlyType.link);
+          _fileModel.setShowOnlyType(ShowOnlyType.link);
           update2Side();
+          MixUtils.safePop(context);
         },
       ),
     ]);
@@ -260,7 +269,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   Future<void> showRenameModal(
@@ -268,7 +277,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     await createRenameModal(
       context,
       file,
-      provider: _themeProvider,
+      provider: _themeModel,
       onExists: () {
         showText('文件已存在');
       },
@@ -283,9 +292,8 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<void> handleMove(BuildContext context) async {
-    if (_shareProvider.selectedFiles.isNotEmpty) {
-      await for (var item
-          in Stream.fromIterable(_shareProvider.selectedFiles)) {
+    if (_commonModel.selectedFiles.isNotEmpty) {
+      await for (var item in Stream.fromIterable(_commonModel.selectedFiles)) {
         String newPath =
             pathLib.join(_currentDir.path, pathLib.basename(item.entity.path));
         if (await File(newPath).exists() || await Directory(newPath).exists()) {
@@ -293,15 +301,16 @@ class _FileManagerPageState extends State<FileManagerPage>
           continue;
         }
 
-        await item.entity.rename(newPath).then((val) async {
-          showText('移动完成');
-          await _shareProvider.clearSelectedFiles();
-          await update2Side();
-          MixUtils.safePop(context);
-        }).catchError((err) {
+        await item.entity.rename(newPath).catchError((err) {
           showText('$err');
           FLog.error(text: '$err', methodName: 'handleMove');
         });
+      }
+      if (mounted) {
+        showText('移动完成');
+        await update2Side();
+        await _commonModel.clearSelectedFiles();
+        MixUtils.safePop(context);
       }
     }
   }
@@ -309,18 +318,18 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<void> handleSelectedSingle(
       BuildContext context, SelfFileEntity file) async {
     showText('请选择目标目录');
-    _shareProvider.addFile(file);
+    _commonModel.addSelectedFile(file);
     MixUtils.safePop(context);
   }
 
   Future<void> copyModal(BuildContext context) async {
     MixUtils.safePop(context);
-    if (_shareProvider.selectedFiles.isEmpty) {
+    if (_commonModel.selectedFiles.isEmpty) {
       showText('无复制内容');
       return;
     }
 
-    dynamic themeData = _themeProvider.themeData;
+    dynamic themeData = _themeModel.themeData;
     bool popAble = true;
 
     showCupertinoModal(
@@ -344,11 +353,12 @@ class _FileManagerPageState extends State<FileManagerPage>
                   SizedBox(height: 10),
                   popAble
                       ? LanText('确定粘贴?')
-                      : loadingIndicator(context, _themeProvider),
+                      : loadingIndicator(context, _themeModel),
                   SizedBox(height: 10),
                 ],
                 defaultOkText: '确定',
                 onOk: () async {
+                  // 粘贴时无法退出Modal
                   if (!popAble) {
                     return;
                   }
@@ -357,7 +367,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   });
 
                   await for (var item
-                      in Stream.fromIterable(_shareProvider.selectedFiles)) {
+                      in Stream.fromIterable(_commonModel.selectedFiles)) {
                     String targetPath = pathLib.join(
                         _currentDir.path, pathLib.basename(item.entity.path));
                     await FileAction.copy(item, targetPath);
@@ -368,7 +378,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                     });
                     MixUtils.safePop(context);
                     showText('粘贴完成');
-                    await _shareProvider.clearSelectedFiles();
+                    await _commonModel.clearSelectedFiles();
                     await update2Side();
                   }
                   return;
@@ -387,8 +397,8 @@ class _FileManagerPageState extends State<FileManagerPage>
 
   Future<void> removeModal(BuildContext context, SelfFileEntity file) async {
     MixUtils.safePop(context);
-    dynamic themeData = _themeProvider.themeData;
-    List selected = _shareProvider.selectedFiles;
+    dynamic themeData = _themeModel.themeData;
+    List selected = _commonModel.selectedFiles;
     bool confirmRm = false;
 
     showCupertinoModal(
@@ -405,7 +415,7 @@ class _FileManagerPageState extends State<FileManagerPage>
             action: true,
             children: <Widget>[
               confirmRm
-                  ? loadingIndicator(context, _themeProvider)
+                  ? loadingIndicator(context, _themeModel)
                   : NoResizeText(
                       '确定删除${selected.length == 0 ? 1 : selected.length}项?',
                     ),
@@ -417,7 +427,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   confirmRm = true;
                 });
 
-                _shareProvider.addFile(file);
+                _commonModel.addSelectedFile(file);
                 await for (var item in Stream.fromIterable(selected)) {
                   if (item.isDir) {
                     if (FileUtils.rm([item.entity.path],
@@ -437,7 +447,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   MixUtils.safePop(context);
                 }
                 showText('删除完成');
-                _shareProvider.clearSelectedFiles();
+                _commonModel.clearSelectedFiles();
               }
             },
             onCancel: () {
@@ -449,11 +459,26 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
+  // Future<void> changeFilesVisible() async {
+  //   await _fileModel.setDisplayHidden(!_fileModel.isDisplayHidden);
+  //   _modalKey.currentState?.replaceLeft(1, [
+  //     ActionButton(
+  //       content: _fileModel.isDisplayHidden ? '显示隐藏文件' : '不显示隐藏',
+  //       onTap: () async {
+  //         if (mounted) {
+  //           await changeFilesVisible();
+  //         }
+  //       },
+  //     )
+  //   ]);
+  //   await update2Side();
+  // }
+
   Future<void> showCreateFileModal(BuildContext context,
       {bool left = false}) async {
     createFileModal(
       context,
-      provider: _themeProvider,
+      provider: _themeModel,
       willCreateDir: left ? _parentDir.path : _currentDir.path,
       onExists: () {
         showText('已存在, 请重新命名');
@@ -473,12 +498,12 @@ class _FileManagerPageState extends State<FileManagerPage>
   ) async {
     createArchiveModal(
       context,
-      shareProvider: _shareProvider,
-      themeProvider: _themeProvider,
+      commonProvider: _commonModel,
+      themeProvider: _themeModel,
       currentDir: _currentDir,
       onSuccessUpdate: (context) async {
         if (mounted) {
-          _shareProvider.clearSelectedFiles();
+          _commonModel.clearSelectedFiles();
           await update2Side();
           MixUtils.safePop(context);
         }
@@ -503,7 +528,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         content: '正序',
         fontColor: Colors.pink,
         onTap: () async {
-          _commonProvider.setSortReversed(false);
+          _fileModel.setSortReversed(false);
           update2Side();
         },
       ),
@@ -511,7 +536,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         content: '倒序',
         fontColor: Colors.yellow,
         onTap: () async {
-          _commonProvider.setSortReversed(true);
+          _fileModel.setSortReversed(true);
           update2Side();
         },
       ),
@@ -519,55 +544,39 @@ class _FileManagerPageState extends State<FileManagerPage>
         content: '名称',
         fontColor: Colors.lightBlue,
         onTap: () async {
-          _commonProvider.setSortType(SORT_CASE);
+          await _fileModel.setSortType(SORT_CASE);
           update2Side();
-          await Store.setString(FILE_SORT_TYPE, SORT_CASE);
+          // await Store.setString(FILE_SORT_TYPE, SORT_CASE);
         },
       ),
       ActionButton(
         content: '大小',
         fontColor: Colors.blueAccent,
         onTap: () async {
-          _commonProvider.setSortType(SORT_SIZE);
+          await _fileModel.setSortType(SORT_SIZE);
           update2Side();
-          await Store.setString(FILE_SORT_TYPE, SORT_SIZE);
+          // await Store.setString(FILE_SORT_TYPE, SORT_SIZE);
         },
       ),
       ActionButton(
         content: '修改日期',
         fontColor: Colors.cyanAccent,
         onTap: () async {
-          _commonProvider.setSortType(SORT_MODIFIED);
+          await _fileModel.setSortType(SORT_MODIFIED);
           update2Side();
-          await Store.setString(FILE_SORT_TYPE, SORT_MODIFIED);
+          // await Store.setString(FILE_SORT_TYPE, SORT_MODIFIED);
         },
       ),
       ActionButton(
         content: '类型',
         fontColor: Colors.teal,
         onTap: () async {
-          _commonProvider.setSortType(SORT_TYPE);
+          await _fileModel.setSortType(SORT_TYPE);
           update2Side();
-          await Store.setString(FILE_SORT_TYPE, SORT_TYPE);
+          // await Store.setString(FILE_SORT_TYPE, SORT_TYPE);
         },
       ),
     ]);
-  }
-
-  Future<void> changeFilesVisible() async {
-    Store.setBool(SHOW_FILE_HIDDEN, !_commonProvider.isShowHidden);
-    _commonProvider.setShowHidden(!_commonProvider.isShowHidden);
-    _modalKey.currentState.replaceLeft(1, [
-      ActionButton(
-        content: _commonProvider.isShowHidden ? '显示隐藏文件' : '不显示隐藏',
-        onTap: () async {
-          if (mounted) {
-            await changeFilesVisible();
-          }
-        },
-      )
-    ]);
-    update2Side();
   }
 
   Future<void> changeSandboxDir() async {
@@ -576,20 +585,20 @@ class _FileManagerPageState extends State<FileManagerPage>
     _useSandboxDir = !_useSandboxDir;
     if (_useSandboxDir) {
       if (await rootfs.exists()) {
-        _commonProvider.setStorageRootPath(rootfs.path);
+        _commonModel.setStorageRootPath(rootfs.path);
       } else {
         showText('沙盒不存在');
         return;
       }
     } else {
       String path = await MixUtils.getExternalPath();
-      _commonProvider.setStorageRootPath(path);
+      _commonModel.setStorageRootPath(path);
     }
     showText('切换完成');
 
-    await _changeRootPath(_commonProvider.storageRootPath);
+    await _changeRootPath(_commonModel.storageRootPath);
 
-    _modalKey.currentState.replaceLeft(2, [
+    _modalKey.currentState?.replaceLeft(2, [
       ActionButton(
         content: _useSandboxDir ? '切换沙盒目录' : '切换系统目录',
         onTap: () async {
@@ -605,10 +614,10 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<void> handleExtractArchive(BuildContext context) async {
     bool result = false;
 
-    if (_shareProvider.selectedFiles.length > 1) {
+    if (_commonModel.selectedFiles.length > 1) {
       showText('只允许操作单个文件');
     } else {
-      SelfFileEntity first = _shareProvider.selectedFiles.first;
+      SelfFileEntity first = _commonModel.selectedFiles.first;
       String archivePath = first.entity.path;
       String name = FileAction.getName(archivePath);
       if (Directory(pathLib.join(_currentDir.path, name)).existsSync()) {
@@ -621,7 +630,7 @@ class _FileManagerPageState extends State<FileManagerPage>
           if (await AndroidMix.archive.isZipEncrypted(archivePath)) {
             await showSingleTextFieldModal(
               context,
-              _themeProvider,
+              _themeModel,
               title: '输入密码',
               onOk: (val) async {
                 showWaitForArchiveNotification('解压中...');
@@ -692,7 +701,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         showText('提取失败');
       }
       if (mounted) {
-        await _shareProvider.clearSelectedFiles();
+        await _commonModel.clearSelectedFiles();
         await update2Side();
         MixUtils.safePop(context);
       }
@@ -700,11 +709,11 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   void isolateSendFile(SelfFileEntity file) async {
-    IO.Socket socket = _commonProvider.socket;
+    IO.Socket socket = _commonModel.socket;
     if (socket != null && socket.connected) {
       Map data = {
-        'port': _commonProvider.filePort,
-        'ip': _commonProvider.currentConnectIp,
+        'port': _commonModel.filePort,
+        'ip': _commonModel.currentConnectIp,
         'filepath': file.entity.path,
         'filename': file.filename,
       };
@@ -726,7 +735,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
   Future<void> showOptionsWhenPressedEmpty(BuildContext context,
       {bool left = false}) async {
-    bool sharedNotEmpty = _shareProvider.selectedFiles.isNotEmpty;
+    bool sharedNotEmpty = _commonModel.selectedFiles.isNotEmpty;
     showCupertinoModal(
       context: context,
       filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -768,9 +777,10 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  Future<void> showFileOptionsModal({SelfFileEntity file}) async {
+  Future<void> _showFileOptionsModal(
+      {SelfFileEntity file, Function(bool) updateItem}) async {
     bool showSize = false;
-    bool sharedNotEmpty = _shareProvider.selectedFiles.isNotEmpty;
+    bool sharedNotEmpty = _commonModel.selectedFiles.isNotEmpty;
 
     await showCupertinoModal(
       context: context,
@@ -784,7 +794,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                 ActionButton(
                   content: '内网快递',
                   onTap: () async {
-                    if (!_commonProvider.isPurchased) {
+                    if (!_commonModel.isPurchased) {
                       showText('此功能为付费功能');
                       return;
                     }
@@ -830,7 +840,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                 content: '选中',
                 onTap: () {
                   handleSelectedSingle(context, file);
-                  // _commonProvider.setCopyTargetPath(file.entity.path);
+                  // _commonModel.setCopyTargetPath(file.entity.path);
                 },
               ),
               if (sharedNotEmpty)
@@ -849,7 +859,10 @@ class _FileManagerPageState extends State<FileManagerPage>
                 },
               ),
               if (sharedNotEmpty &&
-                  ARCHIVE_EXTS.contains(_shareProvider.selectedFiles.first.ext))
+
+                  // 在判断下 不然移动下 sharedNotEmpty有问题
+                  _commonModel.selectedFiles.length != 0 &&
+                  ARCHIVE_EXTS.contains(_commonModel.selectedFiles.first.ext))
                 ActionButton(
                   content: '提取到此',
                   onTap: () async {
@@ -870,8 +883,8 @@ class _FileManagerPageState extends State<FileManagerPage>
                     context,
                     setState,
                     file: file,
-                    themeProvider: _themeProvider,
-                    commonProvider: _commonProvider,
+                    themeProvider: _themeModel,
+                    commonProvider: _commonModel,
                   );
                 },
               ),
@@ -897,7 +910,7 @@ class _FileManagerPageState extends State<FileManagerPage>
           CupertinoPageRoute(
             builder: (context) {
               return PhotoViewer(
-                images: images,
+                imageRes: images,
                 index: images.indexOf(file.entity.path),
               );
             },
@@ -912,8 +925,9 @@ class _FileManagerPageState extends State<FileManagerPage>
         OpenFile.open(path);
       },
       caseArchive: () {
-        _shareProvider.clearSelectedFiles();
-        _shareProvider.addFile(file);
+        _commonModel.clearSelectedFiles();
+        _commonModel.addSelectedFile(file);
+        setState(() {});
         showText('请选择提取路径');
       },
       caseMd: () async {
@@ -1001,141 +1015,144 @@ class _FileManagerPageState extends State<FileManagerPage>
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
-    return _leftFileList.isEmpty
-        ? Container()
-        : CupertinoPageScaffold(
-            backgroundColor: themeData?.scaffoldBackgroundColor,
-            navigationBar: CupertinoNavigationBar(
-              trailing: GestureDetector(
-                onTap: () async {
-                  await _showMoreOptions(context);
-                },
-                child: Icon(
-                  Icons.hdr_strong,
-                  color: themeData?.topNavIconColor,
-                  size: 25,
-                ),
-              ),
-              leading: _rootDir.path != _currentDir.path
-                  ? GestureDetector(
-                      onTap: () => {willPop(1, 1)},
-                      child: Icon(
-                        Icons.arrow_left,
-                        color: themeData?.topNavIconColor,
-                        size: 35,
-                      ),
-                    )
-                  : null,
-              middle: NoResizeText(
-                FileAction.filename(_currentDir.path ?? ''),
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20,
-                  color: themeData?.navTitleColor,
-                ),
-              ),
-              backgroundColor: themeData?.navBackgroundColor,
-              border: null,
-            ),
-            child: Container(
-              padding: EdgeInsets.only(top: 15),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: FileListView(
-                      onUpdateView: () async {
-                        await update2Side();
-                      },
-                      fileList: _leftFileList,
-                      onLongPressEmpty: (d) async {
-                        await showOptionsWhenPressedEmpty(context, left: true);
-                      },
-                      onHozDrag: (index, dir) {
-                        SelfFileEntity file = _leftFileList[index];
-                        if (dir == 1) {
-                          _shareProvider.addFile(file);
-                        } else if (dir == -1) {
-                          _shareProvider.removeFile(file);
-                        }
-                      },
-                      itemOnLongPress: (index) {
-                        SelfFileEntity file = _leftFileList[index];
-                        showFileOptionsModal(file: file);
-                      },
-                      onItemTap: (index) async {
-                        SelfFileEntity file = _leftFileList[index];
-                        if (file.isDir) {
-                          // 点击后交换两边角色
-                          changeSidesRole(file);
-                          List<SelfFileEntity> list =
-                              await readdir(file.entity);
-                          if (mounted) {
-                            setState(() {
-                              _rightFileList = list;
-                            });
-                          }
-                        } else {
-                          openFileActionByExt(
-                            file,
-                            left: true,
-                            index: index,
-                          );
-                        }
-                      },
-                    ),
+    dynamic themeData = _themeModel?.themeData;
+    return Consumer<FileModel>(builder: (context, model, child) {
+      return _leftFileList.isEmpty
+          ? Container()
+          : CupertinoPageScaffold(
+              backgroundColor: themeData?.scaffoldBackgroundColor,
+              navigationBar: CupertinoNavigationBar(
+                trailing: GestureDetector(
+                  onTap: () async {
+                    await _showMoreOptions(context);
+                  },
+                  child: Icon(
+                    Icons.hdr_strong,
+                    color: themeData?.topNavIconColor,
+                    size: 25,
                   ),
-                  if (_rootDir.path != _currentDir.path)
+                ),
+                leading: _rootDir.path != _currentDir.path
+                    ? GestureDetector(
+                        onTap: () => {willPop(1, 1)},
+                        child: Icon(
+                          Icons.arrow_left,
+                          color: themeData?.topNavIconColor,
+                          size: 35,
+                        ),
+                      )
+                    : null,
+                middle: NoResizeText(
+                  FileAction.filename(_currentDir.path ?? ''),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 20,
+                    color: themeData?.navTitleColor,
+                  ),
+                ),
+                backgroundColor: themeData?.navBackgroundColor,
+                border: null,
+              ),
+              child: Container(
+                padding: EdgeInsets.only(top: 15),
+                child: Row(
+                  children: <Widget>[
                     Expanded(
                       flex: 1,
                       child: FileListView(
                         onUpdateView: () async {
                           await update2Side();
                         },
+                        fileList: _leftFileList,
                         onLongPressEmpty: (d) async {
                           await showOptionsWhenPressedEmpty(context,
-                              left: false);
+                              left: true);
                         },
-                        fileList: _rightFileList,
                         onHozDrag: (index, dir) {
-                          SelfFileEntity file = _rightFileList[index];
+                          SelfFileEntity file = _leftFileList[index];
                           if (dir == 1) {
-                            _shareProvider.addFile(file);
+                            _commonModel.addSelectedFile(file);
                           } else if (dir == -1) {
-                            _shareProvider.removeFile(file);
+                            _commonModel.removeSelectedFile(file);
                           }
                         },
-                        itemOnLongPress: (index) {
-                          SelfFileEntity file = _rightFileList[index];
-                          showFileOptionsModal(file: file);
+                        itemOnLongPress: (index, updateItem) {
+                          SelfFileEntity file = _leftFileList[index];
+                          _showFileOptionsModal(
+                              file: file, updateItem: updateItem);
                         },
-                        onItemTap: (index) async {
-                          SelfFileEntity file = _rightFileList[index];
+                        onItemTap: (index, updateItem) async {
+                          SelfFileEntity file = _leftFileList[index];
                           if (file.isDir) {
+                            // 点击后交换两边角色
                             changeSidesRole(file);
                             List<SelfFileEntity> list =
                                 await readdir(file.entity);
                             if (mounted) {
                               setState(() {
-                                _leftFileList = _rightFileList;
                                 _rightFileList = list;
                               });
                             }
                           } else {
                             openFileActionByExt(
                               file,
-                              left: false,
+                              left: true,
                               index: index,
                             );
                           }
                         },
                       ),
                     ),
-                ],
+                    if (_rootDir.path != _currentDir.path)
+                      Expanded(
+                        flex: 1,
+                        child: FileListView(
+                          onUpdateView: () async {
+                            await update2Side();
+                          },
+                          onLongPressEmpty: (d) async {
+                            await showOptionsWhenPressedEmpty(context,
+                                left: false);
+                          },
+                          fileList: _rightFileList,
+                          onHozDrag: (index, dir) {
+                            SelfFileEntity file = _rightFileList[index];
+                            if (dir == 1) {
+                              _commonModel.addSelectedFile(file);
+                            } else if (dir == -1) {
+                              _commonModel.removeSelectedFile(file);
+                            }
+                          },
+                          itemOnLongPress: (index, updateItem) {
+                            SelfFileEntity file = _rightFileList[index];
+                            _showFileOptionsModal(file: file);
+                          },
+                          onItemTap: (index, updateItem) async {
+                            SelfFileEntity file = _rightFileList[index];
+                            if (file.isDir) {
+                              changeSidesRole(file);
+                              List<SelfFileEntity> list =
+                                  await readdir(file.entity);
+                              if (mounted) {
+                                _leftFileList = _rightFileList;
+                                _rightFileList = list;
+                                setState(() {});
+                              }
+                            } else {
+                              openFileActionByExt(
+                                file,
+                                left: false,
+                                index: index,
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
+    });
   }
 }

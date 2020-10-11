@@ -5,8 +5,8 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:lan_express/common/widget/function_widget.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
-import 'package:lan_express/model/common.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/common_model.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/req.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
@@ -20,8 +20,8 @@ class PrivacyPolicyPage extends StatefulWidget {
 }
 
 class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
-  ThemeProvider _themeProvider;
-  CommonProvider _commonProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
   bool _mutex;
   String _html;
 
@@ -34,12 +34,12 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
     if (_mutex) {
       try {
         dio.Response res =
-            await req().get(_commonProvider.baseUrl + '/assets/privacy.html');
+            await req().get(_commonModel.baseUrl + '/assets/privacy.html');
         if (res.data != null) {
           setState(() {
             _html = res.data;
@@ -53,12 +53,12 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -76,7 +76,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
         border: null,
       ),
       child: _html == null
-          ? Center(child: loadingIndicator(context, _themeProvider))
+          ? Center(child: loadingIndicator(context, _themeModel))
           : ListView.builder(
               physics: BouncingScrollPhysics(),
               itemCount: 1,

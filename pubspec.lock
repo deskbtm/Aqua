@@ -8,13 +8,6 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
-  android_mix_recorder:
-    dependency: "direct main"
-    description:
-      path: "plugins/android_mix_recorder"
-      relative: true
-    source: path
-    version: "0.0.1"
   archive:
     dependency: "direct main"
     description:
@@ -85,6 +78,34 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.14.12"
+  connectivity:
+    dependency: "direct main"
+    description:
+      name: connectivity
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.9+3"
+  connectivity_for_web:
+    dependency: transitive
+    description:
+      name: connectivity_for_web
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.1+2"
+  connectivity_macos:
+    dependency: transitive
+    description:
+      name: connectivity_macos
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.0+5"
+  connectivity_platform_interface:
+    dependency: transitive
+    description:
+      name: connectivity_platform_interface
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.6"
   convert:
     dependency: "direct main"
     description:
@@ -493,9 +514,9 @@ packages:
   photo_manager:
     dependency: "direct main"
     description:
-      name: photo_manager
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "plugins/photo_manager"
+      relative: true
+    source: path
     version: "0.5.8"
   photo_view:
     dependency: "direct main"
@@ -532,6 +553,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.2"
+  preload_page_view:
+    dependency: transitive
+    description:
+      name: preload_page_view
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.4"
   process:
     dependency: transitive
     description:

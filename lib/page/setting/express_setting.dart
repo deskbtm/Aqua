@@ -4,9 +4,9 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/common/widget/switch.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
-import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/common_model.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -21,24 +21,24 @@ class ExpressSettingPage extends StatefulWidget {
 }
 
 class ExpressSettingPageState extends State<ExpressSettingPage> {
-  ThemeProvider _themeProvider;
-  CommonProvider _commonProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
   }
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
 
     List<Widget> settingList = [
       Column(
@@ -50,16 +50,16 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
             subtitle: LanText('多台PC设备 3s后自动选择 弹窗消失'),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
-              value: _commonProvider.enableAutoConnectCommonIp,
+              value: _commonModel.enableAutoConnectCommonIp,
               onChanged: (val) async {
-                _commonProvider.setEnableAutoConnectCommonIp(val);
+                _commonModel.setEnableAutoConnectCommonIp(val);
               },
             ),
           ),
           InkWell(
             onTap: () async {
               List<MapEntry<dynamic, dynamic>> ipStatistics =
-                  _commonProvider.commonIps.entries.toList();
+                  _commonModel.commonIps.entries.toList();
               List<Widget> ipStatisticsWidget = ipStatistics.isEmpty
                   ? [
                       Container(
@@ -98,7 +98,7 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
 
               showSelectModal(
                 context,
-                _themeProvider,
+                _themeModel,
                 title: '常用IP列表',
                 subTitle: '长按移除',
                 options: ipStatisticsWidget,
@@ -124,7 +124,7 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
                         )
                       ],
                 onLongPressDeleteItem: (index, tmpOptions) {
-                  _commonProvider.removeFromCommonIps(ipStatistics[index].key);
+                  _commonModel.removeFromCommonIps(ipStatistics[index].key);
                 },
               );
             },

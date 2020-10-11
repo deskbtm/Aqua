@@ -1,8 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:lan_express/common/widget/function_widget.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_utils.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 class AppImages {
   static Widget folder({double width = 30, double height = 30}) =>
@@ -94,7 +99,8 @@ class AppImages {
           width: width, height: height, fit: BoxFit.cover);
 }
 
-Widget getPreviewIconSync(SelfFileEntity file) {
+Widget getPreviewIconSync(
+    BuildContext context, ThemeModel themeModel, SelfFileEntity file) {
   Widget previewIcon;
   if (file.ext == '.apk') {
     try {
@@ -115,12 +121,38 @@ Widget getPreviewIconSync(SelfFileEntity file) {
   } else if (IMG_EXTS.contains(file.ext.toLowerCase())) {
     previewIcon = ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(5)),
-      child: Image.file(
-        file.entity,
-        width: 40,
-        height: 40,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.low,
+      child: FutureBuilder<Uint8List>(
+        future: PhotoManager.getThumbnailByPath(
+            path: file.entity.path, quality: 50),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              return Container(
+                width: 40,
+                height: 40,
+                child: Center(
+                  child: Icon(OMIcons.errorOutline),
+                ),
+              );
+            } else {
+              return Image.memory(
+                snapshot.data,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.low,
+              );
+            }
+          } else {
+            return Container(
+              width: 40,
+              height: 40,
+              child: Center(
+                child: Center(child: loadingIndicator(context, themeModel)),
+              ),
+            );
+          }
+        },
       ),
     );
   } else if (file.isLink) {
@@ -129,14 +161,4 @@ Widget getPreviewIconSync(SelfFileEntity file) {
     previewIcon = matchFileIcon(file.isDir ? 'folder' : file.ext);
   }
   return previewIcon;
-}
-
-class ErrorImageOccupy extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints.expand(),
-      color: Colors.red,
-    );
-  }
 }

@@ -249,6 +249,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.4.0"
+  preload_page_view:
+    dependency: "direct main"
+    description:
+      name: preload_page_view
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.4"
   pub_semver:
     dependency: transitive
     description:

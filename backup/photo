@@ -49,7 +49,7 @@ Positioned(
                 },
                 itemCount: widget.images.length,
                 loadingBuilder: (context, event) {
-                  return loadingIndicator(context, _themeProvider);
+                  return loadingIndicator(context, _themeModel);
                 },
                 backgroundDecoration: BoxDecoration(
                   color: themeData?.scaffoldBackgroundColor,

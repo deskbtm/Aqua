@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lan_express/constant/constant.dart';
@@ -8,32 +7,8 @@ import 'package:lan_express/utils/store.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class CommonProvider extends ChangeNotifier {
+class CommonModel extends ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
-
-  bool _isShowHidden;
-  bool get isShowHidden => _isShowHidden;
-
-  Future<void> setShowHidden(bool arg) async {
-    _isShowHidden = arg;
-    notifyListeners();
-  }
-
-  String _staticUploadSavePath;
-  String get staticUploadSavePath => _staticUploadSavePath;
-  Future<void> setStaticUploadSavePath(String arg) async {
-    _staticUploadSavePath = arg;
-    await Store.setString(STATIC_UPLOAD_SAVEPATH, arg);
-    notifyListeners();
-  }
-
-  String _sortType;
-  String get sortType => _sortType;
-
-  Future<void> setSortType(String arg) async {
-    _sortType = arg;
-    notifyListeners();
-  }
 
   String _storageRootPath = '';
   String get storageRootPath => _storageRootPath;
@@ -43,8 +18,14 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _sortReversed;
-  bool get sortReversed => _sortReversed;
+  String _staticUploadSavePath;
+  String get staticUploadSavePath => _staticUploadSavePath;
+
+  Future<void> setStaticUploadSavePath(String arg) async {
+    _staticUploadSavePath = arg;
+    await Store.setString(STATIC_UPLOAD_SAVEPATH, arg);
+    notifyListeners();
+  }
 
   String _filePort;
   String get filePort => _filePort;
@@ -54,6 +35,7 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 购买
   bool _isPurchased;
   bool get isPurchased => _isPurchased;
 
@@ -63,6 +45,7 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // app 初始化
   bool _isAppInit = true;
   bool get isAppInit => _isAppInit;
 
@@ -79,6 +62,29 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<SelfFileEntity> _selectedFiles = [];
+  List<SelfFileEntity> get selectedFiles => _selectedFiles;
+
+  Future<void> addSelectedFile(SelfFileEntity value) async {
+    if (!_selectedFiles.any((ele) => ele.entity.path == value.entity.path))
+      _selectedFiles.add(value);
+    notifyListeners();
+  }
+
+  Future<void> removeSelectedFile(SelfFileEntity value) async {
+    _selectedFiles.removeWhere((ele) => ele.entity.path == value.entity.path);
+    notifyListeners();
+  }
+
+  bool hasSelectedFile(String path) {
+    return _selectedFiles.any((ele) => ele.entity.path == path);
+  }
+
+  Future<void> clearSelectedFiles() async {
+    _selectedFiles = [];
+    notifyListeners();
+  }
+
   String _baseUrl;
   String get baseUrl => _baseUrl;
 
@@ -86,9 +92,6 @@ class CommonProvider extends ChangeNotifier {
     _baseUrl = arg;
     await Store.setString(BASE_URL_KEY, _baseUrl);
   }
-
-  ShowOnlyType _showOnlyType = ShowOnlyType.all;
-  ShowOnlyType get showOnlyType => _showOnlyType;
 
   String _internalIp;
   String get internalIp => _internalIp;
@@ -114,21 +117,7 @@ class CommonProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> removeFromAliveIps(String arg, {notify = true}) async {
-  //   _aliveIps.remove(arg);
-  //   if (notify) notifyListeners();
-  // }
-
-  Future<void> setShowOnlyType(ShowOnlyType arg) async {
-    _showOnlyType = arg;
-    notifyListeners();
-  }
-
-  Future<void> setSortReversed(bool arg) async {
-    _sortReversed = arg;
-    notifyListeners();
-  }
-
+  //  内网快递自动连接
   bool _autoConnectExpress;
   bool get autoConnectExpress => _autoConnectExpress;
 
@@ -203,7 +192,7 @@ class CommonProvider extends ChangeNotifier {
     } else {
       await secureStorage.write(key: CODE_SERVER_PWD, value: arg);
     }
-    notifyListeners();
+    // notifyListeners();
   }
 
   String _codeSrvPort;
@@ -240,7 +229,7 @@ class CommonProvider extends ChangeNotifier {
   Future<void> setWebDavAddr(String arg) async {
     _webDavAddr = arg;
     await Store.setString(WEBDAV_ADDR, arg);
-    notifyListeners();
+    // notifyListeners();
   }
 
   String _webDavUsername;
@@ -249,7 +238,7 @@ class CommonProvider extends ChangeNotifier {
   Future<void> setWebDavUsername(String arg) async {
     _webDavUsername = arg;
     await Store.setString(WEBDAV_USERNAME, arg);
-    notifyListeners();
+    // notifyListeners();
   }
 
   String _webDavPwd;
@@ -258,7 +247,7 @@ class CommonProvider extends ChangeNotifier {
   Future<void> setWebDavPwd(String arg) async {
     _webDavPwd = arg;
     await secureStorage.write(key: WEBDAV_PWD, value: arg);
-    notifyListeners();
+    // notifyListeners();
   }
 
   Map _gWebData = {};
@@ -266,7 +255,7 @@ class CommonProvider extends ChangeNotifier {
 
   Future<void> setGobalWebData(Map arg) async {
     _gWebData = arg;
-    notifyListeners();
+    // notifyListeners();
   }
 
   String _username;
@@ -275,7 +264,7 @@ class CommonProvider extends ChangeNotifier {
   Future<void> setUsername(String arg) async {
     _username = arg;
     await Store.setString(LOGIN_USERNMAE, arg);
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> logout() async {
@@ -288,9 +277,6 @@ class CommonProvider extends ChangeNotifier {
   }
 
   Future<void> initCommon() async {
-    _isShowHidden = (await Store.getBool(SHOW_FILE_HIDDEN)) ?? true;
-    _sortType = (await Store.getString(FILE_SORT_TYPE)) ?? SORT_CASE;
-    _sortReversed = (await Store.getString(SORT_REVERSED)) ?? false;
     _filePort = (await Store.getString(FILE_PORT)) ?? '20201';
 
     _codeSrvPort = await Store.getString(CODE_SERVER_PORT) ?? '20202';

@@ -62,17 +62,17 @@ class LanSwitch extends StatelessWidget {
 // }
 
 // class _LanSwitchState extends State<LanSwitch> {
-//   ThemeProvider _themeProvider;
+//   ThemeModel _themeModel;
 
 //   @override
 //   void didChangeDependencies() {
 //     super.didChangeDependencies();
-//     _themeProvider = Provider.of<ThemeProvider>(context);
+//     _themeModel = Provider.of<ThemeModel>(context);
 //   }
 
 //   @override
 //   Widget build(BuildContext context) {
-//     dynamic themeData = _themeProvider?.themeData;
+//     dynamic themeData = _themeModel?.themeData;
 //     print(themeData?.switchColor);
 //     return Transform.scale(
 //       scale: 0.9,

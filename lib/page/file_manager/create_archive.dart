@@ -11,22 +11,23 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
 import 'package:lan_express/external/menu/menu.dart';
+import 'package:lan_express/model/common_model.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/model/share.dart';
-import 'package:lan_express/model/theme.dart';
+
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
 import 'package:path/path.dart' as pathLib;
 
 Future<void> createArchiveModal(
   BuildContext context, {
-  @required ShareProvider shareProvider,
-  @required ThemeProvider themeProvider,
+  @required CommonModel commonProvider,
+  @required ThemeModel themeProvider,
   @required Directory currentDir,
   @required Function(BuildContext) onSuccessUpdate,
 }) async {
   MixUtils.safePop(context);
-  if (shareProvider.selectedFiles.isNotEmpty) {
+  if (commonProvider.selectedFiles.isNotEmpty) {
     dynamic themeData = themeProvider.themeData;
     bool popAble = true;
     String archiveType = 'zip';
@@ -218,7 +219,7 @@ Future<void> createArchiveModal(
                     popAble = false;
                   });
                   await Future.delayed(Duration(milliseconds: 50));
-                  List<String> paths = shareProvider.selectedFiles
+                  List<String> paths = commonProvider.selectedFiles
                       .map((e) => e.entity.path)
                       .toList();
 

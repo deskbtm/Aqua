@@ -10,9 +10,9 @@ import 'package:lan_express/common/widget/switch.dart';
 import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/external/menu/menu.dart';
-import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/common_model.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
@@ -48,21 +48,21 @@ class CodeSettingPage extends StatefulWidget {
 }
 
 class CodeSettingPageState extends State<CodeSettingPage> {
-  ThemeProvider _themeProvider;
-  CommonProvider _commonProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
 
   CodeSrvUtils get cutils => widget.cutils;
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
   }
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   // Future<String> copyResolveClipboard() async {
@@ -76,8 +76,8 @@ class CodeSettingPageState extends State<CodeSettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
-    String repo = _commonProvider.linuxRepo;
+    dynamic themeData = _themeModel?.themeData;
+    String repo = _commonModel.linuxRepo;
     Directory rootfs = Directory('${cutils.filesPath}/rootfs');
 
     List<Widget> settingList = [
@@ -91,14 +91,14 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                _themeProvider,
+                _themeModel,
                 title: '登录密码',
                 onOk: (val) async {
-                  await _commonProvider.setCodeSrvPwd(val);
+                  await _commonModel.setCodeSrvPwd(val);
                   showText('设置成功');
                 },
                 onCancel: () async {
-                  await _commonProvider.setCodeSrvPwd(null);
+                  await _commonModel.setCodeSrvPwd(null);
                   showText('设置成功');
                 },
                 defaultCancelText: '设置为无密码',
@@ -107,8 +107,8 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             child: ListTile(
               title: LanText('登录密码'),
               subtitle: LanText(
-                _commonProvider.codeSrvPwd != null
-                    ? List(_commonProvider.codeSrvPwd.length)
+                _commonModel.codeSrvPwd != null
+                    ? List(_commonModel.codeSrvPwd.length)
                         .map((e) => '*')
                         .toList()
                         .join('')
@@ -120,17 +120,17 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           ),
           ListTile(
             title: LanText('端口'),
-            // subtitle: LanText(_commonProvider.codeSrvPort),
+            // subtitle: LanText(_commonModel.codeSrvPort),
             trailing: CupertinoButton(
-                child: NoResizeText('${_commonProvider.codeSrvPort}'),
+                child: NoResizeText('${_commonModel.codeSrvPort}'),
                 onPressed: () async {
                   showSingleTextFieldModal(
                     context,
-                    _themeProvider,
+                    _themeModel,
                     title: '更改端口',
-                    placeholder: _commonProvider.codeSrvPort,
+                    placeholder: _commonModel.codeSrvPort,
                     onOk: (val) {
-                      _commonProvider.setCodeSrvPort(val);
+                      _commonModel.setCodeSrvPort(val);
                       showText('设置成功');
                     },
                     onCancel: () {},
@@ -152,9 +152,9 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             subtitle: LanText('用于帮助了解如何改进vscode', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
-              value: _commonProvider.codeSrvTelemetry,
+              value: _commonModel.codeSrvTelemetry,
               onChanged: (val) async {
-                _commonProvider.setCodeSrvTelemetry(val);
+                _commonModel.setCodeSrvTelemetry(val);
               },
             ),
           ),
@@ -191,28 +191,28 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                     title: LanText('清华'),
                     onPressed: () async {
                       await cutils.setChineseRepo(TSINGHUA_REPO);
-                      await _commonProvider.setLinuxRepo(TSINGHUA_REPO);
+                      await _commonModel.setLinuxRepo(TSINGHUA_REPO);
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('阿里云'),
                     onPressed: () async {
                       await cutils.setChineseRepo(ALIYUN_REPO);
-                      await _commonProvider.setLinuxRepo(ALIYUN_REPO);
+                      await _commonModel.setLinuxRepo(ALIYUN_REPO);
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('中科大'),
                     onPressed: () async {
                       await cutils.setChineseRepo(USTC_REPO);
-                      await _commonProvider.setLinuxRepo(USTC_REPO);
+                      await _commonModel.setLinuxRepo(USTC_REPO);
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('Alpine(不推荐)'),
                     onPressed: () async {
                       await cutils.setChineseRepo(ALPINE_REPO);
-                      await _commonProvider.setLinuxRepo(ALPINE_REPO);
+                      await _commonModel.setLinuxRepo(ALPINE_REPO);
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
@@ -245,10 +245,10 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () async {
               showTipTextModal(
                 context,
-                _themeProvider,
+                _themeModel,
                 title: '删除沙盒',
                 tip: '确定删除沙盒以及code server?',
-                confirmedView: loadingIndicator(context, _themeProvider),
+                confirmedView: loadingIndicator(context, _themeModel),
                 onOk: () async {
                   await cutils.rmAllResource().catchError((err) {
                     showText('删除出现异常');

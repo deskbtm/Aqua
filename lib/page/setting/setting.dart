@@ -15,8 +15,8 @@ import 'package:lan_express/page/setting/control_setting.dart';
 import 'package:lan_express/page/setting/express_setting.dart';
 import 'package:lan_express/page/setting/logger_setting.dart';
 import 'package:lan_express/page/setting/privacy_policy.dart';
-import 'package:lan_express/model/common.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/common_model.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -35,8 +35,8 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
-  ThemeProvider _themeProvider;
-  CommonProvider _commonProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
   bool _willUpdate;
   Map _mSetting;
   String _version;
@@ -56,11 +56,11 @@ class SettingPageState extends State<SettingPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
 
-    _mSetting = _commonProvider.gWebData['mobile'] != null
-        ? _commonProvider.gWebData['mobile']
+    _mSetting = _commonModel.gWebData['mobile'] != null
+        ? _commonModel.gWebData['mobile']
         : {};
     if (_updateLocker) {
       _updateLocker = false;
@@ -71,14 +71,14 @@ class SettingPageState extends State<SettingPage> {
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   Future setTheme(bool val) async {
     if (val) {
-      _themeProvider.setTheme(DARK_THEME);
+      _themeModel.setTheme(DARK_THEME);
     } else {
-      _themeProvider.setTheme(LIGHT_THEME);
+      _themeModel.setTheme(LIGHT_THEME);
     }
   }
 
@@ -102,10 +102,10 @@ class SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
 
     List<Widget> settingList = [
-      if (!_commonProvider.isPurchased)
+      if (!_commonModel.isPurchased)
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -127,7 +127,7 @@ class SettingPageState extends State<SettingPage> {
                     color: themeData?.itemFontColor),
                 title: LanText('购买'),
                 subtitle: LanText(
-                  '价格${_commonProvider?.gWebData['amount'] ?? DEF_AMOUNT}元 购买后此选项不再显示',
+                  '价格${_commonModel?.gWebData['amount'] ?? DEF_AMOUNT}元 购买后此选项不再显示',
                   small: true,
                 ),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
@@ -135,7 +135,7 @@ class SettingPageState extends State<SettingPage> {
             ),
           ],
         ),
-      if (_commonProvider.username != null)
+      if (_commonModel.username != null)
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -145,7 +145,7 @@ class SettingPageState extends State<SettingPage> {
             ListTile(
               title: LanText('用户名'),
               subtitle: LanText(
-                '${_commonProvider.username}',
+                '${_commonModel.username}',
                 small: true,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -154,11 +154,11 @@ class SettingPageState extends State<SettingPage> {
                 onPressed: () async {
                   await showTipTextModal(
                     context,
-                    _themeProvider,
+                    _themeModel,
                     title: '用户退出',
                     tip: '确定退出？退出后购买也会被删除',
                     onOk: () async {
-                      await _commonProvider.logout();
+                      await _commonModel.logout();
                     },
                     onCancel: () {},
                   );
@@ -177,7 +177,7 @@ class SettingPageState extends State<SettingPage> {
             title: LanText('暗黑模式'),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
-              value: _themeProvider.isDark,
+              value: _themeModel.isDark,
               onChanged: (val) async {
                 await setTheme(val);
               },
@@ -189,7 +189,7 @@ class SettingPageState extends State<SettingPage> {
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: Container(
               width: 42,
-              child: LanText(_themeProvider.isDark ? '暗黑' : '浅白', small: true),
+              child: LanText(_themeModel.isDark ? '暗黑' : '浅白', small: true),
             ),
           ),
         ],
@@ -202,7 +202,7 @@ class SettingPageState extends State<SettingPage> {
           SizedBox(height: 15),
           ListTile(
             title: LanText('本机IP'),
-            subtitle: LanText('${_commonProvider?.internalIp}'),
+            subtitle: LanText('${_commonModel?.internalIp}'),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
           ),
           ListTile(
@@ -210,17 +210,17 @@ class SettingPageState extends State<SettingPage> {
             subtitle: LanText('内网快递 静态服务端口', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 5),
             trailing: CupertinoButton(
-              child: NoResizeText('${_commonProvider.filePort}'),
+              child: NoResizeText('${_commonModel.filePort}'),
               onPressed: () async {
                 await showSingleTextFieldModal(
                   context,
-                  _themeProvider,
+                  _themeModel,
                   title: '更改端口',
-                  placeholder: _commonProvider.filePort,
+                  placeholder: _commonModel.filePort,
                   onOk: (val) async {
                     String port = val.toString();
                     showText('请更改pc端口为 $port 并重启软件');
-                    await _commonProvider.setFilePort(port);
+                    await _commonModel.setFilePort(port);
                   },
                   onCancel: () {},
                 );
@@ -232,9 +232,9 @@ class SettingPageState extends State<SettingPage> {
             subtitle: LanText('关闭后 需要与PC连接的服务将无法使用', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
-              value: _commonProvider.enableConnect,
+              value: _commonModel.enableConnect,
               onChanged: (val) async {
-                await _commonProvider.setEnableConnect(val);
+                await _commonModel.setEnableConnect(val);
               },
             ),
           ),
@@ -243,9 +243,9 @@ class SettingPageState extends State<SettingPage> {
             subtitle: LanText('一台PC设备 自动连接 无弹窗', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
-              value: _commonProvider.autoConnectExpress,
+              value: _commonModel.autoConnectExpress,
               onChanged: (val) async {
-                await _commonProvider.setAutoConnectExpress(val);
+                await _commonModel.setAutoConnectExpress(val);
               },
             ),
           ),
@@ -283,24 +283,23 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {},
             child: ListTile(
               title: LanText('上传保存路径'),
-              subtitle: LanText('${_commonProvider.staticUploadSavePath}'),
+              subtitle: LanText('${_commonModel.staticUploadSavePath}'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
                 child: NoResizeText('更换'),
                 onPressed: () {
                   showSingleTextFieldModal(
                     context,
-                    _themeProvider,
+                    _themeModel,
                     title: '静态上传保存路径',
-                    initText: _commonProvider.storageRootPath + '/',
-                    placeholder: '以 ${_commonProvider.storageRootPath}/ 开头',
+                    initText: _commonModel.storageRootPath + '/',
+                    placeholder: '以 ${_commonModel.storageRootPath}/ 开头',
                     onOk: (String val) async {
                       try {
                         if (!Directory(val).existsSync()) {
                           await Directory(val).create(recursive: true);
                         }
-                        await _commonProvider
-                            .setStaticUploadSavePath(val?.trim());
+                        await _commonModel.setStaticUploadSavePath(val?.trim());
                       } catch (e) {}
                     },
                     onCancel: () {},
@@ -402,9 +401,9 @@ class SettingPageState extends State<SettingPage> {
             subtitle: LanText('开启后可直接(ctrl+v)', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
-              value: _commonProvider.enableClipboard,
+              value: _commonModel.enableClipboard,
               onChanged: (val) async {
-                await _commonProvider.setEnableClipboard(val);
+                await _commonModel.setEnableClipboard(val);
               },
             ),
           ),
@@ -434,11 +433,11 @@ class SettingPageState extends State<SettingPage> {
             onTap: () async {
               await showSingleTextFieldModal(
                 context,
-                _themeProvider,
+                _themeModel,
                 title: '服务器地址',
-                placeholder: _commonProvider.webDavAddr,
+                placeholder: _commonModel.webDavAddr,
                 onOk: (val) {
-                  _commonProvider
+                  _commonModel
                       .setWebDavAddr(val.replaceFirst(RegExp(r'/*$'), ''));
                   showText('设置成功');
                 },
@@ -448,9 +447,9 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
               trailing: Icon(OMIcons.web, color: themeData?.itemFontColor),
               title: LanText('服务器'),
-              subtitle: LanText(_commonProvider.webDavAddr == null
+              subtitle: LanText(_commonModel.webDavAddr == null
                   ? '未设置'
-                  : _commonProvider.webDavAddr),
+                  : _commonModel.webDavAddr),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -458,11 +457,11 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                _themeProvider,
+                _themeModel,
                 title: '账号',
-                placeholder: _commonProvider.webDavUsername,
+                placeholder: _commonModel.webDavUsername,
                 onOk: (val) {
-                  _commonProvider.setWebDavUsername(val);
+                  _commonModel.setWebDavUsername(val);
                   showText('设置成功');
                 },
                 onCancel: () {},
@@ -474,9 +473,9 @@ class SettingPageState extends State<SettingPage> {
                 '账号',
               ),
               subtitle: LanText(
-                _commonProvider.webDavUsername == null
+                _commonModel.webDavUsername == null
                     ? '未设置'
-                    : _commonProvider.webDavUsername,
+                    : _commonModel.webDavUsername,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
@@ -485,10 +484,10 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                _themeProvider,
+                _themeModel,
                 title: '密码',
                 onOk: (val) {
-                  _commonProvider.setWebDavPwd(val);
+                  _commonModel.setWebDavPwd(val);
                   showText('设置成功');
                 },
                 onCancel: () {},
@@ -497,9 +496,9 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
               title: LanText('密码'),
               subtitle: LanText(
-                _commonProvider.webDavPwd == null
+                _commonModel.webDavPwd == null
                     ? '未设置'
-                    : List(_commonProvider.webDavPwd.length)
+                    : List(_commonModel.webDavPwd.length)
                         .map((e) => '*')
                         .toList()
                         .join(''),

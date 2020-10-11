@@ -47,7 +47,7 @@
 //   // create some values
 //   Color pickerColor = Color(0xff443a49);
 //   Color currentColor = Color(0xff443a49);
-//   ThemeProvider _themeProvider;
+//   ThemeModel _themeModel;
 
 // // ValueChanged<Color> callback
 //   void changeColor(Color color) {
@@ -99,7 +99,7 @@
 //   @override
 //   void didChangeDependencies() {
 //     super.didChangeDependencies();
-//     _themeProvider = Provider.of<ThemeProvider>(context);
+//     _themeModel = Provider.of<ThemeModel>(context);
 //   }
 
 //   @override

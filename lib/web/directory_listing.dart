@@ -1,7 +1,6 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:lan_express/page/file_manager/file_utils.dart';
 import 'package:path/path.dart' as pathLib;
@@ -9,10 +8,8 @@ import 'package:shelf/shelf.dart';
 
 Future<String> _getHeader(String sanitizedHeading, String logo,
     {bool isShareFiles = false, bool isDark}) async {
-  // String cmJsString =
-  //     await rootBundle.loadString('lib/web/assets/contextmenu.js');
-  // String cmCssString =
-  //     await rootBundle.loadString('lib/web/assets/contextmenu.css');
+  String plyrJs = await rootBundle.loadString('lib/web/assets/plyr.js');
+  String plyrCss = await rootBundle.loadString('lib/web/assets/plyr.css');
 
   return '''<!DOCTYPE html>
 <html>
@@ -21,16 +18,11 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   <title>$sanitizedHeading</title>
   <link rel="shortcut icon" href="data:image/png;base64,$logo">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>$plyrJs</script>
+  <style>$plyrCss</style>
   <style>
   *{
-    color: ${isDark ? '#fff' : '#242424'}; 
-    font-size: 14px; 
-  }
-
-  button{
-    border: none;
-    outline: none;
-    white-space: nowrap;
+    font-size: 14px;
   }
 
   html, body {
@@ -38,13 +30,87 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
     padding: 0;
   }
 
-  li{
+  li {
     list-style: none;
   }
 
   body {
     font-family: sans-serif;
     background-color: ${isDark ? '#000' : '#fff'};
+  }
+
+  button {
+    border: none;
+    outline: none;
+    white-space: nowrap;
+  }
+
+  #mask {
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .c-btn {
+    border-radius: 5px;
+    background-color: #2196f3;
+    margin: 10px;
+    height: 29px;
+    color: ${isDark ? '#fff' : '#242424'};
+    transition: transform 300ms ease;
+  }
+
+  .c-btn:hover {}
+
+  .c-btn:active {
+    transform: scale(0.7);
+  }
+
+  .mask-bg {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: #000000;
+    z-index: 999;
+    opacity: 0.2;
+    animation: opacity-display 500ms ease;
+  }
+
+  #mask.hidden{
+    display: none;
+  }
+
+  #mask .display-stage{
+    z-index: 1001;
+    width: 600px;
+    position: relative;
+  }
+
+  #mask .display-stage img{
+    width: 500px;
+    height: 500px;
+    object-fit: contain;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -250px;
+    margin-top: -250px;
+  }
+
+  #mask .display-stage video {
+    width: 100%;
+  }
+
+  @keyframes opacity-display{
+    from {
+      opacity: 0;
+    } to {
+      opacity: 0.2;
+    }
   }
 
   .click-scale{
@@ -56,8 +122,13 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   .click-scale:active{
     transform: scale(0.9);
   }
+    
+  .plyr {
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
 
-  section{
+  section {
     display: flex;
     justify-content: center;
     margin-bottom: 200px;
@@ -89,28 +160,36 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
     transform: unset;
   }
 
-  ul > .func-item button{
-    border-radius: 5px;
-    background-color: #2196f3;
-    margin: 10px;
-    height: 36px;
-  }
-
-  ul .item .file-name{
+  ul .item .file-name {
     width: 80%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
+  .link-item {
+    display: inline-block;
+    width: 80%;
+  }
+
+  .content-wrapper{
+    display: flex;
+    align-items: center;
+  }
+
   .icon{
     padding: 10px 5px;
     width: 30px;
     height: 30px;
+    object-fit: contain;
   }
 
   .tiny-func{
     height: 100px;
+  }
+
+  .item-container *{
+    color: ${isDark ? '#fff' : '#242424'};
   }
   
   .item {
@@ -128,7 +207,8 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
 
   .download-tip{
     position: absolute;
-    right: 30px;
+    right: 20px;
+    z-index: 10;
   }
 
   .drag-txt{
@@ -189,7 +269,7 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
     transform: rotate(-45deg);
   }
 
-  #chip-wrapper{
+  #chip-wrapper {
     width: 70%;
     height: 65px;
     display:flex;
@@ -198,7 +278,7 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
     align-items: center;
   }
 
-  @keyframes admittance{
+  @keyframes admittance {
     from {
       transform: scale(0.8);
       opacity: 0.6;
@@ -224,10 +304,11 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   </style>
 </head>
 <body>
-<div class='modal'>
-  <div class="mask"></div>
+<div id="mask" class="hidden">
+  <div class="mask-bg" onclick="toggleMask()"></div>
+  <div class="display-stage"></div>
 </div>
-<section>
+<section class="item-container">
   <ul>
   <li class="item heading-item">
     <div>$sanitizedHeading</div>
@@ -235,9 +316,9 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   </li>
 
   <li class='item func-item'>
-  ${isShareFiles ? "<button class='click-scale download-all'>下载全部</button>" : ""}
-    <button id='upload' class='click-scale'>上传</button>
-    <button id='select-file' class='click-scale'>选择<input id="input-file" type='file' multiple/></button>
+  ${isShareFiles ? "<button class='c-btn download-all'>下载全部</button>" : ""}
+    <button id='upload' class='c-btn'>上传</button>
+    <button id='select-file' class='c-btn'>选择<input id="input-file" type='file' multiple/></button>
     <span id='chip-wrapper'></span>
     <h2 class="drag-txt">可拖拽到此</h2>
   </li>
@@ -250,19 +331,106 @@ String _trailer({bool isShareFiles = false, String serverUrl}) {
 </section>
 <script>
 
-var willUploadFiles = [];
+var controls = [
+  'play-large',
+  'restart',
+  'play',
+  'progress',
+  'current-time',
+  'duration',
+  'mute',
+  'volume',
+  'captions',
+  'settings',
+  'pip',
+  'airplay',
+  'download',
+  'fullscreen'
+];
 
-var delFileFromWrapper  = function(name){
-  removeFile(name);
-  renderFileChips();
+var videoExts =  [
+  '.mp4',
+  '.flv',
+  '.avi',
+  '.mov',
+  '.wmv',
+  '.rmvb',
+  '.rm',
+  '.asf',
+  '.mpg',
+  '.mpeg',
+];
+
+var imgExts =  [
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.bmp',
+  '.webp',
+];
+
+var mask = document.getElementById('mask');151
+
+var downloadURI = function(uri, name) {
+  var link = document.createElement("a");
+  link.setAttribute('download', name);
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
-var fileChip = fileName =>  "<button class='click-scale chip'><span>" + fileName + 
-"</span><div class='close-btn' onclick='delFileFromWrapper(" + '"' + fileName + '"' + ")'></div></button>";
-var selectFileBtn = document.getElementById('select-file');
-var inputFile = document.getElementById('input-file');
-var chipWrapper = document.getElementById('chip-wrapper');
-var uploadBtn = document.getElementById('upload');
+var toggleMask = function(){
+  if(mask.classList.contains('hidden')){
+    mask.classList.remove('hidden');
+  }else{
+    mask.classList.add('hidden');
+  }
+}
+
+var clickItem = function(e, name = ''){
+  name = name.toLowerCase();
+  e = e || window.event;
+  var isVideo = videoExts.some((val)=> name.indexOf(val) > -1);
+  var isImg = imgExts.some((val)=> name.indexOf(val) > -1);
+  var display  = document.querySelector('.display-stage');
+
+  if(isVideo){
+    e.preventDefault();
+    
+    toggleMask();
+
+    display.innerHTML = '<video controls crossorigin id="player" src="' + name + '"></video>';
+
+    var player = new Plyr('#player', {controls});
+    // 播放器下载按钮
+    document.querySelector('[data-plyr="download"]').onclick = function(de){
+      de.preventDefault();
+      downloadURI(name, name);
+    }
+    return;
+  }
+
+  if(isImg){
+    e.preventDefault();
+    toggleMask();
+    display.innerHTML = '<img src="' + name + '"></img>';
+    return;
+  }
+
+}
+
+// 判断是否分享单个文件
+if($isShareFiles){
+  var files = document.getElementsByClassName('download-tip');
+  var downloadBtn = document.querySelector('.download-all');
+  downloadBtn.onclick = function(){
+    for(var i = 0; i < files.length; i  ++){
+      files[i].click();
+    }
+  }
+}
 
 var toast = function(msg, duration){
   duration=isNaN(duration)?3000:duration;
@@ -278,74 +446,81 @@ var toast = function(msg, duration){
   }, duration);
 }
 
-uploadBtn.onclick = function(e){
-  e.preventDefault();
-  var formData = new FormData();
-  willUploadFiles.forEach((file, index)=>{
-    formData.append('file' + index,  file, file.name);
-  })
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST','/upload_file');
-  xhr.send(formData)
-  xhr.onreadystatechange = function(){
-    if(xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 404)){
-      try{
-        var a = JSON.parse(xhr.responseText);
-        toast(a.msg,  2000);
-      }catch(e){
-        toast('出现未知错误',  2000);
-      }
-    }
-  };
-}
-
-inputFile.onchange = function(e){
-  e.preventDefault();
-  Object.values(inputFile.files).forEach((file)=>{addFile(file);});
-  renderFileChips();
-}
-
-var renderFileChips = function(){
-  chipWrapper.innerHTML = willUploadFiles.map((file)=>{
-    return fileChip(file.name);
-  }).join('');
-}
-
-var existsFile = function (name){
-  return willUploadFiles.some((file)=>{
-    return file.name === name;
-  })
-}
-
-var addFile = function(file){
-  if(existsFile(file.name)){
-    alert(file.name + '已存在');
-  }else{
-    willUploadFiles.push(file);
-  }
-}
-
-var removeFile = function(name){
-  var offset = willUploadFiles.findIndex((f, i)=>{
-    return f.name === name;
-  });
-  
-  inputFile.value = '';
-  willUploadFiles.splice(offset, 1);
-}
-
-if($isShareFiles){
-  var files = document.getElementsByClassName('file-path');
-  var downloadBtn = document.querySelector('.download-all');
-  downloadBtn.onclick = function(){
-    for(var i = 0; i < files.length; i  ++){
-      files[i].click();
-    }
-  }
-}
-
 if("$serverUrl" != "null"){
+
   var funcItem = document.getElementsByClassName('func-item')[0];
+  var selectFileBtn = document.getElementById('select-file');
+  var inputFile = document.getElementById('input-file');
+  var chipWrapper = document.getElementById('chip-wrapper');
+  var uploadBtn = document.getElementById('upload');
+
+  var fileChip = fileName =>  "<button class='chip c-btn'><span>" + fileName + 
+  "</span><div class='close-btn' onclick='delFileFromWrapper(" + '"' + fileName + '"' + ")'></div></button>";
+
+  // 存放将要上传的文件
+  var willUploadFiles = [];
+
+  var delFileFromWrapper  = function(name){
+    removeFile(name);
+    renderFileChips();
+  }
+
+  uploadBtn.onclick = function(e){
+    e.preventDefault();
+    var formData = new FormData();
+    willUploadFiles.forEach((file, index)=>{
+      formData.append('file' + index,  file, file.name);
+    })
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST','/upload_file');
+    xhr.send(formData)
+    xhr.onreadystatechange = function(){
+      if(xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 404)){
+        try{
+          var a = JSON.parse(xhr.responseText);
+          toast(a.msg,  2000);
+        }catch(e){
+          toast('出现未知错误',  2000);
+        }
+      }
+    };
+  }
+
+  inputFile.onchange = function(e){
+    e.preventDefault();
+    Object.values(inputFile.files).forEach((file)=>{addFile(file);});
+    renderFileChips();
+  }
+
+  var renderFileChips = function(){
+    chipWrapper.innerHTML = willUploadFiles.map((file)=>{
+      return fileChip(file.name);
+    }).join('');
+  }
+
+  var existsFile = function (name){
+    return willUploadFiles.some((file)=>{
+      return file.name === name;
+    })
+  }
+
+  var addFile = function(file){
+    if(existsFile(file.name)){
+      alert(file.name + '已存在');
+    }else{
+      willUploadFiles.push(file);
+    }
+  }
+
+  var removeFile = function(name){
+    var offset = willUploadFiles.findIndex((f, i)=>{
+      return f.name === name;
+    });
+    
+    inputFile.value = '';
+    willUploadFiles.splice(offset, 1);
+  }
+  
   funcItem.ondragover = function(e){
     e.preventDefault();
     funcItem.classList.add('dashed');
@@ -362,6 +537,8 @@ if("$serverUrl" != "null"){
     Object.values(e.dataTransfer.files).forEach((file)=>{addFile(file);});
     renderFileChips();
   }
+}else{
+  toast('服务器地址 出现未知错误',  2000);
 }
 
 </script>
@@ -371,8 +548,6 @@ if("$serverUrl" != "null"){
 }
 
 Future<Map> _loadIcons() async {
-  // rootBundle.loadString()
-
   return {
     'ppt': base64Encode(
         (await rootBundle.load('assets/images/ppt.png')).buffer.asUint8List()),
@@ -538,15 +713,19 @@ Future<Response> listDirectory(String fileSystemPath, String dirPath,
         ext = 'folder';
       }
       String sanitizedName = sanitizer.convert(name);
+      String base64Icon = "data:image/png;base64, ${matchIcon(ext, icons)}";
       // 非链接强制下载
       add("""
-      <a href="$sanitizedName" ${isDir ? '' : 'download="$sanitizedName"'}>
-        <li class="item click-scale">
-          <img  class="icon" src="data:image/png;base64, ${matchIcon(ext, icons)}"/>
-          <div class="file-name">$sanitizedName</div>
-          ${isDir ? '' : '<span class="download-tip">下载</span>'}
+        <li class="item ${isDir ? 'click-scale' : ''}">
+          <a class="link-item" onclick='clickItem(event, "$sanitizedName", this)' href="${isDir ? sanitizedName : 'javascript:void(0)'}">
+            <div class="content-wrapper">
+              <img class="icon" src="${IMG_EXTS.any((val) => sanitizedName.endsWith(val)) ? sanitizedName : base64Icon}"/>
+              <div class="file-name">$sanitizedName</div>
+            </div>
+          </a>
+          ${isDir ? '' : '<a  class="download-tip" href="$sanitizedName" download="$sanitizedName"><button class="c-btn">下载</button></a>'}
         </li>
-      </a>""");
+      """);
     }
 
     add(_trailer(serverUrl: serverUrl));
@@ -584,15 +763,19 @@ Future<Response> listFiles(List<String> paths,
       ext = 'folder';
     }
     String sanitizedName = sanitizer.convert(name);
+    String base64Icon = "data:image/png;base64, ${matchIcon(ext, icons)}";
 
     add("""
-      <a class="${isDir ? 'dir-path' : 'file-path'}" href="$path" ${isDir ? '' : 'download="$sanitizedName"'}>
-        <li class="item click-scale">
-          <img class="icon" src="data:image/png;base64, ${matchIcon(ext, icons)}"/>
-          <div class="file-name">$sanitizedName</div>
-          ${isDir ? '' : '<span class="download-tip">下载</span>'}
-        </li>
-      </a>""");
+      <li class="item ${isDir ? 'click-scale' : ''}">
+        <a class="link-item" onclick='clickItem(event, "$sanitizedName", this)' href="${isDir ? sanitizedName : 'javascript:void(0)'}">
+          <div class="content-wrapper">
+            <img class="icon" src="${IMG_EXTS.any((val) => sanitizedName.endsWith(val)) ? sanitizedName : base64Icon}"/>
+            <div class="file-name">$sanitizedName</div>
+          </div>
+        </a>
+        ${isDir ? '' : '<a  class="download-tip" href="$sanitizedName" download="$sanitizedName"><button class="c-btn">下载</button></a>'}
+      </li>
+    """);
   }
   add(_trailer(isShareFiles: true, serverUrl: serverUrl));
   controller.close();

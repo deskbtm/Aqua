@@ -10,13 +10,12 @@ import 'package:lcfarm_flutter_umeng/lcfarm_flutter_umeng.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'external/bot_toast/src/toast_navigator_observer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:lan_express/model/init_provider.dart';
 import 'package:lan_express/constant/constant.dart';
 import 'external/bot_toast/src/bot_toast_init.dart';
-import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/common_model.dart';
 import 'package:lan_express/page/home/home.dart';
 import 'package:lan_express/utils/notification.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/store.dart';
 import 'package:lan_express/utils/req.dart';
@@ -34,15 +33,12 @@ class _LanExpressState extends State<LanExpress> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ThemeProvider>(
-          create: (_) => ThemeProvider(),
+        ChangeNotifierProvider<ThemeModel>(
+          create: (_) => ThemeModel(),
         ),
-        ChangeNotifierProvider<CommonProvider>(
-          create: (_) => CommonProvider(),
+        ChangeNotifierProvider<CommonModel>(
+          create: (_) => CommonModel(),
         ),
-        // ChangeNotifierProvider<ShareProvider>(
-        //   create: (_) => ShareProvider(),
-        // ),
       ],
       child: LanExpressWrapper(),
     );
@@ -57,8 +53,8 @@ class LanExpressWrapper extends StatefulWidget {
 }
 
 class _LanExpressWrapperState extends State {
-  ThemeProvider _themeProvider;
-  CommonProvider _commonProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
 
   bool _mutex;
   bool _settingMutex;
@@ -80,16 +76,16 @@ class _LanExpressWrapperState extends State {
   }
 
   Future<void> _preLoadMsg() async {
-    String baseUrl = _commonProvider?.baseUrl;
+    String baseUrl = _commonModel?.baseUrl;
     if (baseUrl != null) {
       await req().get(baseUrl + '/assets/index.json').then((receive) async {
         dynamic data = receive.data;
         if (data['baseUrl'] != null &&
             data['baseUrl'] != baseUrl &&
             MixUtils.isHttpUrl(data['baseUrl'])) {
-          await _commonProvider.setBaseUrl(data['baseUrl']);
+          await _commonModel.setBaseUrl(data['baseUrl']);
         }
-        await _commonProvider.setGobalWebData(receive.data);
+        await _commonModel.setGobalWebData(receive.data);
       }).catchError((err) {
         BotToast.showText(text: '首次请求出现错误, 导出日志与开发者联系');
         FLog.error(text: '$err', methodName: '_preLoadMsg');
@@ -100,30 +96,30 @@ class _LanExpressWrapperState extends State {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
     if (_settingMutex) {
       _settingMutex = false;
       String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
-      await _themeProvider.setTheme(theme).catchError((err) {
+      await _themeModel.setTheme(theme).catchError((err) {
         FLog.error(text: '$err', methodName: 'setTheme');
       });
-      await _commonProvider.initCommon().catchError((err) {
+      await _commonModel.initCommon().catchError((err) {
         FLog.error(text: '$err', methodName: 'initCommon');
       });
       await _preLoadMsg();
     }
 
-    if (_mutex && _commonProvider.enableConnect != null) {
+    if (_mutex && _commonModel.enableConnect != null) {
       _mutex = false;
       String internalIp = await AndroidMix.wifi.ip;
-      await _commonProvider.setInternalIp(internalIp);
+      await _commonModel.setInternalIp(internalIp);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider.themeData;
+    dynamic themeData = _themeModel.themeData;
 
     return themeData == null
         ? Container()

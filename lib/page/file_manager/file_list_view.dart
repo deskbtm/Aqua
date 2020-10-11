@@ -4,22 +4,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lan_express/common/widget/draggable_scrollbar.dart';
-import 'package:lan_express/common/widget/function_widget.dart';
 import 'package:lan_express/common/widget/images.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_item.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:provider/provider.dart';
 
 class FileListView extends StatefulWidget {
   final List<SelfFileEntity> fileList;
-  final Function(int) itemOnLongPress;
+  final Function(int, Function(bool)) itemOnLongPress;
   final Function(LongPressStartDetails) onLongPressEmpty;
   final Function(int, double) onHozDrag;
-  final Function(int) onItemTap;
+  final Function(int, Function(bool)) onItemTap;
   final Function onUpdateView;
 
   const FileListView(
@@ -40,8 +39,8 @@ class FileListView extends StatefulWidget {
 
 class _FileListViewState extends State<FileListView>
     with AutomaticKeepAliveClientMixin {
-  ThemeProvider _themeProvider;
-  // CommonProvider _commonProvider;
+  ThemeModel _themeModel;
+  // CommonModel _commonModel;
   ScrollController _scrollController;
   bool _mutex;
 
@@ -66,18 +65,19 @@ class _FileListViewState extends State<FileListView>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
   }
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    dynamic themeData = _themeProvider.themeData;
+    dynamic themeData = _themeModel.themeData;
+
     return widget.fileList.isEmpty
         ? GestureDetector(
             onLongPressStart: widget.onLongPressEmpty,
@@ -90,6 +90,8 @@ class _FileListViewState extends State<FileListView>
           )
         : GestureDetector(
             onLongPressStart: widget.onLongPressEmpty,
+
+            /// [bug] DraggableScrollbar 会导致ListView setState()
             child: DraggableScrollbar.rrect(
               controller: _scrollController,
               scrollbarTimeToFade: const Duration(seconds: 5),
@@ -99,7 +101,8 @@ class _FileListViewState extends State<FileListView>
                 itemCount: widget.fileList.length,
                 itemBuilder: (BuildContext context, int index) {
                   SelfFileEntity file = widget.fileList[index];
-                  Widget previewIcon = getPreviewIconSync(file);
+                  Widget previewIcon =
+                      getPreviewIconSync(context, _themeModel, file);
 
                   return FileItem(
                     type: file.isDir ? FileItemType.folder : FileItemType.file,
@@ -125,12 +128,14 @@ class _FileListViewState extends State<FileListView>
                     filename: file.filename,
                     path: file.entity.path,
                     subTitle: MixUtils.formatFileTime(file.modified),
-                    onLongPress: (details) {
-                      if (widget.itemOnLongPress != null)
-                        widget.itemOnLongPress(index);
+                    onLongPress: (details, update) {
+                      if (widget.itemOnLongPress != null) {
+                        widget.itemOnLongPress(index, update);
+                      }
                     },
-                    onTap: () {
-                      if (widget.onItemTap != null) widget.onItemTap(index);
+                    onTap: (itemUpdate) {
+                      if (widget.onItemTap != null)
+                        widget.onItemTap(index, itemUpdate);
                     },
                     onHozDrag: (dir) {
                       /// [index] 位数 [dir] 方向 1 向右 -1 左
@@ -152,7 +157,7 @@ class _FileListViewState extends State<FileListView>
 //                       builder: (BuildContext context, AsyncSnapshot snapshot) {
 //                         if (snapshot.connectionState == ConnectionState.done) {
 //                           if (snapshot.hasError) {
-//                             return loadingIndicator(context, _themeProvider);
+//                             return loadingIndicator(context, _themeModel);
 //                           } else {
 //                             return file.isDir
 //                                 ? snapshot.data
@@ -174,7 +179,7 @@ class _FileListViewState extends State<FileListView>
 //                                   );
 //                           }
 //                         } else {
-//                           return loadingIndicator(context, _themeProvider);
+//                           return loadingIndicator(context, _themeModel);
 //                         }
 //                       },
 //                     ),

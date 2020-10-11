@@ -6,18 +6,17 @@ import 'package:lan_express/common/widget/dialog.dart';
 import 'package:lan_express/common/widget/function_widget.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
-import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
 import 'package:lan_express/external/system_info/system_info.dart';
-import 'package:lan_express/model/common.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/common_model.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'code_server/utils.dart';
 
 Future<void> createProotEnv(
   BuildContext context, {
-  @required ThemeProvider themeProvider,
-  @required CommonProvider commonProvider,
+  @required ThemeModel themeProvider,
+  @required CommonModel commonProvider,
   @required Function onSuccess,
 }) async {
   MixUtils.safePop(context);

@@ -362,56 +362,6 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
 
   double get viewMinScrollExtent => widget.controller.position.minScrollExtent;
 
-  @override
-  Widget build(BuildContext context) {
-    Widget labelText;
-    if (widget.labelTextBuilder != null && _isDragInProcess) {
-      labelText = widget.labelTextBuilder(
-        _viewOffset + _barOffset + widget.heightScrollThumb / 2,
-      );
-    }
-
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-      //print("LayoutBuilder constraints=$constraints");
-
-      return NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification notification) {
-          changePosition(notification);
-        },
-        child: Stack(
-          children: <Widget>[
-            RepaintBoundary(
-              child: widget.child,
-            ),
-            RepaintBoundary(
-                child: GestureDetector(
-              onVerticalDragStart: _onVerticalDragStart,
-              onVerticalDragUpdate: _onVerticalDragUpdate,
-              onVerticalDragEnd: _onVerticalDragEnd,
-              child: Container(
-                alignment: Alignment.topRight,
-                margin: EdgeInsets.only(top: _barOffset),
-                padding: widget.padding,
-                child: widget.scrollThumbBuilder(
-                  widget.backgroundColor,
-                  _thumbAnimation,
-                  _labelAnimation,
-                  widget.heightScrollThumb,
-                  labelText: labelText,
-                  labelConstraints: widget.labelConstraints,
-                ),
-              ),
-            )),
-          ],
-        ),
-      );
-    });
-  }
-
-  //scroll bar has received notification that it's view was scrolled
-  //so it should also changes his position
-  //but only if it isn't dragged
   changePosition(ScrollNotification notification) {
     if (_isDragInProcess) {
       return;
@@ -457,6 +407,60 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    Widget labelText;
+    if (widget.labelTextBuilder != null && _isDragInProcess) {
+      labelText = widget.labelTextBuilder(
+        _viewOffset + _barOffset + widget.heightScrollThumb / 2,
+      );
+    }
+
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      //print("LayoutBuilder constraints=$constraints");
+
+      return NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification notification) {
+          if (mounted) {
+            changePosition(notification);
+          }
+          return true;
+        },
+        child: Stack(
+          children: <Widget>[
+            RepaintBoundary(
+              child: widget.child,
+            ),
+            RepaintBoundary(
+                child: GestureDetector(
+              onVerticalDragStart: _onVerticalDragStart,
+              onVerticalDragUpdate: _onVerticalDragUpdate,
+              onVerticalDragEnd: _onVerticalDragEnd,
+              child: Container(
+                alignment: Alignment.topRight,
+                margin: EdgeInsets.only(top: _barOffset),
+                padding: widget.padding,
+                child: widget.scrollThumbBuilder(
+                  widget.backgroundColor,
+                  _thumbAnimation,
+                  _labelAnimation,
+                  widget.heightScrollThumb,
+                  labelText: labelText,
+                  labelConstraints: widget.labelConstraints,
+                ),
+              ),
+            )),
+          ],
+        ),
+      );
+    });
+  }
+
+  //scroll bar has received notification that it's view was scrolled
+  //so it should also changes his position
+  //but only if it isn't dragged
+
   double getBarDelta(
     double scrollViewDelta,
     double barMaxScrollExtent,
@@ -474,41 +478,45 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
   }
 
   void _onVerticalDragStart(DragStartDetails details) {
-    setState(() {
-      _isDragInProcess = true;
-      _labelAnimationController.forward();
-      _fadeoutTimer?.cancel();
-    });
+    if (mounted) {
+      setState(() {
+        _isDragInProcess = true;
+        _labelAnimationController.forward();
+        _fadeoutTimer?.cancel();
+      });
+    }
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
-    setState(() {
-      if (_thumbAnimationController.status != AnimationStatus.forward) {
-        _thumbAnimationController.forward();
-      }
-      if (_isDragInProcess) {
-        _barOffset += details.delta.dy;
+    if (mounted) {
+      setState(() {
+        if (_thumbAnimationController.status != AnimationStatus.forward) {
+          _thumbAnimationController.forward();
+        }
+        if (_isDragInProcess) {
+          _barOffset += details.delta.dy;
 
-        if (_barOffset < barMinScrollExtent) {
-          _barOffset = barMinScrollExtent;
-        }
-        if (_barOffset > barMaxScrollExtent) {
-          _barOffset = barMaxScrollExtent;
-        }
+          if (_barOffset < barMinScrollExtent) {
+            _barOffset = barMinScrollExtent;
+          }
+          if (_barOffset > barMaxScrollExtent) {
+            _barOffset = barMaxScrollExtent;
+          }
 
-        double viewDelta = getScrollViewDelta(
-            details.delta.dy, barMaxScrollExtent, viewMaxScrollExtent);
+          double viewDelta = getScrollViewDelta(
+              details.delta.dy, barMaxScrollExtent, viewMaxScrollExtent);
 
-        _viewOffset = widget.controller.position.pixels + viewDelta;
-        if (_viewOffset < widget.controller.position.minScrollExtent) {
-          _viewOffset = widget.controller.position.minScrollExtent;
+          _viewOffset = widget.controller.position.pixels + viewDelta;
+          if (_viewOffset < widget.controller.position.minScrollExtent) {
+            _viewOffset = widget.controller.position.minScrollExtent;
+          }
+          if (_viewOffset > viewMaxScrollExtent) {
+            _viewOffset = viewMaxScrollExtent;
+          }
+          widget.controller.jumpTo(_viewOffset);
         }
-        if (_viewOffset > viewMaxScrollExtent) {
-          _viewOffset = viewMaxScrollExtent;
-        }
-        widget.controller.jumpTo(_viewOffset);
-      }
-    });
+      });
+    }
   }
 
   void _onVerticalDragEnd(DragEndDetails details) {
@@ -517,9 +525,11 @@ class _DraggableScrollbarState extends State<DraggableScrollbar>
       _labelAnimationController.reverse();
       _fadeoutTimer = null;
     });
-    setState(() {
-      _isDragInProcess = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isDragInProcess = false;
+      });
+    }
   }
 }
 

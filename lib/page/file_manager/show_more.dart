@@ -9,8 +9,8 @@ import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
 import 'package:lan_express/external/webdav/webdav.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/model/common.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/common_model.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/webdav.dart';
 import 'package:open_file/open_file.dart';
@@ -27,8 +27,8 @@ Future<void> uploadToWebDAV(SelfFileEntity file) async {
 Future<void> showMoreModal(
   BuildContext context,
   StateSetter setState, {
-  @required ThemeProvider themeProvider,
-  @required CommonProvider commonProvider,
+  @required ThemeModel themeProvider,
+  @required CommonModel commonProvider,
   @required SelfFileEntity file,
 }) async {
   MixUtils.safePop(context);

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:android_mix/android_mix.dart';
 import 'package:device_info/device_info.dart';
-import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/common_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ping_discover_network/ping_discover_network.dart';
 import 'package:path/path.dart' as pathLib;
@@ -53,7 +53,7 @@ class MixUtils {
     }
   }
 
-  // static Future scanSubnet(CommonProvider settingProvider) async {
+  // static Future scanSubnet(CommonModel settingProvider) async {
   //   String port = settingProvider?.filePort;
   //   String internalIp = settingProvider?.internalIp;
   //   String subnet =

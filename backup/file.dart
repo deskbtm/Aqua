@@ -137,7 +137,7 @@
 // // switch (archiveType) {
 // //   case 'zip':
 // //     await AndroidMix.archive.zip(
-// //       _shareProvider.selectedFiles
+// //       _shareModel.selectedFiles
 // //           .map((e) => e.entity.path)
 // //           .toList(),
 // //       FileAction.genPathWhenExists(
@@ -146,7 +146,7 @@
 // //       onZip: (data) {},
 // //       onZipSuccess: () async {
 // //         showText('归档成功');
-// //         await _shareProvider.clear();
+// //         await _shareModel.clear();
 // //         await update2Side();
 // //         MixUtils.safePop(context);
 // //       },
@@ -156,7 +156,7 @@
 
 // // Map data = {
 // //   'type': archiveType,
-// //   'paths': _shareProvider.selectedFiles
+// //   'paths': _shareModel.selectedFiles
 // //       .map((e) => e.entity.path)
 // //       .toList(),
 // //   'targetDir': _currentDir.path,
@@ -172,7 +172,7 @@
 // //     if (message == 'done') {
 // //       showText('归档完成');
 // //       await update2Side();
-// //       await _shareProvider.clear();
+// //       await _shareModel.clear();
 // //       if (mounted) {
 // //         MixUtils.safePop(context);
 // //       }
@@ -191,7 +191,7 @@
 // //   if (message == 'done') {
 // //     showText('归档完成');
 // //     await update2Side();
-// //     await _shareProvider.clear();
+// //     await _shareModel.clear();
 // //     if (mounted) {
 // //       MixUtils.safePop(context);
 // //     }

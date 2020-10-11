@@ -11,10 +11,10 @@
 // Future<void> handleExtractArchive(BuildContext context) async {
 //   bool result = false;
 
-//   if (_shareProvider.selectedFiles.length > 1) {
+//   if (_shareModel.selectedFiles.length > 1) {
 //     showText('只允许操作单个文件');
 //   } else {
-//     SelfFileEntity first = _shareProvider.selectedFiles.first;
+//     SelfFileEntity first = _shareModel.selectedFiles.first;
 //     String archivePath = first.entity.path;
 //     String name = FileAction.getName(archivePath);
 
@@ -28,7 +28,7 @@
 //         if (await AndroidMix.archive.isZipEncrypted(archivePath)) {
 //           await showSingleTextFieldModal(
 //             context,
-//             _themeProvider,
+//             _themeModel,
 //             title: '输入密码',
 //             onOk: (val) async {
 //               showWaitForArchiveNotification('解压中...');
@@ -99,7 +99,7 @@
 //       showText('提取失败');
 //     }
 //     // if (mounted) {
-//     //   await _shareProvider.clearSelectedFiles();
+//     //   await _shareModel.clearSelectedFiles();
 //     //   await update2Side();
 //     //   MixUtils.safePop(context);
 //     // }

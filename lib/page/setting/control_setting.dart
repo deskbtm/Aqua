@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/switch.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
-import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/common_model.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 class ControlSettingPage extends StatefulWidget {
@@ -19,24 +19,24 @@ class ControlSettingPage extends StatefulWidget {
 }
 
 class ControlSettingPageState extends State<ControlSettingPage> {
-  ThemeProvider _themeProvider;
-  CommonProvider _commonProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
   }
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
 
     List<Widget> settingList = [
       Column(
@@ -48,9 +48,9 @@ class ControlSettingPageState extends State<ControlSettingPage> {
             subtitle: LanText('触摸按钮震动反馈'),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
-              value: _commonProvider.codeSrvTelemetry,
+              value: _commonModel.codeSrvTelemetry,
               onChanged: (val) async {
-                _commonProvider.setCodeSrvTelemetry(val);
+                _commonModel.setCodeSrvTelemetry(val);
               },
             ),
           ),

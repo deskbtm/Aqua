@@ -7,13 +7,13 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/common/widget/text_field.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 
 Future<void> createRenameModal(
   BuildContext context,
   SelfFileEntity file, {
-  @required ThemeProvider provider,
+  @required ThemeModel provider,
   @required VoidCallback onExists,
   @required Function(String) onSuccess,
   @required Function(dynamic) onError,

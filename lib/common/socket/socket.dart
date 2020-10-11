@@ -7,16 +7,16 @@ import 'package:flutter/services.dart';
 import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/isolate/search_devices.dart';
 import 'package:lan_express/utils/mix_utils.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/notification.dart';
-import 'package:lan_express/model/common.dart';
+import 'package:lan_express/model/common_model.dart';
 import 'package:clipboard_listener/clipboard_listener.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketConnecter {
-  final CommonProvider commonProvider;
+  final CommonModel commonProvider;
   dynamic _cachedClipboard;
   bool _resourceLocker = false;
 
@@ -98,7 +98,7 @@ class SocketConnecter {
   Future<void> searchDevicesAndConnect(
     BuildContext context, {
     int limit = 10,
-    ThemeProvider themeProvider,
+    ThemeModel themeProvider,
     Function(String) onNotExpected,
     bool initiativeConnect = true,
   }) async {
@@ -133,8 +133,8 @@ class SocketConnecter {
           if (message is List<String> && message.isNotEmpty) {
             isolate?.kill();
             _resourceLocker = false;
-            message
-                .addAll(['122.123.123.12', '122.123.123.11', '122.123.123.10']);
+            // message
+            //     .addAll(['122.123.123.12', '122.123.123.11', '122.123.123.10']);
             if (message.length > 1) {
               Timer timer;
               showSelectModal(

@@ -8,6 +8,7 @@ environment:
   flutter: ">=1.6.0 <2.0.0"
 
 dependencies:
+  preload_page_view: ^0.1.4
   flutter:
     sdk: flutter
 

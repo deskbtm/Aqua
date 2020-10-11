@@ -4,8 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/model/share.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/common_model.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 enum FileItemType { folder, file }
@@ -13,7 +13,7 @@ enum FileItemType { folder, file }
 class FileItem extends StatefulWidget {
   final String subTitle;
   final int index;
-  final Function onTap;
+  final Function(Function(bool)) onTap;
   final Color itemBgColor;
   final Color fontColor;
   final bool withAnimation;
@@ -26,7 +26,7 @@ class FileItem extends StatefulWidget {
 
   /// -1 向右
   final Function(double) onHozDrag;
-  final Function(LongPressStartDetails) onLongPress;
+  final Function(LongPressStartDetails, Function(bool)) onLongPress;
   final Widget leading;
   final FileItemType type;
 
@@ -62,15 +62,23 @@ class FileItemState extends State<FileItem>
   AnimationController _controller;
   double _dragX = 0;
   bool _selected = false;
+
+  ///
   double dir;
+
+  /// 缓存leading防止图片在刷新时 瞎几把闪
+  Widget _cacheLeading;
 
   int get index => widget.index;
   String get path => widget.path;
-  Function get onTap => widget.onTap;
+  Function(Function(bool)) get onTap => widget.onTap;
   Color get itemBgColor => widget.itemBgColor;
   Color get fontColor => widget.fontColor;
   bool get withAnimation => widget.withAnimation;
   Function get onHozDrag => widget.onHozDrag;
+  Function(LongPressStartDetails, Function(bool)) get onLongPress =>
+      widget.onLongPress;
+
   FileItemType get type => widget.type;
   bool get justDisplay => widget.justDisplay;
   String get filename => widget.filename;
@@ -78,12 +86,16 @@ class FileItemState extends State<FileItem>
   double get titleSize => widget.titleSize;
   bool get autoWrap => widget.autoWrap;
 
-  ThemeProvider _themeProvider;
-  ShareProvider _shareProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
 
   @override
   void initState() {
     super.initState();
+    if (_cacheLeading == null) {
+      _cacheLeading = widget.leading;
+    }
+
     if (!justDisplay) {
       _controller = AnimationController(vsync: this);
       _controller.addListener(() {
@@ -97,12 +109,12 @@ class FileItemState extends State<FileItem>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _shareProvider = Provider.of<ShareProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
     if (!justDisplay) {
       if (mounted) {
         setState(() {
-          _selected = _shareProvider.has(path);
+          _selected = _commonModel.hasSelectedFile(path);
         });
       }
     }
@@ -114,27 +126,15 @@ class FileItemState extends State<FileItem>
     _controller?.dispose();
   }
 
-  void selectItem() {
-    setState(() {
-      _selected = true;
-    });
-  }
-
-  void cancelSelectItem() {
-    setState(() {
-      _selected = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
     Color itemfontColor = fontColor ?? themeData?.itemFontColor;
     Color itemColor = itemBgColor ?? themeData?.itemColor;
 
     Widget tile = ListTile(
-      leading: widget.leading,
+      leading: _cacheLeading,
       title: NoResizeText(
         filename,
         overflow: autoWrap
@@ -165,11 +165,36 @@ class FileItemState extends State<FileItem>
           child: justDisplay
               ? tile
               : GestureDetector(
-                  onTap: onTap,
+                  onTap: () {
+                    if (onTap != null) {
+                      onTap((b) {
+                        if (mounted) {
+                          setState(() {
+                            _selected = b;
+                          });
+                        }
+                      });
+                    }
+                  },
                   onHorizontalDragDown: (details) {
                     _controller.stop();
                   },
-                  onLongPressStart: widget.onLongPress,
+                  onLongPressStart: (d) {
+                    if (onLongPress != null) {
+                      onLongPress(d, (b) {
+                        if (mounted) {
+                          setState(() {
+                            _selected = b;
+                          });
+                        }
+                      });
+                    }
+                    // if (onLongPress(d)) {
+                    //   setState(() {
+                    //     _selected = true;
+                    //   });
+                    // }
+                  },
                   onHorizontalDragUpdate: (details) {
                     if (details.primaryDelta > 0) {
                       dir = 1;
@@ -202,9 +227,9 @@ class FileItemState extends State<FileItem>
                     if (onHozDrag != null) {
                       if (mounted) {
                         onHozDrag(dir);
-                        _shareProvider.has(path)
-                            ? selectItem()
-                            : cancelSelectItem();
+                        setState(() {
+                          _selected = _commonModel.hasSelectedFile(path);
+                        });
                       }
                     }
                   },

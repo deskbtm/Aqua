@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:provider/provider.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 
 class ActionButton extends StatefulWidget {
   final Color color;
@@ -29,17 +29,17 @@ class ActionButton extends StatefulWidget {
 }
 
 class _ActionButtonState extends State<ActionButton> {
-  ThemeProvider _themeProvider;
+  ThemeModel _themeModel;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
 
     return Container(
       width: 170,

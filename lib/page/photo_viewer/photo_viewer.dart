@@ -11,19 +11,20 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:share_extend/share_extend.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 
 class PhotoViewer extends StatefulWidget {
-  final List<String> images;
+  final List<String> imageRes;
   final int index;
 
-  const PhotoViewer({Key key, this.images, this.index = 0}) : super(key: key);
+  const PhotoViewer({Key key, this.imageRes, this.index = 0}) : super(key: key);
 
   @override
   _PhotoViewerState createState() => _PhotoViewerState();
@@ -31,32 +32,39 @@ class PhotoViewer extends StatefulWidget {
 
 class _PhotoViewerState extends State<PhotoViewer> {
   int _currentIndex;
-  PageController _controller;
-  ThemeProvider _themeProvider;
+  PreloadPageController _controller;
+  ThemeModel _themeModel;
   final _barFader = FadeInController(autoStart: true);
   final _topFader = FadeInController(autoStart: true);
   bool _viewFaded = false;
   int _navCurrentIndex;
-  List<String> _images;
+
+  List<String> get imagesRes => widget.imageRes;
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   @override
   void initState() {
-    super.initState();
-    _images = widget.images;
-    _controller = PageController(initialPage: widget.index);
+    // imagesRes = widget.imageRes;
+    _controller = PreloadPageController(initialPage: widget.index);
     _currentIndex = widget.index;
     _navCurrentIndex = 0;
+    super.initState();
   }
 
   @override
   void didChangeDependencies() {
+    _themeModel = Provider.of<ThemeModel>(context);
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
   }
 
   Future<void> _showMoreOptions(
@@ -109,12 +117,12 @@ class _PhotoViewerState extends State<PhotoViewer> {
       BuildContext context, SelfFileEntity img) async {
     showTipTextModal(
       context,
-      _themeProvider,
+      _themeModel,
       tip: '确定删除此照片?',
       onOk: () async {
         await img.entity.delete();
         setState(() {
-          _images.remove(img.entity.path);
+          imagesRes.remove(img.entity.path);
         });
         showText('已删除');
       },
@@ -124,7 +132,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider.themeData;
+    dynamic themeData = _themeModel.themeData;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -143,16 +151,17 @@ class _PhotoViewerState extends State<PhotoViewer> {
               child: Container(
                 alignment: Alignment.center,
                 child: PhotoViewGallery.builder(
+                  preloadCount: 5,
                   scrollPhysics: const BouncingScrollPhysics(),
                   builder: (BuildContext context, int index) {
-                    File img = File(_images[index]);
+                    File img = File(imagesRes[index]);
                     return PhotoViewGalleryPageOptions(
                       imageProvider: FileImage(img),
                     );
                   },
-                  itemCount: _images.length,
+                  itemCount: imagesRes.length,
                   loadingBuilder: (context, event) {
-                    return loadingIndicator(context, _themeProvider);
+                    return loadingIndicator(context, _themeModel);
                   },
                   backgroundDecoration: BoxDecoration(
                     color: themeData?.scaffoldBackgroundColor,
@@ -182,7 +191,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
                     child: Container(
                       padding: EdgeInsets.only(left: 15),
                       child: NoResizeText(
-                        "${_currentIndex + 1}/${_images.length}",
+                        "${_currentIndex + 1}/${imagesRes.length}",
                         style: TextStyle(
                             fontSize: 16, color: themeData?.itemFontColor),
                       ),
@@ -217,7 +226,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
                     setState(() {
                       _navCurrentIndex = index;
                     });
-                    File img = File(_images[_currentIndex]);
+                    File img = File(imagesRes[_currentIndex]);
                     SelfFileEntity image = SelfFileEntity(
                       modified: img.statSync().modified,
                       entity: img,

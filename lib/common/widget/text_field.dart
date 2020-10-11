@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 export 'package:flutter/services.dart'
@@ -439,12 +439,12 @@ class _LanTextFieldState extends State<LanTextField>
     }
   }
 
-  ThemeProvider _themeProvider;
+  ThemeModel _themeModel;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
   }
 
   @override
@@ -756,7 +756,7 @@ class _LanTextFieldState extends State<LanTextField>
         ),
       ),
     );
-    dynamic theme = _themeProvider.themeData;
+    dynamic theme = _themeModel.themeData;
 
     return Semantics(
       enabled: enabled,

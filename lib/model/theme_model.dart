@@ -3,7 +3,7 @@ import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/utils/store.dart';
 import 'package:lan_express/utils/theme.dart';
 
-class ThemeProvider extends ChangeNotifier {
+class ThemeModel extends ChangeNotifier {
   String _theme;
   dynamic _themeData;
 

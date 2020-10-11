@@ -113,7 +113,8 @@ class FileAction {
           pureName: pathLib.basenameWithoutExtension(filename),
         );
 
-        if (showHidden && fileEntity.filename[0] == '.') {
+        // 如果时隐藏文件就跳过
+        if (!showHidden && fileEntity.filename[0] == '.') {
           continue;
         }
 

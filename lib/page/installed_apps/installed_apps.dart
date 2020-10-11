@@ -6,13 +6,14 @@ import 'package:f_logs/f_logs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/action_button.dart';
-import 'package:lan_express/common/widget/function_widget.dart';
+import 'package:lan_express/common/widget/loading_flipping.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
+import 'package:lan_express/model/common_model.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_item.dart';
-import 'package:lan_express/model/share.dart';
-import 'package:lan_express/model/theme.dart';
+
+import 'package:lan_express/model/theme_model.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:intent/action.dart' as action;
@@ -24,8 +25,8 @@ class InstalledAppsPage extends StatefulWidget {
 }
 
 class _InstalledAppsPageState extends State<InstalledAppsPage> {
-  ThemeProvider _themeProvider;
-  ShareProvider _shareProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
   bool _showSystemApps = false;
   List<Application> apps = [];
   bool _mutex = true;
@@ -33,8 +34,8 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _shareProvider = Provider.of<ShareProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
     if (_mutex) {
       _mutex = false;
       apps = await DeviceApps.getInstalledApplications(
@@ -56,7 +57,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider.themeData;
+    dynamic themeData = _themeModel.themeData;
 
     return Material(
       child: CupertinoPageScaffold(
@@ -100,7 +101,12 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
           automaticallyImplyLeading: false,
         ),
         child: apps.isEmpty
-            ? Center(child: loadingIndicator(context, _themeProvider))
+            ? Center(
+                child: LoadingDoubleFlipping.square(
+                  size: 30,
+                  backgroundColor: Color(0xFF007AFF),
+                ),
+              )
             : Scrollbar(
                 child: ListView.builder(
                   itemBuilder: (BuildContext context, int index) {
@@ -137,7 +143,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                               '数据目录: ${app.dataDir}\n'
                               '安装时间: ${DateTime.fromMillisecondsSinceEpoch(app.installTimeMillis).toString()}\n'
                               '更新时间: ${DateTime.fromMillisecondsSinceEpoch(app.updateTimeMillis).toString()}\n',
-                          onLongPress: (details) async {
+                          onLongPress: (details, _update) async {
                             showCupertinoModal(
                               filter:
                                   ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -151,7 +157,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                                           content: '卸载',
                                           onTap: () async {
                                             await showTipTextModal(
-                                                context, _themeProvider,
+                                                context, _themeModel,
                                                 title: '卸载',
                                                 tip: '确定卸载${app.packageName}',
                                                 onOk: () {
@@ -178,7 +184,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                               },
                             );
                           },
-                          onTap: () {
+                          onTap: (itemUpdate) {
                             DeviceApps.openApp(app.packageName);
                           },
                           subTitleSize: 12,
@@ -189,9 +195,9 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                           onHozDrag: (dir) async {
                             if (await file.exists()) {
                               if (dir == 1) {
-                                _shareProvider.addFile(fileEntity);
+                                _commonModel.addSelectedFile(fileEntity);
                               } else if (dir == -1) {
-                                _shareProvider.removeFile(fileEntity);
+                                _commonModel.removeSelectedFile(fileEntity);
                               }
                             }
                           },

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/point_tab.dart';
 import 'package:lan_express/page/lan/share.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 class LanPage extends StatefulWidget {
@@ -14,7 +14,7 @@ class LanPage extends StatefulWidget {
 }
 
 class LanPageState extends State<LanPage> {
-  ThemeProvider _themeProvider;
+  ThemeModel _themeModel;
   TabController _controller;
 
   List<Tab> _tabs;
@@ -38,7 +38,7 @@ class LanPageState extends State<LanPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
 
     if (mounted) {
       setState(() {});
@@ -47,7 +47,7 @@ class LanPageState extends State<LanPage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
 
     return Material(
       child: CupertinoPageScaffold(

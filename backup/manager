@@ -2,7 +2,7 @@
   // Future<void> createFileModal(BuildContext context,
   //     {bool left = false}) async {
   //   MixUtils.safePop(context);
-  //   dynamic themeData = _themeProvider.themeData;
+  //   dynamic themeData = _themeModel.themeData;
   //   TextEditingController textEditingController = TextEditingController();
   //   bool recursiveCreate = false;
   //   String willCreateDir = left ? _parentDir.path : _currentDir.path;

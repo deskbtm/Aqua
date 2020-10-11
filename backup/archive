@@ -1,8 +1,8 @@
 
   Future<void> archiveModal(BuildContext context, SelfFileEntity file) async {
     MixUtils.safePop(context);
-    if (_shareProvider.selectedFiles.isNotEmpty) {
-      dynamic themeData = _themeProvider.themeData;
+    if (_shareModel.selectedFiles.isNotEmpty) {
+      dynamic themeData = _themeModel.themeData;
       bool popAble = true;
       String archiveType = 'zip';
       String archiveText = 'zip';
@@ -59,7 +59,7 @@
 
                                   await showSingleTextFieldModal(
                                     context,
-                                    _themeProvider,
+                                    _themeModel,
                                     title: '输入密码',
                                     transparent: true,
                                     onOk: (val) async {
@@ -161,7 +161,7 @@
                               ),
                             ),
                           )
-                        : loadingIndicator(context, _themeProvider),
+                        : loadingIndicator(context, _themeModel),
                     SizedBox(height: 10),
                   ],
                   defaultOkText: '确定',
@@ -176,7 +176,7 @@
                       });
                     }
                     await Future.delayed(Duration(milliseconds: 50));
-                    List<String> paths = _shareProvider.selectedFiles
+                    List<String> paths = _shareModel.selectedFiles
                         .map((e) => e.entity.path)
                         .toList();
 
@@ -201,7 +201,7 @@
                       showText('归档失败');
                     }
                     if (mounted) {
-                      await _shareProvider.clearSelectedFiles();
+                      await _shareModel.clearSelectedFiles();
                       await update2Side();
                       MixUtils.safePop(context);
                     }

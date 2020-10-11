@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 class NoResizeText extends Text {
@@ -60,16 +60,16 @@ class LanText extends StatefulWidget {
 }
 
 class LanTextState extends State<LanText> {
-  ThemeProvider _themeProvider;
+  ThemeModel _themeModel;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
+    _themeModel = Provider.of<ThemeModel>(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
 
     return Container(
       constraints: widget.maxWidth != null

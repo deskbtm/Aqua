@@ -1,6 +1,6 @@
 
   Future<void> airDrop(SelfFileEntity file) async {
-    IO.Socket socket = _commonProvider.socket;
+    IO.Socket socket = _commonModel.socket;
     if (socket != null && socket.connected) {
       if (!_isSendingFile) {
         _isSendingFile = true;

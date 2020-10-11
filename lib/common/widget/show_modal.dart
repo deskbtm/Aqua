@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lan_express/common/widget/dialog.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/text_field.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 
 class SplitSelectionModal extends StatefulWidget {
@@ -138,7 +138,7 @@ class SplitSelectionModalState extends State<SplitSelectionModal> {
 
 Future<void> showScopeModal(
   BuildContext context,
-  ThemeProvider provider, {
+  ThemeModel provider, {
   String title = '',
   String tip = '',
   @required Function onOk,
@@ -308,7 +308,7 @@ Future<T> showCupertinoModal<T>({
 
 Future<dynamic> showSingleTextFieldModal(
   BuildContext context,
-  ThemeProvider provider, {
+  ThemeModel provider, {
   bool popPreWindow = false,
   String title = '',
   String placeholder,
@@ -362,7 +362,7 @@ Future<dynamic> showSingleTextFieldModal(
 
 Future<dynamic> showTwoTextFieldModal(
   BuildContext context,
-  ThemeProvider provider, {
+  ThemeModel provider, {
   bool popPreWindow = false,
   String title = '',
   String fPlaceholder,
@@ -422,7 +422,7 @@ Future<dynamic> showTwoTextFieldModal(
 
 Future<dynamic> showTipTextModal(
   BuildContext context,
-  ThemeProvider provider, {
+  ThemeModel provider, {
   bool popPreWindow = false,
   String title = '',
   String tip = '',
@@ -485,7 +485,7 @@ Future<dynamic> showTipTextModal(
 
 Future<dynamic> showSelectModal(
   BuildContext context,
-  ThemeProvider provider, {
+  ThemeModel provider, {
   bool popPreWindow = false,
   String title = '',
   String subTitle = '',

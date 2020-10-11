@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/theme_model.dart';
 
-Widget loadingIndicator(BuildContext context, ThemeProvider provider) =>
+Widget loadingIndicator(BuildContext context, ThemeModel provider) =>
     CupertinoTheme(
       data: CupertinoTheme.of(context).copyWith(
           brightness: provider.isDark ? Brightness.dark : Brightness.light),
       child: CupertinoActivityIndicator(),
     );
 
-Widget loadingWithText(BuildContext context, ThemeProvider provider,
+Widget loadingWithText(BuildContext context, ThemeModel provider,
         {@required String text}) =>
     Column(
       children: <Widget>[
@@ -38,3 +38,5 @@ Widget blockTitle(String title, {String subtitle}) => Container(
         if (subtitle != null) LanText(subtitle, small: true)
       ]),
     );
+
+

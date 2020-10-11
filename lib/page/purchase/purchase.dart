@@ -10,8 +10,8 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
-import 'package:lan_express/model/common.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/common_model.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/req.dart';
 import 'package:lan_express/utils/store.dart';
@@ -27,23 +27,23 @@ class PurchasePage extends StatefulWidget {
 }
 
 class PurchasePageState extends State<PurchasePage> {
-  ThemeProvider _themeProvider;
-  CommonProvider _commonProvider;
+  ThemeModel _themeModel;
+  CommonModel _commonModel;
   Map _qrcodeData = {};
   bool _mutex = true;
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
-    if (_commonProvider.username != null) {
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
+    if (_commonModel.username != null) {
       if (mounted) {
         _qrcodeData = await fetchQrcode();
         if (_qrcodeData.isNotEmpty) {
           if (_mutex) {
             _mutex = false;
-            // await _commonProvider.setPurchase(true);
+            // await _commonModel.setPurchase(true);
           }
         }
         setState(() {});
@@ -52,8 +52,8 @@ class PurchasePageState extends State<PurchasePage> {
   }
 
   Future<Map> fetchQrcode() async {
-    Response rec = await req()
-        .get(_commonProvider.baseUrl + '/pay/qrcode', queryParameters: {
+    Response rec =
+        await req().get(_commonModel.baseUrl + '/pay/qrcode', queryParameters: {
       'app_name': APP_NAME,
       'device_id': await MixUtils.getAndroidId(),
     }).catchError((err) {
@@ -66,7 +66,7 @@ class PurchasePageState extends State<PurchasePage> {
   void showText(String content, {int duration = 4}) {
     BotToast.showText(
       text: content,
-      contentColor: _themeProvider.themeData?.toastColor,
+      contentColor: _themeModel.themeData?.toastColor,
       duration: Duration(seconds: duration),
     );
   }
@@ -92,15 +92,15 @@ class PurchasePageState extends State<PurchasePage> {
             child: NoResizeText('激活'),
             color: Color(0xFF007AFF),
             onPressed: () async {
-              await req().get(_commonProvider.baseUrl + '/pay/own_app',
-                  queryParameters: {
-                    'app_name': APP_NAME,
-                    'device_id': await MixUtils.getAndroidId(),
-                  }).then((value) {
+              await req()
+                  .get(_commonModel.baseUrl + '/pay/own_app', queryParameters: {
+                'app_name': APP_NAME,
+                'device_id': await MixUtils.getAndroidId(),
+              }).then((value) {
                 dynamic data = value.data;
                 if (data['purchased']) {
                   _qrcodeData = {};
-                  _commonProvider.setPurchase(true);
+                  _commonModel.setPurchase(true);
                   showText('购买成功');
                 } else {
                   String msg;
@@ -119,8 +119,8 @@ class PurchasePageState extends State<PurchasePage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider.themeData;
-    String baseUrl = _commonProvider.baseUrl;
+    dynamic themeData = _themeModel.themeData;
+    String baseUrl = _commonModel.baseUrl;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -165,9 +165,7 @@ class PurchasePageState extends State<PurchasePage> {
                               children: <Widget>[
                                 LanText('局域网.文件.更多', fontSize: 18),
                                 LanText(
-                                    _commonProvider.isPurchased
-                                        ? '已购买'
-                                        : '暂未购买',
+                                    _commonModel.isPurchased ? '已购买' : '暂未购买',
                                     small: true),
                               ],
                             )
@@ -223,7 +221,7 @@ class PurchasePageState extends State<PurchasePage> {
                         if (_qrcodeData.isNotEmpty &&
                             _qrcodeData['purchased'] == false) ...[
                           LanText(
-                            '立刻购买(${_commonProvider?.gWebData['amount'] ?? DEF_AMOUNT}￥)',
+                            '立刻购买(${_commonModel?.gWebData['amount'] ?? DEF_AMOUNT}￥)',
                             fontSize: 22,
                           ),
                           Column(
@@ -296,7 +294,7 @@ class PurchasePageState extends State<PurchasePage> {
                           //       color: Color(0xFF007AFF),
                           //       onPressed: () async {
                           //         await req().get(
-                          //             _commonProvider.baseUrl + '/pay/own_app',
+                          //             _commonModel.baseUrl + '/pay/own_app',
                           //             queryParameters: {
                           //               'app_name': APP_NAME,
                           //               'device_id':
@@ -305,7 +303,7 @@ class PurchasePageState extends State<PurchasePage> {
                           //           dynamic data = value.data;
                           //           if (data['purchased']) {
                           //             _qrcodeData = {};
-                          //             _commonProvider.setPurchase(true);
+                          //             _commonModel.setPurchase(true);
                           //             showText('购买成功');
                           //           } else {
                           //             String msg;
@@ -332,7 +330,7 @@ class PurchasePageState extends State<PurchasePage> {
                           SizedBox(height: 10),
                           activeButton(),
                         ],
-                        if (_commonProvider.username == null) ...[
+                        if (_commonModel.username == null) ...[
                           LanText(
                             '立刻购买',
                             fontSize: 22,
@@ -344,7 +342,7 @@ class PurchasePageState extends State<PurchasePage> {
                                 onPressed: () async {
                                   await showTwoTextFieldModal(
                                     context,
-                                    _themeProvider,
+                                    _themeModel,
                                     fPlaceholder: '邮箱',
                                     sPlaceholder: '密码',
                                     title: '登录',
@@ -372,7 +370,7 @@ class PurchasePageState extends State<PurchasePage> {
                                             null) {
                                           await Store.setString(LOGIN_TOKEN,
                                               data['data']['access_token']);
-                                          await _commonProvider.setUsername(
+                                          await _commonModel.setUsername(
                                               data['data']['username']);
                                         }
                                       }).catchError((err) {
@@ -389,7 +387,7 @@ class PurchasePageState extends State<PurchasePage> {
                                 onPressed: () async {
                                   await showTwoTextFieldModal(
                                     context,
-                                    _themeProvider,
+                                    _themeModel,
                                     fPlaceholder: '使用邮箱',
                                     sPlaceholder: '密码(数字加英文)',
                                     title: '注册',

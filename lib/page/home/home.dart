@@ -8,11 +8,12 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/show_modal.dart';
 import 'package:lan_express/constant/constant.dart';
 import 'package:lan_express/external/bot_toast/src/toast.dart';
+import 'package:lan_express/model/file_model.dart';
 import 'package:lan_express/page/file_manager/file_manager.dart';
 import 'package:lan_express/page/lan/lan.dart';
 import 'package:lan_express/page/setting/setting.dart';
-import 'package:lan_express/model/common.dart';
-import 'package:lan_express/model/theme.dart';
+import 'package:lan_express/model/common_model.dart';
+import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/store.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -32,9 +33,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  ThemeProvider _themeProvider;
+  ThemeModel _themeModel;
   CupertinoTabController _tabController;
-  CommonProvider _commonProvider;
+  CommonModel _commonModel;
   bool _mutex;
 
   @override
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeProvider.themeData?.toastColor);
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   Future<void> showUpdateModal(Map data) async {
@@ -61,6 +62,7 @@ class _HomePageState extends State<HomePage> {
 
     if (isNotTip) {
       if (!forceUpdate) {
+        // 强制更新 不显示
         return;
       } else {
         await Store.setBool(REMEMBER_NO_UPDATE_TIP, false);
@@ -72,7 +74,7 @@ class _HomePageState extends State<HomePage> {
       bool checked = false;
       await showTipTextModal(
         context,
-        _themeProvider,
+        _themeModel,
         tip: '发现新版本 v$remoteVersion\n$descMsg',
         title: '更新',
         defaultOkText: '下载',
@@ -86,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                   height: 30,
                   child: LanCheckBox(
                     value: checked,
-                    borderColor: _themeProvider.themeData.itemFontColor,
+                    borderColor: _themeModel.themeData.itemFontColor,
                     onChanged: (val) async {
                       await Store.setBool(REMEMBER_NO_UPDATE_TIP, val);
                       if (mounted) {
@@ -101,7 +103,7 @@ class _HomePageState extends State<HomePage> {
               NoResizeText(
                 '不再提示, 遇到强制更新则提示',
                 style: TextStyle(
-                  color: _themeProvider.themeData.itemFontColor,
+                  color: _themeModel.themeData.itemFontColor,
                 ),
               )
             ],
@@ -127,9 +129,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeProvider = Provider.of<ThemeProvider>(context);
-    _commonProvider = Provider.of<CommonProvider>(context);
-    Map data = _commonProvider.gWebData;
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
+    Map data = _commonModel.gWebData;
 
     if (_mutex && data.isNotEmpty) {
       _mutex = false;
@@ -139,7 +141,7 @@ class _HomePageState extends State<HomePage> {
 
       PermissionStatus status = await PermissionHandler()
           .checkPermissionStatus(PermissionGroup.microphone);
-      if (_commonProvider.isAppInit) {
+      if (_commonModel.isAppInit) {
         if (PermissionStatus.granted != status) {
           // 提示用户 需要麦克风 权限 否则 无法进入
           await _requestMicphonePermissionModal(context);
@@ -148,12 +150,12 @@ class _HomePageState extends State<HomePage> {
         // await _forceReadTutorialModal(context);
       }
 
-      if (_commonProvider.enableConnect) {
+      if (_commonModel.enableConnect) {
         // 延迟一秒 不阻塞UI
         Timer(Duration(seconds: 1), () async {
-          await SocketConnecter(_commonProvider).searchDevicesAndConnect(
+          await SocketConnecter(_commonModel).searchDevicesAndConnect(
             context,
-            themeProvider: _themeProvider,
+            themeProvider: _themeModel,
             onNotExpected: (String msg) {
               showText(msg);
             },
@@ -166,7 +168,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _requestMicphonePermissionModal(context) async {
     await showTipTextModal(
       context,
-      _themeProvider,
+      _themeModel,
       title: '权限请求',
       tip: '由于软件支持录屏功能, 需要麦克风的权限',
       defaultOkText: '获取权限',
@@ -183,7 +185,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _forceReadTutorialModal(context) async {
     await showScopeModal(
       context,
-      _themeProvider,
+      _themeModel,
       title: '请仔细阅读教程',
       tip: '该界面无返返回, 需前往教程后, 方可消失',
       withCancel: false,
@@ -198,7 +200,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeProvider?.themeData;
+    dynamic themeData = _themeModel?.themeData;
     return themeData == null
         ? Container()
         : CupertinoTabScaffold(
@@ -225,7 +227,10 @@ class _HomePageState extends State<HomePage> {
               switch (index) {
                 case 0:
                   return CupertinoTabView(
-                    builder: (context) => FileManagerPage(),
+                    builder: (context) => ChangeNotifierProvider(
+                      create: (context) => FileModel(),
+                      child: FileManagerPage(),
+                    ),
                   );
                 case 1:
                   return CupertinoTabView(

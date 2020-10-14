@@ -121,11 +121,13 @@ Future<void> createProotEnv(
                   return;
                 }
 
-                ProcessResult ir =
-                    await cutils.installNodeJs().catchError((err) {
-                  showText('node 安装失败');
-                  FLog.error(text: '$err', methodName: 'installNodeJs');
-                });
+                ProcessResult ir = await cutils.installNodeJs().catchError(
+                  (err) {
+                    showText('node 安装失败');
+                    FLog.error(
+                        text: '', exception: err, methodName: 'installNodeJs');
+                  },
+                );
 
                 if (MixUtils.isDev) {
                   print(ir.stdout.toString());

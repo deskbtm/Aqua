@@ -84,13 +84,13 @@ class SocketConnecter {
     });
 
     socket.on('connect_error', (error) {
-      FLog.error(text: '$error', methodName: 'createClient');
+      FLog.error(text: '', exception: error, methodName: 'createClient');
       if (onNotExpected != null) onNotExpected("连接出现错误");
       socket.destroy();
     });
 
     socket.on('connect_timeout', (error) {
-      FLog.error(text: '$error', methodName: 'createClient');
+      FLog.error(text: '', exception: error, methodName: 'createClient');
       if (onNotExpected != null) onNotExpected("连接超时");
     });
   }

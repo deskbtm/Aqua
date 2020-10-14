@@ -23,32 +23,33 @@ class FileItem extends StatefulWidget {
   final double subTitleSize;
   final double titleSize;
   final bool autoWrap;
+  final Function(LongPressStartDetails, Function(bool)) onLongPress;
+  final Function(double) onHozDrag;
+  final FileItemType type;
+  final Widget leading;
 
   /// -1 向右
-  final Function(double) onHozDrag;
-  final Function(LongPressStartDetails, Function(bool)) onLongPress;
-  final Widget leading;
-  final FileItemType type;
 
   const FileItem({
     Key key,
-    this.subTitle,
     this.index,
     this.onTap,
-    this.itemBgColor,
+    this.subTitle,
     this.fontColor,
-    this.withAnimation = false,
     this.onHozDrag,
+    this.itemBgColor,
     this.onLongPress,
-    @required this.leading,
-    @required this.type,
-    this.justDisplay = false,
-    @required this.path,
-    @required this.filename,
-    this.subTitleSize = 7,
     this.titleSize = 12,
+    this.subTitleSize = 7,
     this.autoWrap = true,
+    this.justDisplay = false,
+    this.withAnimation = false,
+    @required this.filename,
+    @required this.leading,
+    @required this.path,
+    @required this.type,
   }) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return FileItemState();
@@ -62,12 +63,7 @@ class FileItemState extends State<FileItem>
   AnimationController _controller;
   double _dragX = 0;
   bool _selected = false;
-
-  ///
   double dir;
-
-  /// 缓存leading防止图片在刷新时 瞎几把闪
-  Widget _cacheLeading;
 
   int get index => widget.index;
   String get path => widget.path;
@@ -92,9 +88,6 @@ class FileItemState extends State<FileItem>
   @override
   void initState() {
     super.initState();
-    if (_cacheLeading == null) {
-      _cacheLeading = widget.leading;
-    }
 
     if (!justDisplay) {
       _controller = AnimationController(vsync: this);
@@ -134,7 +127,7 @@ class FileItemState extends State<FileItem>
     Color itemColor = itemBgColor ?? themeData?.itemColor;
 
     Widget tile = ListTile(
-      leading: _cacheLeading,
+      leading: widget.leading,
       title: NoResizeText(
         filename,
         overflow: autoWrap
@@ -255,5 +248,3 @@ class FileItemState extends State<FileItem>
   @override
   bool get wantKeepAlive => true;
 }
-
-// #ebebeb7d

@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:connectivity/connectivity.dart';
+
 import 'generated/l10n.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:catcher/core/catcher.dart';
-import 'package:android_mix/android_mix.dart';
 import 'package:lcfarm_flutter_umeng/lcfarm_flutter_umeng.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'external/bot_toast/src/toast_navigator_observer.dart';
@@ -59,6 +60,8 @@ class _LanExpressWrapperState extends State {
   bool _mutex;
   bool _settingMutex;
 
+  StreamSubscription<ConnectivityResult> _connectSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -73,6 +76,13 @@ class _LanExpressWrapperState extends State {
       channel: MixUtils.isDev ? 'development' : 'production',
       logEnable: MixUtils.isDev,
     );
+
+    _connectSubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) async {
+      String internalIp = await Connectivity().getWifiIP();
+      await _commonModel.setInternalIp(internalIp);
+    });
   }
 
   Future<void> _preLoadMsg() async {
@@ -88,7 +98,7 @@ class _LanExpressWrapperState extends State {
         await _commonModel.setGobalWebData(receive.data);
       }).catchError((err) {
         BotToast.showText(text: '首次请求出现错误, 导出日志与开发者联系');
-        FLog.error(text: '$err', methodName: '_preLoadMsg');
+        FLog.error(text: '', exception: err, methodName: '_preLoadMsg');
       });
     }
   }
@@ -102,19 +112,25 @@ class _LanExpressWrapperState extends State {
       _settingMutex = false;
       String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
       await _themeModel.setTheme(theme).catchError((err) {
-        FLog.error(text: '$err', methodName: 'setTheme');
+        FLog.error(text: '', exception: err, methodName: 'setTheme');
       });
       await _commonModel.initCommon().catchError((err) {
-        FLog.error(text: '$err', methodName: 'initCommon');
+        FLog.error(text: '', exception: err, methodName: 'initCommon');
       });
       await _preLoadMsg();
     }
 
     if (_mutex && _commonModel.enableConnect != null) {
       _mutex = false;
-      String internalIp = await AndroidMix.wifi.ip;
+      String internalIp = await Connectivity().getWifiIP();
       await _commonModel.setInternalIp(internalIp);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _connectSubscription?.cancel();
   }
 
   @override

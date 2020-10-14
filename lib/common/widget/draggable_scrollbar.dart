@@ -20,7 +20,7 @@ typedef Text LabelTextBuilder(double offsetY);
 /// for quick navigation of the BoxScrollView.
 class DraggableScrollbar extends StatefulWidget {
   /// The view that will be scrolled with the scroll thumb
-  final BoxScrollView child;
+  final dynamic child;
 
   /// A function that builds a thumb using the current configuration
   final ScrollThumbBuilder scrollThumbBuilder;

@@ -65,24 +65,26 @@ class CommonModel extends ChangeNotifier {
   List<SelfFileEntity> _selectedFiles = [];
   List<SelfFileEntity> get selectedFiles => _selectedFiles;
 
-  Future<void> addSelectedFile(SelfFileEntity value) async {
+  Future<void> addSelectedFile(SelfFileEntity value,
+      {bool update = true}) async {
     if (!_selectedFiles.any((ele) => ele.entity.path == value.entity.path))
       _selectedFiles.add(value);
-    notifyListeners();
+    if (update) notifyListeners();
   }
 
-  Future<void> removeSelectedFile(SelfFileEntity value) async {
+  Future<void> removeSelectedFile(SelfFileEntity value,
+      {bool update = true}) async {
     _selectedFiles.removeWhere((ele) => ele.entity.path == value.entity.path);
-    notifyListeners();
+    if (update) notifyListeners();
   }
 
   bool hasSelectedFile(String path) {
     return _selectedFiles.any((ele) => ele.entity.path == path);
   }
 
-  Future<void> clearSelectedFiles() async {
+  Future<void> clearSelectedFiles({bool update = true}) async {
     _selectedFiles = [];
-    notifyListeners();
+    if (update) notifyListeners();
   }
 
   String _baseUrl;

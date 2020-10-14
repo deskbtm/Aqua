@@ -58,7 +58,7 @@ class PurchasePageState extends State<PurchasePage> {
       'device_id': await MixUtils.getAndroidId(),
     }).catchError((err) {
       showText('登录失败');
-      FLog.error(text: '$err');
+      FLog.error(text: '', exception: err);
     });
     return rec?.data;
   }
@@ -375,7 +375,7 @@ class PurchasePageState extends State<PurchasePage> {
                                         }
                                       }).catchError((err) {
                                         showText('登录失败');
-                                        FLog.error(text: '$err');
+                                        FLog.error(text: '', exception: err);
                                       });
                                     },
                                     onCancel: () {},
@@ -414,7 +414,7 @@ class PurchasePageState extends State<PurchasePage> {
                                         showText('${data['message']}');
                                       }).catchError((err) {
                                         showText('注册出错');
-                                        FLog.error(text: '$err');
+                                        FLog.error(text: '', exception: err);
                                       });
                                     },
                                     onCancel: () {},

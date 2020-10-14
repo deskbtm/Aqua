@@ -232,14 +232,14 @@ Future<void> createArchiveModal(
 
                   if (archiveType == 'zip') {
                     bool result = await AndroidMix.archive
-                        .zip(
-                      paths,
-                      generatedArchivePath,
-                      pwd: pwd?.trim(),
-                      encrypt: ZipEncryptionMethod.aes,
-                    )
+                        .zip(paths, generatedArchivePath,
+                            pwd: pwd?.trim(), encrypt: ZipEncryptionMethod.aes)
                         .catchError((err) {
-                      FLog.error(text: '$err', methodName: 'archiveModal');
+                      FLog.error(
+                        text: '',
+                        exception: err,
+                        methodName: 'archiveModal',
+                      );
                     });
                     await runAfterArchive(context, result);
                   } else {
@@ -279,7 +279,10 @@ Future<void> createArchiveModal(
                         compressionType: cType,
                       )
                           .catchError((err) {
-                        FLog.error(text: '$err', methodName: 'archiveModal');
+                        FLog.error(
+                            text: '',
+                            exception: err,
+                            methodName: 'archiveModal');
                       });
 
                       await runAfterArchive(context, result);

@@ -40,9 +40,9 @@ class LanPageState extends State<LanPage> {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
 
-    if (mounted) {
-      setState(() {});
-    }
+    // if (mounted) {
+    //   setState(() {});
+    // }
   }
 
   @override

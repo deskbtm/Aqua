@@ -128,7 +128,11 @@ class _FileManagerPageState extends State<FileManagerPage>
       showHidden: _fileModel.isDisplayHidden,
       reversed: _fileModel.sortReversed,
     ).catchError((err) {
-      FLog.error(text: '$err', methodName: 'readdir', className: 'FileManager');
+      FLog.error(
+          text: '',
+          exception: err,
+          methodName: 'readdir',
+          className: 'FileManager');
     });
 
     switch (_fileModel.showOnlyType) {
@@ -303,7 +307,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
         await item.entity.rename(newPath).catchError((err) {
           showText('$err');
-          FLog.error(text: '$err', methodName: 'handleMove');
+          FLog.error(text: '', exception: err, methodName: 'handleMove');
         });
       }
       if (mounted) {
@@ -777,8 +781,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  Future<void> _showFileOptionsModal(
-      {SelfFileEntity file, Function(bool) updateItem}) async {
+  Future<void> _showFileOptionsModal({SelfFileEntity file}) async {
     bool showSize = false;
     bool sharedNotEmpty = _commonModel.selectedFiles.isNotEmpty;
 
@@ -967,6 +970,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     _parentDir = _currentDir.parent;
   }
 
+  /// tag
   Future<bool> willPop(stopDefaultButtonEvent, routeInfo) async {
     if (_currentDir.path == _rootDir.path) {
       return false;
@@ -1079,8 +1083,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                         },
                         itemOnLongPress: (index, updateItem) {
                           SelfFileEntity file = _leftFileList[index];
-                          _showFileOptionsModal(
-                              file: file, updateItem: updateItem);
+                          _showFileOptionsModal(file: file);
                         },
                         onItemTap: (index, updateItem) async {
                           SelfFileEntity file = _leftFileList[index];

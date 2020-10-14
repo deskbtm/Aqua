@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:lan_express/common/socket/socket.dart';
 import 'package:lan_express/common/widget/checkbox.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
@@ -37,12 +37,14 @@ class _HomePageState extends State<HomePage> {
   CupertinoTabController _tabController;
   CommonModel _commonModel;
   bool _mutex;
+  bool _updateModalMutex;
 
   @override
   void initState() {
     super.initState();
     _tabController = CupertinoTabController();
     _mutex = true;
+    _updateModalMutex = true;
   }
 
   void showText(String content) {
@@ -62,7 +64,7 @@ class _HomePageState extends State<HomePage> {
 
     if (isNotTip) {
       if (!forceUpdate) {
-        // 强制更新 不显示
+        /// 强制更新 不显示
         return;
       } else {
         await Store.setBool(REMEMBER_NO_UPDATE_TIP, false);
@@ -133,11 +135,14 @@ class _HomePageState extends State<HomePage> {
     _commonModel = Provider.of<CommonModel>(context);
     Map data = _commonModel.gWebData;
 
-    if (_mutex && data.isNotEmpty) {
-      _mutex = false;
-
+    if (_updateModalMutex && data.isNotEmpty) {
+      _updateModalMutex = false;
       // 显示更新弹窗
       await showUpdateModal(data);
+    }
+
+    if (_mutex) {
+      _mutex = false;
 
       PermissionStatus status = await PermissionHandler()
           .checkPermissionStatus(PermissionGroup.microphone);

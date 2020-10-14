@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lan_express/common/widget/draggable_scrollbar.dart';
 import 'package:lan_express/common/widget/images.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
@@ -40,14 +41,15 @@ class FileListView extends StatefulWidget {
 class _FileListViewState extends State<FileListView>
     with AutomaticKeepAliveClientMixin {
   ThemeModel _themeModel;
-  // CommonModel _commonModel;
   ScrollController _scrollController;
   bool _mutex;
+  List<Widget> _loadedList;
 
   @override
   void initState() {
     super.initState();
     _mutex = false;
+    _loadedList = List(widget.fileList.length);
     _scrollController = ScrollController()
       ..addListener(() {
         if (_scrollController.offset < -140) {
@@ -66,6 +68,15 @@ class _FileListViewState extends State<FileListView>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
+    if (widget.fileList.isNotEmpty) {
+      _loadedList = List(widget.fileList.length);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _loadedList = [];
   }
 
   void showText(String content) {
@@ -91,58 +102,69 @@ class _FileListViewState extends State<FileListView>
         : GestureDetector(
             onLongPressStart: widget.onLongPressEmpty,
 
-            /// [bug] DraggableScrollbar 会导致ListView setState()
-            child: DraggableScrollbar.rrect(
-              controller: _scrollController,
-              scrollbarTimeToFade: const Duration(seconds: 5),
-              child: ListView.builder(
-                controller: _scrollController,
-                physics: BouncingScrollPhysics(),
-                itemCount: widget.fileList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  SelfFileEntity file = widget.fileList[index];
-                  Widget previewIcon =
-                      getPreviewIconSync(context, _themeModel, file);
+            // ListView.custom();
 
-                  return FileItem(
-                    type: file.isDir ? FileItemType.folder : FileItemType.file,
-                    leading: file.isDir
-                        ? previewIcon
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              previewIcon,
-                              SizedBox(height: 6),
-                              NoResizeText(
-                                file.humanSize,
-                                style: TextStyle(
-                                  fontSize: 8,
-                                  color: themeData?.itemFontColor,
-                                ),
-                              )
-                            ],
-                          ),
-                    withAnimation: index < 15,
-                    index: index,
-                    filename: file.filename,
-                    path: file.entity.path,
-                    subTitle: MixUtils.formatFileTime(file.modified),
-                    onLongPress: (details, update) {
-                      if (widget.itemOnLongPress != null) {
-                        widget.itemOnLongPress(index, update);
-                      }
-                    },
-                    onTap: (itemUpdate) {
-                      if (widget.onItemTap != null)
-                        widget.onItemTap(index, itemUpdate);
-                    },
-                    onHozDrag: (dir) {
-                      /// [index] 位数 [dir] 方向 1 向右 -1 左
-                      widget.onHozDrag(index, dir);
-                    },
-                  );
-                },
+            /// [bug] DraggableScrollbar 会导致ListView setState()
+            child: AnimationLimiter(
+              child: DraggableScrollbar.rrect(
+                controller: _scrollController,
+                scrollbarTimeToFade: const Duration(seconds: 5),
+                child: ListView.builder(
+                  controller: _scrollController,
+                  physics: BouncingScrollPhysics(),
+                  itemCount: widget.fileList.length,
+                  addAutomaticKeepAlives: false,
+                  addRepaintBoundaries: false,
+                  itemBuilder: (BuildContext context, int index) {
+                    SelfFileEntity file = widget.fileList[index];
+                    if (_loadedList.elementAt(index) == null) {
+                      Widget previewIcon =
+                          getPreviewIconSync(context, _themeModel, file);
+                      _loadedList[index] = previewIcon;
+                    }
+
+                    return FileItem(
+                      type:
+                          file.isDir ? FileItemType.folder : FileItemType.file,
+                      leading: file.isDir
+                          ? _loadedList[index]
+                          // 显示文件的大小
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                _loadedList[index],
+                                SizedBox(height: 6),
+                                NoResizeText(
+                                  file.humanSize,
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    color: themeData?.itemFontColor,
+                                  ),
+                                )
+                              ],
+                            ),
+                      withAnimation: index < 15,
+                      index: index,
+                      filename: file.filename,
+                      path: file.entity.path,
+                      subTitle: MixUtils.formatFileTime(file.modified),
+                      onLongPress: (details, update) {
+                        if (widget.itemOnLongPress != null) {
+                          widget.itemOnLongPress(index, update);
+                        }
+                      },
+                      onTap: (itemUpdate) {
+                        if (widget.onItemTap != null)
+                          widget.onItemTap(index, itemUpdate);
+                      },
+                      onHozDrag: (dir) {
+                        /// [index] 位数 [dir] 方向 1 向右 -1 左
+                        widget.onHozDrag(index, dir);
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           );

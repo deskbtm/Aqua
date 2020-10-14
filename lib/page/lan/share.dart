@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:f_logs/model/flog/flog.dart';
 import 'package:lan_express/common/socket/socket.dart';
@@ -19,7 +18,6 @@ import 'package:lan_express/page/file_manager/file_item.dart';
 import 'package:lan_express/page/lan/code_server/utils.dart';
 import 'package:lan_express/page/lan/create_download_res.dart';
 import 'package:lan_express/model/common_model.dart';
-
 import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
@@ -118,6 +116,12 @@ class _StaticSharePageState extends State<StaticSharePage> {
   Future<void> createStaticServer() async {
     try {
       String ip = _commonModel?.internalIp;
+
+      if (ip == null) {
+        showText('请先连接局域网(wifi)');
+        return;
+      }
+
       int port = int.parse(_commonModel?.filePort ?? '20201');
       String savePath = _commonModel?.staticUploadSavePath;
       FutureOr<Response> Function(Request) handlerFunc;
@@ -184,6 +188,9 @@ class _StaticSharePageState extends State<StaticSharePage> {
     String internalIp = _commonModel.internalIp;
     String filePort = _commonModel.filePort;
     String codeSrvPort = _commonModel.codeSrvPort;
+    String fileAddr = internalIp == null ? '未连接局域网' : '$internalIp:$filePort';
+    String codeAddr =
+        internalIp == null ? '未连接局域网' : '$internalIp:$codeSrvPort';
     // String codeSrvIp = _commonModel.codeSrvIp;
 
     String firstAliveIp =
@@ -209,8 +216,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                       children: [
                         ListTile(
                           title: LanText('静态文件服务'),
-                          subtitle:
-                              LanText('$internalIp:$filePort', small: true),
+                          subtitle: LanText(fileAddr, small: true),
                           contentPadding: EdgeInsets.only(left: 15, right: 10),
                           trailing: LanSwitch(
                             value: _shareSwitch,
@@ -222,17 +228,17 @@ class _StaticSharePageState extends State<StaticSharePage> {
                               }
                               await createStaticServer().catchError((err) {
                                 FLog.error(
-                                    text: 'create static server error',
-                                    methodName: 'createStaticServer',
-                                    exception: err);
+                                  text: '静态服务出错',
+                                  methodName: 'createStaticServer',
+                                  exception: err,
+                                );
                               });
                             },
                           ),
                         ),
                         ListTile(
                           title: LanText('Vscode Server'),
-                          subtitle:
-                              LanText('$internalIp:$codeSrvPort', small: true),
+                          subtitle: LanText(codeAddr, small: true),
                           contentPadding: EdgeInsets.only(left: 15, right: 10),
                           trailing: LanSwitch(
                             value: _vscdeSwitch,
@@ -331,17 +337,19 @@ class _StaticSharePageState extends State<StaticSharePage> {
                             // final List<AssetEntity> assets =
                             //     await AssetPicker.pickAssets(context);
                             // print(assets);
-                            Uint8List a = await PhotoManager.getThumbnailByPath(
-                              width: 100,
-                              height: 100,
-                              path: '/sdcard/1.png',
-                              quality: 60,
-                            );
+                            // String a = await (Connectivity().getWifiIP());
+                            // print(a);
+                            // Uint8List a = await PhotoManager.getThumbnailByPath(
+                            //   width: 100,
+                            //   height: 100,
+                            //   path: '/sdcard/1.png',
+                            //   quality: 60,
+                            // );
 
-                            print(a.length);
-                            setState(() {
-                              img = a;
-                            });
+                            // print(a.length);
+                            // setState(() {
+                            //   img = a;
+                            // });
                             // List<AssetPathEntity> list =
                             //     await PhotoManager.getAssetPathList();
                             // print(list);
@@ -370,16 +378,17 @@ class _StaticSharePageState extends State<StaticSharePage> {
               child: _commonModel.selectedFiles.isEmpty
                   ? Center(
                       child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.share,
-                          size: 57,
-                        ),
-                        SizedBox(height: 20),
-                        LanText('默认分享根目录', alignX: 0, fontSize: 14)
-                      ],
-                    ))
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.share,
+                            size: 57,
+                          ),
+                          SizedBox(height: 20),
+                          LanText('默认分享根目录', alignX: 0, fontSize: 14)
+                        ],
+                      ),
+                    )
                   : ListView.builder(
                       physics: BouncingScrollPhysics(),
                       itemCount: _commonModel.selectedFiles.length,
@@ -392,7 +401,11 @@ class _StaticSharePageState extends State<StaticSharePage> {
                         return Dismissible(
                           key: ObjectKey(file),
                           onDismissed: (direction) {
-                            _commonModel.selectedFiles.remove(file);
+                            _commonModel.removeSelectedFile(file,
+                                update: false);
+                            if (_commonModel.selectedFiles.isEmpty) {
+                              setState(() {});
+                            }
                           },
                           child: FileItem(
                             type: FileItemType.file,

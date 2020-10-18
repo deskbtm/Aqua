@@ -1,0 +1,3 @@
+[submodule "android_mix"]
+	path = plugins/android_mix
+	url = https://github.com/sewerganger/android_mix.git

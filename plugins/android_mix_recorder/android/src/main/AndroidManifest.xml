@@ -1,0 +1,20 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  package="com.sewerganger.android_mix_recorder">
+
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+  <application tools:targetApi="q">
+
+    <service
+      android:name="com.sewerganger.android_mix_recorder.ScreenRecordService"
+      android:foregroundServiceType="mediaProjection"
+      tools:targetApi="q" />
+
+    <receiver android:name="com.sewerganger.android_mix_recorder.NotificationReceiver" />
+
+  </application>
+</manifest>

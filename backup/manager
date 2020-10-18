@@ -1,0 +1,88 @@
+
+  // Future<void> createFileModal(BuildContext context,
+  //     {bool left = false}) async {
+  //   MixUtils.safePop(context);
+  //   dynamic themeData = _themeModel.themeData;
+  //   TextEditingController textEditingController = TextEditingController();
+  //   bool recursiveCreate = false;
+  //   String willCreateDir = left ? _parentDir.path : _currentDir.path;
+
+  //   showCupertinoModal(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //         builder: (BuildContext context,
+  //             void Function(void Function()) changeState) {
+  //           return LanDialog(
+  //             fontColor: themeData.itemFontColor,
+  //             bgColor: themeData.dialogBgColor,
+  //             title: LanDialogTitle(
+  //                 title: '新建', subTitle: '${pathLib.basename(willCreateDir)}'),
+  //             action: true,
+  //             children: <Widget>[
+  //               LanTextField(
+  //                 controller: textEditingController,
+  //               ),
+  //               SizedBox(height: 10),
+  //               SizedBox(
+  //                 height: 30,
+  //                 child: Row(children: <Widget>[
+  //                   LanCheckBox(
+  //                     value: recursiveCreate,
+  //                     borderColor: themeData.itemFontColor,
+  //                     onChanged: (val) {
+  //                       if (mounted) {
+  //                         changeState(() {
+  //                           recursiveCreate = !recursiveCreate;
+  //                         });
+  //                       }
+  //                     },
+  //                   ),
+  //                   NoResizeText(
+  //                     '递归创建  例:xxx/xx/x',
+  //                     style: TextStyle(
+  //                       color: themeData.itemFontColor,
+  //                     ),
+  //                   )
+  //                 ]),
+  //               )
+  //             ],
+  //             defaultCancelText: '新建文件',
+  //             defaultOkText: '新建文件夹',
+  //             onOk: () async {
+  //               await _action.mkdir(
+  //                 willCreateDir,
+  //                 textEditingController.text,
+  //                 recursive: recursiveCreate,
+  //                 onExists: () {
+  //                   showText('文件夹已存在');
+  //                 },
+  //               ).then((value) async {
+  //                 showText('${textEditingController.text}创建成功');
+  //                 await update2Side();
+  //                 MixUtils.safePop(context);
+  //               }).catchError((err) {
+  //                 showText('创建文件夹失败');
+  //                 FLog.error(text: '创建文件失败');
+  //               });
+  //             },
+  //             onCancel: () async {
+  //               await _action.createFile(
+  //                   willCreateDir, textEditingController.text,
+  //                   recursive: recursiveCreate, onExists: () {
+  //                 showText('文件已存在');
+  //               }).then((value) async {
+  //                 showText('${textEditingController.text}创建成功');
+  //                 await update2Side();
+  //                 MixUtils.safePop(context);
+  //               }).catchError((err) {
+  //                 showText('创建文件失败');
+  //                 FLog.error(text: '创建文件失败');
+  //               });
+  //             },
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }

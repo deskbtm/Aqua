@@ -1,0 +1,80 @@
+
+  Future<void> airDrop(SelfFileEntity file) async {
+    IO.Socket socket = _commonModel.socket;
+    if (socket != null && socket.connected) {
+      if (!_isSendingFile) {
+        _isSendingFile = true;
+        socket.emit('will-upload-file', {'filename': file.filename});
+        BotToast.showText(text: '正在发送');
+        File(file.entity.path).openRead().listen((bytes) {
+          socket.emitWithBinary(UPLOAD_FILE, bytes);
+        }, onDone: () {
+          _isSendingFile = false;
+          socket.emit('upload-file-done' /* , {'filename': file.filename} */);
+          if (_willSendFileQueue.isNotEmpty) {
+            airDrop(_willSendFileQueue.removeAt(0));
+          }
+        });
+      } else {
+        BotToast.showText(text: '任务已被加入队列');
+        _willSendFileQueue.add(file);
+      }
+    } else {
+      BotToast.showText(text: '请连接后在试');
+    }
+  }
+
+
+  
+// IO.Socket createMySocketClient({
+//   @required String ip,
+//   @required String port,
+//   @required String internalIp,
+//   Function(IO.Socket) onInitSocket,
+//   Function(IO.Socket) onConnect,
+//   Function(dynamic) onDisconnect,
+//   Function(String) onReceiveClipboard,
+//   Function(String) onReceiveFile,
+//   bool isInit = false,
+// }) {
+//   String url = 'http://$ip:$port';
+
+//   IO.Socket socket = IO.io(url, {
+//     'transports': ['websocket'],
+//     'autoConnect': true
+//   });
+
+//   if (onConnect != null) onInitSocket(socket);
+
+//   socket.on('connect', (_) {
+//     if (isInit) {
+//       BotToast.showSimpleNotification(
+//         title: '自动连接至',
+//         subTitle: url,
+//         closeIcon: Icon(Icons.close),
+//         duration: Duration(seconds: 8),
+//       );
+//     }
+
+//     // 发送本机地址 作为已连接的地址
+//     socket.emit('connected-address', '$internalIp:$port');
+//     if (onConnect != null) onConnect(socket);
+//   });
+//   socket.on('disconnect', (_) {
+//     if (onDisconnect != null) onDisconnect(_);
+//   });
+
+//   socket.on('clipboard-to-client', (_) {
+//     if (onReceiveClipboard != null) onReceiveClipboard(_);
+//   });
+
+//   // socket.on('clipboard-to-client', (_) {
+//   //   if (onReceiveFile != null) onReceiveFile(_);
+//   // });
+
+//   socket.on('connect_error', (error) {
+//     FLog.error(text: error.toString(), methodName: 'createMySocketClient');
+//   });
+
+//   return socket;
+// }

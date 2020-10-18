@@ -1,0 +1,221 @@
+
+  Future<void> archiveModal(BuildContext context, SelfFileEntity file) async {
+    MixUtils.safePop(context);
+    if (_shareModel.selectedFiles.isNotEmpty) {
+      dynamic themeData = _themeModel.themeData;
+      bool popAble = true;
+      String archiveType = 'zip';
+      String archiveText = 'zip';
+      bool preDisplay = false;
+      String pwd;
+
+      showCupertinoModal(
+        context: context,
+        filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (BuildContext context,
+                void Function(void Function()) changeState) {
+              return WillPopScope(
+                onWillPop: () async {
+                  return popAble;
+                },
+                child: LanDialog(
+                  display: preDisplay,
+                  fontColor: themeData?.itemFontColor,
+                  bgColor: themeData?.dialogBgColor,
+                  title: NoResizeText('归档'),
+                  action: true,
+                  children: <Widget>[
+                    SizedBox(height: 10),
+                    popAble
+                        ? FocusedMenuHolder(
+                            menuWidth: MediaQuery.of(context).size.width * 0.4,
+                            blurSize: 5.0,
+                            menuItemExtent: 45,
+                            duration: Duration(milliseconds: 100),
+                            animateMenuItems: true,
+                            maskColor: Color(0x00FFFFFF),
+                            menuOffset: 10.0,
+                            bottomOffsetHeight: 80.0,
+                            menuItems: <FocusedMenuItem>[
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText('zip'),
+                                onPressed: () {
+                                  changeState(() {
+                                    archiveText = 'zip';
+                                    archiveType = 'zip';
+                                  });
+                                },
+                              ),
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText('zip 加密'),
+                                onPressed: () async {
+                                  changeState(() {
+                                    preDisplay = true;
+                                  });
+
+                                  await showSingleTextFieldModal(
+                                    context,
+                                    _themeModel,
+                                    title: '输入密码',
+                                    transparent: true,
+                                    onOk: (val) async {
+                                      changeState(() {
+                                        archiveText = 'zip 加密';
+                                        archiveType = 'zip';
+                                        pwd = val;
+                                        preDisplay = false;
+                                      });
+                                    },
+                                    onCancel: () {
+                                      MixUtils.safePop(context);
+                                    },
+                                  );
+                                },
+                              ),
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText('tar'),
+                                onPressed: () async {
+                                  changeState(() {
+                                    archiveText = 'tar';
+                                    archiveType = 'tar';
+                                  });
+                                },
+                              ),
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText('tar.gz'),
+                                onPressed: () async {
+                                  changeState(() {
+                                    archiveText = 'tar.gz';
+                                    archiveType = 'tar.gz';
+                                  });
+                                },
+                              ),
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText('tar.bz'),
+                                onPressed: () async {
+                                  changeState(() {
+                                    archiveText = 'tar.bz2';
+                                    archiveType = 'tar.bz2';
+                                  });
+                                },
+                              ),
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText('tar.xz'),
+                                onPressed: () async {
+                                  changeState(() {
+                                    archiveText = 'tar.xz';
+                                    archiveType = 'tar.xz';
+                                  });
+                                },
+                              ),
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText('7z'),
+                                onPressed: () async {
+                                  changeState(() {
+                                    archiveText = 'tar.xz';
+                                    archiveType = 'tar.xz';
+                                  });
+                                },
+                              ),
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText('jar'),
+                                onPressed: () async {},
+                              ),
+                              FocusedMenuItem(
+                                backgroundColor: themeData?.menuItemColor,
+                                title: LanText(
+                                  '取消',
+                                  style: TextStyle(color: Colors.redAccent),
+                                ),
+                                trailingIcon: Icon(
+                                  Icons.close,
+                                  color: Colors.redAccent,
+                                  size: 16,
+                                ),
+                                onPressed: () {
+                                  MixUtils.safePop(context);
+                                },
+                              ),
+                            ],
+                            child: Container(
+                              padding: EdgeInsets.only(left: 16, right: 16),
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: <Widget>[
+                                  NoResizeText(
+                                    archiveText,
+                                    style: TextStyle(color: Color(0xFF007AFF)),
+                                  ),
+                                  Icon(Icons.arrow_drop_down),
+                                ],
+                              ),
+                            ),
+                          )
+                        : loadingIndicator(context, _themeModel),
+                    SizedBox(height: 10),
+                  ],
+                  defaultOkText: '确定',
+                  defaultCancelText: popAble ? '取消' : '后台',
+                  onOk: () async {
+                    if (!popAble) {
+                      return;
+                    }
+                    if (mounted) {
+                      changeState(() {
+                        popAble = false;
+                      });
+                    }
+                    await Future.delayed(Duration(milliseconds: 50));
+                    List<String> paths = _shareModel.selectedFiles
+                        .map((e) => e.entity.path)
+                        .toList();
+
+                    bool result = await AndroidMix.archive
+                        .zip(
+                      paths,
+                      FileAction.newPathWhenExists(
+                          pathLib.join(
+                            _currentDir.path,
+                            FileAction.getArchiveName(paths, _currentDir.path),
+                          ),
+                          '.' + archiveType),
+                      pwd: pwd?.trim(),
+                      encrypt: ZipEncryptionMethod.aes,
+                    )
+                        .catchError((err) {
+                      FLog.error(text: '$err', methodName: 'archiveModal');
+                    });
+                    if (result) {
+                      showText('归档成功');
+                    } else {
+                      showText('归档失败');
+                    }
+                    if (mounted) {
+                      await _shareModel.clearSelectedFiles();
+                      await update2Side();
+                      MixUtils.safePop(context);
+                    }
+                  },
+                  onCancel: () {
+                    MixUtils.safePop(context);
+                  },
+                  actionPos: MainAxisAlignment.end,
+                ),
+              );
+            },
+          );
+        },
+      );
+    }
+  }
+  

@@ -11,9 +11,15 @@ import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_item.dart';
 import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/page/file_manager/file_utils.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:provider/provider.dart';
+
+class ListFileItemInfo {
+  final Widget leading;
+  final SelfFileEntity file;
+
+  ListFileItemInfo({this.leading, this.file});
+}
 
 class FileListView extends StatefulWidget {
   final List<SelfFileEntity> fileList;
@@ -43,11 +49,13 @@ class _FileListViewState extends State<FileListView> {
   ThemeModel _themeModel;
   ScrollController _scrollController;
   bool _mutex;
+  List<ListFileItemInfo> _cacheList;
 
   @override
   void initState() {
     super.initState();
     _mutex = false;
+    _cacheList = [];
 
     _scrollController = ScrollController()
       ..addListener(() {
@@ -75,10 +83,25 @@ class _FileListViewState extends State<FileListView> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _cacheList = [];
+  }
+
+  @override
   Widget build(BuildContext context) {
     dynamic themeData = _themeModel.themeData;
-    // if (widget.fileList.length)
-    return widget.fileList.isEmpty
+
+    if (widget.fileList.length != _cacheList.length) {
+      _cacheList.clear();
+      for (var i = 0; i < widget.fileList.length; i++) {
+        SelfFileEntity file = widget.fileList[i];
+        _cacheList.add(ListFileItemInfo(
+            leading: getPreviewIcon(context, _themeModel, file), file: file));
+      }
+    }
+
+    return _cacheList.isEmpty
         ? GestureDetector(
             onLongPressStart: widget.onLongPressEmpty,
             child: Container(
@@ -91,8 +114,6 @@ class _FileListViewState extends State<FileListView> {
         : GestureDetector(
             onLongPressStart: widget.onLongPressEmpty,
 
-            // ListView.custom();
-
             /// [bug] DraggableScrollbar 会导致ListView setState()
             child: AnimationLimiter(
               child: DraggableScrollbar.rrect(
@@ -101,30 +122,28 @@ class _FileListViewState extends State<FileListView> {
                 child: ListView.builder(
                   controller: _scrollController,
                   physics: BouncingScrollPhysics(),
-                  itemCount: widget.fileList.length,
-                  addAutomaticKeepAlives: false,
-                  addRepaintBoundaries: false,
+                  itemCount: _cacheList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    SelfFileEntity file = widget.fileList[index];
+                    // SelfFileEntity file = widget.fileList[index];
+                    ListFileItemInfo item = _cacheList[index];
 
-                    Widget previewIcon =
-                        getPreviewIconSync(context, _themeModel, file);
-
+                    // Widget previewIcon =
+                    //     getPreviewIcon(context, _themeModel, file);
                     return FileItem(
-                      type:
-                          file.isDir ? FileItemType.folder : FileItemType.file,
-                      // cacheLeading: needCachedAssets(file),
-                      leading: file.isDir
-                          ? previewIcon
+                      type: item.file.isDir
+                          ? FileItemType.folder
+                          : FileItemType.file,
+                      leading: item.file.isDir
+                          ? item.leading
                           // 显示文件的大小
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                previewIcon,
+                                item.leading,
                                 SizedBox(height: 6),
                                 NoResizeText(
-                                  file.humanSize,
+                                  item.file.humanSize,
                                   style: TextStyle(
                                     fontSize: 8,
                                     color: themeData?.itemFontColor,
@@ -134,9 +153,9 @@ class _FileListViewState extends State<FileListView> {
                             ),
                       withAnimation: index < 15,
                       index: index,
-                      filename: file.filename,
-                      path: file.entity.path,
-                      subTitle: MixUtils.formatFileTime(file.modified),
+                      filename: item.file.filename,
+                      path: item.file.entity.path,
+                      subTitle: MixUtils.formatFileTime(item.file.modified),
                       onLongPress: (details, update) {
                         if (widget.itemOnLongPress != null) {
                           widget.itemOnLongPress(index, update);

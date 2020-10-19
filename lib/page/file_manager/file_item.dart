@@ -59,7 +59,7 @@ class FileItem extends StatefulWidget {
 }
 
 class FileItemState extends State<FileItem>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   String get subTitle => widget.subTitle;
   Animation<Offset> _animation;
   AnimationController _controller;
@@ -86,13 +86,13 @@ class FileItemState extends State<FileItem>
 
   ThemeModel _themeModel;
   CommonModel _commonModel;
-  Widget _leadingCacher;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    // 缓存leading 防止瞎鸡儿闪
-    _leadingCacher = widget.leading;
     if (!justDisplay) {
       _controller = AnimationController(vsync: this);
       _controller.addListener(() {
@@ -121,17 +121,17 @@ class FileItemState extends State<FileItem>
   void dispose() {
     super.dispose();
     _controller?.dispose();
-    // _leadingCacher = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     dynamic themeData = _themeModel?.themeData;
     Color itemfontColor = fontColor ?? themeData?.itemFontColor;
     Color itemColor = itemBgColor ?? themeData?.itemColor;
 
     Widget tile = ListTile(
-      leading: _leadingCacher,
+      leading: widget.leading,
       title: NoResizeText(
         filename,
         overflow: autoWrap
@@ -173,9 +173,6 @@ class FileItemState extends State<FileItem>
                       });
                     }
                   },
-                  onHorizontalDragDown: (details) {
-                    _controller.stop();
-                  },
                   onLongPressStart: (d) {
                     if (onLongPress != null) {
                       onLongPress(d, (b) {
@@ -186,11 +183,9 @@ class FileItemState extends State<FileItem>
                         }
                       });
                     }
-                    // if (onLongPress(d)) {
-                    //   setState(() {
-                    //     _selected = true;
-                    //   });
-                    // }
+                  },
+                  onHorizontalDragDown: (details) {
+                    _controller.stop();
                   },
                   onHorizontalDragUpdate: (details) {
                     if (details.primaryDelta > 0) {

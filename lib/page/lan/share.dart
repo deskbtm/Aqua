@@ -60,15 +60,15 @@ class _StaticSharePageState extends State<StaticSharePage> {
   CommonModel _commonModel;
   HttpServer _server;
   bool _shareSwitch;
-  bool _vscdeSwitch;
+  bool _vscodeSwitch;
   bool _mutex;
 
   @override
   void initState() {
     super.initState();
-    _mutex = true;
+    // _mutex = true;
     _shareSwitch = false;
-    _vscdeSwitch = false;
+    _vscodeSwitch = false;
   }
 
   @override
@@ -77,12 +77,12 @@ class _StaticSharePageState extends State<StaticSharePage> {
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
 
-    if (mounted) {
-      setState(() {});
-    }
-    if (_mutex) {
-      _mutex = false;
-    }
+    // if (mounted) {
+    //   setState(() {});
+    // }
+    // if (_mutex) {
+    //   _mutex = false;
+    // }
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
@@ -188,9 +188,8 @@ class _StaticSharePageState extends State<StaticSharePage> {
     String internalIp = _commonModel.internalIp;
     String filePort = _commonModel.filePort;
     String codeSrvPort = _commonModel.codeSrvPort;
-    String fileAddr = internalIp == null ? '未连接局域网' : '$internalIp:$filePort';
-    String codeAddr =
-        internalIp == null ? '未连接局域网' : '$internalIp:$codeSrvPort';
+    String fileAddr = internalIp == null ? '未连接' : '$internalIp:$filePort';
+    String codeAddr = internalIp == null ? '未连接' : '$internalIp:$codeSrvPort';
     // String codeSrvIp = _commonModel.codeSrvIp;
 
     String firstAliveIp =
@@ -199,7 +198,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                 (_commonModel.socket?.connected != null ||
                     _commonModel.socket?.connected == true)
             ? '${_commonModel.currentConnectIp}:${_commonModel.filePort}'
-            : '暂未连接';
+            : '未连接';
 
     return CupertinoPageScaffold(
       child: SafeArea(
@@ -241,7 +240,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                           subtitle: LanText(codeAddr, small: true),
                           contentPadding: EdgeInsets.only(left: 15, right: 10),
                           trailing: LanSwitch(
-                            value: _vscdeSwitch,
+                            value: _vscodeSwitch,
                             onChanged: (val) async {
                               CodeSrvUtils utils = await CodeSrvUtils().init();
                               bool outLocker = true;
@@ -252,7 +251,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                               }
                               if (await utils.existsAllResource()) {
                                 setState(() {
-                                  _vscdeSwitch = !_vscdeSwitch;
+                                  _vscodeSwitch = !_vscodeSwitch;
                                 });
                                 if (val) {
                                   String srvUrl = '$internalIp:$codeSrvPort';
@@ -397,7 +396,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                             _commonModel.selectedFiles.elementAt(index);
 
                         Widget previewIcon =
-                            getPreviewIconSync(context, _themeModel, file);
+                            getPreviewIcon(context, _themeModel, file);
                         return Dismissible(
                           key: ObjectKey(file),
                           onDismissed: (direction) {

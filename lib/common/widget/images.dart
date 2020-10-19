@@ -99,7 +99,7 @@ class AppImages {
           width: width, height: height, fit: BoxFit.cover);
 }
 
-Widget getPreviewIconSync(
+Widget getPreviewIcon(
     BuildContext context, ThemeModel themeModel, SelfFileEntity file) {
   Widget previewIcon;
   if (file.ext?.toLowerCase() == '.apk') {
@@ -163,7 +163,7 @@ Widget getPreviewIconSync(
   return previewIcon;
 }
 
-bool needCachedAssets(SelfFileEntity file) {
-  return file.ext?.toLowerCase() == '.apk' ||
-      IMG_EXTS.contains(file.ext?.toLowerCase());
-}
+// bool isTheAssetsShouldNotUpdateLeading(SelfFileEntity file) {
+//   String ext = file.ext?.toLowerCase();
+//   return ext == '.apk' || IMG_EXTS.contains(ext);
+// }

@@ -16,6 +16,7 @@ class ProgressBar extends StatelessWidget {
   final Color backgroundColor;
   final Color boarderColor;
   final bool showRemainder;
+  final double extraSize;
 
   ProgressBar(
       {@required this.title,
@@ -29,11 +30,13 @@ class ProgressBar extends StatelessWidget {
       this.padding = 0.0,
       this.backgroundColor = Colors.white,
       this.boarderColor = Colors.grey,
-      this.showRemainder = true});
+      this.showRemainder = true,
+      this.extraSize});
 
   @override
   Widget build(BuildContext context) {
-    double barWithoutPadding = this.barWidth - this.padding;
+    double barWithoutPadding =
+        this.barWidth - this.padding - (extraSize != null ? extraSize : 0);
 
     double percentageWidth =
         (this.numerator / this.denominator) * barWithoutPadding;

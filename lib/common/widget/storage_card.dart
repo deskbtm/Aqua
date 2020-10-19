@@ -22,8 +22,9 @@ class StorageCard extends StatelessWidget {
         child: ProgressBar(
           padding: 5,
           barColor: Color(0xF38B8B8B),
-          backgroundColor: Color(0x44DFDFDFf),
+          backgroundColor: Color(0x13FFFFFFf),
           barHeight: 7,
+          extraSize: 40,
           barWidth: MediaQuery.of(context).size.width,
           numerator: totalSize - validSize,
           denominator: totalSize,

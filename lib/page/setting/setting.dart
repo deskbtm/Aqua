@@ -202,7 +202,8 @@ class SettingPageState extends State<SettingPage> {
           SizedBox(height: 15),
           ListTile(
             title: LanText('本机IP'),
-            subtitle: LanText('${_commonModel?.internalIp}'),
+            subtitle: LanText(
+                '${_commonModel?.internalIp != null ? _commonModel.internalIp : '未连接'}'),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
           ),
           ListTile(

@@ -75,6 +75,9 @@ Future<void> createProotEnv(
                   case 'armv51':
                     arch = 'armv7';
                     break;
+                  case 'i686':
+                    arch = 'x86_64';
+                    break;
                   default:
                 }
 
@@ -86,6 +89,7 @@ Future<void> createProotEnv(
                   // busyBoxUrl = '$DEV_CODE_SERVER_URL/$busyboxName';
                   Map s = commonProvider.gWebData['sandbox'];
                   Map b = commonProvider.gWebData['busybox'];
+
                   if (s != null && b != null) {
                     resourceUrl = s[resourceName]['url'];
                     busyBoxUrl = b[busyboxName]['url'];

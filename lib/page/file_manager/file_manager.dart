@@ -601,7 +601,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         return;
       }
     } else {
-      String path = await MixUtils.getExternalPath();
+      String path = await MixUtils.getExternalRootPath();
       _commonModel.setStorageRootPath(path);
     }
     showText('切换完成');

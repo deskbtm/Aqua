@@ -327,9 +327,8 @@ class SettingPageState extends State<SettingPage> {
           ),
           InkWell(
             onTap: () async {
-              CodeSrvUtils cutils = CodeSrvUtils();
-              await cutils.init();
-
+              CodeSrvUtils cutils = await CodeSrvUtils().init();
+              // await cutils.init();
               Navigator.of(context, rootNavigator: true).push(
                 CupertinoPageRoute<void>(
                   maintainState: false,

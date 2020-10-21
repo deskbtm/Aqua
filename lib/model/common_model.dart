@@ -305,7 +305,7 @@ class CommonModel extends ChangeNotifier {
 
     _enableAutoConnectCommonIp =
         (await Store.getBool(AUTO_CONNECT_COMMON_IP)) ?? true;
-    _storageRootPath = await MixUtils.getExternalPath();
+    _storageRootPath = await MixUtils.getExternalRootPath();
     _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
         await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
   }

@@ -39,10 +39,6 @@ class LanPageState extends State<LanPage> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-
-    // if (mounted) {
-    //   setState(() {});
-    // }
   }
 
   @override
@@ -71,6 +67,7 @@ class LanPageState extends State<LanPage> {
             controller: _controller,
             children: <Widget>[
               StaticSharePage(),
+              
               // Container(
               //   child: Center(
               //     child: LanText(

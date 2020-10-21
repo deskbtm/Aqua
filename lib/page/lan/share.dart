@@ -3,9 +3,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 import 'dart:typed_data';
+import 'package:android_mix/android_mix.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:lan_express/external/system_info/system_info.dart';
 import 'package:provider/provider.dart';
 import 'package:f_logs/model/flog/flog.dart';
 import 'package:lan_express/common/socket/socket.dart';
@@ -245,10 +247,10 @@ class _StaticSharePageState extends State<StaticSharePage> {
                               CodeSrvUtils utils = await CodeSrvUtils().init();
                               bool outLocker = true;
                               bool errLocker = true;
-                              if (!_commonModel.isPurchased) {
-                                showText('此功能为付费功能');
-                                return;
-                              }
+                              // if (!_commonModel.isPurchased) {
+                              //   showText('此功能为付费功能');
+                              //   return;
+                              // }
                               if (await utils.existsAllResource()) {
                                 setState(() {
                                   _vscodeSwitch = !_vscodeSwitch;
@@ -265,10 +267,14 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                     indeterminate: true,
                                   );
 
-                                  Process result = await utils.runServer(
+                                  Process result = await utils
+                                      .runServer(
                                     srvUrl,
                                     pwd: _commonModel.codeSrvPwd,
-                                  );
+                                  )
+                                      .catchError((err) {
+                                    showText('开启出现错误');
+                                  });
 
                                   result.stdout
                                       .transform(utf8.decoder)
@@ -333,6 +339,25 @@ class _StaticSharePageState extends State<StaticSharePage> {
                         CupertinoButton(
                           child: Text('click'),
                           onPressed: () async {
+                            CodeSrvUtils utils = await CodeSrvUtils().init();
+                            String filesPath =
+                                (await CodeSrvUtils().init()).filesPath;
+                            // await utils.chmod777('$filesPath/busybox');
+                            // ProcessResult a = await Process.run(
+                            //     '$filesPath/busybox', [],
+                            //     workingDirectory: filesPath);
+
+                            // print(a.stdout.toString());
+                            // print(a.stderr.toString());
+                            print(await AndroidMix.storage.getStorageDirectory);
+                            print(await AndroidMix
+                                .storage.getExternalStorageDirectory);
+
+                            // print(SysInfo.kernelArchitecture);
+                            // ProcessResult a = await Process.run('tar', ['--help']);
+                            // print(a.stdout.toString());
+                            // print(a.stderr.toString());
+
                             // final List<AssetEntity> assets =
                             //     await AssetPicker.pickAssets(context);
                             // print(assets);

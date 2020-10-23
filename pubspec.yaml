@@ -75,9 +75,10 @@ dependencies:
   shelf_body_parser: ^1.0.6
   photo_manager:
     path: plugins/photo_manager
-  share_extend: ^1.1.9
-  # flutter_bugly: ^0.2.8
+  flutter_bugly:
+    path: plugins/flutter_bugly
   # android_mix_recorder:
+  share_extend: ^1.1.9
   #   path: plugins/android_mix_recorder
   # uuid: ^2.2.0
   # photo_view: ^0.10.0

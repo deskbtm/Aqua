@@ -12,6 +12,7 @@ import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_item.dart';
 import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
+import 'package:lan_express/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ListFileItemInfo {
@@ -49,13 +50,13 @@ class _FileListViewState extends State<FileListView> {
   ThemeModel _themeModel;
   ScrollController _scrollController;
   bool _mutex;
-  List<ListFileItemInfo> _cacheList;
+  List<ListFileItemInfo> _cachedFileList;
 
   @override
   void initState() {
     super.initState();
     _mutex = false;
-    _cacheList = [];
+    _cachedFileList = [];
 
     _scrollController = ScrollController()
       ..addListener(() {
@@ -85,23 +86,26 @@ class _FileListViewState extends State<FileListView> {
   @override
   void dispose() {
     super.dispose();
-    _cacheList = [];
+    _cachedFileList = [];
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel.themeData;
+    LanFileMoreTheme themeData = _themeModel.themeData;
 
-    if (widget.fileList.length != _cacheList.length) {
-      _cacheList.clear();
+    /// 如果文件数量变化，更新否则使用缓存的[_cachedFileList]，防止读取照片文件
+    /// thumb 时瞎几把闪，提前渲染好leaing
+
+    if (widget.fileList.length != _cachedFileList.length) {
+      _cachedFileList.clear();
       for (var i = 0; i < widget.fileList.length; i++) {
         SelfFileEntity file = widget.fileList[i];
-        _cacheList.add(ListFileItemInfo(
+        _cachedFileList.add(ListFileItemInfo(
             leading: getPreviewIcon(context, _themeModel, file), file: file));
       }
     }
 
-    return _cacheList.isEmpty
+    return _cachedFileList.isEmpty
         ? GestureDetector(
             onLongPressStart: widget.onLongPressEmpty,
             child: Container(
@@ -115,6 +119,8 @@ class _FileListViewState extends State<FileListView> {
             onLongPressStart: widget.onLongPressEmpty,
 
             /// [bug] DraggableScrollbar 会导致ListView setState()
+            /// 会有错误抛出 但是不太影响
+
             child: AnimationLimiter(
               child: DraggableScrollbar.rrect(
                 controller: _scrollController,
@@ -122,13 +128,10 @@ class _FileListViewState extends State<FileListView> {
                 child: ListView.builder(
                   controller: _scrollController,
                   physics: BouncingScrollPhysics(),
-                  itemCount: _cacheList.length,
+                  itemCount: _cachedFileList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    // SelfFileEntity file = widget.fileList[index];
-                    ListFileItemInfo item = _cacheList[index];
+                    ListFileItemInfo item = _cachedFileList[index];
 
-                    // Widget previewIcon =
-                    //     getPreviewIcon(context, _themeModel, file);
                     return FileItem(
                       type: item.file.isDir
                           ? FileItemType.folder

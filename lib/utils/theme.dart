@@ -1,12 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class BasicTheme {
-  Color activeIconColor = Color(0xFF007AFF);
-  Color inactiveIconColor = Color(0xFF959596);
+abstract class LanFileMoreTheme {
+  Color bottomNavColor;
+  Color scaffoldBackgroundColor;
+  Color navBackgroundColor;
+  Color topNavIconColor;
+  Color actionButtonColor;
+  Color itemColor;
+  Color itemFontColor = Colors.black54;
+  Color navTitleColor = Colors.black87;
+  Color toastColor = Colors.black54;
+  Color toastNotificationColor = Colors.black54;
+  Color dialogBgColor;
+  Color inputColor;
+  Color inputBorderColor;
+  Color menuItemColor;
+  Color photoNavColor;
+  Brightness systemNavigationBarIconBrightness;
+  Color systemNavigationBarColor;
 }
 
-class LightTheme extends BasicTheme {
+class LightTheme implements LanFileMoreTheme {
+  Color activeIconColor = Color(0xFF007AFF);
+  Color inactiveIconColor = Color(0xFF959596);
   Color bottomNavColor = Color(0x94F3ECEC);
   Color scaffoldBackgroundColor = Color(0xFFFFFFFFF);
   Color navBackgroundColor = Color(0xFFFFFFFFF);
@@ -22,9 +39,13 @@ class LightTheme extends BasicTheme {
   Color inputBorderColor = Color(0x33000000);
   Color menuItemColor = Color(0xDEFFFFFF);
   Color photoNavColor = Color(0x4BF3ECEC);
+  Brightness systemNavigationBarIconBrightness = Brightness.dark;
+  Color systemNavigationBarColor = Colors.white;
 }
 
-class DarkTheme extends BasicTheme {
+class DarkTheme implements LanFileMoreTheme {
+  Color activeIconColor = Color(0xFF007AFF);
+  Color inactiveIconColor = Color(0xFF959596);
   Color bottomNavColor = Color(0xB00E0D0D);
   Color scaffoldBackgroundColor = Color(0xFF0000000);
   Color navBackgroundColor = Color(0xFF0000000);
@@ -40,4 +61,6 @@ class DarkTheme extends BasicTheme {
   Color inputBorderColor = Color(0x4FFFFFFF);
   Color menuItemColor = Color(0xCC0000000);
   Color photoNavColor = Color(0xCC0000000);
+  Brightness systemNavigationBarIconBrightness = Brightness.light;
+  Color systemNavigationBarColor = Colors.black;
 }

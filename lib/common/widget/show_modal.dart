@@ -368,7 +368,7 @@ Future<dynamic> showTwoTextFieldModal(
   String fPlaceholder,
   String sPlaceholder,
   @required Function(String, String) onOk,
-  @required Function onCancel,
+  Function onCancel,
   bool transparent = false,
   String defaultCancelText,
 }) async {
@@ -391,16 +391,24 @@ Future<dynamic> showTwoTextFieldModal(
             title: LanDialogTitle(title: title),
             action: true,
             children: <Widget>[
-              LanTextField(
-                controller: fEditingController,
-                placeholder: fPlaceholder,
-                maxLines: 1,
+              SizedBox(
+                height: 30,
+                child: LanTextField(
+                  style: TextStyle(fontSize: 16),
+                  controller: fEditingController,
+                  placeholder: fPlaceholder,
+                  maxLines: 1,
+                ),
               ),
               SizedBox(height: 15),
-              LanTextField(
-                controller: sEditingController,
-                placeholder: sPlaceholder,
-                maxLines: 1,
+              SizedBox(
+                height: 32,
+                child: LanTextField(
+                  style: TextStyle(fontSize: 16),
+                  controller: sEditingController,
+                  placeholder: sPlaceholder,
+                  maxLines: 1,
+                ),
               ),
               SizedBox(height: 10),
             ],
@@ -409,7 +417,7 @@ Future<dynamic> showTwoTextFieldModal(
               await MixUtils.safePop(context);
             },
             onCancel: () async {
-              onCancel();
+              if (onCancel != null) onCancel();
               await MixUtils.safePop(context);
             },
             defaultCancelText: defaultCancelText,

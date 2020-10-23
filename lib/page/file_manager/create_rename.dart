@@ -33,6 +33,7 @@ Future<void> createRenameModal(
         action: true,
         children: <Widget>[
           LanTextField(
+            style: TextStyle(textBaseline: TextBaseline.alphabetic),
             controller: textEditingController,
             placeholder: '${file.filename}',
           ),

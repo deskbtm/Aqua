@@ -3,13 +3,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 import 'dart:typed_data';
-import 'package:android_mix/android_mix.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:lan_express/external/system_info/system_info.dart';
 import 'package:provider/provider.dart';
 import 'package:f_logs/model/flog/flog.dart';
+import 'package:android_mix/android_mix.dart';
 import 'package:lan_express/common/socket/socket.dart';
 import 'package:lan_express/common/widget/images.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
@@ -340,8 +339,11 @@ class _StaticSharePageState extends State<StaticSharePage> {
                           child: Text('click'),
                           onPressed: () async {
                             CodeSrvUtils utils = await CodeSrvUtils().init();
-                            String filesPath =
-                                (await CodeSrvUtils().init()).filesPath;
+
+                            print(MediaQuery.of(context).padding.top);
+                            // String filesPath =
+                            //     (await CodeSrvUtils().init()).filesPath;
+
                             // await utils.chmod777('$filesPath/busybox');
                             // ProcessResult a = await Process.run(
                             //     '$filesPath/busybox', [],
@@ -349,9 +351,9 @@ class _StaticSharePageState extends State<StaticSharePage> {
 
                             // print(a.stdout.toString());
                             // print(a.stderr.toString());
-                            print(await AndroidMix.storage.getStorageDirectory);
-                            print(await AndroidMix
-                                .storage.getExternalStorageDirectory);
+                            // print(await AndroidMix.storage.getStorageDirectory);
+                            // print(await AndroidMix
+                            //     .storage.getExternalStorageDirectory);
 
                             // print(SysInfo.kernelArchitecture);
                             // ProcessResult a = await Process.run('tar', ['--help']);

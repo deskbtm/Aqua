@@ -13,6 +13,7 @@ import 'package:lan_express/external/bot_toast/src/toast.dart';
 import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
+import 'package:lan_express/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -132,7 +133,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel.themeData;
+    LanFileMoreTheme themeData = _themeModel.themeData;
     return Scaffold(
       body: Stack(
         children: <Widget>[

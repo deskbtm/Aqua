@@ -209,6 +209,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_bugly:
+    dependency: "direct main"
+    description:
+      path: "plugins/flutter_bugly"
+      relative: true
+    source: path
+    version: "0.2.9"
   flutter_html:
     dependency: "direct main"
     description:

@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/services.dart';
+import 'package:lan_express/utils/theme.dart';
 
 import 'generated/l10n.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:catcher/core/catcher.dart';
 import 'package:lcfarm_flutter_umeng/lcfarm_flutter_umeng.dart';
 import 'package:lan_express/external/bot_toast/bot_toast.dart';
 import 'external/bot_toast/src/toast_navigator_observer.dart';
@@ -135,39 +136,46 @@ class _LanExpressWrapperState extends State {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel.themeData;
+    LanFileMoreTheme themeData = _themeModel.themeData;
 
     return themeData == null
         ? Container()
-        : CupertinoApp(
-            navigatorKey: Catcher.navigatorKey,
-            localizationsDelegates: [
-              S.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: S.delegate.supportedLocales,
-            builder: BotToastInit(),
-            navigatorObservers: [
-              BotToastNavigatorObserver(),
-            ],
+        : AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              systemNavigationBarIconBrightness:
+                  themeData.systemNavigationBarIconBrightness,
+              systemNavigationBarColor: themeData.systemNavigationBarColor,
+            ),
+            child: CupertinoApp(
+              // navigatorKey: Catcher.navigatorKey,
+              localizationsDelegates: [
+                S.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: S.delegate.supportedLocales,
+              builder: BotToastInit(),
+              navigatorObservers: [
+                BotToastNavigatorObserver(),
+              ],
 
-            /// 灵感来自爱死亡机器人
-            title: '局域网.文件.更多',
-            theme: CupertinoThemeData(
-              scaffoldBackgroundColor: themeData.scaffoldBackgroundColor,
-              textTheme: CupertinoTextThemeData(
-                textStyle: TextStyle(
-                  color: themeData.itemFontColor,
+              /// 灵感来自爱死亡机器人
+              title: '局域网.文件.更多',
+              theme: CupertinoThemeData(
+                scaffoldBackgroundColor: themeData.scaffoldBackgroundColor,
+                textTheme: CupertinoTextThemeData(
+                  textStyle: TextStyle(
+                    color: themeData.itemFontColor,
+                  ),
                 ),
               ),
-            ),
-            home: WillPopScope(
-              child: HomePage(),
-              onWillPop: () async {
-                return false;
-              },
+              home: WillPopScope(
+                child: HomePage(),
+                onWillPop: () async {
+                  return false;
+                },
+              ),
             ),
           );
   }

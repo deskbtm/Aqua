@@ -14,6 +14,7 @@ import 'package:lan_express/page/file_manager/file_action.dart';
 import 'package:lan_express/page/file_manager/file_item.dart';
 
 import 'package:lan_express/model/theme_model.dart';
+import 'package:lan_express/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:intent/action.dart' as action;
@@ -57,7 +58,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel.themeData;
+    LanFileMoreTheme themeData = _themeModel.themeData;
 
     return Material(
       child: CupertinoPageScaffold(

@@ -2,7 +2,7 @@
   Future<void> archiveModal(BuildContext context, SelfFileEntity file) async {
     MixUtils.safePop(context);
     if (_shareModel.selectedFiles.isNotEmpty) {
-      dynamic themeData = _themeModel.themeData;
+      LanFileMoreTheme themeData = _themeModel.themeData;
       bool popAble = true;
       String archiveType = 'zip';
       String archiveText = 'zip';

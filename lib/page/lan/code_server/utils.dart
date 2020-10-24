@@ -202,7 +202,6 @@ ff02::3     ipv6-allhosts
 
   Future<Process> startProot(List<String> cmds,
       {Map<String, String> env}) async {
-    print(env);
     return Process.start(
       '$filesPath/proot',
       getArguments(cmds),

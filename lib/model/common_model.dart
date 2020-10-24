@@ -132,7 +132,7 @@ class CommonModel extends ChangeNotifier {
   }
 
   /// 开启 与PC连接
-  bool _enableConnect;
+  bool _enableConnect = true;
   bool get enableConnect => _enableConnect;
 
   Future<void> setEnableConnect(bool arg) async {

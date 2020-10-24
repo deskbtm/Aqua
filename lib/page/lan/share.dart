@@ -76,13 +76,6 @@ class _StaticSharePageState extends State<StaticSharePage> {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
-
-    // if (mounted) {
-    //   setState(() {});
-    // }
-    // if (_mutex) {
-    //   _mutex = false;
-    // }
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
@@ -245,10 +238,10 @@ class _StaticSharePageState extends State<StaticSharePage> {
                               CodeSrvUtils utils = await CodeSrvUtils().init();
                               bool outLocker = true;
                               bool errLocker = true;
-                              if (!_commonModel.isPurchased) {
-                                showText('此功能为付费功能');
-                                return;
-                              }
+                              // if (!_commonModel.isPurchased) {
+                              //   showText('此功能为付费功能');
+                              //   return;
+                              // }
                               if (await utils.existsAllResource()) {
                                 setState(() {
                                   _vscodeSwitch = !_vscodeSwitch;
@@ -333,6 +326,16 @@ class _StaticSharePageState extends State<StaticSharePage> {
                         CupertinoButton(
                           child: Text('click'),
                           onPressed: () async {
+                            CodeSrvUtils u = await CodeSrvUtils().init();
+                            String filesPath = u.filesPath;
+                            ProcessResult a = await Process.run(
+                              '$filesPath/busybox',
+                              ['--help'],
+                              workingDirectory: filesPath,
+                            );
+
+                            print(a.stdout.toString());
+                            print(a.stderr.toString());
                             // final List<AssetEntity> assets =
                             //     await AssetPicker.pickAssets(context);
                             // print(assets);

@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:f_logs/model/flog/flog.dart';
-import 'package:android_mix/android_mix.dart';
 import 'package:lan_express/common/socket/socket.dart';
 import 'package:lan_express/common/widget/images.dart';
 import 'package:lan_express/common/widget/no_resize_text.dart';
@@ -335,52 +334,16 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                   },
                                 ),
                         ),
-                        CupertinoButton(
-                          child: Text('click'),
-                          onPressed: () async {
-                            CodeSrvUtils utils = await CodeSrvUtils().init();
+                        if (MixUtils.isDev) ...[
+                          CupertinoButton(
+                            child: Text('click'),
+                            onPressed: () async {
+                              CodeSrvUtils utils = await CodeSrvUtils().init();
 
-                            print(MediaQuery.of(context).padding.top);
-                            // String filesPath =
-                            //     (await CodeSrvUtils().init()).filesPath;
-
-                            // await utils.chmod777('$filesPath/busybox');
-                            // ProcessResult a = await Process.run(
-                            //     '$filesPath/busybox', [],
-                            //     workingDirectory: filesPath);
-
-                            // print(a.stdout.toString());
-                            // print(a.stderr.toString());
-                            // print(await AndroidMix.storage.getStorageDirectory);
-                            // print(await AndroidMix
-                            //     .storage.getExternalStorageDirectory);
-
-                            // print(SysInfo.kernelArchitecture);
-                            // ProcessResult a = await Process.run('tar', ['--help']);
-                            // print(a.stdout.toString());
-                            // print(a.stderr.toString());
-
-                            // final List<AssetEntity> assets =
-                            //     await AssetPicker.pickAssets(context);
-                            // print(assets);
-                            // String a = await (Connectivity().getWifiIP());
-                            // print(a);
-                            // Uint8List a = await PhotoManager.getThumbnailByPath(
-                            //   width: 100,
-                            //   height: 100,
-                            //   path: '/sdcard/1.png',
-                            //   quality: 60,
-                            // );
-
-                            // print(a.length);
-                            // setState(() {
-                            //   img = a;
-                            // });
-                            // List<AssetPathEntity> list =
-                            //     await PhotoManager.getAssetPathList();
-                            // print(list);
-                          },
-                        )
+                              print(MediaQuery.of(context).padding.top);
+                            },
+                          )
+                        ]
                       ],
                     );
                   },

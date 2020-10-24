@@ -850,8 +850,7 @@ class _FileManagerPageState extends State<FileManagerPage>
               ActionButton(
                 content: '选中',
                 onTap: () {
-                  handleSelectedSingle(context, file);
-                  // _commonModel.setCopyTargetPath(file.entity.path);
+                  handleSelectedSingle(context, file, updateItem: updateItem);
                 },
               ),
               if (sharedNotEmpty)

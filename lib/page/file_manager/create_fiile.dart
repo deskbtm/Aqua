@@ -42,6 +42,7 @@ Future<void> createFileModal(
             action: true,
             children: <Widget>[
               LanTextField(
+                style: TextStyle(textBaseline: TextBaseline.alphabetic),
                 controller: textEditingController,
               ),
               SizedBox(height: 10),

@@ -34,6 +34,7 @@ import 'package:lan_express/model/common_model.dart';
 import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/notification.dart';
+import 'package:lan_express/utils/theme.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:file_utils/file_utils.dart';
@@ -337,7 +338,7 @@ class _FileManagerPageState extends State<FileManagerPage>
       return;
     }
 
-    dynamic themeData = _themeModel.themeData;
+    LanFileMoreTheme themeData = _themeModel.themeData;
     bool popAble = true;
 
     showCupertinoModal(
@@ -406,7 +407,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<void> removeModal(BuildContext context, SelfFileEntity file,
       {Function(bool) updateItem}) async {
     MixUtils.safePop(context);
-    dynamic themeData = _themeModel.themeData;
+    LanFileMoreTheme themeData = _themeModel.themeData;
     List selected = _commonModel.selectedFiles;
     bool confirmRm = false;
 
@@ -601,7 +602,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         return;
       }
     } else {
-      String path = await MixUtils.getExternalPath();
+      String path = await MixUtils.getExternalRootPath();
       _commonModel.setStorageRootPath(path);
     }
     showText('切换完成');
@@ -849,8 +850,7 @@ class _FileManagerPageState extends State<FileManagerPage>
               ActionButton(
                 content: '选中',
                 onTap: () {
-                  handleSelectedSingle(context, file);
-                  // _commonModel.setCopyTargetPath(file.entity.path);
+                  handleSelectedSingle(context, file, updateItem: updateItem);
                 },
               ),
               if (sharedNotEmpty)

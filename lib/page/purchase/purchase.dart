@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +14,7 @@ import 'package:lan_express/model/theme_model.dart';
 import 'package:lan_express/utils/mix_utils.dart';
 import 'package:lan_express/utils/req.dart';
 import 'package:lan_express/utils/store.dart';
+import 'package:lan_express/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -84,7 +84,7 @@ class PurchasePageState extends State<PurchasePage> {
     }
   }
 
-  Widget activeButton() => Column(
+  Widget activeButton(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CupertinoButton(
@@ -102,6 +102,7 @@ class PurchasePageState extends State<PurchasePage> {
                   _qrcodeData = {};
                   _commonModel.setPurchase(true);
                   showText('购买成功');
+                  MixUtils.safePop(context);
                 } else {
                   String msg;
                   if (data['message'] is List) {
@@ -119,7 +120,7 @@ class PurchasePageState extends State<PurchasePage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel.themeData;
+    LanFileMoreTheme themeData = _themeModel.themeData;
     String baseUrl = _commonModel.baseUrl;
 
     return CupertinoPageScaffold(
@@ -283,43 +284,7 @@ class PurchasePageState extends State<PurchasePage> {
                             '激活',
                             fontSize: 22,
                           ),
-                          activeButton(),
-                          // Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.center,
-                          //   children: [
-                          //     CupertinoButton(
-                          //       borderRadius:
-                          //           BorderRadius.all(Radius.circular(5)),
-                          //       child: NoResizeText('激活'),
-                          //       color: Color(0xFF007AFF),
-                          //       onPressed: () async {
-                          //         await req().get(
-                          //             _commonModel.baseUrl + '/pay/own_app',
-                          //             queryParameters: {
-                          //               'app_name': APP_NAME,
-                          //               'device_id':
-                          //                   await MixUtils.getAndroidId(),
-                          //             }).then((value) {
-                          //           dynamic data = value.data;
-                          //           if (data['purchased']) {
-                          //             _qrcodeData = {};
-                          //             _commonModel.setPurchase(true);
-                          //             showText('购买成功');
-                          //           } else {
-                          //             String msg;
-                          //             if (data['message'] is List) {
-                          //               msg =
-                          //                   (data['message'] as List).join(',');
-                          //             } else {
-                          //               msg = data['message'];
-                          //             }
-                          //             showText('$msg 未购买');
-                          //           }
-                          //         });
-                          //       },
-                          //     ),
-                          //   ],
-                          // ),
+                          activeButton(context),
                         ],
                         if (_qrcodeData.isNotEmpty &&
                             _qrcodeData['purchased'] == true) ...[
@@ -328,7 +293,7 @@ class PurchasePageState extends State<PurchasePage> {
                             fontSize: 20,
                           ),
                           SizedBox(height: 10),
-                          activeButton(),
+                          activeButton(context),
                         ],
                         if (_commonModel.username == null) ...[
                           LanText(
@@ -359,6 +324,7 @@ class PurchasePageState extends State<PurchasePage> {
                                         showText('密码格式不正确');
                                         return;
                                       }
+
                                       await req().post(baseUrl + '/auth/login',
                                           data: {
                                             'username': f.trim(),
@@ -368,9 +334,10 @@ class PurchasePageState extends State<PurchasePage> {
                                         showText('${data['message']}');
                                         if (data['data']['access_token'] !=
                                             null) {
+                                          // 如果注册 存jwt 否则 二位码无法请求
                                           await Store.setString(LOGIN_TOKEN,
                                               data['data']['access_token']);
-                                          await _commonModel.setUsername(
+                                          await _commonModel.setUsernameGlobal(
                                               data['data']['username']);
                                         }
                                       }).catchError((err) {
@@ -378,7 +345,6 @@ class PurchasePageState extends State<PurchasePage> {
                                         FLog.error(text: '', exception: err);
                                       });
                                     },
-                                    onCancel: () {},
                                   );
                                 },
                               ),

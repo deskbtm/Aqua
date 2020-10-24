@@ -321,7 +321,14 @@ class SettingPageState extends State<SettingPage> {
             onTap: () async {},
             child: ListTile(
               title: LanText('手动安装'),
-              subtitle: LanText('手动添加下载好的压缩包', small: true),
+              // subtitle: LanText('手动添加下载好的压缩包', small: true),
+              contentPadding: EdgeInsets.only(left: 15, right: 10),
+            ),
+          ),
+          InkWell(
+            onTap: () async {},
+            child: ListTile(
+              title: LanText('下载资源包'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
@@ -363,7 +370,7 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('控制'),
+          blockTitle('控制', subtitle: '未实现'),
           SizedBox(height: 15),
           InkWell(
             onTap: () async {

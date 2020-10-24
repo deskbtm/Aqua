@@ -290,7 +290,7 @@ Future<T> showCupertinoModal<T>({
   return Navigator.of(context, rootNavigator: useRootNavigator).push(
     CupertinoModalPopupRoute<T>(
       barrierColor: transparent
-          ? Color(0x00FFFFFF)
+          ? Color(0x00382F2F)
           : CupertinoDynamicColor.resolve(
               CupertinoDynamicColor.withBrightness(
                 color: Color(0x33000000),
@@ -428,6 +428,7 @@ Future<dynamic> showTwoTextFieldModal(
   );
 }
 
+/// 展示提示文字
 Future<dynamic> showTipTextModal(
   BuildContext context,
   ThemeModel provider, {

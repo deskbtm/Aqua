@@ -258,10 +258,14 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                     indeterminate: true,
                                   );
 
-                                  Process result = await utils.runServer(
+                                  Process result = await utils
+                                      .runServer(
                                     srvUrl,
                                     pwd: _commonModel.codeSrvPwd,
-                                  );
+                                  )
+                                      .catchError((err) {
+                                    showText('开启出现错误');
+                                  });
 
                                   result.stdout
                                       .transform(utf8.decoder)
@@ -323,40 +327,16 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                   },
                                 ),
                         ),
-                        CupertinoButton(
-                          child: Text('click'),
-                          onPressed: () async {
-                            CodeSrvUtils u = await CodeSrvUtils().init();
-                            String filesPath = u.filesPath;
-                            ProcessResult a = await Process.run(
-                              '$filesPath/busybox',
-                              ['--help'],
-                              workingDirectory: filesPath,
-                            );
+                        if (MixUtils.isDev) ...[
+                          CupertinoButton(
+                            child: Text('click'),
+                            onPressed: () async {
+                              CodeSrvUtils utils = await CodeSrvUtils().init();
 
-                            print(a.stdout.toString());
-                            print(a.stderr.toString());
-                            // final List<AssetEntity> assets =
-                            //     await AssetPicker.pickAssets(context);
-                            // print(assets);
-                            // String a = await (Connectivity().getWifiIP());
-                            // print(a);
-                            // Uint8List a = await PhotoManager.getThumbnailByPath(
-                            //   width: 100,
-                            //   height: 100,
-                            //   path: '/sdcard/1.png',
-                            //   quality: 60,
-                            // );
-
-                            // print(a.length);
-                            // setState(() {
-                            //   img = a;
-                            // });
-                            // List<AssetPathEntity> list =
-                            //     await PhotoManager.getAssetPathList();
-                            // print(list);
-                          },
-                        )
+                              print(MediaQuery.of(context).padding.top);
+                            },
+                          )
+                        ]
                       ],
                     );
                   },

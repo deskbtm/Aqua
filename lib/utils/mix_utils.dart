@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:android_mix/android_mix.dart';
 import 'package:device_info/device_info.dart';
-import 'package:lan_express/model/common_model.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:ping_discover_network/ping_discover_network.dart';
 import 'package:path/path.dart' as pathLib;
 
 class MixUtils {
@@ -105,17 +103,37 @@ class MixUtils {
     return tmp;
   }
 
-  static Future<String> getExternalPath() async {
+  static Future<String> getExternalRootPath() async {
     String path;
     path = Platform.environment['EXTERNAL_STORAGE'];
     if (path == null) {
       try {
         path = await AndroidMix.storage.getExternalStorageDirectory;
+        // 触发检查权限
         Directory(path).list();
       } catch (err) {
         path = '/sdcard';
         if (!Directory(path).existsSync()) {
           path = '/storage/self/primary';
+        }
+      }
+    }
+
+    return path;
+  }
+
+  static Future<String> getAppStoragePath() async {
+    String path;
+    if (path == null) {
+      try {
+        path = await AndroidMix.storage.getStorageDirectory;
+        // 触发检查权限
+        Directory(path).list();
+      } catch (err) {
+        path = '/sdcard/Android/data/com.sewerganger.lan_express/files';
+        if (!Directory(path).existsSync()) {
+          path =
+              '/storage/self/primary/Android/data/com.sewerganger.lan_express/files';
         }
       }
     }

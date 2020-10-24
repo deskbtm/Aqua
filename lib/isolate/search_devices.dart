@@ -3,8 +3,8 @@ import 'dart:isolate';
 import 'package:lan_express/constant/constant.dart';
 import 'package:ping_discover_network/ping_discover_network.dart';
 
-/// [msg] 参数1
-/// limit
+/// 搜索设备 List 参数0 [SendPort] 参数1 [Map]
+/// [limit] 搜索设备尝试次数限制
 /// [filePort] String
 /// [internalIp] String
 Future<void> searchDevice(List msg) async {
@@ -39,5 +39,6 @@ Future<void> searchDevice(List msg) async {
     }
   }
 
-  await searchDeviceInnerLoop();
+  // 捕获搜索报错 捕获不处理
+  await searchDeviceInnerLoop().catchError((err) {});
 }

@@ -4,6 +4,12 @@ import 'package:f_logs/model/flog/flog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+/// 新建线程发送
+/// [port] 目标端口
+/// [ip] 目标ip
+/// [filename] 文件名
+/// [filepath] 文件路径
+
 void isolateAirDrop(List msg) async {
   // 把它的sendPort发送给宿主isolate，以便宿主可以给它发送消息
   // ReceivePort recPort = ReceivePort();
@@ -47,9 +53,3 @@ void isolateAirDrop(List msg) async {
     sendPort.send('fail');
   });
 }
-
-// Future sendReceive(SendPort port, dynamic msg) {
-//   ReceivePort response = new ReceivePort();
-//   port.send([msg, response.sendPort]);
-//   return response.first;
-// }

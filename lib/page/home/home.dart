@@ -144,15 +144,15 @@ class _HomePageState extends State<HomePage> {
     if (_mutex) {
       _mutex = false;
 
-      PermissionStatus status = await PermissionHandler()
-          .checkPermissionStatus(PermissionGroup.microphone);
+      // PermissionStatus status = await PermissionHandler()
+      //     .checkPermissionStatus(PermissionGroup.microphone);
       if (_commonModel.isAppInit) {
-        if (PermissionStatus.granted != status) {
-          // 提示用户 需要麦克风 权限 否则 无法进入
-          await _requestMicphonePermissionModal(context);
-        }
-        // 强制阅读使用教程 跳转后取消
-        // await _forceReadTutorialModal(context);
+        //   if (PermissionStatus.granted != status) {
+        //     // 提示用户 需要麦克风 权限 否则 无法进入
+        //     await _requestMicphonePermissionModal(context);
+        //   }
+        //   // 强制阅读使用教程 跳转后取消
+        //   // await _forceReadTutorialModal(context);
       }
 
       if (_commonModel.enableConnect) {

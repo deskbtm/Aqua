@@ -4,9 +4,9 @@ const String THEME_KEY = 'theme';
 const String LIGHT_THEME = 'light';
 const String DARK_THEME = 'dark';
 
+// 文件管理器持久化设置
 const String SHOW_FILE_HIDDEN = 'show_hidden';
 const String FILE_SORT_TYPE = 'file_sort_type';
-
 const String SORT_MODIFIED = 'sort_modified';
 const String SORT_CASE = 'sort_case';
 const String SORT_SIZE = 'sort_size';
@@ -39,17 +39,19 @@ const STATIC_UPLOAD_SAVEPATH = 'static_upload_savepath';
 const AUTO_CONNECT_COMMON_IP = 'auto_connect_common_ip';
 const COMMON_IPS = 'common_ips';
 
-const SANDBOX_NO_SECCOMP = 'sandbox-seccomp';
+// vscode 开启用户体验
 const CODE_SERVER_TELEMETRY = 'code-server-telemetry';
-
-const LINUX_REPO = 'linux-repo';
 const ENABLE_CLIPBOARD = 'enable-clipboard';
 
+// const SANDBOX_NO_SECCOMP = 'sandbox-seccomp';
+// 沙盒源
+const LINUX_REPO = 'linux-repo';
 const TSINGHUA_REPO = 'tsinghua';
 const ALIYUN_REPO = 'aliyun';
 const USTC_REPO = 'ustc';
 const ALPINE_REPO = 'alpine';
 
+// webdav
 const WEBDAV_ADDR = 'webdav-addr';
 const WEBDAV_USERNAME = 'webdav-username';
 const WEBDAV_PWD = 'webdav-pwd';
@@ -62,3 +64,8 @@ const FIX_CLIPBOARD_URL =
 
 // isolate_socket.dart
 const NOT_FOUND_DEVICES = 'NOT_FOUND_DEVICES';
+
+// bugly
+const BUGLY_ID = 'b6055da02c';
+const BUGLY_KEY = '91eb2f3a-639b-4f92-93fa-aef7fc802a94';
+// const

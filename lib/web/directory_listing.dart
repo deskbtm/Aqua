@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:lan_express/page/file_manager/file_utils.dart';
+import 'package:lan_express/utils/mix_utils.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:shelf/shelf.dart';
 
@@ -18,6 +19,7 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   <title>$sanitizedHeading</title>
   <link rel="shortcut icon" href="data:image/png;base64,$logo">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${MixUtils.isDev ? '<script src="https://cdn.bootcdn.net/ajax/libs/eruda/2.4.1/eruda.min.js"></script>' : ''}
   <script>$plyrJs</script>
   <style>$plyrCss</style>
   <style>
@@ -149,6 +151,12 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
     transition: unset;
     box-sizing: border-box;
     height: 65px;
+    display: flex;
+    align-items: center;
+  }
+
+  ul > .func-item h2{
+    margin: 0;
   }
 
   ul > .func-item.dashed{
@@ -214,7 +222,8 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   .drag-txt{
     color: #aaa;
     transform: rotate(-25deg);
-    position: absolute;right: 15px;
+    position: absolute;
+    right: 15px;
   }
   
   #select-file{
@@ -331,6 +340,10 @@ String _trailer({bool isShareFiles = false, String serverUrl}) {
 </section>
 <script>
 
+if(${MixUtils.isDev}){
+  eruda.init();
+}
+
 var controls = [
   'play-large',
   'restart',
@@ -370,7 +383,7 @@ var imgExts =  [
   '.webp',
 ];
 
-var mask = document.getElementById('mask');151
+var mask = document.getElementById('mask');
 
 var downloadURI = function(uri, name) {
   var link = document.createElement("a");

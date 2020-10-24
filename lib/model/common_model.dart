@@ -265,10 +265,10 @@ class CommonModel extends ChangeNotifier {
   String _username;
   String get username => _username;
 
-  Future<void> setUsername(String arg) async {
+  Future<void> setUsernameGlobal(String arg) async {
     _username = arg;
     await Store.setString(LOGIN_USERNMAE, arg);
-    // notifyListeners();
+    notifyListeners();
   }
 
   Future<void> logout() async {
@@ -305,7 +305,7 @@ class CommonModel extends ChangeNotifier {
 
     _enableAutoConnectCommonIp =
         (await Store.getBool(AUTO_CONNECT_COMMON_IP)) ?? true;
-    _storageRootPath = await MixUtils.getExternalPath();
+    _storageRootPath = await MixUtils.getExternalRootPath();
     _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
         await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
   }

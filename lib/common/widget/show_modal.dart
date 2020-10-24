@@ -290,7 +290,7 @@ Future<T> showCupertinoModal<T>({
   return Navigator.of(context, rootNavigator: useRootNavigator).push(
     CupertinoModalPopupRoute<T>(
       barrierColor: transparent
-          ? Color(0x00FFFFFF)
+          ? Color(0x00382F2F)
           : CupertinoDynamicColor.resolve(
               CupertinoDynamicColor.withBrightness(
                 color: Color(0x33000000),
@@ -368,7 +368,7 @@ Future<dynamic> showTwoTextFieldModal(
   String fPlaceholder,
   String sPlaceholder,
   @required Function(String, String) onOk,
-  @required Function onCancel,
+  Function onCancel,
   bool transparent = false,
   String defaultCancelText,
 }) async {
@@ -391,16 +391,24 @@ Future<dynamic> showTwoTextFieldModal(
             title: LanDialogTitle(title: title),
             action: true,
             children: <Widget>[
-              LanTextField(
-                controller: fEditingController,
-                placeholder: fPlaceholder,
-                maxLines: 1,
+              SizedBox(
+                height: 30,
+                child: LanTextField(
+                  style: TextStyle(fontSize: 16),
+                  controller: fEditingController,
+                  placeholder: fPlaceholder,
+                  maxLines: 1,
+                ),
               ),
               SizedBox(height: 15),
-              LanTextField(
-                controller: sEditingController,
-                placeholder: sPlaceholder,
-                maxLines: 1,
+              SizedBox(
+                height: 32,
+                child: LanTextField(
+                  style: TextStyle(fontSize: 16),
+                  controller: sEditingController,
+                  placeholder: sPlaceholder,
+                  maxLines: 1,
+                ),
               ),
               SizedBox(height: 10),
             ],
@@ -409,7 +417,7 @@ Future<dynamic> showTwoTextFieldModal(
               await MixUtils.safePop(context);
             },
             onCancel: () async {
-              onCancel();
+              if (onCancel != null) onCancel();
               await MixUtils.safePop(context);
             },
             defaultCancelText: defaultCancelText,
@@ -420,6 +428,7 @@ Future<dynamic> showTwoTextFieldModal(
   );
 }
 
+/// 展示提示文字
 Future<dynamic> showTipTextModal(
   BuildContext context,
   ThemeModel provider, {

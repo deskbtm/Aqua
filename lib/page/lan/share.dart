@@ -339,8 +339,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                             child: Text('click'),
                             onPressed: () async {
                               CodeSrvUtils utils = await CodeSrvUtils().init();
-
-                              print(MediaQuery.of(context).padding.top);
+                              // print(MediaQuery.of(context).padding.top);
                             },
                           )
                         ]

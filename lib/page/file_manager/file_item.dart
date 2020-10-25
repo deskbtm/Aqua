@@ -210,7 +210,7 @@ class FileItemState extends State<FileItem>
                     );
 
                     const spring =
-                        SpringDescription(mass: 30, stiffness: 1, damping: 1);
+                        SpringDescription(mass: 30.0, stiffness: 1.0, damping: 1.0);
 
                     final simulation = SpringSimulation(spring, 0, 1, per.dx);
                     _controller.animateWith(simulation);

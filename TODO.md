@@ -1,4 +1,16 @@
 
+
+2020/10/25
+在更多选项中添加(wifi, bluetooth)打印, 记得map所有非可执行文件 注意编码
+添加手动安装资源文件 支持 armv7 arrch64 x86-64 (x64 node 有点问题)
+兼容android11 新的存储机制 MANAGE_EXTERNAL_STORAGE 保留requestLegacyExternalStorage 
+搞好关于软件  把隐私政策放到关于里
+安装过sandbox后, 隐藏 资源包下载，
+把整个文件管理器抽出来 做成模块 用来打开指定文件夹
+
+pc端(后期) 添加 消息, 参考 Dell connect huawei 多屏协同
+
+
 2020/10/24 
 1. 实现手动安装，把文件管理器抽出来作为单独模块 
 <!-- 1. 图片原, file_item 原尺寸显示 显示缓存缩略图 使用glide解决 -->

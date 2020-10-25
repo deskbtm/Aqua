@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
@@ -58,7 +59,7 @@ class _LanExpressWrapperState extends State {
   ThemeModel _themeModel;
   CommonModel _commonModel;
 
-  bool _mutex;
+  bool _prepared;
   bool _settingMutex;
 
   StreamSubscription<ConnectivityResult> _connectSubscription;
@@ -66,7 +67,7 @@ class _LanExpressWrapperState extends State {
   @override
   void initState() {
     super.initState();
-    _mutex = true;
+    _prepared = false;
     _settingMutex = true;
     LocalNotification.initLocalNotification(onSelected: (String payload) {
       debugPrint(payload);
@@ -109,6 +110,7 @@ class _LanExpressWrapperState extends State {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
+
     if (_settingMutex) {
       _settingMutex = false;
       String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
@@ -119,12 +121,13 @@ class _LanExpressWrapperState extends State {
         FLog.error(text: '', exception: err, methodName: 'initCommon');
       });
       await _preLoadMsg();
-    }
-
-    if (_mutex && _commonModel.enableConnect != null) {
-      _mutex = false;
-      String internalIp = await Connectivity().getWifiIP();
-      await _commonModel.setInternalIp(internalIp);
+      if (_commonModel.enableConnect != null) {
+        String internalIp = await Connectivity().getWifiIP();
+        await _commonModel.setInternalIp(internalIp);
+      }
+      setState(() {
+        _prepared = true;
+      });
     }
   }
 
@@ -136,11 +139,11 @@ class _LanExpressWrapperState extends State {
 
   @override
   Widget build(BuildContext context) {
+    log("root render ====== (prepared = $_prepared)");
     LanFileMoreTheme themeData = _themeModel.themeData;
 
-    return themeData == null
-        ? Container()
-        : AnnotatedRegion<SystemUiOverlayStyle>(
+    return _prepared
+        ? AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle(
               systemNavigationBarIconBrightness:
                   themeData.systemNavigationBarIconBrightness,
@@ -177,6 +180,7 @@ class _LanExpressWrapperState extends State {
                 },
               ),
             ),
-          );
+          )
+        : Container();
   }
 }

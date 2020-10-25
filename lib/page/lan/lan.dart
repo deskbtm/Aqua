@@ -4,6 +4,7 @@ import 'package:lan_express/common/widget/no_resize_text.dart';
 import 'package:lan_express/common/widget/point_tab.dart';
 import 'package:lan_express/page/lan/share.dart';
 import 'package:lan_express/model/theme_model.dart';
+import 'package:lan_express/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class LanPage extends StatefulWidget {
@@ -43,7 +44,7 @@ class LanPageState extends State<LanPage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel?.themeData;
+    LanFileMoreTheme themeData = _themeModel?.themeData;
 
     return Material(
       child: CupertinoPageScaffold(
@@ -62,8 +63,7 @@ class LanPageState extends State<LanPage> {
           backgroundColor: themeData?.navBackgroundColor,
           border: null,
         ),
-        child: SafeArea(
-          child: TabBarView(
+        child:  TabBarView(
             controller: _controller,
             children: <Widget>[
               StaticSharePage(),
@@ -94,7 +94,11 @@ class LanPageState extends State<LanPage> {
               // ),
             ],
           ),
-        ),
+        
+        // SafeArea(
+        //   /// 解决有透明时tabbarview上移
+        //   child: 
+        // ),
       ),
     );
   }

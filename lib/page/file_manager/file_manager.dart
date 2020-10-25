@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
@@ -95,10 +96,10 @@ class _FileManagerPageState extends State<FileManagerPage>
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
     _fileModel = Provider.of<FileModel>(context);
-
     if (_initMutex) {
       _initMutex = false;
       await _fileModel.init();
+      log("root_path ========= ${_commonModel.storageRootPath}");
       await _changeRootPath(_commonModel.storageRootPath);
       await getValidAndTotalStorageSize();
     }
@@ -955,7 +956,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                 selectable: true,
                 data: data,
                 extensionSet: md.ExtensionSet.gitHubWeb,
-                onTapLink: (url) async {
+                onTapLink: (text, url, title) async {
                   if (await canLaunch(url)) {
                     await launch(url);
                   } else {
@@ -1030,7 +1031,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    dynamic themeData = _themeModel?.themeData;
+    LanFileMoreTheme themeData = _themeModel?.themeData;
     return Consumer<FileModel>(
       builder: (context, model, child) {
         return _leftFileList.isEmpty

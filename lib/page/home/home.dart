@@ -157,15 +157,15 @@ class _HomePageState extends State<HomePage> {
 
       if (_commonModel.enableConnect) {
         // 延迟一秒 不阻塞UI
-        Timer(Duration(seconds: 1), () async {
-          await SocketConnecter(_commonModel).searchDevicesAndConnect(
-            context,
-            themeProvider: _themeModel,
-            onNotExpected: (String msg) {
-              showText(msg);
-            },
-          );
-        });
+        // Timer(Duration(seconds: 1), () async {
+        //   await SocketConnecter(_commonModel).searchDevicesAndConnect(
+        //     context,
+        //     themeProvider: _themeModel,
+        //     onNotExpected: (String msg) {
+        //       showText(msg);
+        //     },
+        //   );
+        // });
       }
     }
   }
@@ -215,15 +215,15 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: themeData.bottomNavColor,
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
-                  title: NoResizeText('文件'),
+                  label: '文件',
                   icon: Icon(OMIcons.folder),
                 ),
                 BottomNavigationBarItem(
-                  title: NoResizeText('更多'),
+                  label: '更多',
                   icon: Icon(Icons.devices),
                 ),
                 BottomNavigationBarItem(
-                  title: NoResizeText('设置'),
+                  label: '设置',
                   icon: Icon(OMIcons.settings),
                 )
               ],

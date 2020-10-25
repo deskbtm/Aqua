@@ -152,7 +152,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
               child: Container(
                 alignment: Alignment.center,
                 child: PhotoViewGallery.builder(
-                  preloadCount: 5,
+                  preloadCount: 3,
                   scrollPhysics: const BouncingScrollPhysics(),
                   builder: (BuildContext context, int index) {
                     File img = File(imagesRes[index]);

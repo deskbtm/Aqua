@@ -1,15 +1,16 @@
+import 'dart:io';
+
 import 'package:android_mix/android_mix.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
-import 'package:lan_file_more/common/widget/function_widget.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
-import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as pathLib;
 
 class LoggerSettingPage extends StatefulWidget {
   final CodeSrvUtils cutils;
@@ -35,6 +36,16 @@ class LoggerSettingPageState extends State<LoggerSettingPage> {
         text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
+  Future<void> sendMail(String path) async {
+    final MailOptions mailOptions = MailOptions(
+      attachments: [path],
+      subject: '局域网.文件.更多 日志',
+      recipients: ['wanghan9423@outlook.com'],
+      isHTML: false,
+    );
+    await FlutterMailer.send(mailOptions);
+  }
+
   @override
   Widget build(BuildContext context) {
     dynamic themeData = _themeModel?.themeData;
@@ -46,17 +57,15 @@ class LoggerSettingPageState extends State<LoggerSettingPage> {
           SizedBox(height: 30),
           InkWell(
             onTap: () async {
-              final MailOptions mailOptions = MailOptions(
-                body: (await FLog.getAllLogs())
-                    .map((e) => e.text)
-                    .toList()
-                    .join(''),
-                subject: '局域网.文件.更多 日志',
-                recipients: ['wanghan9423@outlook.com'],
-                isHTML: false,
-              );
+              String externalDir = await AndroidMix.storage.getStorageDirectory;
+              String logFilePath = pathLib.join(externalDir, 'FLogs/flog.txt');
 
-              await FlutterMailer.send(mailOptions);
+              if (await File(logFilePath).exists()) {
+                await sendMail(logFilePath);
+              } else {
+                await FLog.exportLogs();
+                await sendMail(logFilePath);
+              }
             },
             child: ListTile(
               title: LanText('发送日志'),

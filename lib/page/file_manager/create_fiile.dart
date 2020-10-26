@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'dart:ui';
-
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/common/widget/checkbox.dart';
 import 'package:lan_file_more/common/widget/dialog.dart';
@@ -10,6 +8,7 @@ import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/common/widget/text_field.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:path/path.dart' as pathLib;
 
@@ -82,7 +81,7 @@ Future<void> createFileModal(
                 MixUtils.safePop(context);
               }).catchError((err) {
                 onError(err);
-                FLog.error(text: '创建文件失败');
+                recordError(text: '创建文件失败');
               });
             },
             onCancel: () async {
@@ -98,7 +97,7 @@ Future<void> createFileModal(
                 MixUtils.safePop(context);
               }).catchError((err) {
                 onError(err);
-                FLog.error(text: '创建文件失败');
+                recordError(text: '创建文件失败');
               });
             },
           );

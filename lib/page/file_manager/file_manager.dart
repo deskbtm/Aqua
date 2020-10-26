@@ -33,6 +33,7 @@ import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/utils/theme.dart';
@@ -133,7 +134,7 @@ class _FileManagerPageState extends State<FileManagerPage>
       showHidden: _fileModel.isDisplayHidden,
       reversed: _fileModel.sortReversed,
     ).catchError((err) {
-      FLog.error(
+      recordError(
           text: '',
           exception: err,
           methodName: 'readdir',
@@ -312,7 +313,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
         await item.entity.rename(newPath).catchError((err) {
           showText('$err');
-          FLog.error(text: '', exception: err, methodName: 'handleMove');
+          recordError(text: '', exception: err, methodName: 'handleMove');
         });
       }
       if (mounted) {
@@ -961,7 +962,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                     await launch(url);
                   } else {
                     showText('链接打开失败');
-                    FLog.error(text: 'markdown url');
+                    recordError(text: 'markdown url');
                   }
                 },
               ),

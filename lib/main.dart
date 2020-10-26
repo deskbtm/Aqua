@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:f_logs/model/flog/flog.dart';
 import 'package:lan_file_more/lan_file_more.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more_umeng/lan_file_more_umeng.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'constant/constant.dart';
 
@@ -35,6 +36,13 @@ void main() async {
       Zone.current.handleUncaughtError(details.exception, details.stack);
     }
   };
+
+  LanFileMoreUmeng.init(
+    androidAppKey: UMENG_APP_KEY,
+    channel: 'dev',
+    enableLog: MixUtils.isDev,
+    enableReportError: true,
+  );
 
   if (Platform.isAndroid) {
     // 沉浸式

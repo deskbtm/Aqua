@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/isolate/search_devices.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/notification.dart';
@@ -84,13 +84,12 @@ class SocketConnecter {
     });
 
     socket.on('connect_error', (error) {
-      FLog.error(text: '', exception: error, methodName: 'createClient');
+      recordError(text: '', exception: error, methodName: 'createClient');
       if (onNotExpected != null) onNotExpected("连接出现错误");
       socket.destroy();
     });
 
     socket.on('connect_timeout', (error) {
-      FLog.error(text: '', exception: error, methodName: 'createClient');
       if (onNotExpected != null) onNotExpected("连接超时");
     });
   }

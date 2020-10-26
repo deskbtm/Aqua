@@ -11,6 +11,7 @@ import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/req.dart';
 import 'package:lan_file_more/utils/store.dart';
@@ -58,7 +59,7 @@ class PurchasePageState extends State<PurchasePage> {
       'device_id': await MixUtils.getAndroidId(),
     }).catchError((err) {
       showText('登录失败');
-      FLog.error(text: '', exception: err);
+      recordError(text: '', exception: err);
     });
     return rec?.data;
   }
@@ -267,7 +268,7 @@ class PurchasePageState extends State<PurchasePage> {
                                     await launch(url);
                                   } else {
                                     showText('链接打开失败');
-                                    FLog.error(text: 'markdown url');
+                                    recordError(text: 'markdown url');
                                   }
                                 },
                               ),
@@ -342,7 +343,7 @@ class PurchasePageState extends State<PurchasePage> {
                                         }
                                       }).catchError((err) {
                                         showText('登录失败');
-                                        FLog.error(text: '', exception: err);
+                                        recordError(text: '', exception: err);
                                       });
                                     },
                                   );
@@ -380,7 +381,7 @@ class PurchasePageState extends State<PurchasePage> {
                                         showText('${data['message']}');
                                       }).catchError((err) {
                                         showText('注册出错');
-                                        FLog.error(text: '', exception: err);
+                                        recordError(text: '', exception: err);
                                       });
                                     },
                                     onCancel: () {},

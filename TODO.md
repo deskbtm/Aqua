@@ -1,7 +1,8 @@
-
+2020/10/26 
+沙盒安装还需要优化 
 
 2020/10/25
-在更多选项中添加(wifi, bluetooth)打印, 记得map所有非可执行文件 注意编码
+<!-- 在更多选项中添加(wifi, bluetooth)打印, 记得map所有非可执行文件 注意编码 -->
 添加手动安装资源文件 支持 armv7 arrch64 x86-64 (x64 node 有点问题)
 兼容android11 新的存储机制 MANAGE_EXTERNAL_STORAGE 保留requestLegacyExternalStorage 
 搞好关于软件  把隐私政策放到关于里

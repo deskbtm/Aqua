@@ -63,7 +63,7 @@
   //                 MixUtils.safePop(context);
   //               }).catchError((err) {
   //                 showText('创建文件夹失败');
-  //                 FLog.error(text: '创建文件失败');
+  //                 recordError(text: '创建文件失败');
   //               });
   //             },
   //             onCancel: () async {
@@ -77,7 +77,7 @@
   //                 MixUtils.safePop(context);
   //               }).catchError((err) {
   //                 showText('创建文件失败');
-  //                 FLog.error(text: '创建文件失败');
+  //                 recordError(text: '创建文件失败');
   //               });
   //             },
   //           );

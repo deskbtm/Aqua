@@ -6,8 +6,8 @@ import 'dart:typed_data';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:provider/provider.dart';
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:lan_file_more/common/socket/socket.dart';
 import 'package:lan_file_more/common/widget/images.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
@@ -219,7 +219,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                 });
                               }
                               await createStaticServer().catchError((err) {
-                                FLog.error(
+                                recordError(
                                   text: '静态服务出错',
                                   methodName: 'createStaticServer',
                                   exception: err,
@@ -332,6 +332,10 @@ class _StaticSharePageState extends State<StaticSharePage> {
                             child: Text('click'),
                             onPressed: () async {
                               CodeSrvUtils utils = await CodeSrvUtils().init();
+                              recordError(
+                                  text: "demomodemo",
+                                  className: "",
+                                  methodName: "");
                               // print(MediaQuery.of(context).padding.top);
                             },
                           )

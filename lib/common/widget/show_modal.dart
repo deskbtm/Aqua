@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_file_more/common/widget/dialog.dart';
+import 'package:lan_file_more/common/widget/loading_flipping.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/text_field.dart';
 import 'package:lan_file_more/model/theme_model.dart';
@@ -309,7 +310,7 @@ Future<T> showCupertinoModal<T>({
 Future<dynamic> showSingleTextFieldModal(
   BuildContext context,
   ThemeModel provider, {
-  bool popPreWindow = false,
+  bool popPreviousWindow = false,
   String title = '',
   String placeholder,
   String initText,
@@ -318,7 +319,7 @@ Future<dynamic> showSingleTextFieldModal(
   bool transparent = false,
   String defaultCancelText,
 }) async {
-  if (popPreWindow) MixUtils.safePop(context);
+  if (popPreviousWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;
   TextEditingController textEditingController = TextEditingController();
 
@@ -363,7 +364,7 @@ Future<dynamic> showSingleTextFieldModal(
 Future<dynamic> showTwoTextFieldModal(
   BuildContext context,
   ThemeModel provider, {
-  bool popPreWindow = false,
+  bool popPreviousWindow = false,
   String title = '',
   String fPlaceholder,
   String sPlaceholder,
@@ -372,7 +373,7 @@ Future<dynamic> showTwoTextFieldModal(
   bool transparent = false,
   String defaultCancelText,
 }) async {
-  if (popPreWindow) MixUtils.safePop(context);
+  if (popPreviousWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;
   TextEditingController fEditingController = TextEditingController();
   TextEditingController sEditingController = TextEditingController();
@@ -432,7 +433,7 @@ Future<dynamic> showTwoTextFieldModal(
 Future<dynamic> showTipTextModal(
   BuildContext context,
   ThemeModel provider, {
-  bool popPreWindow = false,
+  bool popPreviousWindow = false,
   String title = '',
   String tip = '',
   Widget confirmedView,
@@ -443,7 +444,7 @@ Future<dynamic> showTipTextModal(
   String defaultCancelText,
   List<Widget> additionList,
 }) async {
-  if (popPreWindow) MixUtils.safePop(context);
+  if (popPreviousWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;
   bool confirm = false;
 
@@ -495,7 +496,7 @@ Future<dynamic> showTipTextModal(
 Future<dynamic> showSelectModal(
   BuildContext context,
   ThemeModel provider, {
-  bool popPreWindow = false,
+  bool popPreviousWindow = false,
   String title = '',
   String subTitle = '',
   List<dynamic> options,
@@ -510,7 +511,7 @@ Future<dynamic> showSelectModal(
   Function(int, List<dynamic> tmp) onLongPressDeleteItem,
   List<Widget> leadingList,
 }) async {
-  if (popPreWindow) MixUtils.safePop(context);
+  if (popPreviousWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;
   if (doAction != null) doAction(context);
   List<dynamic> tmpOptions = options;
@@ -589,6 +590,41 @@ Future<dynamic> showSelectModal(
               onCancel();
               MixUtils.safePop(context);
             },
+          );
+        },
+      );
+    },
+  );
+}
+
+Future<dynamic> showLoadingModal(
+  BuildContext context,
+  ThemeModel provider, {
+  bool popPreviousWindow = false,
+  bool transparent = false,
+}) async {
+  if (popPreviousWindow) MixUtils.safePop(context);
+  dynamic themeData = provider.themeData;
+
+  return showCupertinoModal(
+    context: context,
+    filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder:
+            (BuildContext context, void Function(void Function()) changeState) {
+          return LanDialog(
+            actionPos: MainAxisAlignment.end,
+            fontColor: themeData.itemFontColor,
+            bgColor: themeData.dialogBgColor,
+            children: [
+              Center(
+                child: LoadingDoubleFlipping.square(
+                  size: 30,
+                  backgroundColor: Color(0xFF007AFF),
+                ),
+              )
+            ],
           );
         },
       );

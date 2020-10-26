@@ -60,8 +60,10 @@ dependencies:
   dio: ^3.0.10
   version: ^1.2.0
   package_info: ^0.4.3
-  lcfarm_flutter_umeng:
-    path: plugins/lcfarm_flutter_umeng
+  lan_file_more_umeng: 
+    path: plugins/lan_file_more_umeng
+  # lcfarm_flutter_umeng:
+  #   path: plugins/lcfarm_flutter_umeng
   flutter_mailer: ^1.0.0
   storage_mount_listener: 
     path: plugins/storage_mount_listener
@@ -71,8 +73,8 @@ dependencies:
     path: plugins/photo_manager
   flutter_bugly:
     path: plugins/flutter_bugly
-  # android_mix_recorder:
   share_extend: ^1.1.9
+  # android_mix_recorder:
   #   path: plugins/android_mix_recorder
   # uuid: ^2.2.0
   # photo_view: ^0.10.0

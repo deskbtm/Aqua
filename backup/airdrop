@@ -73,7 +73,7 @@
 //   // });
 
 //   socket.on('connect_error', (error) {
-//     FLog.error(text: error.toString(), methodName: 'createMySocketClient');
+//     recordError(text: error.toString(), methodName: 'createMySocketClient');
 //   });
 
 //   return socket;

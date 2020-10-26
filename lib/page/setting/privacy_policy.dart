@@ -7,6 +7,7 @@ import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/req.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
@@ -88,7 +89,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                       await launch(url);
                     } else {
                       showText('链接打开失败');
-                      FLog.error(text: 'privacy policy url');
+                      recordError(text: 'privacy policy url');
                     }
                   },
                 );

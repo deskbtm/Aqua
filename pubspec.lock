@@ -329,13 +329,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.16.1"
-  lcfarm_flutter_umeng:
+  lan_file_more_umeng:
     dependency: "direct main"
     description:
-      path: "plugins/lcfarm_flutter_umeng"
+      path: "plugins/lan_file_more_umeng"
       relative: true
     source: path
-    version: "0.1.9"
+    version: "0.0.1"
   logging:
     dependency: transitive
     description:

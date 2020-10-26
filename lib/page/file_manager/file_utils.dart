@@ -289,3 +289,5 @@ List<String> filterImages(List<SelfFileEntity> list) {
   }
   return result;
 }
+
+// List<String> PRINTABLE_EXT = ['.txt', ''];

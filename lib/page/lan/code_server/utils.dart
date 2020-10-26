@@ -330,7 +330,7 @@ ff02::3     ipv6-allhosts
 
       return startProot(arg);
     } else {
-      throw 'not found nodejs';
+      throw Exception('not found nodejs');
     }
   }
 }

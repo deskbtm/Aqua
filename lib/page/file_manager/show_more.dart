@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:android_mix/android_mix.dart';
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/common/widget/action_button.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
@@ -11,6 +10,7 @@ import 'package:lan_file_more/external/webdav/webdav.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/webdav.dart';
 import 'package:open_file/open_file.dart';
@@ -70,7 +70,7 @@ Future<void> showMoreModal(
               }
               await uploadToWebDAV(file).catchError((err) {
                 showText('上传失败');
-                FLog.error(text: '', exception: err);
+                recordError(text: '', exception: err);
               });
               showText('上传成功');
             },

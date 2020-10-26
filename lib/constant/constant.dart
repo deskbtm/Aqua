@@ -17,7 +17,7 @@ const String BAK_EXTERNAL_PATH = '/storage/emulated/0';
 
 const String EMAIL = 'wanghan9423@outlook.com';
 
-const String UMENG_APP_KEY = '5f4b47cc12981d3ca30a94b5';
+const String UMENG_APP_KEY = '5f96e3c41c520d30739904f0';
 
 const String PURCHASED = 'purchased';
 const String APP_INIT = 'app-init';
@@ -51,6 +51,9 @@ const ALIYUN_REPO = 'aliyun';
 const USTC_REPO = 'ustc';
 const ALPINE_REPO = 'alpine';
 
+// 默认沙盒资源包地址
+const SOURCE_PKG_URL = 'https://wws.lanzous.com/b01hrft4j';
+
 // webdav
 const WEBDAV_ADDR = 'webdav-addr';
 const WEBDAV_USERNAME = 'webdav-username';
@@ -68,4 +71,3 @@ const NOT_FOUND_DEVICES = 'NOT_FOUND_DEVICES';
 // bugly
 const BUGLY_ID = 'b6055da02c';
 const BUGLY_KEY = '91eb2f3a-639b-4f92-93fa-aef7fc802a94';
-// const

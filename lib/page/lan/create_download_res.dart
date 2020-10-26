@@ -10,6 +10,7 @@ import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/external/system_info/system_info.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'code_server/utils.dart';
 
@@ -109,7 +110,7 @@ Future<void> createProotEnv(
                     .catchError((err) {
                   // showText('资源安装出现错误 $err');
 
-                  FLog.error(
+                  recordError(
                     methodName: 'prepareResource',
                     text: 'resource',
                   );
@@ -118,7 +119,7 @@ Future<void> createProotEnv(
 
                 if (prepared != true) {
                   await cutils.rmAllResource().catchError((err) {
-                    FLog.error(text: 'rm all resource');
+                    recordError(text: 'rm all resource');
                   });
                   showText('资源安装失败 已删除');
                   MixUtils.safePop(context);
@@ -128,8 +129,10 @@ Future<void> createProotEnv(
                 ProcessResult ir = await cutils.installNodeJs().catchError(
                   (err) {
                     showText('node 安装失败');
-                    FLog.error(
-                        text: '', exception: err, methodName: 'installNodeJs');
+                    recordError(
+                        text: 'node 安装失败',
+                        exception: err,
+                        methodName: 'installNodeJs');
                   },
                 );
 

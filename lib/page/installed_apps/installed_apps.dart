@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:device_apps/device_apps.dart';
-import 'package:f_logs/f_logs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_file_more/common/widget/action_button.dart';
@@ -14,6 +13,7 @@ import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_item.dart';
 
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
@@ -172,7 +172,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                                                     print(data);
                                                   },
                                                   onError: (e) {
-                                                    FLog.error(text: '$e');
+                                                    recordError(text: '$e');
                                                   },
                                                 );
                                             }, onCancel: () {});

@@ -3,13 +3,14 @@ import 'dart:developer';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/theme.dart';
+import 'package:lan_file_more_umeng/lan_file_more_umeng.dart';
 
 import 'generated/l10n.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:lcfarm_flutter_umeng/lcfarm_flutter_umeng.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
 import 'external/bot_toast/src/toast_navigator_observer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -73,12 +74,6 @@ class _LanFileMoreWrapperState extends State {
       debugPrint(payload);
     });
 
-    LcfarmFlutterUmeng.init(
-      androidAppKey: UMENG_APP_KEY,
-      channel: MixUtils.isDev ? 'development' : 'production',
-      logEnable: MixUtils.isDev,
-    );
-
     _connectSubscription = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) async {
@@ -100,7 +95,7 @@ class _LanFileMoreWrapperState extends State {
         await _commonModel.setGobalWebData(receive.data);
       }).catchError((err) {
         BotToast.showText(text: '首次请求出现错误, 导出日志与开发者联系');
-        FLog.error(text: '', exception: err, methodName: '_preLoadMsg');
+        recordError(text: '', exception: err, methodName: '_preLoadMsg');
       });
     }
   }
@@ -115,10 +110,10 @@ class _LanFileMoreWrapperState extends State {
       _settingMutex = false;
       String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
       await _themeModel.setTheme(theme).catchError((err) {
-        FLog.error(text: '', exception: err, methodName: 'setTheme');
+        recordError(text: '', exception: err, methodName: 'setTheme');
       });
       await _commonModel.initCommon().catchError((err) {
-        FLog.error(text: '', exception: err, methodName: 'initCommon');
+        recordError(text: '', exception: err, methodName: 'initCommon');
       });
       await _preLoadMsg();
       if (_commonModel.enableConnect != null) {

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 /// 新建线程发送
@@ -49,7 +49,7 @@ void isolateAirDrop(List msg) async {
   });
 
   socket.on('error', (error) {
-    FLog.error(text: error.toString(), methodName: 'isolateAirDrop');
+    recordError(text: error.toString(), methodName: 'isolateAirDrop');
     sendPort.send('fail');
   });
 }

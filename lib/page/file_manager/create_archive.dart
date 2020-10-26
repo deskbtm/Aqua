@@ -15,6 +15,7 @@ import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/notification.dart';
 import 'package:path/path.dart' as pathLib;
@@ -235,7 +236,7 @@ Future<void> createArchiveModal(
                         .zip(paths, generatedArchivePath,
                             pwd: pwd?.trim(), encrypt: ZipEncryptionMethod.aes)
                         .catchError((err) {
-                      FLog.error(
+                      recordError(
                         text: '',
                         exception: err,
                         methodName: 'archiveModal',
@@ -279,7 +280,7 @@ Future<void> createArchiveModal(
                         compressionType: cType,
                       )
                           .catchError((err) {
-                        FLog.error(
+                        recordError(
                             text: '',
                             exception: err,
                             methodName: 'archiveModal');

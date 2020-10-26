@@ -193,7 +193,7 @@
                       encrypt: ZipEncryptionMethod.aes,
                     )
                         .catchError((err) {
-                      FLog.error(text: '$err', methodName: 'archiveModal');
+                      recordError(text: '$err', methodName: 'archiveModal');
                     });
                     if (result) {
                       showText('归档成功');

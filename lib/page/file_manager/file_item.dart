@@ -3,9 +3,9 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/model/common_model.dart';
-import 'package:lan_express/model/theme_model.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/model/common_model.dart';
+import 'package:lan_file_more/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 enum FileItemType { folder, file }

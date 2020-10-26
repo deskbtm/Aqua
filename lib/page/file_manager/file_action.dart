@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:android_mix/android_mix.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lan_express/constant/constant.dart';
-import 'package:lan_express/utils/mix_utils.dart';
+import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:path/path.dart' as pathLib;
 
 enum ShowOnlyType { all, folder, file, link }

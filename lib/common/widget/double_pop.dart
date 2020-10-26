@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
 
 // ignore: must_be_immutable
 class DoublePop extends StatelessWidget {

@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/external/bot_toast/src/toast.dart';
-import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/utils/mix_utils.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/external/bot_toast/src/toast.dart';
+import 'package:lan_file_more/page/file_manager/file_action.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
 
 // ignore: must_be_immutable
 class FileInfoCard extends StatefulWidget {

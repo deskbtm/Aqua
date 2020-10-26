@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/common/widget/point_tab.dart';
-import 'package:lan_express/page/lan/share.dart';
-import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/utils/theme.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/point_tab.dart';
+import 'package:lan_file_more/page/lan/share.dart';
+import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class LanPage extends StatefulWidget {

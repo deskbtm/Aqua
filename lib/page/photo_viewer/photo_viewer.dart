@@ -3,17 +3,17 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_express/common/widget/action_button.dart';
-import 'package:lan_express/common/widget/fade_in.dart';
-import 'package:lan_express/common/widget/file_info_card.dart';
-import 'package:lan_express/common/widget/function_widget.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/common/widget/show_modal.dart';
-import 'package:lan_express/external/bot_toast/src/toast.dart';
-import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/utils/mix_utils.dart';
-import 'package:lan_express/utils/theme.dart';
+import 'package:lan_file_more/common/widget/action_button.dart';
+import 'package:lan_file_more/common/widget/fade_in.dart';
+import 'package:lan_file_more/common/widget/file_info_card.dart';
+import 'package:lan_file_more/common/widget/function_widget.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/show_modal.dart';
+import 'package:lan_file_more/external/bot_toast/src/toast.dart';
+import 'package:lan_file_more/page/file_manager/file_action.dart';
+import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -152,7 +152,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
               child: Container(
                 alignment: Alignment.center,
                 child: PhotoViewGallery.builder(
-                  preloadCount: 5,
+                  preloadCount: 3,
                   scrollPhysics: const BouncingScrollPhysics(),
                   builder: (BuildContext context, int index) {
                     File img = File(imagesRes[index]);

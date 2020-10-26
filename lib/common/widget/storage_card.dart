@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_express/common/widget/progress.dart';
+import 'package:lan_file_more/common/widget/progress.dart';
 
 // ignore: must_be_immutable
 class StorageCard extends StatelessWidget {

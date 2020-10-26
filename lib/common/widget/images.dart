@@ -2,10 +2,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:lan_express/common/widget/function_widget.dart';
-import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/page/file_manager/file_utils.dart';
+import 'package:lan_file_more/common/widget/function_widget.dart';
+import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/file_manager/file_action.dart';
+import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:photo_manager/photo_manager.dart';
 

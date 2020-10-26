@@ -2,20 +2,20 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:lan_express/common/socket/socket.dart';
-import 'package:lan_express/common/widget/checkbox.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/common/widget/show_modal.dart';
-import 'package:lan_express/constant/constant.dart';
-import 'package:lan_express/external/bot_toast/src/toast.dart';
-import 'package:lan_express/model/file_model.dart';
-import 'package:lan_express/page/file_manager/file_manager.dart';
-import 'package:lan_express/page/lan/lan.dart';
-import 'package:lan_express/page/setting/setting.dart';
-import 'package:lan_express/model/common_model.dart';
-import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/utils/mix_utils.dart';
-import 'package:lan_express/utils/store.dart';
+import 'package:lan_file_more/common/socket/socket.dart';
+import 'package:lan_file_more/common/widget/checkbox.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/show_modal.dart';
+import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/external/bot_toast/src/toast.dart';
+import 'package:lan_file_more/model/file_model.dart';
+import 'package:lan_file_more/page/file_manager/file_manager.dart';
+import 'package:lan_file_more/page/lan/lan.dart';
+import 'package:lan_file_more/page/setting/setting.dart';
+import 'package:lan_file_more/model/common_model.dart';
+import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/store.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -157,15 +157,15 @@ class _HomePageState extends State<HomePage> {
 
       if (_commonModel.enableConnect) {
         // 延迟一秒 不阻塞UI
-        Timer(Duration(seconds: 1), () async {
-          await SocketConnecter(_commonModel).searchDevicesAndConnect(
-            context,
-            themeProvider: _themeModel,
-            onNotExpected: (String msg) {
-              showText(msg);
-            },
-          );
-        });
+        // Timer(Duration(seconds: 1), () async {
+        //   await SocketConnecter(_commonModel).searchDevicesAndConnect(
+        //     context,
+        //     themeProvider: _themeModel,
+        //     onNotExpected: (String msg) {
+        //       showText(msg);
+        //     },
+        //   );
+        // });
       }
     }
   }
@@ -215,15 +215,15 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: themeData.bottomNavColor,
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
-                  title: NoResizeText('文件'),
+                  label: '文件',
                   icon: Icon(OMIcons.folder),
                 ),
                 BottomNavigationBarItem(
-                  title: NoResizeText('更多'),
+                  label: '更多',
                   icon: Icon(Icons.devices),
                 ),
                 BottomNavigationBarItem(
-                  title: NoResizeText('设置'),
+                  label: '设置',
                   icon: Icon(OMIcons.settings),
                 )
               ],

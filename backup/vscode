@@ -86,7 +86,7 @@ print(await AndroidMix.storage.getExternalCacheDir);
                             //   print('error');
                             // }
                             // List<ProcessResult> b = await Shell().run(
-                            //     '/data/data/com.sewerganger.lan_express/files/proot');
+                            //     '/data/data/com.sewerganger.lan_file_more/files/proot');
                             // for (var item in b) {
                             //   print(item.stdout.toString());
                             // }
@@ -249,10 +249,10 @@ print(await AndroidMix.storage.getExternalCacheDir);
                             // });
 
                             // await Directory(
-                            //         '/data/data/com.sewerganger.lan_express/files/home')
+                            //         '/data/data/com.sewerganger.lan_file_more/files/home')
                             //     .create();
                             // List<ProcessResult> b = await Shell().run(
-                            //     'chmod -R 777 /data/data/com.sewerganger.lan_express/files/home');
+                            //     'chmod -R 777 /data/data/com.sewerganger.lan_file_more/files/home');
                             // for (var item in b) {
                             //   print(item.stdout.toString());
                             // }

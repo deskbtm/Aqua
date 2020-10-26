@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lan_express/page/photo_viewer/lib/data/data.dart';
+import 'package:lan_file_more/page/photo_viewer/lib/data/data.dart';
 
 class Emojies extends StatefulWidget {
   @override

@@ -4,15 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:lan_express/common/widget/draggable_scrollbar.dart';
-import 'package:lan_express/common/widget/images.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/external/bot_toast/bot_toast.dart';
-import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/page/file_manager/file_item.dart';
-import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/utils/mix_utils.dart';
-import 'package:lan_express/utils/theme.dart';
+import 'package:lan_file_more/common/widget/draggable_scrollbar.dart';
+import 'package:lan_file_more/common/widget/images.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
+import 'package:lan_file_more/page/file_manager/file_action.dart';
+import 'package:lan_file_more/page/file_manager/file_item.dart';
+import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ListFileItemInfo {

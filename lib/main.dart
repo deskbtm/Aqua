@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:f_logs/model/flog/flog.dart';
-import 'package:lan_express/lan_express.dart';
-import 'package:lan_express/utils/mix_utils.dart';
+import 'package:lan_file_more/lan_file_more.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'constant/constant.dart';
 
@@ -49,8 +49,8 @@ void main() async {
         MixUtils.checkPermissionAndRequest(PermissionGroup.storage),
       ]);
 
-      runApp(LanExpress());
-      // Catcher(LanExpress(),
+      runApp(LanFileMore());
+      // Catcher(LanFileMore(),
       //     debugConfig: debugOptions, releaseConfig: releaseOptions);
     },
     zoneSpecification: ZoneSpecification(

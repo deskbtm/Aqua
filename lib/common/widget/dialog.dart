@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
 
 class LanDialogTitle extends StatelessWidget {
   final String title;

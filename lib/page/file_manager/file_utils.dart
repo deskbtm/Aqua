@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:lan_express/common/widget/images.dart';
-import 'package:lan_express/page/file_manager/file_action.dart';
+import 'package:lan_file_more/common/widget/images.dart';
+import 'package:lan_file_more/page/file_manager/file_action.dart';
 
 void matchFileExt(
   String ext, {

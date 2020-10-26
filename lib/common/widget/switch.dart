@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:lan_express/external/switch/xliv-switch.dart';
+import 'package:lan_file_more/external/switch/xliv-switch.dart';
 
 class LanSwitch extends StatelessWidget {
   final bool value;

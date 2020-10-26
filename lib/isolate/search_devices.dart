@@ -1,6 +1,6 @@
 import 'dart:isolate';
 
-import 'package:lan_express/constant/constant.dart';
+import 'package:lan_file_more/constant/constant.dart';
 import 'package:ping_discover_network/ping_discover_network.dart';
 
 /// 搜索设备 List 参数0 [SendPort] 参数1 [Map]

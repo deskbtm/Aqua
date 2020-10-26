@@ -4,15 +4,15 @@ import 'dart:isolate';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_express/constant/constant.dart';
-import 'package:lan_express/isolate/search_devices.dart';
-import 'package:lan_express/utils/mix_utils.dart';
-import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/utils/notification.dart';
-import 'package:lan_express/model/common_model.dart';
+import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/isolate/search_devices.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/notification.dart';
+import 'package:lan_file_more/model/common_model.dart';
 import 'package:clipboard_listener/clipboard_listener.dart';
-import 'package:lan_express/common/widget/show_modal.dart';
-import 'package:lan_express/external/bot_toast/bot_toast.dart';
+import 'package:lan_file_more/common/widget/show_modal.dart';
+import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketConnecter {

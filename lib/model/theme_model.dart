@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lan_express/constant/constant.dart';
-import 'package:lan_express/utils/store.dart';
-import 'package:lan_express/utils/theme.dart';
+import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/utils/store.dart';
+import 'package:lan_file_more/utils/theme.dart';
 
 class ThemeModel extends ChangeNotifier {
   String _theme;

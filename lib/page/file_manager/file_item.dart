@@ -3,9 +3,9 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/model/common_model.dart';
-import 'package:lan_express/model/theme_model.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/model/common_model.dart';
+import 'package:lan_file_more/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 enum FileItemType { folder, file }
@@ -210,7 +210,7 @@ class FileItemState extends State<FileItem>
                     );
 
                     const spring =
-                        SpringDescription(mass: 30, stiffness: 1, damping: 1);
+                        SpringDescription(mass: 30.0, stiffness: 1.0, damping: 1.0);
 
                     final simulation = SpringSimulation(spring, 0, 1, per.dx);
                     _controller.animateWith(simulation);

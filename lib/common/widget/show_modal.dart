@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_express/common/widget/dialog.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/common/widget/text_field.dart';
-import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/utils/mix_utils.dart';
+import 'package:lan_file_more/common/widget/dialog.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/text_field.dart';
+import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
 
 class SplitSelectionModal extends StatefulWidget {
   final List<Widget> leftChildren;

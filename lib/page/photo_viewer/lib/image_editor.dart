@@ -4,14 +4,14 @@
 // import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
-// import 'package:lan_express/external/color_picker/colorpicker.dart';
-// import 'package:lan_express/page/photo_viewer/lib/modules/all_emojies.dart';
-// import 'package:lan_express/page/photo_viewer/lib/modules/bottombar_container.dart';
-// import 'package:lan_express/page/photo_viewer/lib/modules/colors_picker.dart';
-// import 'package:lan_express/page/photo_viewer/lib/modules/emoji.dart';
-// import 'package:lan_express/page/photo_viewer/lib/modules/text.dart';
-// import 'package:lan_express/page/photo_viewer/lib/modules/textview.dart';
-// import 'package:lan_express/model/theme.dart';
+// import 'package:lan_file_more/external/color_picker/colorpicker.dart';
+// import 'package:lan_file_more/page/photo_viewer/lib/modules/all_emojies.dart';
+// import 'package:lan_file_more/page/photo_viewer/lib/modules/bottombar_container.dart';
+// import 'package:lan_file_more/page/photo_viewer/lib/modules/colors_picker.dart';
+// import 'package:lan_file_more/page/photo_viewer/lib/modules/emoji.dart';
+// import 'package:lan_file_more/page/photo_viewer/lib/modules/text.dart';
+// import 'package:lan_file_more/page/photo_viewer/lib/modules/textview.dart';
+// import 'package:lan_file_more/model/theme.dart';
 // import 'package:outline_material_icons/outline_material_icons.dart';
 
 // import 'package:path_provider/path_provider.dart';

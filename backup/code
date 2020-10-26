@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:android_mix/archive/enums.dart';
 import 'package:http/http.dart' as http;
-import 'package:lan_express/utils/store.dart';
+import 'package:lan_file_more/utils/store.dart';
 import 'package:android_mix/android_mix.dart';
-import 'package:lan_express/constant/constant.dart';
+import 'package:lan_file_more/constant/constant.dart';
 
 enum AlpineMirror { ustc, aliyun, tsinghua, alpine }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
@@ -9,32 +10,32 @@ import 'package:f_logs/model/flog/flog.dart';
 import 'package:android_mix/android_mix.dart';
 import 'package:android_mix/archive/enums.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:lan_express/common/widget/action_button.dart';
-import 'package:lan_express/common/widget/dialog.dart';
-import 'package:lan_express/common/widget/file_info_card.dart';
-import 'package:lan_express/common/widget/function_widget.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/common/widget/show_modal.dart';
-import 'package:lan_express/common/widget/storage_card.dart';
-import 'package:lan_express/constant/constant.dart';
-import 'package:lan_express/external/back_button_interceptor/back_button_interceptor.dart';
-import 'package:lan_express/external/bot_toast/src/toast.dart';
-import 'package:lan_express/isolate/airdrop.dart';
-import 'package:lan_express/model/file_model.dart';
-import 'package:lan_express/page/file_manager/create_archive.dart';
-import 'package:lan_express/page/file_manager/create_fiile.dart';
-import 'package:lan_express/page/file_manager/file_action.dart';
-import 'package:lan_express/page/file_manager/file_list_view.dart';
-import 'package:lan_express/page/file_manager/file_utils.dart';
-import 'package:lan_express/page/file_manager/create_rename.dart';
-import 'package:lan_express/page/installed_apps/installed_apps.dart';
-import 'package:lan_express/page/lan/code_server/utils.dart';
-import 'package:lan_express/page/photo_viewer/photo_viewer.dart';
-import 'package:lan_express/model/common_model.dart';
-import 'package:lan_express/model/theme_model.dart';
-import 'package:lan_express/utils/mix_utils.dart';
-import 'package:lan_express/utils/notification.dart';
-import 'package:lan_express/utils/theme.dart';
+import 'package:lan_file_more/common/widget/action_button.dart';
+import 'package:lan_file_more/common/widget/dialog.dart';
+import 'package:lan_file_more/common/widget/file_info_card.dart';
+import 'package:lan_file_more/common/widget/function_widget.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/show_modal.dart';
+import 'package:lan_file_more/common/widget/storage_card.dart';
+import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/external/back_button_interceptor/back_button_interceptor.dart';
+import 'package:lan_file_more/external/bot_toast/src/toast.dart';
+import 'package:lan_file_more/isolate/airdrop.dart';
+import 'package:lan_file_more/model/file_model.dart';
+import 'package:lan_file_more/page/file_manager/create_archive.dart';
+import 'package:lan_file_more/page/file_manager/create_fiile.dart';
+import 'package:lan_file_more/page/file_manager/file_action.dart';
+import 'package:lan_file_more/page/file_manager/file_list_view.dart';
+import 'package:lan_file_more/page/file_manager/file_utils.dart';
+import 'package:lan_file_more/page/file_manager/create_rename.dart';
+import 'package:lan_file_more/page/installed_apps/installed_apps.dart';
+import 'package:lan_file_more/page/lan/code_server/utils.dart';
+import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
+import 'package:lan_file_more/model/common_model.dart';
+import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/notification.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:file_utils/file_utils.dart';
@@ -95,10 +96,10 @@ class _FileManagerPageState extends State<FileManagerPage>
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
     _fileModel = Provider.of<FileModel>(context);
-
     if (_initMutex) {
       _initMutex = false;
       await _fileModel.init();
+      log("root_path ========= ${_commonModel.storageRootPath}");
       await _changeRootPath(_commonModel.storageRootPath);
       await getValidAndTotalStorageSize();
     }
@@ -955,7 +956,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                 selectable: true,
                 data: data,
                 extensionSet: md.ExtensionSet.gitHubWeb,
-                onTapLink: (url) async {
+                onTapLink: (text, url, title) async {
                   if (await canLaunch(url)) {
                     await launch(url);
                   } else {
@@ -1030,7 +1031,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    dynamic themeData = _themeModel?.themeData;
+    LanFileMoreTheme themeData = _themeModel?.themeData;
     return Consumer<FileModel>(
       builder: (context, model, child) {
         return _leftFileList.isEmpty

@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_express/common/widget/no_resize_text.dart';
-import 'package:lan_express/common/widget/switch.dart';
-import 'package:lan_express/external/bot_toast/bot_toast.dart';
-import 'package:lan_express/model/common_model.dart';
-import 'package:lan_express/page/lan/code_server/utils.dart';
-import 'package:lan_express/model/theme_model.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/switch.dart';
+import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
+import 'package:lan_file_more/model/common_model.dart';
+import 'package:lan_file_more/page/lan/code_server/utils.dart';
+import 'package:lan_file_more/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 class ControlSettingPage extends StatefulWidget {

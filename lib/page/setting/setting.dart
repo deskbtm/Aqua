@@ -10,6 +10,7 @@ import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/purchase/purchase.dart';
+import 'package:lan_file_more/page/setting/about.dart';
 import 'package:lan_file_more/page/setting/code_setting.dart';
 import 'package:lan_file_more/page/setting/control_setting.dart';
 import 'package:lan_file_more/page/setting/express_setting.dart';
@@ -523,9 +524,25 @@ class SettingPageState extends State<SettingPage> {
           SizedBox(height: 30),
           blockTitle('其他'),
           SizedBox(height: 15),
-          ListTile(
-            title: LanText('关于'),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
+          InkWell(
+            onTap: () {
+              Navigator.of(context, rootNavigator: true).push(
+                CupertinoPageRoute(
+                  builder: (BuildContext context) {
+                    return AboutPage();
+                  },
+                ),
+              );
+            },
+            child: ListTile(
+              title: LanText('关于'),
+              contentPadding: EdgeInsets.only(left: 15, right: 10),
+              trailing: Icon(
+                OMIcons.chevronRight,
+                color: themeData?.itemFontColor,
+                size: 16,
+              ),
+            ),
           ),
           InkWell(
             onTap: () async {

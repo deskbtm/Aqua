@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:f_logs/model/flog/flog.dart';
@@ -127,18 +128,39 @@ class _FileManagerPageState extends State<FileManagerPage>
     _validSize = await AndroidMix.storage.getValidExternalStorageSize;
   }
 
-  Future<List<SelfFileEntity>> readdir(Directory path) async {
+  Future<List<SelfFileEntity>> readdir(Directory dir) async {
+    // FileStat fileStat = await dir.stat();
+    // print(fileStat.modeString());
     SelfFileList result = await FileAction.readdir(
-      path,
+      dir,
       sortType: _fileModel.sortType,
       showHidden: _fileModel.isDisplayHidden,
       reversed: _fileModel.sortReversed,
-    ).catchError((err) {
+    ).catchError((err) async {
+      String errorString = err.toString().toLowerCase();
+      bool overAndroid11 =
+          int.parse((await DeviceInfoPlugin().androidInfo).version.release) >=
+              11;
+      bool isChildOfRootPath = pathLib.isWithin(_rootDir.path, dir.path);
+
+      if (errorString.contains('permission') &&
+          errorString.contains('denied')) {
+        showTipTextModal(
+          context,
+          _themeModel,
+          title: '错误',
+          tip: (overAndroid11 && isChildOfRootPath)
+              ? '安卓11以上data / obb 没有权限'
+              : '没有该目录权限',
+          onCancel: null,
+        );
+      }
       recordError(
-          text: '',
-          exception: err,
-          methodName: 'readdir',
-          className: 'FileManager');
+        text: '',
+        exception: err,
+        methodName: 'readdir',
+        className: 'FileManager',
+      );
     });
 
     switch (_fileModel.showOnlyType) {

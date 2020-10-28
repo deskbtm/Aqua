@@ -5,10 +5,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/theme.dart';
-import 'package:lan_file_more_umeng/lan_file_more_umeng.dart';
 
 import 'generated/l10n.dart';
-import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';

@@ -437,8 +437,8 @@ Future<dynamic> showTipTextModal(
   String title = '',
   String tip = '',
   Widget confirmedView,
-  @required Function onOk,
-  @required Function onCancel,
+  Function onOk,
+  Function onCancel,
   bool transparent = false,
   String defaultOkText,
   String defaultCancelText,
@@ -479,11 +479,15 @@ Future<dynamic> showTipTextModal(
                   confirm = true;
                 });
               }
-              await onOk();
+              if (onOk != null) {
+                await onOk();
+              }
               MixUtils.safePop(context);
             },
             onCancel: () {
-              onCancel();
+              if (onCancel != null) {
+                onCancel();
+              }
               MixUtils.safePop(context);
             },
           );

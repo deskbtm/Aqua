@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
 import 'dart:typed_data';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -331,11 +332,12 @@ class _StaticSharePageState extends State<StaticSharePage> {
                           CupertinoButton(
                             child: Text('click'),
                             onPressed: () async {
-                              CodeSrvUtils utils = await CodeSrvUtils().init();
-                              recordError(
-                                  text: "demomodemo",
-                                  className: "",
-                                  methodName: "");
+                              // print();
+                              // CodeSrvUtils utils = await CodeSrvUtils().init();
+                              // recordError(
+                              //     text: "demomodemo",
+                              //     className: "",
+                              //     methodName: "");
                               // print(MediaQuery.of(context).padding.top);
                             },
                           )

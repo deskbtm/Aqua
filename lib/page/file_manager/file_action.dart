@@ -256,6 +256,7 @@ class FileAction {
     }
   }
 
+  // 去除路径前缀/ 后缀/
   static String trimSlash(String name) {
     return name.trim().replaceAll(RegExp(r"^(\/+)|(\/+)$"), '');
   }

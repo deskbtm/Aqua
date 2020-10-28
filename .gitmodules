@@ -1,6 +1,6 @@
 [submodule "android_mix"]
 	path = plugins/android_mix
-	url = https://github.com/lan_file_more/android_mix.git
+	url = https://github.com/lan-file-more/android_mix.git
 [submodule "lan_file_more_umeng"]
 	path = plugins/lan_file_more_umeng
-	url = https://github.com/lan_file_more/lan_file_more_umeng.git
+	url = https://github.com/lan-file-more/lan_file_more_umeng.git

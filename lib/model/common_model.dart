@@ -254,6 +254,7 @@ class CommonModel extends ChangeNotifier {
     // notifyListeners();
   }
 
+  // 默认为{}
   Map _gWebData = {};
   Map get gWebData => _gWebData;
 

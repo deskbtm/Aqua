@@ -71,3 +71,7 @@ const NOT_FOUND_DEVICES = 'NOT_FOUND_DEVICES';
 // bugly
 const BUGLY_ID = 'b6055da02c';
 const BUGLY_KEY = '91eb2f3a-639b-4f92-93fa-aef7fc802a94';
+// 默认qq群
+const DEFAULT_QQ_GROUP_NUM = '728414724';
+const DEFAULT_QQ_GROUP_KEY = 'QPZhZGDGVgEW9pyJ_f0KAfHG-405Gu8h';
+const DEFAULT_AUTHOR_EMAIL = 'wanghan9423@outlook.com';

@@ -18,6 +18,7 @@ import 'package:lan_file_more/page/setting/logger_setting.dart';
 import 'package:lan_file_more/page/setting/privacy_policy.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -103,7 +104,7 @@ class SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel?.themeData;
+    LanFileMoreTheme themeData = _themeModel?.themeData;
 
     List<Widget> settingList = [
       if (!_commonModel.isPurchased)
@@ -542,21 +543,6 @@ class SettingPageState extends State<SettingPage> {
                 color: themeData?.itemFontColor,
                 size: 16,
               ),
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.of(context, rootNavigator: true).push(
-                CupertinoPageRoute(
-                  builder: (BuildContext context) {
-                    return PrivacyPolicyPage();
-                  },
-                ),
-              );
-            },
-            child: ListTile(
-              title: LanText('隐私政策'),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
           InkWell(

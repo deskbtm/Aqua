@@ -138,7 +138,9 @@ class _HomePageState extends State<HomePage> {
     if (_updateModalMutex && data.isNotEmpty) {
       _updateModalMutex = false;
       // 显示更新弹窗
-      await showUpdateModal(data);
+      if (data != null) {
+        await showUpdateModal(data);
+      }
     }
 
     if (_mutex) {

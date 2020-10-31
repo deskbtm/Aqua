@@ -75,3 +75,5 @@ const BUGLY_KEY = '91eb2f3a-639b-4f92-93fa-aef7fc802a94';
 const DEFAULT_QQ_GROUP_NUM = '728414724';
 const DEFAULT_QQ_GROUP_KEY = 'QPZhZGDGVgEW9pyJ_f0KAfHG-405Gu8h';
 const DEFAULT_AUTHOR_EMAIL = 'wanghan9423@outlook.com';
+const DEFAULT_AUTHOR_AVATAR =
+    'https://oss.turingsenseai.com/1603984097670508746.png?x-oss-process=image/resize,h_200,m_lfit';

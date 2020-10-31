@@ -80,24 +80,6 @@ class _LanFileMoreWrapperState extends State {
     });
   }
 
-  Future<void> _preLoadMsg() async {
-    String baseUrl = _commonModel?.baseUrl;
-    if (baseUrl != null) {
-      await req().get(baseUrl + '/assets/index.json').then((receive) async {
-        dynamic data = receive.data;
-        if (data['baseUrl'] != null &&
-            data['baseUrl'] != baseUrl &&
-            MixUtils.isHttpUrl(data['baseUrl'])) {
-          await _commonModel.setBaseUrl(data['baseUrl']);
-        }
-        await _commonModel.setGobalWebData(receive.data);
-      }).catchError((err) {
-        BotToast.showText(text: '首次请求出现错误, 导出日志与开发者联系');
-        recordError(text: '', exception: err, methodName: '_preLoadMsg');
-      });
-    }
-  }
-
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
@@ -113,7 +95,7 @@ class _LanFileMoreWrapperState extends State {
       await _commonModel.initCommon().catchError((err) {
         recordError(text: '', exception: err, methodName: 'initCommon');
       });
-      await _preLoadMsg();
+
       if (_commonModel.enableConnect != null) {
         String internalIp = await Connectivity().getWifiIP();
         await _commonModel.setInternalIp(internalIp);

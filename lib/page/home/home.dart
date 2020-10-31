@@ -14,7 +14,9 @@ import 'package:lan_file_more/page/lan/lan.dart';
 import 'package:lan_file_more/page/setting/setting.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/req.dart';
 import 'package:lan_file_more/utils/store.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
@@ -128,6 +130,24 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _preLoadMsg() async {
+    String baseUrl = _commonModel?.baseUrl;
+    if (baseUrl != null) {
+      await req().get(baseUrl + '/assets/index.json').then((receive) async {
+        dynamic data = receive.data;
+        if (data['baseUrl'] != null &&
+            data['baseUrl'] != baseUrl &&
+            MixUtils.isHttpUrl(data['baseUrl'])) {
+          await _commonModel.setBaseUrl(data['baseUrl']);
+        }
+        await _commonModel.setGobalWebData(receive.data);
+      }).catchError((err) {
+        BotToast.showText(text: '首次请求出现错误, 导出日志与开发者联系');
+        recordError(text: '', exception: err, methodName: '_preLoadMsg');
+      });
+    }
+  }
+
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
@@ -157,17 +177,19 @@ class _HomePageState extends State<HomePage> {
         //   // await _forceReadTutorialModal(context);
       }
 
+      await _preLoadMsg().catchError((err) {});
+
       if (_commonModel.enableConnect) {
         // 延迟一秒 不阻塞UI
-        // Timer(Duration(seconds: 1), () async {
-        //   await SocketConnecter(_commonModel).searchDevicesAndConnect(
-        //     context,
-        //     themeProvider: _themeModel,
-        //     onNotExpected: (String msg) {
-        //       showText(msg);
-        //     },
-        //   );
-        // });
+        Timer(Duration(seconds: 1), () async {
+          await SocketConnecter(_commonModel).searchDevicesAndConnect(
+            context,
+            themeProvider: _themeModel,
+            onNotExpected: (String msg) {
+              showText(msg);
+            },
+          ).catchError((err) {});
+        });
       }
     }
   }

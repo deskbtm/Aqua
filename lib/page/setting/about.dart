@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/setting/privacy_policy.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
@@ -27,12 +28,21 @@ class _AboutPageState extends State<AboutPage> {
   String _qqGroupNumber;
   String _qqGroupKey;
   String _authorEmail;
+  String _authorAvatar;
 
   @override
   void initState() {
     super.initState();
     _version = '';
     _locker = true;
+  }
+
+  void showText(String content, {int duration = 4}) {
+    BotToast.showText(
+      text: content,
+      contentColor: _themeModel.themeData?.toastColor,
+      duration: Duration(seconds: duration),
+    );
   }
 
   @override
@@ -46,10 +56,13 @@ class _AboutPageState extends State<AboutPage> {
       _qqGroupNumber =
           _commonModel.gWebData['mobile']['config']['qq_group_num'];
       _qqGroupKey = _commonModel.gWebData['mobile']['config']['qq_group_key'];
+      _authorAvatar =
+          _commonModel.gWebData['mobile']['config']['author_avatar'];
     } else {
       _authorEmail = DEFAULT_AUTHOR_EMAIL;
       _qqGroupNumber = DEFAULT_QQ_GROUP_NUM;
       _qqGroupKey = DEFAULT_QQ_GROUP_KEY;
+      _authorAvatar = DEFAULT_AUTHOR_AVATAR;
     }
 
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -86,7 +99,7 @@ class _AboutPageState extends State<AboutPage> {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 15, right: 15, top: 20),
+                padding: EdgeInsets.only(top: 20),
                 child: Column(
                   children: [
                     Row(
@@ -166,14 +179,47 @@ class _AboutPageState extends State<AboutPage> {
                 decoration: BoxDecoration(color: Colors.grey[100]),
               ),
               Container(
+                // padding: EdgeInsets.only(left: 10, right: 15),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    ListTile(
+                      leading: Container(
+                        width: 45,
+                        height: 45,
+                        child: ClipOval(
+                          child: Image.network(
+                            _authorAvatar,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      title: NoResizeText('御神装.勿干涉'),
+                      subtitle: LanText('开发&设计', small: true),
+                    ),
                     Container(
-                      width: 45,
-                      height: 45,
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            'https://oss.turingsenseai.com/1603984097670508746.png?x-oss-process=image/resize,h_200,m_lfit'),
+                      padding: EdgeInsets.only(left: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              await Clipboard.setData(
+                                  ClipboardData(text: _authorEmail));
+                              showText('复制到剪贴板');
+                            },
+                            child: NoResizeText('Email: $_authorEmail'),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              await Clipboard.setData(
+                                ClipboardData(text: 'UTTERcreator'),
+                              );
+                              showText('复制到剪贴板');
+                            },
+                            child: NoResizeText('微信: UTTERcreator'),
+                          ),
+                        ],
                       ),
                     )
                   ],

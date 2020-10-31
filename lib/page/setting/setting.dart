@@ -14,7 +14,8 @@ import 'package:lan_file_more/page/setting/about.dart';
 import 'package:lan_file_more/page/setting/code_setting.dart';
 import 'package:lan_file_more/page/setting/control_setting.dart';
 import 'package:lan_file_more/page/setting/express_setting.dart';
-import 'package:lan_file_more/page/setting/logger_setting.dart';
+import 'package:lan_file_more/page/setting/helper_setting.dart';
+
 import 'package:lan_file_more/page/setting/privacy_policy.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
@@ -537,7 +538,7 @@ class SettingPageState extends State<SettingPage> {
             },
             child: ListTile(
               title: LanText('关于'),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
+              contentPadding: EdgeInsets.only(left: 15, right: 25),
               trailing: Icon(
                 OMIcons.chevronRight,
                 color: themeData?.itemFontColor,
@@ -547,43 +548,16 @@ class SettingPageState extends State<SettingPage> {
           ),
           InkWell(
             onTap: () async {
-              if (await canLaunch(TUTORIAL_URL)) {
-                await launch(TUTORIAL_URL);
-              } else {
-                showText('链接打开失败');
-              }
-            },
-            child: ListTile(
-              title: LanText('使用教程'),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
-            ),
-          ),
-          InkWell(
-            onTap: () {},
-            child: ListTile(
-              title: LanText('检查更新'),
-              subtitle: LanText('$_version', small: true),
-              trailing: _willUpdate
-                  ? Icon(OMIcons.update, color: Colors.redAccent)
-                  : CupertinoButton(
-                      child: NoResizeText('最新'), onPressed: () {}),
-              contentPadding:
-                  EdgeInsets.only(left: 15, right: _willUpdate ? 25 : 10),
-            ),
-          ),
-          InkWell(
-            onTap: () {
               Navigator.of(context, rootNavigator: true).push(
                 CupertinoPageRoute(
                   builder: (BuildContext context) {
-                    return LoggerSettingPage();
+                    return HelperPage();
                   },
                 ),
               );
             },
             child: ListTile(
-              leading: Icon(OMIcons.listAlt, color: themeData?.itemFontColor),
-              title: LanText('日志', alignX: -1.15),
+              title: LanText('帮助'),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
               trailing: Icon(
                 OMIcons.chevronRight,
@@ -592,6 +566,40 @@ class SettingPageState extends State<SettingPage> {
               ),
             ),
           ),
+          InkWell(
+            onTap: () {},
+            child: ListTile(
+              title: LanText('检查更新'),
+              subtitle: LanText('当前版本: v$_version', small: true),
+              trailing: _willUpdate
+                  ? Icon(OMIcons.update, color: Colors.redAccent)
+                  : CupertinoButton(
+                      child: NoResizeText('最新'), onPressed: () {}),
+              contentPadding:
+                  EdgeInsets.only(left: 15, right: _willUpdate ? 25 : 10),
+            ),
+          ),
+          // InkWell(
+          //   onTap: () {
+          //     Navigator.of(context, rootNavigator: true).push(
+          //       CupertinoPageRoute(
+          //         builder: (BuildContext context) {
+          //           return LoggerSettingPage();
+          //         },
+          //       ),
+          //     );
+          //   },
+          //   child: ListTile(
+          //     leading: Icon(OMIcons.listAlt, color: themeData?.itemFontColor),
+          //     title: LanText('日志', alignX: -1.15),
+          //     contentPadding: EdgeInsets.only(left: 15, right: 25),
+          //     trailing: Icon(
+          //       OMIcons.chevronRight,
+          //       color: themeData?.itemFontColor,
+          //       size: 16,
+          //     ),
+          //   ),
+          // ),
           SizedBox(height: 30)
         ],
       ),
@@ -619,9 +627,10 @@ class SettingPageState extends State<SettingPage> {
             physics: BouncingScrollPhysics(),
             itemCount: settingList.length,
             itemBuilder: (BuildContext context, int index) {
-              return StatefulBuilder(builder: (context, changeState) {
-                return settingList[index];
-              });
+              return settingList[index];
+              // return StatefulBuilder(builder: (context, changeState) {
+
+              // });
             },
           ),
         ),

@@ -4,3 +4,6 @@
 [submodule "lan_file_more_umeng"]
 	path = plugins/lan_file_more_umeng
 	url = https://github.com/lan-file-more/lan_file_more_umeng.git
+[submodule "android_tile_service"]
+	path = plugins/android_tile_service
+	url = https://github.com/lan-file-more/android_tile_service.git

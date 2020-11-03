@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
 
+// import 'package:android_tile_service/android_tile_service.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/theme.dart';
+import 'package:quick_actions/quick_actions.dart';
 
 import 'generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +20,7 @@ import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/page/home/home.dart';
 import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/store.dart';
-import 'package:lan_file_more/utils/req.dart';
 import 'package:provider/provider.dart';
 
 class LanFileMore extends StatefulWidget {
@@ -68,6 +68,32 @@ class _LanFileMoreWrapperState extends State {
     super.initState();
     _prepared = false;
     _settingMutex = true;
+
+    final QuickActions quickActions = QuickActions();
+    quickActions.initialize((String shortcutType) {});
+
+    quickActions.setShortcutItems(
+      <ShortcutItem>[
+        // NOTE: This first action icon will only work on iOS.
+        // In a real world project keep the same file name for both platforms.
+        const ShortcutItem(
+          type: 'action_one',
+          localizedTitle: 'Vscode Server',
+          icon: '',
+        ),
+        const ShortcutItem(
+          type: 'action_two',
+          localizedTitle: '静态服务',
+          icon: '',
+        ),
+      ],
+    );
+
+    // AndroidTileService.init(tileIcon: 'vscode', label: 'vscode');
+    // AndroidTileService.listen(onClick: () async {
+    //   print("demo ===============================");
+    // });
+
     LocalNotification.initLocalNotification(onSelected: (String payload) {
       debugPrint(payload);
     });

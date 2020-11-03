@@ -15,8 +15,6 @@ import 'package:lan_file_more/page/setting/code_setting.dart';
 import 'package:lan_file_more/page/setting/control_setting.dart';
 import 'package:lan_file_more/page/setting/express_setting.dart';
 import 'package:lan_file_more/page/setting/helper_setting.dart';
-
-import 'package:lan_file_more/page/setting/privacy_policy.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/theme.dart';

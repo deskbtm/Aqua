@@ -7,7 +7,6 @@ import 'dart:ui';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:android_mix/android_mix.dart';
 import 'package:android_mix/archive/enums.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -252,7 +251,7 @@ class _FileManagerPageState extends State<FileManagerPage>
               ActionButton(
                 content: '过滤类型',
                 onTap: () {
-                  filterType(context);
+                  _filterType(context);
                 },
               ),
             ],
@@ -262,7 +261,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  Future<void> filterType(BuildContext context) async {
+  Future<void> _filterType(BuildContext context) async {
     _modalKey.currentState?.insertRightCol([
       ActionButton(
         content: '显示全部',
@@ -768,7 +767,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     }
   }
 
-  Future<void> showOptionsWhenPressedEmpty(BuildContext context,
+  Future<void> _showOptionsWhenPressedEmpty(BuildContext context,
       {bool left = false}) async {
     bool sharedNotEmpty = _commonModel.selectedFiles.isNotEmpty;
     showCupertinoModal(
@@ -929,7 +928,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  void openFileActionByExt(SelfFileEntity file,
+  void _openFileActionByExt(SelfFileEntity file,
       {bool left, int index = 0, Function(bool) updateItem}) {
     String path = file.entity.path;
     matchSupportFileExt(
@@ -1106,7 +1105,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                           },
                           fileList: _leftFileList,
                           onLongPressEmpty: (d) async {
-                            await showOptionsWhenPressedEmpty(context,
+                            await _showOptionsWhenPressedEmpty(context,
                                 left: true);
                           },
                           onHozDrag: (index, dir) {
@@ -1135,7 +1134,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                                 });
                               }
                             } else {
-                              openFileActionByExt(
+                              _openFileActionByExt(
                                 file,
                                 left: true,
                                 index: index,
@@ -1153,7 +1152,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                               await update2Side();
                             },
                             onLongPressEmpty: (d) async {
-                              await showOptionsWhenPressedEmpty(context,
+                              await _showOptionsWhenPressedEmpty(context,
                                   left: false);
                             },
                             fileList: _rightFileList,
@@ -1182,7 +1181,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                                   setState(() {});
                                 }
                               } else {
-                                openFileActionByExt(
+                                _openFileActionByExt(
                                   file,
                                   left: false,
                                   index: index,

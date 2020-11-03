@@ -202,13 +202,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_bugly:
-    dependency: "direct main"
-    description:
-      path: "plugins/flutter_bugly"
-      relative: true
-    source: path
-    version: "0.2.9"
   flutter_html:
     dependency: "direct main"
     description:
@@ -391,7 +384,7 @@ packages:
       name: open_file
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.3"
   open_iconic_flutter:
     dependency: transitive
     description:
@@ -553,6 +546,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.3.2+2"
+  quick_actions:
+    dependency: "direct main"
+    description:
+      name: quick_actions
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.0+10"
   screen:
     dependency: transitive
     description:

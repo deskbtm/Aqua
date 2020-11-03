@@ -22,3 +22,8 @@
 -keep class com.heytap.** {*;}
 -keep class a.** {*;}
 -keep class com.vivo.** {*;}
+
+# 压缩
+-keep class net.lingala.** {*;}
+-keep class org.apache.** {*;}
+-keep class org.rauschig.** {*;}

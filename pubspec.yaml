@@ -25,7 +25,7 @@ dependencies:
     sdk: flutter
   outline_material_icons: ^0.1.1
   shelf: ^0.7.7
-  open_file: ^3.0.1
+  open_file: ^3.0.3
   flutter_staggered_animations: "^0.1.2"
   permission_handler: "^4.4.0+hotfix.4"
   provider: ^4.3.2+2
@@ -69,11 +69,14 @@ dependencies:
     path: plugins/storage_mount_listener
   connectivity: ^0.4.9+3
   shelf_body_parser: ^1.0.6
+  share_extend: ^1.1.9
+  quick_actions: ^0.4.0+10
   photo_manager:
     path: plugins/photo_manager
-  flutter_bugly:
-    path: plugins/flutter_bugly
-  share_extend: ^1.1.9
+  # android_tile_service:
+  #   path: plugins/android_tile_service
+  # flutter_bugly:
+  #   path: plugins/flutter_bugly
   # android_mix_recorder:
   #   path: plugins/android_mix_recorder
   # uuid: ^2.2.0

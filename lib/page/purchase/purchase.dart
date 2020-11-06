@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
@@ -165,7 +166,14 @@ class PurchasePageState extends State<PurchasePage> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                LanText('局域网.文件.更多', fontSize: 18),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    LanText('局域网.文件.更多', fontSize: 18),
+                                    SizedBox(width: 4),
+                                    LanText('for developer', fontSize: 12),
+                                  ],
+                                ),
                                 LanText(
                                     _commonModel.isPurchased ? '已购买' : '暂未购买',
                                     small: true),

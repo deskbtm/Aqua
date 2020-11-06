@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:lan_file_more/common/socket/socket.dart';
 import 'package:lan_file_more/common/widget/checkbox.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
@@ -22,6 +22,7 @@ import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:quick_actions/quick_actions.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 import 'package:intent/intent.dart' as intent;
@@ -47,6 +48,34 @@ class _HomePageState extends State<HomePage> {
     _tabController = CupertinoTabController();
     _mutex = true;
     _updateModalMutex = true;
+    QuickActions quickActions = QuickActions();
+
+    quickActions.setShortcutItems(
+      <ShortcutItem>[
+        const ShortcutItem(
+          type: 'static-server',
+          localizedTitle: '静态服务',
+          icon: 'content',
+        ),
+        const ShortcutItem(
+          type: 'vscode-server',
+          localizedTitle: 'Vscode Server',
+          icon: 'vscode',
+        ),
+      ],
+    );
+
+    quickActions.initialize((String shortcutType) {
+      switch (shortcutType) {
+        case 'static-server':
+          _tabController.index = 1;
+          break;
+        case 'vscode-server':
+          _tabController.index = 1;
+          break;
+        default:
+      }
+    });
   }
 
   void showText(String content) {
@@ -235,7 +264,6 @@ class _HomePageState extends State<HomePage> {
         : CupertinoTabScaffold(
             controller: _tabController,
             tabBar: CupertinoTabBar(
-              onTap: (index) {},
               backgroundColor: themeData.bottomNavColor,
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(

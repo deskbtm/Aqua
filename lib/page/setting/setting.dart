@@ -7,6 +7,7 @@ import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/common/widget/switch.dart';
 import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/purchase/purchase.dart';
@@ -126,7 +127,7 @@ class SettingPageState extends State<SettingPage> {
               child: ListTile(
                 trailing: Icon(OMIcons.addShoppingCart,
                     color: themeData?.itemFontColor),
-                title: LanText('购买'),
+                title: LanText('购买 developer 版本'),
                 subtitle: LanText(
                   '价格${_commonModel?.gWebData['amount'] ?? DEF_AMOUNT}元 购买后此选项不再显示',
                   small: true,
@@ -405,7 +406,7 @@ class SettingPageState extends State<SettingPage> {
           blockTitle('剪贴板'),
           SizedBox(height: 15),
           ListTile(
-            title: LanText('开启剪贴板'),
+            title: LanText('剪贴板'),
             subtitle: LanText('开启后可直接(ctrl+v)', small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(

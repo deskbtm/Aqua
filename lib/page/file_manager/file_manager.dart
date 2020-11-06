@@ -17,7 +17,7 @@ import 'package:lan_file_more/common/widget/function_widget.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/common/widget/storage_card.dart';
-import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/back_button_interceptor/back_button_interceptor.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/isolate/airdrop.dart';
@@ -812,7 +812,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<void> _showFileOptionsModal(
-      {SelfFileEntity file, Function(bool) updateItem}) async {
+      {SelfFileEntity file /* , Function(bool) updateItem */}) async {
     bool showSize = false;
     bool sharedNotEmpty = _commonModel.selectedFiles.isNotEmpty;
 
@@ -873,7 +873,8 @@ class _FileManagerPageState extends State<FileManagerPage>
               ActionButton(
                 content: '选中',
                 onTap: () {
-                  handleSelectedSingle(context, file, updateItem: updateItem);
+                  handleSelectedSingle(
+                      context, file /* , updateItem: updateItem */);
                 },
               ),
               if (sharedNotEmpty)
@@ -1116,12 +1117,12 @@ class _FileManagerPageState extends State<FileManagerPage>
                               _commonModel.removeSelectedFile(file);
                             }
                           },
-                          itemOnLongPress: (index, updateItem) {
+                          itemOnLongPress: (index /* , updateItem */) {
                             SelfFileEntity file = _leftFileList[index];
                             _showFileOptionsModal(
-                                file: file, updateItem: updateItem);
+                                file: file /* , updateItem: updateItem */);
                           },
-                          onItemTap: (index, updateItem) async {
+                          onItemTap: (index /* , updateItem */) async {
                             SelfFileEntity file = _leftFileList[index];
                             if (file.isDir) {
                               // 点击后交换两边角色
@@ -1138,7 +1139,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                                 file,
                                 left: true,
                                 index: index,
-                                updateItem: updateItem,
+                                /* updateItem: updateItem, */
                               );
                             }
                           },
@@ -1164,12 +1165,12 @@ class _FileManagerPageState extends State<FileManagerPage>
                                 _commonModel.removeSelectedFile(file);
                               }
                             },
-                            itemOnLongPress: (index, updateItem) {
+                            itemOnLongPress: (index /* , updateItem */) {
                               SelfFileEntity file = _rightFileList[index];
                               _showFileOptionsModal(
-                                  file: file, updateItem: updateItem);
+                                  file: file /* , updateItem: updateItem */);
                             },
-                            onItemTap: (index, updateItem) async {
+                            onItemTap: (index /* , updateItem */) async {
                               SelfFileEntity file = _rightFileList[index];
                               if (file.isDir) {
                                 changeSidesRole(file);
@@ -1185,7 +1186,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                                   file,
                                   left: false,
                                   index: index,
-                                  updateItem: updateItem,
+                                  /* updateItem: updateItem, */
                                 );
                               }
                             },

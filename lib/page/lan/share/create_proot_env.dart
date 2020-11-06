@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lan_file_more/common/widget/dialog.dart';
 import 'package:lan_file_more/common/widget/function_widget.dart';
@@ -10,9 +9,9 @@ import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/external/system_info/system_info.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
-import 'code_server/utils.dart';
 
 Future<void> createProotEnv(
   BuildContext context, {

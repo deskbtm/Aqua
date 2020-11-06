@@ -1,12 +1,11 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
-import 'dart:typed_data';
-import 'package:device_info/device_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:provider/provider.dart';
 import 'package:lan_file_more/common/socket/socket.dart';
@@ -17,7 +16,6 @@ import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_item.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
-import 'package:lan_file_more/page/lan/create_download_res.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
@@ -26,36 +24,17 @@ import 'package:lan_file_more/web/web_handler.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
 import 'package:shelf_body_parser/shelf_body_parser.dart';
+import 'package:wakelock/wakelock.dart';
 
-class StaticSharePage extends StatefulWidget {
+class LanSharePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _StaticSharePageState();
+    return _LanSharePageState();
   }
 }
 
-void isolateAirDrop(List msg) async {
-  // 把它的sendPort发送给宿主isolate，以便宿主可以给它发送消息
-  // ReceivePort recPort = ReceivePort();
-  SendPort sendPort = msg[0];
-
-  // String port = data['port'],
-  // ip = data['ip'],
-  // filename = data['filename'],
-  // filepath = data['filepath'];
-
-  Timer(Duration(seconds: 1), () {
-    sendPort.send("demo");
-  });
-  Timer(Duration(seconds: 2), () {
-    sendPort.send("demo1");
-  });
-  Timer(Duration(seconds: 3), () {
-    sendPort.send("demo2");
-  });
-}
-
-class _StaticSharePageState extends State<StaticSharePage> {
+class _LanSharePageState extends State<LanSharePage>
+    with AutomaticKeepAliveClientMixin {
   ThemeModel _themeModel;
 
   CommonModel _commonModel;
@@ -67,7 +46,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
   @override
   void initState() {
     super.initState();
-    // _mutex = true;
+    _mutex = true;
     _shareSwitch = false;
     _vscodeSwitch = false;
   }
@@ -77,6 +56,8 @@ class _StaticSharePageState extends State<StaticSharePage> {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
+
+    if (_mutex) {}
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
@@ -109,14 +90,9 @@ class _StaticSharePageState extends State<StaticSharePage> {
 
   Future<void> createStaticServer() async {
     try {
-      String ip = _commonModel?.internalIp;
+      String ip = _commonModel.internalIp ?? LOOPBACK_ADDR;
 
-      if (ip == null) {
-        showText('请先连接局域网(wifi)');
-        return;
-      }
-
-      int port = int.parse(_commonModel?.filePort ?? '20201');
+      int port = int.parse(_commonModel?.filePort ?? FILE_DEFAULT_PORT);
       String savePath = _commonModel?.staticUploadSavePath;
       FutureOr<Response> Function(Request) handlerFunc;
 
@@ -162,28 +138,45 @@ class _StaticSharePageState extends State<StaticSharePage> {
             title: '静态文件共享中.....',
             ongoing: true);
         debugPrint('Serving at http://${_server.address.host}:${_server.port}');
+
+        // 保持唤醒状态
+        bool isWakeEnabled = await Wakelock.isEnabled;
+        if (!isWakeEnabled) {
+          Wakelock.enable();
+        }
       } else {
         _server?.close();
         showText('共享关闭');
         LocalNotification.plugin?.cancel(0);
+        Wakelock.disable();
       }
     } catch (err) {
       throw Exception(err);
     }
   }
 
-  void showText(String content) {
+  void showText(String content, {Duration duration}) {
     BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+      text: content,
+      contentColor: _themeModel.themeData?.toastColor,
+      duration: duration,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     String internalIp = _commonModel.internalIp;
-    String filePort = _commonModel.filePort;
-    String codeSrvPort = _commonModel.codeSrvPort;
-    String fileAddr = internalIp == null ? '未连接' : '$internalIp:$filePort';
-    String codeAddr = internalIp == null ? '未连接' : '$internalIp:$codeSrvPort';
+    String filePort = _commonModel.filePort ?? FILE_DEFAULT_PORT;
+    String codeSrvPort = _commonModel.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
+
+    String fileAddr = internalIp == null
+        ? '$LOOPBACK_ADDR:$filePort'
+        : '$internalIp:$filePort';
+
+    String codeAddr = internalIp == null
+        ? '$LOOPBACK_ADDR:$codeSrvPort'
+        : '$internalIp:$codeSrvPort';
+
     // String codeSrvIp = _commonModel.codeSrvIp;
 
     String firstAliveIp =
@@ -236,19 +229,23 @@ class _StaticSharePageState extends State<StaticSharePage> {
                           trailing: LanSwitch(
                             value: _vscodeSwitch,
                             onChanged: (val) async {
+                              if (!_commonModel.isPurchased) {
+                                showText(
+                                  '请先购买 "局域网.文件.更多" for developer',
+                                  duration: Duration(seconds: 3),
+                                );
+                                return;
+                              }
                               CodeSrvUtils utils = await CodeSrvUtils().init();
                               bool outLocker = true;
                               bool errLocker = true;
-                              // if (!_commonModel.isPurchased) {
-                              //   showText('此功能为付费功能');
-                              //   return;
-                              // }
+
                               if (await utils.existsAllResource()) {
                                 setState(() {
                                   _vscodeSwitch = !_vscodeSwitch;
                                 });
                                 if (val) {
-                                  String srvUrl = '$internalIp:$codeSrvPort';
+                                  // String srvUrl = '$internalIp:$codeSrvPort';
 
                                   LocalNotification.showNotification(
                                     index: 1,
@@ -261,7 +258,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
 
                                   Process result = await utils
                                       .runServer(
-                                    srvUrl,
+                                    codeAddr,
                                     pwd: _commonModel.codeSrvPwd,
                                   )
                                       .catchError((err) {
@@ -270,7 +267,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
 
                                   result.stdout
                                       .transform(utf8.decoder)
-                                      .listen((data) {
+                                      .listen((data) async {
                                     if (outLocker) {
                                       LocalNotification.plugin?.cancel(1);
                                       LocalNotification.showNotification(
@@ -279,6 +276,11 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                         title: 'vscode server 运行中',
                                         ongoing: true,
                                       );
+                                      bool isWakeEnabled =
+                                          await Wakelock.isEnabled;
+                                      if (!isWakeEnabled) {
+                                        Wakelock.enable();
+                                      }
                                       outLocker = false;
                                     }
                                     debugPrint(data);
@@ -291,6 +293,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                         errLocker = false;
                                         showText('错误 $data');
                                         LocalNotification.plugin?.cancel(1);
+                                        Wakelock.disable();
                                       }
                                     }
                                     debugPrint(data);
@@ -299,6 +302,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                                   await utils.killNodeServer();
                                   LocalNotification.plugin?.cancel(2);
                                   showText('vscode 服务已关闭');
+                                  Wakelock.disable();
                                 }
                               } else {
                                 await showDownloadResourceModal(context);
@@ -330,7 +334,7 @@ class _StaticSharePageState extends State<StaticSharePage> {
                         ),
                         if (MixUtils.isDev) ...[
                           CupertinoButton(
-                            child: Text('click'),
+                            child: Text('测试按钮'),
                             onPressed: () async {
                               // print();
                               // CodeSrvUtils utils = await CodeSrvUtils().init();
@@ -348,18 +352,6 @@ class _StaticSharePageState extends State<StaticSharePage> {
                 ),
               ),
             ),
-            if (img != null)
-              Expanded(
-                child: Container(
-                  color: Colors.red,
-                  child: Image.memory(
-                    img,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
             Expanded(
               flex: 2,
               child: _commonModel.selectedFiles.isEmpty
@@ -414,5 +406,6 @@ class _StaticSharePageState extends State<StaticSharePage> {
     );
   }
 
-  Uint8List img;
+  @override
+  bool get wantKeepAlive => true;
 }

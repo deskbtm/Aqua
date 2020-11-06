@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/utils/store.dart';
 import 'package:lan_file_more/utils/theme.dart';
 

@@ -6,6 +6,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 enum FileItemType { folder, file }
@@ -13,7 +14,7 @@ enum FileItemType { folder, file }
 class FileItem extends StatefulWidget {
   final String subTitle;
   final int index;
-  final Function(Function(bool)) onTap;
+  final Function(/* Function(bool) */) onTap;
   final Color itemBgColor;
   final Color fontColor;
   final bool withAnimation;
@@ -23,7 +24,7 @@ class FileItem extends StatefulWidget {
   final double subTitleSize;
   final double titleSize;
   final bool autoWrap;
-  final Function(LongPressStartDetails, Function(bool)) onLongPress;
+  final Function(LongPressStartDetails /* , Function(bool) */) onLongPress;
   final Function(double) onHozDrag;
   final FileItemType type;
   final Widget leading;
@@ -69,13 +70,15 @@ class FileItemState extends State<FileItem>
 
   int get index => widget.index;
   String get path => widget.path;
-  Function(Function(bool)) get onTap => widget.onTap;
+  Function(/* Function(bool) */) get onTap => widget.onTap;
   Color get itemBgColor => widget.itemBgColor;
   Color get fontColor => widget.fontColor;
   bool get withAnimation => widget.withAnimation;
   Function get onHozDrag => widget.onHozDrag;
-  Function(LongPressStartDetails, Function(bool)) get onLongPress =>
-      widget.onLongPress;
+  Function(
+    LongPressStartDetails,
+    /* Function(bool) */
+  ) get onLongPress => widget.onLongPress;
 
   FileItemType get type => widget.type;
   bool get justDisplay => widget.justDisplay;
@@ -108,13 +111,17 @@ class FileItemState extends State<FileItem>
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
-    if (!justDisplay) {
-      if (mounted) {
-        setState(() {
-          _selected = _commonModel.hasSelectedFile(path);
-        });
-      }
-    }
+    // 每次渲染的时候就判断下
+    // if (!justDisplay) {
+    //   if (mounted) {
+    //     log(path +
+    //         '-----------' +
+    //         _commonModel.hasSelectedFile(path).toString());
+    //     setState(() {
+    //       _selected = _commonModel.hasSelectedFile(path);
+    //     });
+    //   }
+    // }
   }
 
   @override
@@ -126,16 +133,24 @@ class FileItemState extends State<FileItem>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    dynamic themeData = _themeModel?.themeData;
+    LanFileMoreTheme themeData = _themeModel?.themeData;
     Color itemfontColor = fontColor ?? themeData?.itemFontColor;
     Color itemColor = itemBgColor ?? themeData?.itemColor;
+
+    if (widget.justDisplay) {
+      _selected = false;
+    } else {
+      _selected = _commonModel.hasSelectedFile(path);
+    }
 
     Widget tile = ListTile(
       leading: widget.leading,
       title: NoResizeText(
         filename,
         overflow: autoWrap
-            ? filename.length > 30 ? TextOverflow.ellipsis : null
+            ? filename.length > 30
+                ? TextOverflow.ellipsis
+                : null
             : null,
         style: TextStyle(fontSize: titleSize, color: itemfontColor),
       ),
@@ -164,24 +179,28 @@ class FileItemState extends State<FileItem>
               : GestureDetector(
                   onTap: () {
                     if (onTap != null) {
-                      onTap((b) {
+                      onTap(
+                          /* (b) {
                         if (mounted) {
                           setState(() {
                             _selected = b;
                           });
                         }
-                      });
+                      } */
+                          );
                     }
                   },
                   onLongPressStart: (d) {
                     if (onLongPress != null) {
-                      onLongPress(d, (b) {
+                      onLongPress(
+                        d, /* (b) {
                         if (mounted) {
                           setState(() {
                             _selected = b;
                           });
                         }
-                      });
+                      } */
+                      );
                     }
                   },
                   onHorizontalDragDown: (details) {
@@ -199,7 +218,7 @@ class FileItemState extends State<FileItem>
                     });
                   },
                   // onHorizontalDragStart: ,
-                  onHorizontalDragEnd: (DragEndDetails details) {
+                  onHorizontalDragEnd: (DragEndDetails details) async {
                     Offset per = details.velocity.pixelsPerSecond;
 
                     _animation = _controller.drive(
@@ -209,8 +228,8 @@ class FileItemState extends State<FileItem>
                       ),
                     );
 
-                    const spring =
-                        SpringDescription(mass: 30.0, stiffness: 1.0, damping: 1.0);
+                    const spring = SpringDescription(
+                        mass: 30.0, stiffness: 1.0, damping: 1.0);
 
                     final simulation = SpringSimulation(spring, 0, 1, per.dx);
                     _controller.animateWith(simulation);
@@ -218,14 +237,17 @@ class FileItemState extends State<FileItem>
                     //  水平滑动事件
                     if (onHozDrag != null) {
                       if (mounted) {
-                        onHozDrag(dir);
-                        setState(() {
-                          _selected = _commonModel.hasSelectedFile(path);
-                        });
+                        // 等待执行完成再更新 否则可能出现installed_apps 中 onHozDrag 异步没执行好
+                        // setState 就执行的情况
+                        await onHozDrag(dir);
+                        // setState(() {
+                        //   _selected = _commonModel.hasSelectedFile(path);
+                        // });
                       }
                     }
                   },
-                  child: tile),
+                  child: tile,
+                ),
         ),
       ),
     );

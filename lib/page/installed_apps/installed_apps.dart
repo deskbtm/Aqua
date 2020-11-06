@@ -144,7 +144,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                               '数据目录: ${app.dataDir}\n'
                               '安装时间: ${DateTime.fromMillisecondsSinceEpoch(app.installTimeMillis).toString()}\n'
                               '更新时间: ${DateTime.fromMillisecondsSinceEpoch(app.updateTimeMillis).toString()}\n',
-                          onLongPress: (details, _update) async {
+                          onLongPress: (details /* , update */) async {
                             showCupertinoModal(
                               filter:
                                   ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -185,7 +185,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                               },
                             );
                           },
-                          onTap: (itemUpdate) {
+                          onTap: (/* itemUpdate */) {
                             DeviceApps.openApp(app.packageName);
                           },
                           subTitleSize: 12,
@@ -203,7 +203,6 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                             }
                           },
                         ),
-                        // ),
                       ],
                     );
                   },

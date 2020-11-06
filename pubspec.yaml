@@ -71,6 +71,7 @@ dependencies:
   shelf_body_parser: ^1.0.6
   share_extend: ^1.1.9
   quick_actions: ^0.4.0+10
+  wakelock: ^0.1.2
   photo_manager:
     path: plugins/photo_manager
   # android_tile_service:

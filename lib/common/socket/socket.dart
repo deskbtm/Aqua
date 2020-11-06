@@ -3,7 +3,7 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/isolate/search_devices.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';

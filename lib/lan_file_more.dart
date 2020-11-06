@@ -4,6 +4,7 @@ import 'dart:developer';
 // import 'package:android_tile_service/android_tile_service.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
+import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:quick_actions/quick_actions.dart';
@@ -69,26 +70,6 @@ class _LanFileMoreWrapperState extends State {
     _prepared = false;
     _settingMutex = true;
 
-    final QuickActions quickActions = QuickActions();
-    quickActions.initialize((String shortcutType) {});
-
-    quickActions.setShortcutItems(
-      <ShortcutItem>[
-        // NOTE: This first action icon will only work on iOS.
-        // In a real world project keep the same file name for both platforms.
-        const ShortcutItem(
-          type: 'action_one',
-          localizedTitle: 'Vscode Server',
-          icon: '',
-        ),
-        const ShortcutItem(
-          type: 'action_two',
-          localizedTitle: '静态服务',
-          icon: '',
-        ),
-      ],
-    );
-
     // AndroidTileService.init(tileIcon: 'vscode', label: 'vscode');
     // AndroidTileService.listen(onClick: () async {
     //   print("demo ===============================");
@@ -145,6 +126,7 @@ class _LanFileMoreWrapperState extends State {
 
     return _prepared
         ? AnnotatedRegion<SystemUiOverlayStyle>(
+            /// 系统虚拟按键主题
             value: SystemUiOverlayStyle(
               systemNavigationBarIconBrightness:
                   themeData.systemNavigationBarIconBrightness,

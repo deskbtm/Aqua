@@ -24,10 +24,16 @@ class ListFileItemInfo {
 
 class FileListView extends StatefulWidget {
   final List<SelfFileEntity> fileList;
-  final Function(int, Function(bool)) itemOnLongPress;
+  final Function(
+    int,
+    /* Function(bool) */
+  ) itemOnLongPress;
   final Function(LongPressStartDetails) onLongPressEmpty;
   final Function(int, double) onHozDrag;
-  final Function(int, Function(bool)) onItemTap;
+  final Function(
+    int,
+    /* Function(bool) */
+  ) onItemTap;
   final Function onUpdateView;
 
   const FileListView(
@@ -159,14 +165,16 @@ class _FileListViewState extends State<FileListView> {
                       filename: item.file.filename,
                       path: item.file.entity.path,
                       subTitle: MixUtils.formatFileTime(item.file.modified),
-                      onLongPress: (details, update) {
+                      onLongPress: (details /* , update */) {
                         if (widget.itemOnLongPress != null) {
-                          widget.itemOnLongPress(index, update);
+                          widget.itemOnLongPress(index /* , update */);
                         }
                       },
-                      onTap: (itemUpdate) {
+                      onTap: (/* itemUpdate */) {
                         if (widget.onItemTap != null)
-                          widget.onItemTap(index, itemUpdate);
+                          widget.onItemTap(
+                            index, /* itemUpdate */
+                          );
                       },
                       onHozDrag: (dir) {
                         /// [index] 位数 [dir] 方向 1 向右 -1 左

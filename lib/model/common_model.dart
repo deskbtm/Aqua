@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/store.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
@@ -282,7 +283,7 @@ class CommonModel extends ChangeNotifier {
   }
 
   Future<void> initCommon() async {
-    _filePort = (await Store.getString(FILE_PORT)) ?? '20201';
+    _filePort = (await Store.getString(FILE_PORT)) ?? FILE_DEFAULT_PORT;
 
     _codeSrvPort = await Store.getString(CODE_SERVER_PORT) ?? '20202';
     _codeSrvPwd = await secureStorage.read(key: CODE_SERVER_PWD);

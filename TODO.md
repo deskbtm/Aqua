@@ -1,3 +1,8 @@
+2020/11/9
+文件菜单选中 文件item不更新
+开发游戏控制 editor
+<img width="100" src=""/>
+
 2020/11/6
 1. 文件管理器 返回上级目录 快速 或者 卡顿的时候
 会偶现的导致 页面不发生交换, 路径多退栈 
@@ -55,3 +60,6 @@ pc端(后期) 添加 消息, 参考 Dell connect huawei 多屏协同
 1. ~~文件左右滑动显示更新弹窗 勾选了不显示也无效~~
 2. ~~注释了些代码 notifyListeners 可能无法刷新~~
 3. ~~优化provider~~
+
+![](https://raw.githubusercontent.com/lan-file-more/dev-progress/main/ADEB3A0CAF32FE4B4234858689494305.jpg)
+![](https://raw.githubusercontent.com/lan-file-more/dev-progress/main/08818E81A81854CD83E840CCEF989D92.jpg)

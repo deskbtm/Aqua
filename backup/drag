@@ -1,0 +1,81 @@
+ // Positioned(
+            //   child: Transform.scale(
+            //     scale: 0.8,
+            //     child: Transform.rotate(
+            //       angle: _math.pi / 2,
+            //       child: PadGroupButtonsController(
+            //         size: 230,
+            //         buttons: [
+            //           PadButtonItem(
+            //             index: 0,
+            //             buttonText: NoResizeText(
+            //               "A",
+            //               style: TextStyle(fontSize: 22),
+            //             ),
+            //           ),
+            //           PadButtonItem(
+            //             index: 1,
+            //             pressedColor: Colors.red,
+            //             buttonText: NoResizeText(
+            //               "B",
+            //               style: TextStyle(fontSize: 22),
+            //             ),
+            //           ),
+            //           PadButtonItem(
+            //             index: 2,
+            //             pressedColor: Colors.green,
+            //             buttonText: NoResizeText(
+            //               "C",
+            //               style: TextStyle(fontSize: 22),
+            //             ),
+            //           ),
+            //           PadButtonItem(
+            //             index: 3,
+            //             buttonText: NoResizeText(
+            //               "D",
+            //               style: TextStyle(fontSize: 22),
+            //             ),
+            //           ),
+            //         ],
+            //         padButtonPressedCallback:
+            //             (int index, GamePadGestures gesture) async {
+            //           await pressVibrate();
+            //         },
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            Positioned(
+              left: 0,
+              top: 100,
+              child: Transform.scale(
+                scale: 0.8,
+                child: JoystickController(
+                  iconsColor: Colors.black45,
+                ),
+              ),
+            ),
+            Positioned(
+              top: y,
+              left: x,
+              child: Draggable(
+                onDragEnd: (details) {
+                  x = details.offset.dx;
+                  y = details.offset.dy;
+                },
+                onDraggableCanceled: (v, o) {
+                  setState(() {
+                    x = o.dx;
+                    y = o.dy;
+                  });
+                },
+                feedback: Container(),
+                child: PadSingleButton(
+                  size: 50,
+                  buttonText: NoResizeText(
+                    "A",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            )

@@ -12,14 +12,14 @@ typedef GroupButtonPressedCallback = Future<void> Function(
 
 class GroupButtonsController extends StatelessWidget {
   final double size;
-  final List<PadButtonItem> buttons;
+  final List<SingleButtonItem> buttons;
   final GroupButtonPressedCallback groupButtonPressedCallback;
   final Map<int, Color> buttonsStateMap = HashMap<int, Color>();
   final double buttonsPadding;
   final Color backgroundPadButtonsColor;
 
   GroupButtonsController({
-    this.size,
+    this.size = 210,
     @required this.buttons,
     this.groupButtonPressedCallback,
     this.buttonsPadding = 0,
@@ -66,7 +66,7 @@ class GroupButtonsController extends StatelessWidget {
     return list;
   }
 
-  Positioned createPositionedButtons(PadButtonItem paddButton,
+  Positioned createPositionedButtons(SingleButtonItem paddButton,
       double actualSize, int index, double innerCircleSize) {
     return Positioned(
       child: StatefulBuilder(
@@ -128,9 +128,10 @@ class GroupButtonsController extends StatelessWidget {
   }
 
   Future<void> _processGesture(
-      PadButtonItem button, GamePadGestures gesture) async {
-    if (GroupButtonPressedCallback != null &&
+      SingleButtonItem button, GamePadGestures gesture) async {
+    if (groupButtonPressedCallback != null &&
         button.supportedGestures.contains(gesture)) {
+      print('${button.index} $gesture');
       await groupButtonPressedCallback(button.index, gesture);
       print("$gesture paddbutton id =  ${[button.index]}");
     }

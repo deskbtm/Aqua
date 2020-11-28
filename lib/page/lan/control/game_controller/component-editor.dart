@@ -1,32 +1,43 @@
 import 'package:flutter/material.dart';
 
-class ResizebleWidget extends StatefulWidget {
+class ComponentEditor extends StatefulWidget {
   final double initSize;
   final Widget child;
   final bool editorMode;
+  final double minSize;
+  final double maxSize;
+  final double padding;
+  final Function(double) onResize;
+  final Function(double dx, double dy) onMove;
 
-  const ResizebleWidget({
+  const ComponentEditor({
     Key key,
     this.initSize = 60,
     this.child,
     this.editorMode = false,
+    this.minSize,
+    this.maxSize,
+    this.onResize,
+    this.onMove,
+    this.padding = 10,
   }) : super(key: key);
 
   @override
-  _ResizebleWidgetState createState() => _ResizebleWidgetState();
+  _ComponentEditorState createState() => _ComponentEditorState();
 }
 
-class _ResizebleWidgetState extends State<ResizebleWidget> {
+class _ComponentEditorState extends State<ComponentEditor> {
   double top = 0;
   double left = 0;
-  double height;
-  double width;
+  double size = 0;
+  // double height;
+  // double width;
 
   @override
   void initState() {
     super.initState();
-    height = widget.initSize;
-    width = widget.initSize;
+    size = widget.minSize ?? widget.initSize;
+    // width = widget.minSize ?? widget.initSize;
   }
 
   @override
@@ -38,8 +49,9 @@ class _ResizebleWidgetState extends State<ResizebleWidget> {
                 top: top,
                 left: left,
                 child: Container(
-                  height: height,
-                  width: width,
+                  height: size,
+                  width: size,
+                  padding: EdgeInsets.all(widget.padding),
                   child: widget.child,
                 ),
               ),
@@ -54,7 +66,7 @@ class _ResizebleWidgetState extends State<ResizebleWidget> {
               ),
               Positioned(
                 top: top - 15,
-                left: left + width - 15,
+                left: left + size - 15,
                 child: DraggableFixedBox(
                   width: 30,
                   height: 30,
@@ -63,24 +75,35 @@ class _ResizebleWidgetState extends State<ResizebleWidget> {
                 ),
               ),
               Positioned(
-                top: top + height - 15,
-                left: left + width - 15,
+                top: top + size - 15,
+                left: left + size - 15,
                 child: DraggableFixedBox(
                   width: 30,
                   height: 30,
                   child: Icon(Icons.zoom_out_map),
                   onDrag: (dx, dy) {
-                    var mid = (dx + dy) / 2;
-
-                    var newHeight = height + 2 * mid;
-                    var newWidth = width + 2 * mid;
-
-                    setState(() {
-                      height = newHeight > 0 ? newHeight : 0;
-                      width = newWidth > 0 ? newWidth : 0;
-                      top = top - mid;
-                      left = left - mid;
-                    });
+                    double mid = (dx + dy) / 2;
+                    double newSize = size + 2 * mid;
+                    if (mounted) {
+                      setState(
+                        () {
+                          if (widget.minSize != null &&
+                              newSize < widget.minSize) {
+                            size = widget.minSize;
+                          } else {
+                            size = newSize > 0 ? newSize : 0;
+                            top = top - mid;
+                            left = left - mid;
+                            if (widget.onMove != null) {
+                              widget.onMove(dx, dy);
+                            }
+                          }
+                          if (widget.onResize != null) {
+                            widget.onResize(size / widget.minSize);
+                          }
+                        },
+                      );
+                    }
                   },
                 ),
               ),
@@ -89,8 +112,8 @@ class _ResizebleWidgetState extends State<ResizebleWidget> {
                 left: left,
                 child: DraggableFixedBox(
                   child: Container(
-                    height: height,
-                    width: width,
+                    height: size,
+                    width: size,
                     color: Colors.blue.withOpacity(0.2),
                   ),
                   onDrag: (dx, dy) {
@@ -110,7 +133,7 @@ class _ResizebleWidgetState extends State<ResizebleWidget> {
 class DraggableFixedBox extends StatefulWidget {
   final double width;
   final double height;
-  final Function onDrag;
+  final Function(double, double) onDrag;
   final Widget child;
   final Function onTap;
 

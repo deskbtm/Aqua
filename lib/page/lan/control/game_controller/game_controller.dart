@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/page/lan/control/game_controller/component_container.dart';
+import 'package:lan_file_more/page/lan/control/game_controller/component-editor.dart';
 import 'package:lan_file_more/page/lan/control/game_controller/gamepad/group_buttons_controller.dart';
 import 'package:lan_file_more/page/lan/control/game_controller/gamepad/joystick_controller.dart';
 import 'package:lan_file_more/page/lan/control/game_controller/gamepad/pad_button_item.dart';
@@ -34,6 +34,7 @@ class _GameControllerPageState extends State<GameControllerPage> {
   double x = 0;
   double y = 0;
   Offset _offset = Offset(0, 0);
+  double buttonSize = 200;
 
   @override
   Widget build(BuildContext context) {
@@ -50,56 +51,85 @@ class _GameControllerPageState extends State<GameControllerPage> {
             //     ),
             //   ),
             // ),
-            ResizebleWidget(
+
+            JoystickController(
+              size: 200,
+              iconsColor: Colors.black45,
+            ),
+            ComponentEditor(
               editorMode: true,
+              minSize: 240,
+              onResize: (scale) {
+                setState(() {
+                  buttonSize = buttonSize * scale;
+                });
+              },
               child: Container(
                 padding: EdgeInsets.all(10),
                 child: JoystickController(
+                  size: buttonSize,
                   iconsColor: Colors.black45,
                   // size: 400,
                 ),
               ),
             ),
-            ResizebleWidget(
+            // ComponentEditor(
+            //   editorMode: true,
+            //   child: Container(
+            //     padding: EdgeInsets.all(10),
+            //     child: SingleButton(
+            //       size: 50,
+            //       buttonText: NoResizeText(
+            //         "A",
+            //         style: TextStyle(fontSize: 18),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            SingleButton(
+              size: 60,
+              pressedColor: Colors.green,
+              singlePressedCallback: (gesture) {
+                print(gesture);
+              },
+              buttonText: NoResizeText(
+                "B",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            ComponentEditor(
               editorMode: true,
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: SingleButton(
-                  size: 50,
-                  buttonText: NoResizeText(
-                    "A",
-                    style: TextStyle(fontSize: 18),
-                  ),
+              minSize: 80,
+              onResize: (scale) {},
+              child: SingleButton(
+                pressedColor: Colors.green,
+                singlePressedCallback: (gesture) {
+                  print(gesture);
+                },
+                buttonText: NoResizeText(
+                  "B",
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
             ),
-            ResizebleWidget(
+            ComponentEditor(
               editorMode: true,
+              minSize: 240,
+              onResize: (scale) {
+                print(scale);
+              },
               child: Container(
-                padding: EdgeInsets.all(10),
-                child: SingleButton(
-                  size: 50,
-                  buttonText: NoResizeText(
-                    "B",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-            ),
-            ResizebleWidget(
-              editorMode: true,
-              child: Container(
-                padding: EdgeInsets.all(10),
                 child: GroupButtonsController(
+                  size: 210,
                   buttons: [
-                    PadButtonItem(
+                    SingleButtonItem(
                       index: 0,
                       buttonText: NoResizeText(
                         "A",
                         style: TextStyle(fontSize: 22),
                       ),
                     ),
-                    PadButtonItem(
+                    SingleButtonItem(
                       index: 1,
                       pressedColor: Colors.red,
                       buttonText: NoResizeText(
@@ -107,7 +137,7 @@ class _GameControllerPageState extends State<GameControllerPage> {
                         style: TextStyle(fontSize: 22),
                       ),
                     ),
-                    PadButtonItem(
+                    SingleButtonItem(
                       index: 2,
                       pressedColor: Colors.green,
                       buttonText: NoResizeText(
@@ -115,7 +145,7 @@ class _GameControllerPageState extends State<GameControllerPage> {
                         style: TextStyle(fontSize: 22),
                       ),
                     ),
-                    PadButtonItem(
+                    SingleButtonItem(
                       index: 3,
                       buttonText: NoResizeText(
                         "D",

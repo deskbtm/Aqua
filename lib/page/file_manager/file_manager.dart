@@ -130,6 +130,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<List<SelfFileEntity>> readdir(Directory dir) async {
     // FileStat fileStat = await dir.stat();
     // print(fileStat.modeString());
+    print(_fileModel.sortReversed);
     SelfFileList result = await FileAction.readdir(
       dir,
       sortType: _fileModel.sortType,
@@ -220,9 +221,8 @@ class _FileManagerPageState extends State<FileManagerPage>
                   if (mounted) {
                     await _fileModel
                         .setDisplayHidden(!_fileModel.isDisplayHidden);
-                    changeState(() {});
-                    await update2Side();
                     MixUtils.safePop(context);
+                    await update2Side();
                   }
                 },
               ),
@@ -232,7 +232,9 @@ class _FileManagerPageState extends State<FileManagerPage>
               ),
               ActionButton(
                 content: '排序方式',
-                onTap: insertSortOptions,
+                onTap: () {
+                  insertSortOptions(context);
+                },
               ),
               ActionButton(
                 content: '本机应用',
@@ -350,7 +352,7 @@ class _FileManagerPageState extends State<FileManagerPage>
       {Function(bool) updateItem}) async {
     showText('请选择目标目录');
     _commonModel.addSelectedFile(file);
-    updateItem(true);
+    // updateItem(true);
     MixUtils.safePop(context);
   }
 
@@ -556,22 +558,24 @@ class _FileManagerPageState extends State<FileManagerPage>
     }
   }
 
-  Future<void> insertSortOptions() async {
+  Future<void> insertSortOptions(BuildContext context) async {
     _modalKey.currentState.insertRightCol([
       ActionButton(
         content: '正序',
         fontColor: Colors.pink,
         onTap: () async {
-          _fileModel.setSortReversed(false);
-          update2Side();
+          await _fileModel.setSortReversed(false);
+          MixUtils.safePop(context);
+          await update2Side();
         },
       ),
       ActionButton(
         content: '倒序',
         fontColor: Colors.yellow,
         onTap: () async {
-          _fileModel.setSortReversed(true);
-          update2Side();
+          await _fileModel.setSortReversed(true);
+          MixUtils.safePop(context);
+          await update2Side();
         },
       ),
       ActionButton(
@@ -579,17 +583,19 @@ class _FileManagerPageState extends State<FileManagerPage>
         fontColor: Colors.lightBlue,
         onTap: () async {
           await _fileModel.setSortType(SORT_CASE);
-          update2Side();
-          // await Store.setString(FILE_SORT_TYPE, SORT_CASE);
+          MixUtils.safePop(context);
+          await update2Side();
         },
       ),
       ActionButton(
         content: '大小',
         fontColor: Colors.blueAccent,
         onTap: () async {
-          await _fileModel.setSortType(SORT_SIZE);
-          update2Side();
-          // await Store.setString(FILE_SORT_TYPE, SORT_SIZE);
+          if (mounted) {
+            await _fileModel.setSortType(SORT_SIZE);
+            MixUtils.safePop(context);
+            await update2Side();
+          }
         },
       ),
       ActionButton(
@@ -597,8 +603,8 @@ class _FileManagerPageState extends State<FileManagerPage>
         fontColor: Colors.cyanAccent,
         onTap: () async {
           await _fileModel.setSortType(SORT_MODIFIED);
-          update2Side();
-          // await Store.setString(FILE_SORT_TYPE, SORT_MODIFIED);
+          MixUtils.safePop(context);
+          await update2Side();
         },
       ),
       ActionButton(
@@ -606,8 +612,8 @@ class _FileManagerPageState extends State<FileManagerPage>
         fontColor: Colors.teal,
         onTap: () async {
           await _fileModel.setSortType(SORT_TYPE);
-          update2Side();
-          // await Store.setString(FILE_SORT_TYPE, SORT_TYPE);
+          MixUtils.safePop(context);
+          await update2Side();
         },
       ),
     ]);
@@ -874,7 +880,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                 content: '选中',
                 onTap: () {
                   handleSelectedSingle(
-                      context, file /* , updateItem: updateItem */);
+                      context, file /*  , updateItem: updateItem */);
                 },
               ),
               if (sharedNotEmpty)
@@ -929,8 +935,12 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  void _openFileActionByExt(SelfFileEntity file,
-      {bool left, int index = 0, Function(bool) updateItem}) {
+  void _openFileActionByExt(
+    SelfFileEntity file, {
+    bool left,
+    int index = 0,
+    /* Function(bool) updateItem */
+  }) {
     String path = file.entity.path;
     matchSupportFileExt(
       file.ext,
@@ -962,7 +972,7 @@ class _FileManagerPageState extends State<FileManagerPage>
       caseArchive: () {
         _commonModel.clearSelectedFiles(update: true);
         _commonModel.addSelectedFile(file);
-        updateItem(true);
+        // updateItem(true);
         setState(() {});
         showText('请选择提取路径');
       },
@@ -1033,6 +1043,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         _leftFileList = await readdir(_parentDir);
         _rightFileList = await readdir(_currentDir);
       }
+
       // if (await Directory(_currentDir.path).exists()) {
       // } else {
       //   if (_currentDir.parent.path == _rootPath) {
@@ -1053,6 +1064,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    log('==============================');
 
     LanFileMoreTheme themeData = _themeModel?.themeData;
     return Consumer<FileModel>(

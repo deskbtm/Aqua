@@ -4,23 +4,25 @@ import 'package:lan_file_more/page/lan/control/game_controller/gamepad/gamepad_g
 
 class SingleButton extends StatefulWidget {
   final double size;
-  final Color color;
+  final Color backgroundColor;
+  final Color pressedColor;
   final Image buttonImage;
   final Icon buttonIcon;
   final Widget buttonText;
   final bool withVibration;
   final Function(GamePadGestures) singlePressedCallback;
 
-  const SingleButton(
-      {Key key,
-      this.size,
-      this.color,
-      this.buttonImage,
-      this.buttonIcon,
-      this.buttonText,
-      this.withVibration,
-      this.singlePressedCallback})
-      : super(key: key);
+  const SingleButton({
+    Key key,
+    this.size,
+    this.backgroundColor,
+    this.buttonImage,
+    this.buttonIcon,
+    this.buttonText,
+    this.withVibration,
+    this.singlePressedCallback,
+    this.pressedColor,
+  }) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _SingleButtonState();
@@ -28,6 +30,14 @@ class SingleButton extends StatefulWidget {
 }
 
 class _SingleButtonState extends State<SingleButton> {
+  Color _color;
+
+  @override
+  initState() {
+    super.initState();
+    _color = widget.backgroundColor;
+  }
+
   Future<void> _processGesture(GamePadGestures gesture) async {
     if (widget.singlePressedCallback != null) {
       await widget.singlePressedCallback(gesture);
@@ -45,47 +55,34 @@ class _SingleButtonState extends State<SingleButton> {
           onTapUp: (details) async {
             await _processGesture(GamePadGestures.TAPUP);
             Future.delayed(const Duration(milliseconds: 50), () {
-              // setState(() => buttonsStateMap[paddButton.index] =
-              //     paddButton.backgroundColor);
+              setState(() => _color = widget.backgroundColor);
             });
           },
           onTapDown: (details) async {
             await _processGesture(GamePadGestures.TAPDOWN);
-
-            // setState(() =>
-            //     buttonsStateMap[paddButton.index] = paddButton.pressedColor);
+            setState(() => _color = widget.pressedColor);
           },
           onTapCancel: () async {
             await _processGesture(GamePadGestures.TAPCANCEL);
-
-            // setState(() =>
-            //     buttonsStateMap[paddButton.index] = paddButton.backgroundColor);
+            setState(() => _color = widget.backgroundColor);
           },
           onLongPress: () async {
             await _processGesture(GamePadGestures.LONGPRESS);
           },
           onLongPressStart: (details) async {
             await _processGesture(GamePadGestures.LONGPRESSSTART);
-
-            // setState(() =>
-            //     buttonsStateMap[paddButton.index] = paddButton.pressedColor);
+            setState(() => _color = widget.pressedColor);
           },
           onLongPressUp: () async {
             await _processGesture(GamePadGestures.LONGPRESSUP);
-
-            // setState(() =>
-            // buttonsStateMap[paddButton.index] = paddButton.backgroundColor);
+            setState(() => _color = widget.backgroundColor);
           },
-          child: SizedBox(
-            width: widget.size,
-            height: widget.size,
-            child: CircleView.padButtonCircle(
-              widget.size,
-              widget.color,
-              widget.buttonImage,
-              widget.buttonIcon,
-              widget.buttonText,
-            ),
+          child: CircleView.padButtonCircle(
+            widget.size,
+            _color,
+            widget.buttonImage,
+            widget.buttonIcon,
+            widget.buttonText,
           ),
         );
       },

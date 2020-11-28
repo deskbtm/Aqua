@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'gamepad_gestures.dart';
 
 /// Model of one padd button.
-class PadButtonItem {
+class SingleButtonItem {
   /// [index] required parameter, the key to recognize button instance.
   final int index;
 
@@ -33,7 +33,7 @@ class PadButtonItem {
   /// Default value is [GamePadGestures.TAP].
   final List<GamePadGestures> supportedGestures;
 
-  const PadButtonItem({
+  const SingleButtonItem({
     @required this.index,
     this.buttonText,
     this.buttonImage,

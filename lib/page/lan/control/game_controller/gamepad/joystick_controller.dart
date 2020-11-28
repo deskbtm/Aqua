@@ -36,11 +36,9 @@ class JoystickController extends StatelessWidget {
                 MediaQuery.of(context).size.height) *
             0.5;
 
-    // print(actualSize);
+    print('$actualSize ============');
     double innerCircleSize = actualSize / 2;
     Offset lastPosition = Offset(innerCircleSize, innerCircleSize);
-    Offset joystickInnerPosition = _calculatePositionOfInnerCircle(
-        lastPosition, innerCircleSize, actualSize, Offset(0, 0));
 
     DateTime _callbackTimestamp;
 
@@ -58,43 +56,23 @@ class JoystickController extends StatelessWidget {
                   actualSize / 2,
                   innerCircleColor,
                 ),
-                top: joystickInnerPosition.dy,
-                left: joystickInnerPosition.dx,
               ),
-              if (showArrows) ...createArrows(),
+              // if (showArrows) ...createArrows(),
+              OverflowBox(
+                child: Container(
+                  child: Column(children: [
+                    Row(children: [Container(), Container()]),
+                    Row(),
+                  ]),
+                ),
+              )
             ],
           );
 
           return GestureDetector(
-            onPanStart: (details) {
-              _callbackTimestamp = _processGesture(actualSize, actualSize / 2,
-                  details.localPosition, _callbackTimestamp);
-              setState(() => lastPosition = details.localPosition);
-            },
-            onPanEnd: (details) {
-              _callbackTimestamp = null;
-              if (onDirectionChanged != null) {
-                onDirectionChanged(0, 0);
-              }
-              joystickInnerPosition = _calculatePositionOfInnerCircle(
-                  Offset(innerCircleSize, innerCircleSize),
-                  innerCircleSize,
-                  actualSize,
-                  Offset(0, 0));
-              setState(() =>
-                  lastPosition = Offset(innerCircleSize, innerCircleSize));
-            },
-            onPanUpdate: (details) {
-              _callbackTimestamp = _processGesture(actualSize, actualSize / 2,
-                  details.localPosition, _callbackTimestamp);
-              joystickInnerPosition = _calculatePositionOfInnerCircle(
-                  lastPosition,
-                  innerCircleSize,
-                  actualSize,
-                  details.localPosition);
-
-              setState(() => lastPosition = details.localPosition);
-            },
+            onPanStart: (details) {},
+            onPanEnd: (details) {},
+            onPanUpdate: (details) {},
             child: (opacity != null)
                 ? Opacity(opacity: opacity, child: joystick)
                 : joystick,
@@ -143,112 +121,5 @@ class JoystickController extends StatelessWidget {
         right: 0.0,
       ),
     ];
-  }
-
-  DateTime _processGesture(double size, double ignoreSize, Offset offset,
-      DateTime callbackTimestamp) {
-    double middle = size / 2.0;
-
-    double angle = _math.atan2(offset.dy - middle, offset.dx - middle);
-    double degrees = angle * 180 / _math.pi + 90;
-    if (offset.dx < middle && offset.dy < middle) {
-      degrees = 360 + degrees;
-    }
-
-    double dx = _math.max(0, _math.min(offset.dx, size));
-    double dy = _math.max(0, _math.min(offset.dy, size));
-
-    double distance =
-        _math.sqrt(_math.pow(middle - dx, 2) + _math.pow(middle - dy, 2));
-
-    double normalizedDistance = _math.min(distance / (size / 2), 1.0);
-
-    DateTime _callbackTimestamp = callbackTimestamp;
-    if (onDirectionChanged != null &&
-        _canCallOnDirectionChanged(callbackTimestamp)) {
-      _callbackTimestamp = DateTime.now();
-      onDirectionChanged(degrees, normalizedDistance);
-    }
-
-    return _callbackTimestamp;
-  }
-
-  /// Checks if the [onDirectionChanged] can be called.
-  ///
-  /// Returns true if enough time has passed since last time it was called
-  /// or when there is no [interval] set.
-  bool _canCallOnDirectionChanged(DateTime callbackTimestamp) {
-    if (interval != null && callbackTimestamp != null) {
-      int intervalMilliseconds = interval.inMilliseconds;
-      int timestampMilliseconds = callbackTimestamp.millisecondsSinceEpoch;
-      int currentTimeMilliseconds = DateTime.now().millisecondsSinceEpoch;
-
-      if (currentTimeMilliseconds - timestampMilliseconds <=
-          intervalMilliseconds) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  Offset _calculatePositionOfInnerCircle(
-      Offset lastPosition, double innerCircleSize, double size, Offset offset) {
-    double middle = size / 2.0;
-
-    double angle = _math.atan2(offset.dy - middle, offset.dx - middle);
-    double degrees = angle * 180 / _math.pi;
-    if (offset.dx < middle && offset.dy < middle) {
-      degrees = 360 + degrees;
-    }
-    bool isStartPosition = lastPosition.dx == innerCircleSize &&
-        lastPosition.dy == innerCircleSize;
-    double lastAngleRadians =
-        (isStartPosition) ? 0 : (degrees) * (_math.pi / 180.0);
-
-    var rBig = size / 2;
-    var rSmall = innerCircleSize / 2;
-
-    var x = (lastAngleRadians == -1)
-        ? rBig - rSmall
-        : (rBig - rSmall) + (rBig - rSmall) * _math.cos(lastAngleRadians);
-    var y = (lastAngleRadians == -1)
-        ? rBig - rSmall
-        : (rBig - rSmall) + (rBig - rSmall) * _math.sin(lastAngleRadians);
-
-    var xPosition = lastPosition.dx - rSmall;
-    var yPosition = lastPosition.dy - rSmall;
-
-    var angleRadianPlus = lastAngleRadians + _math.pi / 2;
-    if (angleRadianPlus < _math.pi / 2) {
-      if (xPosition > x) {
-        xPosition = x;
-      }
-      if (yPosition < y) {
-        yPosition = y;
-      }
-    } else if (angleRadianPlus < _math.pi) {
-      if (xPosition > x) {
-        xPosition = x;
-      }
-      if (yPosition > y) {
-        yPosition = y;
-      }
-    } else if (angleRadianPlus < 3 * _math.pi / 2) {
-      if (xPosition < x) {
-        xPosition = x;
-      }
-      if (yPosition > y) {
-        yPosition = y;
-      }
-    } else {
-      if (xPosition < x) {
-        xPosition = x;
-      }
-      if (yPosition < y) {
-        yPosition = y;
-      }
-    }
-    return Offset(xPosition, yPosition);
   }
 }

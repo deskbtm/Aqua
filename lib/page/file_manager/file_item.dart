@@ -28,7 +28,6 @@ class FileItem extends StatefulWidget {
   final Function(double) onHozDrag;
   final FileItemType type;
   final Widget leading;
-  final bool cacheLeading;
 
   /// -1 向右
 
@@ -50,7 +49,6 @@ class FileItem extends StatefulWidget {
     @required this.leading,
     @required this.path,
     @required this.type,
-    this.cacheLeading = false,
   }) : super(key: key);
 
   @override
@@ -89,6 +87,9 @@ class FileItemState extends State<FileItem>
 
   ThemeModel _themeModel;
   CommonModel _commonModel;
+
+  Widget _cacheLeading;
+  String _cachePath;
 
   @override
   bool get wantKeepAlive => true;
@@ -143,8 +144,13 @@ class FileItemState extends State<FileItem>
       _selected = _commonModel.hasSelectedFile(path);
     }
 
+    if (_cachePath != widget.path) {
+      _cacheLeading = widget.leading;
+      _cachePath = widget.path;
+    }
+
     Widget tile = ListTile(
-      leading: widget.leading,
+      leading: _cacheLeading,
       title: NoResizeText(
         filename,
         overflow: autoWrap

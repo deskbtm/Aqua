@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/theme.dart';
-import 'package:quick_actions/quick_actions.dart';
 
 import 'generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
 import 'external/bot_toast/src/toast_navigator_observer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:lan_file_more/constant/constant.dart';
 import 'external/bot_toast/src/bot_toast_init.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/page/home/home.dart';

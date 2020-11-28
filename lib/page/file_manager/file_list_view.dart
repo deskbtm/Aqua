@@ -19,7 +19,10 @@ class ListFileItemInfo {
   final Widget leading;
   final SelfFileEntity file;
 
-  ListFileItemInfo({this.leading, this.file});
+  ListFileItemInfo({
+    this.leading,
+    this.file,
+  });
 }
 
 class FileListView extends StatefulWidget {
@@ -56,13 +59,13 @@ class _FileListViewState extends State<FileListView> {
   ThemeModel _themeModel;
   ScrollController _scrollController;
   bool _mutex;
-  List<ListFileItemInfo> _cachedFileList;
+  // List<ListFileItemInfo> _cachedFileList;
 
   @override
   void initState() {
     super.initState();
     _mutex = false;
-    _cachedFileList = [];
+    // _cachedFileList = [];
 
     _scrollController = ScrollController()
       ..addListener(() {
@@ -92,8 +95,27 @@ class _FileListViewState extends State<FileListView> {
   @override
   void dispose() {
     super.dispose();
-    _cachedFileList = [];
+    // _cachedFileList = [];
   }
+
+  // bool compareFileListChanged() {
+  //   if (widget.fileList.length != _cachedFileList.length) {
+  //     return true;
+  //   } else {
+  //     bool longer = widget.fileList.length > _cachedFileList.length;
+  //     List shorterList = longer ? _cachedFileList : widget.fileList;
+  //     // print(shorterList);
+  //     for (var i = 0; i < shorterList.length; i++) {
+  //       print(
+  //           '-----------------------${_cachedFileList[i].file.entity.path != widget.fileList[i].entity.path}');
+  //       if (_cachedFileList[i].file.entity.path !=
+  //           widget.fileList[i].entity.path) {
+  //         return true;
+  //       }
+  //     }
+  //     return false;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -102,16 +124,18 @@ class _FileListViewState extends State<FileListView> {
     /// 如果文件数量变化，更新否则使用缓存的[_cachedFileList]，防止读取照片文件
     /// thumb 时瞎几把闪，提前渲染好leaing
 
-    if (widget.fileList.length != _cachedFileList.length) {
-      _cachedFileList.clear();
-      for (var i = 0; i < widget.fileList.length; i++) {
-        SelfFileEntity file = widget.fileList[i];
-        _cachedFileList.add(ListFileItemInfo(
-            leading: getPreviewIcon(context, _themeModel, file), file: file));
-      }
-    }
+    // if(widget)
+    // print('${compareFileListChanged()}%%%%%%%%%%%%%%');
+    // if (compareFileListChanged()) {
+    //   _cachedFileList.clear();
+    //   for (var i = 0; i < widget.fileList.length; i++) {
+    //     SelfFileEntity file = widget.fileList[i];
+    //     _cachedFileList.add(ListFileItemInfo(
+    //         leading: getPreviewIcon(context, _themeModel, file), file: file));
+    //   }
+    // }
 
-    return _cachedFileList.isEmpty
+    return widget.fileList.isEmpty
         ? GestureDetector(
             onLongPressStart: widget.onLongPressEmpty,
             child: Container(
@@ -134,9 +158,13 @@ class _FileListViewState extends State<FileListView> {
                 child: ListView.builder(
                   controller: _scrollController,
                   physics: BouncingScrollPhysics(),
-                  itemCount: _cachedFileList.length,
+                  itemCount: widget.fileList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    ListFileItemInfo item = _cachedFileList[index];
+                    SelfFileEntity file = widget.fileList[index];
+                    ListFileItemInfo item = ListFileItemInfo(
+                      leading: getPreviewIcon(context, _themeModel, file),
+                      file: file,
+                    );
 
                     return FileItem(
                       type: item.file.isDir

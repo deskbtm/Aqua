@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
 
 class CircleView extends StatelessWidget {
   final double size;

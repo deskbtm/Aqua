@@ -1,6 +1,4 @@
 import 'dart:isolate';
-
-import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:ping_discover_network/ping_discover_network.dart';
 

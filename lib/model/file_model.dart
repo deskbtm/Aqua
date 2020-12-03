@@ -43,3 +43,10 @@ class FileModel extends ChangeNotifier {
     _sortReversed = (await Store.getBool(SORT_REVERSED)) ?? false;
   }
 }
+
+class Demo extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    throw UnimplementedError();
+  }
+}

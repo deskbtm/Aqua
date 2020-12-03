@@ -6,10 +6,9 @@
 	path = plugins/lan_file_more_umeng
 	url = https://github.com/lan-file-more/lan_file_more_umeng.git
 	ignore = dirty
-[submodule "dev-progress"]
-	path = dev-progress
-	url = https://github.com/lan-file-more/dev-progress.git
-	ignore = dirty
 # [submodule "android_tile_service"]
 # 	path = plugins/android_tile_service
 # 	url = https://github.com/lan-file-more/android_tile_service.git
+[submodule "dev-progress"]
+	path = dev-progress
+	url = https://github.com/lan-file-more/dev-progress.git

@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
+import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/theme.dart';
 
@@ -39,6 +40,9 @@ class _LanFileMoreState extends State<LanFileMore> {
         ),
         ChangeNotifierProvider<CommonModel>(
           create: (_) => CommonModel(),
+        ),
+        ChangeNotifierProvider<FileModel>(
+          create: (_) => FileModel(),
         ),
       ],
       child: LanFileMoreWrapper(),

@@ -9,6 +9,7 @@ import 'package:lan_file_more/common/widget/switch.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
+import 'package:lan_file_more/page/file_manager/file_manager.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/purchase/purchase.dart';
 import 'package:lan_file_more/page/setting/about.dart';
@@ -18,6 +19,7 @@ import 'package:lan_file_more/page/setting/express_setting.dart';
 import 'package:lan_file_more/page/setting/helper_setting.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
@@ -320,10 +322,20 @@ class SettingPageState extends State<SettingPage> {
           blockTitle('Code Server&沙盒'),
           SizedBox(height: 15),
           InkWell(
-            onTap: () async {},
+            onTap: () async {
+              await Navigator.of(context, rootNavigator: true).push(
+                CupertinoPageRoute<void>(
+                  maintainState: false,
+                  builder: (BuildContext context) {
+                    return FileManagerPage(
+                      appointPath: '/sdcard/AcFun',
+                    );
+                  },
+                ),
+              );
+            },
             child: ListTile(
               title: LanText('手动安装'),
-              // subtitle: LanText('手动添加下载好的压缩包', small: true),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
@@ -578,27 +590,6 @@ class SettingPageState extends State<SettingPage> {
                   EdgeInsets.only(left: 15, right: _willUpdate ? 25 : 10),
             ),
           ),
-          // InkWell(
-          //   onTap: () {
-          //     Navigator.of(context, rootNavigator: true).push(
-          //       CupertinoPageRoute(
-          //         builder: (BuildContext context) {
-          //           return LoggerSettingPage();
-          //         },
-          //       ),
-          //     );
-          //   },
-          //   child: ListTile(
-          //     leading: Icon(OMIcons.listAlt, color: themeData?.itemFontColor),
-          //     title: LanText('日志', alignX: -1.15),
-          //     contentPadding: EdgeInsets.only(left: 15, right: 25),
-          //     trailing: Icon(
-          //       OMIcons.chevronRight,
-          //       color: themeData?.itemFontColor,
-          //       size: 16,
-          //     ),
-          //   ),
-          // ),
           SizedBox(height: 30)
         ],
       ),

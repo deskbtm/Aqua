@@ -284,10 +284,7 @@ class _HomePageState extends State<HomePage> {
               switch (index) {
                 case 0:
                   return CupertinoTabView(
-                    builder: (context) => ChangeNotifierProvider(
-                      create: (context) => FileModel(),
-                      child: FileManagerPage(),
-                    ),
+                    builder: (context) => FileManagerPage(),
                   );
                 case 1:
                   return CupertinoTabView(
@@ -295,8 +292,11 @@ class _HomePageState extends State<HomePage> {
                   );
                 case 2:
                   return CupertinoTabView(
-                    builder: (context) => SettingPage(
-                      gTabController: _tabController,
+                    builder: (context) => ChangeNotifierProvider(
+                      create: (_) => FileModel(),
+                      child: SettingPage(
+                        gTabController: _tabController,
+                      ),
                     ),
                   );
                 default:

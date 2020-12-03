@@ -48,6 +48,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'show_more.dart';
 
 class FileManagerPage extends StatefulWidget {
+  final String appointPath;
+  final Function(SelfFileEntity) onSelectItem;
+  final Widget Function(BuildContext) trailingBuilder;
+  final int selectLimit;
+
+  ///  * [appointPath] 默认外存的根目录
+  const FileManagerPage({
+    Key key,
+    this.appointPath,
+    this.onSelectItem,
+    this.selectLimit,
+    this.trailingBuilder,
+  }) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _FileManagerPageState();
@@ -100,8 +114,12 @@ class _FileManagerPageState extends State<FileManagerPage>
     if (_initMutex) {
       _initMutex = false;
       await _fileModel.init();
-      log("root_path ========= ${_commonModel.storageRootPath}");
-      await _changeRootPath(_commonModel.storageRootPath);
+      String initialPath = widget.appointPath != null
+          ? widget.appointPath
+          : _commonModel.storageRootPath;
+
+      log("file-root_path ========= $initialPath");
+      await _changeRootPath(initialPath);
       await getValidAndTotalStorageSize();
     }
   }
@@ -494,21 +512,6 @@ class _FileManagerPageState extends State<FileManagerPage>
       },
     );
   }
-
-  // Future<void> changeFilesVisible() async {
-  //   await _fileModel.setDisplayHidden(!_fileModel.isDisplayHidden);
-  //   _modalKey.currentState?.replaceLeft(1, [
-  //     ActionButton(
-  //       content: _fileModel.isDisplayHidden ? '显示隐藏文件' : '不显示隐藏',
-  //       onTap: () async {
-  //         if (mounted) {
-  //           await changeFilesVisible();
-  //         }
-  //       },
-  //     )
-  //   ]);
-  //   await update2Side();
-  // }
 
   Future<void> showCreateFileModal(BuildContext context,
       {bool left = false}) async {
@@ -1044,16 +1047,6 @@ class _FileManagerPageState extends State<FileManagerPage>
         _rightFileList = await readdir(_currentDir);
       }
 
-      // if (await Directory(_currentDir.path).exists()) {
-      // } else {
-      //   if (_currentDir.parent.path == _rootPath) {
-      //     _leftFileList = await readdir(_currentDir.parent);
-      //     _rightFileList = [];
-      //   } else {
-      //     _leftFileList = await readdir(_parentDir.parent);
-      //     _rightFileList = await readdir(_currentDir.parent);
-      //   }
-      // }
       if (updateView) {
         setState(() {});
         await getValidAndTotalStorageSize();
@@ -1067,148 +1060,144 @@ class _FileManagerPageState extends State<FileManagerPage>
     log('==============================');
 
     LanFileMoreTheme themeData = _themeModel?.themeData;
-    return Consumer<FileModel>(
-      builder: (context, model, child) {
-        return _leftFileList.isEmpty
-            ? Container()
-            : CupertinoPageScaffold(
-                backgroundColor: themeData?.scaffoldBackgroundColor,
-                navigationBar: CupertinoNavigationBar(
-                  trailing: GestureDetector(
-                    onTap: () async {
-                      await _showMoreOptions(context);
-                    },
-                    child: Icon(
-                      Icons.hdr_strong,
-                      color: themeData?.topNavIconColor,
-                      size: 25,
-                    ),
-                  ),
-                  leading: _rootDir.path != _currentDir.path
-                      ? GestureDetector(
-                          onTap: () => {willPop(1, 1)},
-                          child: Icon(
-                            Icons.arrow_left,
-                            color: themeData?.topNavIconColor,
-                            size: 35,
-                          ),
-                        )
-                      : null,
-                  middle: NoResizeText(
-                    FileAction.filename(_currentDir.path ?? ''),
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 20,
-                      color: themeData?.navTitleColor,
-                    ),
-                  ),
-                  backgroundColor: themeData?.navBackgroundColor,
-                  border: null,
-                ),
-                child: Container(
-                  padding: EdgeInsets.only(top: 15),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 1,
-                        child: FileListView(
-                          onUpdateView: () async {
-                            await update2Side();
-                          },
-                          fileList: _leftFileList,
-                          onLongPressEmpty: (d) async {
-                            await _showOptionsWhenPressedEmpty(context,
-                                left: true);
-                          },
-                          onHozDrag: (index, dir) {
-                            SelfFileEntity file = _leftFileList[index];
-                            if (dir == 1) {
-                              _commonModel.addSelectedFile(file);
-                            } else if (dir == -1) {
-                              _commonModel.removeSelectedFile(file);
-                            }
-                          },
-                          itemOnLongPress: (index /* , updateItem */) {
-                            SelfFileEntity file = _leftFileList[index];
-                            _showFileOptionsModal(
-                                file: file /* , updateItem: updateItem */);
-                          },
-                          onItemTap: (index /* , updateItem */) async {
-                            SelfFileEntity file = _leftFileList[index];
-                            if (file.isDir) {
-                              // 点击后交换两边角色
-                              changeSidesRole(file);
-                              List<SelfFileEntity> list =
-                                  await readdir(file.entity);
-                              if (mounted) {
-                                setState(() {
-                                  _rightFileList = list;
-                                });
-                              }
-                            } else {
-                              _openFileActionByExt(
-                                file,
-                                left: true,
-                                index: index,
-                                /* updateItem: updateItem, */
-                              );
-                            }
-                          },
-                        ),
+
+    return _leftFileList.isEmpty
+        ? Container()
+        : CupertinoPageScaffold(
+            backgroundColor: themeData?.scaffoldBackgroundColor,
+            navigationBar: CupertinoNavigationBar(
+              trailing: widget.trailingBuilder != null
+                  ? widget.trailingBuilder(context)
+                  : GestureDetector(
+                      onTap: () async {
+                        await _showMoreOptions(context);
+                      },
+                      child: Icon(
+                        Icons.hdr_strong,
+                        color: themeData?.topNavIconColor,
+                        size: 25,
                       ),
-                      if (_rootDir.path != _currentDir.path)
-                        Expanded(
-                          flex: 1,
-                          child: FileListView(
-                            onUpdateView: () async {
-                              await update2Side();
-                            },
-                            onLongPressEmpty: (d) async {
-                              await _showOptionsWhenPressedEmpty(context,
-                                  left: false);
-                            },
-                            fileList: _rightFileList,
-                            onHozDrag: (index, dir) {
-                              SelfFileEntity file = _rightFileList[index];
-                              if (dir == 1) {
-                                _commonModel.addSelectedFile(file);
-                              } else if (dir == -1) {
-                                _commonModel.removeSelectedFile(file);
-                              }
-                            },
-                            itemOnLongPress: (index /* , updateItem */) {
-                              SelfFileEntity file = _rightFileList[index];
-                              _showFileOptionsModal(
-                                  file: file /* , updateItem: updateItem */);
-                            },
-                            onItemTap: (index /* , updateItem */) async {
-                              SelfFileEntity file = _rightFileList[index];
-                              if (file.isDir) {
-                                changeSidesRole(file);
-                                List<SelfFileEntity> list =
-                                    await readdir(file.entity);
-                                if (mounted) {
-                                  _leftFileList = _rightFileList;
-                                  _rightFileList = list;
-                                  setState(() {});
-                                }
-                              } else {
-                                _openFileActionByExt(
-                                  file,
-                                  left: false,
-                                  index: index,
-                                  /* updateItem: updateItem, */
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                    ],
-                  ),
+                    ),
+              leading: _rootDir.path != _currentDir.path
+                  ? GestureDetector(
+                      onTap: () => {willPop(1, 1)},
+                      child: Icon(
+                        Icons.arrow_left,
+                        color: themeData?.topNavIconColor,
+                        size: 35,
+                      ),
+                    )
+                  : Container(),
+              middle: NoResizeText(
+                FileAction.filename(_currentDir.path ?? ''),
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 20,
+                  color: themeData?.navTitleColor,
                 ),
-              );
-      },
-    );
+              ),
+              backgroundColor: themeData?.navBackgroundColor,
+              border: null,
+            ),
+            child: Container(
+              padding: EdgeInsets.only(top: 15),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: FileListView(
+                      onUpdateView: () async {
+                        await update2Side();
+                      },
+                      fileList: _leftFileList,
+                      onLongPressEmpty: (d) async {
+                        await _showOptionsWhenPressedEmpty(context, left: true);
+                      },
+                      onHozDrag: (index, dir) {
+                        SelfFileEntity file = _leftFileList[index];
+                        if (dir == 1) {
+                          _commonModel.addSelectedFile(file);
+                        } else if (dir == -1) {
+                          _commonModel.removeSelectedFile(file);
+                        }
+                      },
+                      itemOnLongPress: (index) {
+                        SelfFileEntity file = _leftFileList[index];
+                        _showFileOptionsModal(file: file);
+                      },
+                      onItemTap: (index) async {
+                        SelfFileEntity file = _leftFileList[index];
+                        if (file.isDir) {
+                          // 点击后交换两边角色
+                          changeSidesRole(file);
+                          List<SelfFileEntity> list =
+                              await readdir(file.entity);
+                          if (mounted) {
+                            setState(() {
+                              _rightFileList = list;
+                            });
+                          }
+                        } else {
+                          _openFileActionByExt(
+                            file,
+                            left: true,
+                            index: index,
+                            /* updateItem: updateItem, */
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  if (_rootDir.path != _currentDir.path)
+                    Expanded(
+                      flex: 1,
+                      child: FileListView(
+                        onUpdateView: () async {
+                          await update2Side();
+                        },
+                        onLongPressEmpty: (d) async {
+                          await _showOptionsWhenPressedEmpty(context,
+                              left: false);
+                        },
+                        fileList: _rightFileList,
+                        onHozDrag: (index, dir) {
+                          SelfFileEntity file = _rightFileList[index];
+                          if (dir == 1) {
+                            _commonModel.addSelectedFile(file);
+                          } else if (dir == -1) {
+                            _commonModel.removeSelectedFile(file);
+                          }
+                        },
+                        itemOnLongPress: (index) {
+                          SelfFileEntity file = _rightFileList[index];
+                          _showFileOptionsModal(file: file);
+                        },
+                        onItemTap: (index) async {
+                          SelfFileEntity file = _rightFileList[index];
+                          if (file.isDir) {
+                            changeSidesRole(file);
+                            List<SelfFileEntity> list =
+                                await readdir(file.entity);
+                            if (mounted) {
+                              _leftFileList = _rightFileList;
+                              _rightFileList = list;
+                              setState(() {});
+                            }
+                          } else {
+                            _openFileActionByExt(
+                              file,
+                              left: false,
+                              index: index,
+                              /* updateItem: updateItem, */
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          );
   }
 }

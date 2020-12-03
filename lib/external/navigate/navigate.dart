@@ -67,7 +67,7 @@ class Handler {
               pageBuilder: (BuildContext context, _, __) {
                 return pageBuilder(context, arg);
               },
-              transitionsBuilder: pageTransaction(transactionType)));
+              transitionsBuilder: pageTransaction(transactionType)),);
     } else if (replaceRoute == ReplaceRoute.thisOne) {
       return await Navigator.pushReplacement(
           context,

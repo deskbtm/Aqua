@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'gamepad_gestures.dart';
+import 'joystick_gestures.dart';
 
 /// Model of one padd button.
 class SingleButtonItem {
@@ -30,8 +30,8 @@ class SingleButtonItem {
   /// [supportedGestures] optional parameter, list of gestures for button which
   /// will call the callback [PadButtonsView.padButtonPressedCallback].
   ///
-  /// Default value is [GamePadGestures.TAP].
-  final List<GamePadGestures> supportedGestures;
+  /// Default value is [JoystickGestures.TAP].
+  final List<JoystickGestures> supportedGestures;
 
   const SingleButtonItem({
     @required this.index,
@@ -40,6 +40,6 @@ class SingleButtonItem {
     this.buttonIcon,
     this.backgroundColor = Colors.white54,
     this.pressedColor = Colors.lightBlueAccent,
-    this.supportedGestures = const [GamePadGestures.TAP],
+    this.supportedGestures = const [JoystickGestures.TAP],
   }) : assert(index != null);
 }

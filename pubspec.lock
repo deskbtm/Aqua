@@ -64,6 +64,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0+1"
+  clipboard:
+    dependency: "direct main"
+    description:
+      name: clipboard
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.2+8"
   clipboard_listener:
     dependency: "direct main"
     description:
@@ -91,7 +98,7 @@ packages:
       name: connectivity
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.4.9+5"
+    version: "0.4.9+3"
   connectivity_for_web:
     dependency: transitive
     description:
@@ -222,14 +229,14 @@ packages:
       name: flutter_local_notifications
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.5.0+1"
+    version: "3.0.2"
   flutter_local_notifications_platform_interface:
     dependency: transitive
     description:
       name: flutter_local_notifications_platform_interface
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.1"
+    version: "2.0.0+1"
   flutter_localizations:
     dependency: "direct dev"
     description: flutter
@@ -329,6 +336,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.16.1"
+  joystick_editor:
+    dependency: "direct main"
+    description:
+      path: "plugins/joystick_editor"
+      relative: true
+    source: path
+    version: "0.0.1"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.1.1"
   lan_file_more_umeng:
     dependency: "direct main"
     description:
@@ -637,13 +658,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.7.9"
-  shelf_body_parser:
-    dependency: "direct main"
-    description:
-      name: shelf_body_parser
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.6"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -719,6 +733,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.19-nullsafety.2"
+  timezone:
+    dependency: transitive
+    description:
+      name: timezone
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.9"
   typed_data:
     dependency: transitive
     description:
@@ -867,5 +888,5 @@ packages:
     source: hosted
     version: "2.0.3"
 sdks:
-  dart: ">=2.10.0-110 <2.11.0"
+  dart: ">=2.10.2 <2.11.0"
   flutter: ">=1.22.0 <2.0.0"

@@ -24,9 +24,10 @@ Future<void> createProotEnv(
   bool isInstall = false;
   void showText(String content, {int duration = 4}) {
     BotToast.showText(
-        text: content,
-        contentColor: themeData?.toastColor,
-        duration: Duration(seconds: duration));
+      text: content,
+      contentColor: themeData?.toastColor,
+      duration: Duration(seconds: duration),
+    );
   }
 
   showCupertinoModal(
@@ -107,13 +108,11 @@ Future<void> createProotEnv(
                     .prepareResource(
                         resourceUrl: resourceUrl, busyboxUrl: busyBoxUrl)
                     .catchError((err) {
-                  // showText('资源安装出现错误 $err');
-
+                  showText('资源安装出现错误');
                   recordError(
                     methodName: 'prepareResource',
                     text: 'resource',
                   );
-                  // MixUtils.safePop(context);
                 });
 
                 if (prepared != true) {

@@ -28,6 +28,13 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  String _sysDownloadPath;
+  String get sysDownloadPath => _sysDownloadPath;
+
+  Future<void> setSysDownloadPath(String arg) async {
+    _sysDownloadPath = arg;
+  }
+
   String _filePort;
   String get filePort => _filePort;
 
@@ -70,8 +77,9 @@ class CommonModel extends ChangeNotifier {
 
   Future<void> addSelectedFile(SelfFileEntity value,
       {bool update = false}) async {
-    if (!_selectedFiles.any((ele) => ele.entity.path == value.entity.path))
+    if (!_selectedFiles.any((ele) => ele.entity.path == value.entity.path)) {
       _selectedFiles.add(value);
+    }
     if (update) notifyListeners();
   }
 
@@ -87,6 +95,31 @@ class CommonModel extends ChangeNotifier {
 
   Future<void> clearSelectedFiles({bool update = false}) async {
     _selectedFiles = [];
+    if (update) notifyListeners();
+  }
+
+  List<SelfFileEntity> _pickFiles = [];
+  List<SelfFileEntity> get pickedFiles => _pickFiles;
+
+  Future<void> addPickedFile(SelfFileEntity value,
+      {bool update = false}) async {
+    if (!_pickFiles.any((ele) => ele.entity.path == value.entity.path))
+      _pickFiles.add(value);
+    if (update) notifyListeners();
+  }
+
+  Future<void> removePickedFile(SelfFileEntity value,
+      {bool update = false}) async {
+    _pickFiles.removeWhere((ele) => ele.entity.path == value.entity.path);
+    if (update) notifyListeners();
+  }
+
+  bool hasPickFile(String path) {
+    return _pickFiles.any((ele) => ele.entity.path == path);
+  }
+
+  Future<void> clearPickedFiles({bool update = false}) async {
+    _pickFiles = [];
     if (update) notifyListeners();
   }
 
@@ -295,7 +328,8 @@ class CommonModel extends ChangeNotifier {
     _webDavUsername = await Store.getString(WEBDAV_USERNAME);
     _webDavPwd = await secureStorage.read(key: WEBDAV_PWD);
     _enableClipboard = (await Store.getBool(ENABLE_CLIPBOARD)) ?? true;
-    _isPurchased = (await secureStorage.read(key: PURCHASED)) == 'true';
+    _isPurchased =
+        true /* (await secureStorage.read(key: PURCHASED)) == 'true' */;
     _isAppInit = (await Store.getBool(APP_INIT)) ?? true;
     _baseUrl = (await Store.getString(BASE_URL_KEY)) ?? DEF_BASE_URL;
     _username = await Store.getString(LOGIN_USERNMAE);
@@ -310,5 +344,7 @@ class CommonModel extends ChangeNotifier {
     _storageRootPath = await MixUtils.getExternalRootPath();
     _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
         await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
+    // _sysDownloadPath = await AndroidMix.storage
+    //     .getExternalStorageDirectories(StorageDirectory.downloads);
   }
 }

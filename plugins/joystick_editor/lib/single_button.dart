@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/page/lan/control/game_controller/gamepad/circle_view.dart';
-import 'package:lan_file_more/page/lan/control/game_controller/gamepad/gamepad_gestures.dart';
 
-class SingleButton extends StatefulWidget {
+import 'circle_view.dart';
+import 'joystick_gestures.dart';
+
+class SingleCircleButton extends StatefulWidget {
   final double size;
   final Color backgroundColor;
   final Color pressedColor;
@@ -10,9 +11,9 @@ class SingleButton extends StatefulWidget {
   final Icon buttonIcon;
   final Widget buttonText;
   final bool withVibration;
-  final Function(GamePadGestures) singlePressedCallback;
+  final Function(JoystickGestures) singlePressedCallback;
 
-  const SingleButton({
+  const SingleCircleButton({
     Key key,
     this.size,
     this.backgroundColor,
@@ -25,11 +26,11 @@ class SingleButton extends StatefulWidget {
   }) : super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return _SingleButtonState();
+    return _SingleCircleButtonState();
   }
 }
 
-class _SingleButtonState extends State<SingleButton> {
+class _SingleCircleButtonState extends State<SingleCircleButton> {
   Color _color;
 
   @override
@@ -38,7 +39,7 @@ class _SingleButtonState extends State<SingleButton> {
     _color = widget.backgroundColor;
   }
 
-  Future<void> _processGesture(GamePadGestures gesture) async {
+  Future<void> _processGesture(JoystickGestures gesture) async {
     if (widget.singlePressedCallback != null) {
       await widget.singlePressedCallback(gesture);
     }
@@ -50,31 +51,31 @@ class _SingleButtonState extends State<SingleButton> {
       builder: (context, setState) {
         return GestureDetector(
           onTap: () async {
-            await _processGesture(GamePadGestures.TAP);
+            await _processGesture(JoystickGestures.TAP);
           },
           onTapUp: (details) async {
-            await _processGesture(GamePadGestures.TAPUP);
+            await _processGesture(JoystickGestures.TAPUP);
             Future.delayed(const Duration(milliseconds: 50), () {
               setState(() => _color = widget.backgroundColor);
             });
           },
           onTapDown: (details) async {
-            await _processGesture(GamePadGestures.TAPDOWN);
+            await _processGesture(JoystickGestures.TAPDOWN);
             setState(() => _color = widget.pressedColor);
           },
           onTapCancel: () async {
-            await _processGesture(GamePadGestures.TAPCANCEL);
+            await _processGesture(JoystickGestures.TAPCANCEL);
             setState(() => _color = widget.backgroundColor);
           },
           onLongPress: () async {
-            await _processGesture(GamePadGestures.LONGPRESS);
+            await _processGesture(JoystickGestures.LONGPRESS);
           },
           onLongPressStart: (details) async {
-            await _processGesture(GamePadGestures.LONGPRESSSTART);
+            await _processGesture(JoystickGestures.LONGPRESSSTART);
             setState(() => _color = widget.pressedColor);
           },
           onLongPressUp: () async {
-            await _processGesture(GamePadGestures.LONGPRESSUP);
+            await _processGesture(JoystickGestures.LONGPRESSUP);
             setState(() => _color = widget.backgroundColor);
           },
           child: CircleView.padButtonCircle(

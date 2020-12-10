@@ -6,6 +6,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/file_manager/file_manager.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,7 @@ enum FileItemType { folder, file }
 class FileItem extends StatefulWidget {
   final String subTitle;
   final int index;
-  final Function(/* Function(bool) */) onTap;
+  final Function() onTap;
   final Color itemBgColor;
   final Color fontColor;
   final bool withAnimation;
@@ -24,10 +25,11 @@ class FileItem extends StatefulWidget {
   final double subTitleSize;
   final double titleSize;
   final bool autoWrap;
-  final Function(LongPressStartDetails /* , Function(bool) */) onLongPress;
+  final Function(LongPressStartDetails) onLongPress;
   final Function(double) onHozDrag;
   final FileItemType type;
   final Widget leading;
+  final FileManagerMode mode;
 
   /// -1 向右
 
@@ -49,6 +51,7 @@ class FileItem extends StatefulWidget {
     @required this.leading,
     @required this.path,
     @required this.type,
+    this.mode,
   }) : super(key: key);
 
   @override
@@ -68,14 +71,13 @@ class FileItemState extends State<FileItem>
 
   int get index => widget.index;
   String get path => widget.path;
-  Function(/* Function(bool) */) get onTap => widget.onTap;
+  Function() get onTap => widget.onTap;
   Color get itemBgColor => widget.itemBgColor;
   Color get fontColor => widget.fontColor;
   bool get withAnimation => widget.withAnimation;
   Function get onHozDrag => widget.onHozDrag;
   Function(
     LongPressStartDetails,
-    /* Function(bool) */
   ) get onLongPress => widget.onLongPress;
 
   FileItemType get type => widget.type;
@@ -138,10 +140,15 @@ class FileItemState extends State<FileItem>
     Color itemfontColor = fontColor ?? themeData?.itemFontColor;
     Color itemColor = itemBgColor ?? themeData?.itemColor;
 
+    /// [优化点]
     if (widget.justDisplay) {
       _selected = false;
     } else {
-      _selected = _commonModel.hasSelectedFile(path);
+      if (widget.mode == FileManagerMode.pick) {
+        _selected = _commonModel.hasPickFile(path);
+      } else {
+        _selected = _commonModel.hasSelectedFile(path);
+      }
     }
 
     if (_cachePath != widget.path) {

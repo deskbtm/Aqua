@@ -13,9 +13,6 @@ const String FILE_DEFAULT_PORT = '20201';
 const String CODE_SERVER_DEFAULT_PORT = '20202';
 const String LOOPBACK_ADDR = '127.0.0.1';
 
-// 默认沙盒资源包地址
-const String SOURCE_PKG_URL = 'https://wws.lanzous.com/b01hrft4j';
-
 const String TUTORIAL_URL =
     'http://sewerganger.gitee.io/lan-file-more/archives';
 const String TUTORIAL_BASIC_URL =

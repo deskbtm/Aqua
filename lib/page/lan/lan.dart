@@ -8,12 +8,14 @@ import 'package:lan_file_more/page/lan/share/share.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
+
 class LanPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return LanPageState();
   }
 }
+
 class LanPageState extends State<LanPage> {
   ThemeModel _themeModel;
   TabController _controller;
@@ -78,30 +80,6 @@ class LanPageState extends State<LanPage> {
           children: <Widget>[
             LanSharePage(),
             LanControlPage(),
-            // Container(
-            //   child: Center(
-            //     child: LanText(
-            //       '远程控制, 远程游戏手柄, 敬请期待',
-            //       alignX: 0,
-            //     ),
-            //   ),
-            // ),
-            // Container(
-            //   child: Center(
-            //     child: LanText(
-            //       '远程控制, 远程游戏手柄, 敬请期待',
-            //       alignX: 0,
-            //     ),
-            //   ),
-            // ),
-            // Container(
-            //   child: Center(
-            //     child: LanText(
-            //       '远程控制, 远程游戏手柄, 敬请期待',
-            //       alignX: 0,
-            //     ),
-            //   ),
-            // ),
           ],
         ),
 

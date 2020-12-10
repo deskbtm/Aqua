@@ -33,10 +33,6 @@ class FileModel extends ChangeNotifier {
     _showOnlyType = arg;
   }
 
-  update() {
-    notifyListeners();
-  }
-
   Future<void> init() async {
     _isDisplayHidden = (await Store.getBool(SHOW_FILE_HIDDEN)) ?? false;
     _sortType = (await Store.getString(FILE_SORT_TYPE)) ?? SORT_CASE;

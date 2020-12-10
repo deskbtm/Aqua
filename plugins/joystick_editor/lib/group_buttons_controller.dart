@@ -2,28 +2,30 @@ import 'dart:collection';
 import 'dart:math' as _math;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lan_file_more/page/lan/control/game_controller/gamepad/gamepad_gestures.dart';
-import 'package:lan_file_more/page/lan/control/game_controller/gamepad/pad_button_item.dart';
+import 'package:joystick_editor/single_button_item.dart';
 
 import 'circle_view.dart';
+import 'joystick_gestures.dart';
 
 typedef GroupButtonPressedCallback = Future<void> Function(
-    int buttonIndex, GamePadGestures gesture);
+    int buttonIndex, JoystickGestures gesture);
 
 class GroupButtonsController extends StatelessWidget {
-  final double size;
+  final double minSize;
+  final int rotate;
   final List<SingleButtonItem> buttons;
-  final GroupButtonPressedCallback groupButtonPressedCallback;
+  final GroupButtonPressedCallback onGroupButtonPressed;
   final Map<int, Color> buttonsStateMap = HashMap<int, Color>();
   final double buttonsPadding;
   final Color backgroundPadButtonsColor;
 
   GroupButtonsController({
-    this.size = 210,
+    this.minSize = 180,
     @required this.buttons,
-    this.groupButtonPressedCallback,
+    this.onGroupButtonPressed,
     this.buttonsPadding = 0,
     this.backgroundPadButtonsColor = Colors.transparent,
+    this.rotate = 0,
   }) : assert(buttons != null && buttons.isNotEmpty) {
     buttons.forEach(
         (button) => buttonsStateMap[button.index] = button.backgroundColor);
@@ -31,15 +33,16 @@ class GroupButtonsController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double actualSize = size != null
-        ? size
+    double actualSize = minSize != null
+        ? minSize
         : _math.min(MediaQuery.of(context).size.width,
                 MediaQuery.of(context).size.height) *
             0.5;
     double innerCircleSize = actualSize / 3;
 
     return Center(
-        child: Stack(children: createButtons(innerCircleSize, actualSize)));
+      child: Stack(children: createButtons(innerCircleSize, actualSize)),
+    );
   }
 
   List<Widget> createButtons(double innerCircleSize, double actualSize) {
@@ -73,38 +76,39 @@ class GroupButtonsController extends StatelessWidget {
         builder: (context, setState) {
           return GestureDetector(
             onTap: () async {
-              await _processGesture(paddButton, GamePadGestures.TAP);
+              await _processGesture(paddButton, JoystickGestures.TAP);
             },
             onTapUp: (details) async {
-              await _processGesture(paddButton, GamePadGestures.TAPUP);
+              await _processGesture(paddButton, JoystickGestures.TAPUP);
               Future.delayed(const Duration(milliseconds: 50), () {
                 setState(() => buttonsStateMap[paddButton.index] =
                     paddButton.backgroundColor);
               });
             },
             onTapDown: (details) async {
-              await _processGesture(paddButton, GamePadGestures.TAPDOWN);
+              await _processGesture(paddButton, JoystickGestures.TAPDOWN);
 
               setState(() =>
                   buttonsStateMap[paddButton.index] = paddButton.pressedColor);
             },
             onTapCancel: () async {
-              await _processGesture(paddButton, GamePadGestures.TAPCANCEL);
+              await _processGesture(paddButton, JoystickGestures.TAPCANCEL);
 
               setState(() => buttonsStateMap[paddButton.index] =
                   paddButton.backgroundColor);
             },
             onLongPress: () async {
-              await _processGesture(paddButton, GamePadGestures.LONGPRESS);
+              await _processGesture(paddButton, JoystickGestures.LONGPRESS);
             },
             onLongPressStart: (details) async {
-              await _processGesture(paddButton, GamePadGestures.LONGPRESSSTART);
+              await _processGesture(
+                  paddButton, JoystickGestures.LONGPRESSSTART);
 
               setState(() =>
                   buttonsStateMap[paddButton.index] = paddButton.pressedColor);
             },
             onLongPressUp: () async {
-              await _processGesture(paddButton, GamePadGestures.LONGPRESSUP);
+              await _processGesture(paddButton, JoystickGestures.LONGPRESSUP);
 
               setState(() => buttonsStateMap[paddButton.index] =
                   paddButton.backgroundColor);
@@ -128,11 +132,11 @@ class GroupButtonsController extends StatelessWidget {
   }
 
   Future<void> _processGesture(
-      SingleButtonItem button, GamePadGestures gesture) async {
-    if (groupButtonPressedCallback != null &&
+      SingleButtonItem button, JoystickGestures gesture) async {
+    if (onGroupButtonPressed != null &&
         button.supportedGestures.contains(gesture)) {
       print('${button.index} $gesture');
-      await groupButtonPressedCallback(button.index, gesture);
+      await onGroupButtonPressed(button.index, gesture);
       print("$gesture paddbutton id =  ${[button.index]}");
     }
   }

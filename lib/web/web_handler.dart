@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'body_parser/src/file.dart';
 import 'util.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -7,7 +8,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:shelf/shelf.dart';
-import 'package:shelf_body_parser/shelf_body_parser.dart';
+
 import 'directory_listing.dart';
 
 final _defaultMimeTypeResolver = MimeTypeResolver();
@@ -59,7 +60,7 @@ Handler createWebHandler(
 
           if (file == null) {
             return Response.notFound(
-              jsonEncode({'msg': '上传失败 ', 'code': 0}),
+              jsonEncode({'msg': '访问失败', 'code': 0}),
             );
           }
 
@@ -68,7 +69,7 @@ Handler createWebHandler(
 
             if (!pathLib.isWithin(fileSystemPath, resolvedPath)) {
               return Response.notFound(
-                jsonEncode({'msg': '上传失败 ', 'code': 0}),
+                jsonEncode({'msg': '访问失败', 'code': 0}),
               );
             }
           }
@@ -96,7 +97,7 @@ Handler createWebHandler(
                       File(pathLib.join(uploadSavePath, pFile.filename));
                   IOSink fileSink = file.openWrite();
                   await pFile.part.pipe(fileSink);
-                  await fileSink.close();
+                  fileSink.close();
                   debugPrint('${pFile.filename} upload done');
                   if (onUploadResult != null) onUploadResult(true);
                   return Response.ok(
@@ -169,9 +170,10 @@ Handler createFilesHandler(
               FileParams pFile = item[0];
               if (pFile != null) {
                 File file = File(pathLib.join(uploadSavePath, pFile.filename));
+                // file.writeAsBytes(await pFile.);
                 IOSink fileSink = file.openWrite();
                 await pFile.part.pipe(fileSink);
-                await fileSink.close();
+                fileSink.close();
                 debugPrint('${pFile.filename} upload done');
                 if (onUploadResult != null) onUploadResult(true);
                 return Response.ok(

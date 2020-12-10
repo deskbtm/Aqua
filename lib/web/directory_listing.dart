@@ -310,6 +310,44 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
     }
   }
 
+  .line {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    background-color: #2196f3;
+    margin:  0 2.5px;
+  }
+
+  .load-1{
+    display: flex;
+    justify-content: center;
+    height: 20px;
+  }
+
+  .load-1 .line:nth-last-child(1) {
+    animation: loadingA 1.5s 1s infinite;
+  }
+  .load-1 .line:nth-last-child(2) {
+    animation: loadingA 1.5s 0.5s infinite;
+  }
+  .load-1 .line:nth-last-child(3) {
+    animation: loadingA 1.5s 0s infinite;
+  }
+
+  @keyframes loadingA {
+    0 {
+      height: 15px;
+    }
+    50% {
+      height: 35px;
+    }
+    100% {
+      height: 15px;
+    }
+  }
+
+
   </style>
 </head>
 <body>
@@ -317,6 +355,7 @@ Future<String> _getHeader(String sanitizedHeading, String logo,
   <div class="mask-bg" onclick="toggleMask()"></div>
   <div class="display-stage"></div>
 </div>
+
 <section class="item-container">
   <ul>
   <li class="item heading-item">
@@ -341,7 +380,9 @@ String _trailer({bool isShareFiles = false, String serverUrl}) {
 <script>
 
 if(${MixUtils.isDev}){
-  eruda.init();
+  // if(!!eruda){
+  //   eruda.init();
+  // }
 }
 
 var controls = [
@@ -384,6 +425,7 @@ var imgExts =  [
 ];
 
 var mask = document.getElementById('mask');
+var displayStage = document.querySelector('.display-stage');
 
 var downloadURI = function(uri, name) {
   var link = document.createElement("a");
@@ -407,14 +449,13 @@ var clickItem = function(e, name = ''){
   e = e || window.event;
   var isVideo = videoExts.some((val)=> name.indexOf(val) > -1);
   var isImg = imgExts.some((val)=> name.indexOf(val) > -1);
-  var display  = document.querySelector('.display-stage');
 
   if(isVideo){
     e.preventDefault();
     
     toggleMask();
 
-    display.innerHTML = '<video controls crossorigin id="player" src="' + name + '"></video>';
+    displayStage.innerHTML = '<video controls crossorigin id="player" src="' + name + '"></video>';
 
     var player = new Plyr('#player', {controls});
     // 播放器下载按钮
@@ -428,7 +469,7 @@ var clickItem = function(e, name = ''){
   if(isImg){
     e.preventDefault();
     toggleMask();
-    display.innerHTML = '<img src="' + name + '"></img>';
+    displayStage.innerHTML = '<img src="' + name + '"></img>';
     return;
   }
 
@@ -459,6 +500,16 @@ var toast = function(msg, duration){
   }, duration);
 }
 
+var loadingModal = function(){
+  toggleMask();
+  displayStage.innerHTML = '<div class="load-1"><div class="line"></div><div class="line"></div><div class="line"></div></div>';
+}
+
+var clearLoadingModal = function(){
+  mask.classList.add('hidden');
+  displayStage.innerHTML = '';
+}
+
 if("$serverUrl" != "null"){
 
   var funcItem = document.getElementsByClassName('func-item')[0];
@@ -486,11 +537,15 @@ if("$serverUrl" != "null"){
     })
     var xhr = new XMLHttpRequest();
     xhr.open('POST','/upload_file');
-    xhr.send(formData)
+    loadingModal();
+    xhr.send(formData);
     xhr.onreadystatechange = function(){
       if(xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 404)){
         try{
           var a = JSON.parse(xhr.responseText);
+          willUploadFiles = [];
+          chipWrapper.innerHTML = '';
+          clearLoadingModal();
           toast(a.msg,  2000);
         }catch(e){
           toast('出现未知错误',  2000);
@@ -769,11 +824,12 @@ Future<Response> listFiles(List<String> paths,
     String name = pathLib.basename(path);
     String ext = pathLib.extension(path);
     File file = File(path);
-    // File(path)
     bool isDir = file.statSync().type == FileSystemEntityType.directory;
     if (isDir) {
       name += '/';
       ext = 'folder';
+    } else {
+      name = path;
     }
     String sanitizedName = sanitizer.convert(name);
     String base64Icon = "data:image/png;base64, ${matchIcon(ext, icons)}";

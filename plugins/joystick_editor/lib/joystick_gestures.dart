@@ -1,5 +1,5 @@
 /// Supported gestures for pad buttons.
-enum GamePadGestures {
+enum JoystickGestures {
   TAPDOWN,
   TAPUP,
   TAPCANCEL,

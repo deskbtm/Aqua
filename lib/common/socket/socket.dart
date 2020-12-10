@@ -23,10 +23,11 @@ class SocketConnecter {
   SocketConnecter(this.commonProvider);
 
   Future<void> _clipboardListener() async {
+    
     if (commonProvider.enableClipboard) {
       ClipboardData content = await Clipboard.getData(Clipboard.kTextPlain);
       // 防止重复发
-      if (_cachedClipboard != content.text) {
+      if (_cachedClipboard != content?.text) {
         _cachedClipboard = content.text;
         commonProvider.socket?.emit('clipboard-to-server', content.text);
       }

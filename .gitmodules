@@ -12,3 +12,4 @@
 [submodule "dev-progress"]
 	path = dev-progress
 	url = https://github.com/lan-file-more/dev-progress.git
+	ignore = dirty

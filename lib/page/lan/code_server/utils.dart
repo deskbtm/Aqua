@@ -2,9 +2,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:android_mix/android_mix.dart';
-import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
 
 enum AlpineMirror { ustc, aliyun, tsinghua, alpine }
 
@@ -133,18 +131,23 @@ ff02::3     ipv6-allhosts
     String resourceUrl,
     String busyboxUrl,
   }) async {
-    await fetchAndSave(busyboxUrl, '$filesPath/$busyboxName');
-    await fetchAndSave(resourceUrl, '$filesPath/$tarName');
+    try {
+      await fetchAndSave(busyboxUrl, '$filesPath/$busyboxName');
+      await fetchAndSave(resourceUrl, '$filesPath/$tarName');
+      await installResource();
+      return true;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<bool> installResource() async {
     await chmod777('$filesPath/$tarName');
     await chmod777('$filesPath/busybox');
     if (!(await File('$filesPath/busybox').exists())) {
       return false;
     }
     await tarGz('./$tarName', './');
-    // bool successed = await extractResource();
-    // if (!successed) {
-    //   return false;
-    // }
     await chmod777('$filesPath/proot');
     await createProotTmp();
     await chmod777('$filesPath/rootfs');

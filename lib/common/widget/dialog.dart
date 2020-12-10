@@ -109,13 +109,14 @@ class LanDialog extends Dialog {
                               Container(
                                 child: Row(
                                   children: <Widget>[
-                                    DefaultTextStyle(
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: fontColor,
+                                    if (title != null)
+                                      DefaultTextStyle(
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: fontColor,
+                                        ),
+                                        child: title,
                                       ),
-                                      child: title,
-                                    ),
                                   ],
                                 ),
                               ),

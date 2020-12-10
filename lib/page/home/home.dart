@@ -48,6 +48,7 @@ class _HomePageState extends State<HomePage> {
     _tabController = CupertinoTabController();
     _mutex = true;
     _updateModalMutex = true;
+
     QuickActions quickActions = QuickActions();
 
     quickActions.setShortcutItems(
@@ -190,6 +191,10 @@ class _HomePageState extends State<HomePage> {
       if (data != null) {
         await showUpdateModal(data);
       }
+
+      // 设计稿 为 Nokia x6
+      // ScreenUtil.init(context,
+      //     designSize: Size(1080, 2280), allowFontScaling: false);
     }
 
     if (_mutex) {
@@ -284,7 +289,9 @@ class _HomePageState extends State<HomePage> {
               switch (index) {
                 case 0:
                   return CupertinoTabView(
-                    builder: (context) => FileManagerPage(),
+                    builder: (context) => FileManagerPage(
+                      mode: FileManagerMode.surf,
+                    ),
                   );
                 case 1:
                   return CupertinoTabView(

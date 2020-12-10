@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
 import 'package:lan_file_more/utils/error.dart';
+import 'package:lan_file_more/web/body_parser/src/shelf_body_parser.dart';
 import 'package:provider/provider.dart';
 import 'package:lan_file_more/common/socket/socket.dart';
 import 'package:lan_file_more/common/widget/images.dart';
@@ -23,7 +24,7 @@ import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/web/web_handler.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
-import 'package:shelf_body_parser/shelf_body_parser.dart';
+
 import 'package:wakelock/wakelock.dart';
 
 class LanSharePage extends StatefulWidget {
@@ -41,12 +42,10 @@ class _LanSharePageState extends State<LanSharePage>
   HttpServer _server;
   bool _shareSwitch;
   bool _vscodeSwitch;
-  bool _mutex;
 
   @override
   void initState() {
     super.initState();
-    _mutex = true;
     _shareSwitch = false;
     _vscodeSwitch = false;
   }
@@ -56,8 +55,6 @@ class _LanSharePageState extends State<LanSharePage>
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
-
-    if (_mutex) {}
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
@@ -126,9 +123,8 @@ class _LanSharePageState extends State<LanSharePage>
         );
       }
 
-      var handler = const Pipeline()
-          .addMiddleware(bodyParser(storeOriginalBuffer: false))
-          .addHandler(handlerFunc);
+      var handler =
+          const Pipeline().addMiddleware(bodyParser()).addHandler(handlerFunc);
 
       if (_shareSwitch) {
         _server = await shelf.serve(handler, ip, port, shared: true);
@@ -155,29 +151,24 @@ class _LanSharePageState extends State<LanSharePage>
     }
   }
 
-  void showText(String content, {Duration duration}) {
+  void showText(
+    String content,
+  ) {
     BotToast.showText(
-      text: content,
-      contentColor: _themeModel.themeData?.toastColor,
-      duration: duration,
-    );
+        text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     String internalIp = _commonModel.internalIp;
     String filePort = _commonModel.filePort ?? FILE_DEFAULT_PORT;
     String codeSrvPort = _commonModel.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
 
-    String fileAddr = internalIp == null
-        ? '$LOOPBACK_ADDR:$filePort'
-        : '$internalIp:$filePort';
+    String fileAddr = '$internalIp:$filePort';
 
-    String codeAddr = internalIp == null
-        ? '$LOOPBACK_ADDR:$codeSrvPort'
-        : '$internalIp:$codeSrvPort';
-
-    // String codeSrvIp = _commonModel.codeSrvIp;
+    String codeAddr = '$internalIp:$codeSrvPort';
 
     String firstAliveIp =
         // ignore: null_aware_in_logical_operator
@@ -212,13 +203,15 @@ class _LanSharePageState extends State<LanSharePage>
                                   _shareSwitch = !_shareSwitch;
                                 });
                               }
-                              await createStaticServer().catchError((err) {
-                                recordError(
-                                  text: '静态服务出错',
-                                  methodName: 'createStaticServer',
-                                  exception: err,
-                                );
-                              });
+                              await createStaticServer().catchError(
+                                (err) {
+                                  recordError(
+                                    text: '静态服务出错',
+                                    methodName: 'createStaticServer',
+                                    exception: err,
+                                  );
+                                },
+                              );
                             },
                           ),
                         ),
@@ -229,11 +222,8 @@ class _LanSharePageState extends State<LanSharePage>
                           trailing: LanSwitch(
                             value: _vscodeSwitch,
                             onChanged: (val) async {
-                              if (!_commonModel.isPurchased) {
-                                showText(
-                                  '请先购买 "局域网.文件.更多" for developer',
-                                  duration: Duration(seconds: 3),
-                                );
+                              if (/* !_commonModel.isPurchased */ false) {
+                                showText('请先购买 "局域网.文件.更多" for developer');
                                 return;
                               }
                               CodeSrvUtils utils = await CodeSrvUtils().init();
@@ -336,7 +326,10 @@ class _LanSharePageState extends State<LanSharePage>
                           CupertinoButton(
                             child: Text('测试按钮'),
                             onPressed: () async {
-                              // print();
+                              print(await MixUtils.getIntenalIp());
+
+                              // Color(0x9999);
+
                               // CodeSrvUtils utils = await CodeSrvUtils().init();
                               // recordError(
                               //     text: "demomodemo",

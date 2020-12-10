@@ -1,8 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:joystick_editor/joystick_board.dart';
 import 'package:lan_file_more/constant/constant.dart';
-import 'package:lan_file_more/page/lan/control/game_controller/game_controller.dart';
+
 import 'package:lan_file_more/page/lan/control/image_leading_tile.dart';
 import 'package:provider/provider.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
@@ -92,7 +93,7 @@ class _LanControlPageState extends State<LanControlPage>
                               Navigator.of(context, rootNavigator: true).push(
                                 CupertinoPageRoute(
                                   builder: (BuildContext context) {
-                                    return GameControllerPage();
+                                    return JoystickBoard();
                                   },
                                 ),
                               );

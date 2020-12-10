@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:android_mix/android_mix.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_file_more/common/widget/function_widget.dart';
@@ -9,6 +10,7 @@ import 'package:lan_file_more/common/widget/switch.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
+import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/purchase/purchase.dart';
@@ -19,6 +21,7 @@ import 'package:lan_file_more/page/setting/express_setting.dart';
 import 'package:lan_file_more/page/setting/helper_setting.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -73,9 +76,13 @@ class SettingPageState extends State<SettingPage> {
     }
   }
 
-  void showText(String content) {
+  void showText(String content,
+      {Duration duration = const Duration(seconds: 3)}) {
     BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+      text: content,
+      contentColor: _themeModel.themeData?.toastColor,
+      duration: duration,
+    );
   }
 
   Future setTheme(bool val) async {
@@ -328,7 +335,71 @@ class SettingPageState extends State<SettingPage> {
                   maintainState: false,
                   builder: (BuildContext context) {
                     return FileManagerPage(
-                      appointPath: '/sdcard/AcFun',
+                      appointPath: _commonModel.storageRootPath,
+                      selectLimit: 1,
+                      mode: FileManagerMode.pick,
+                      // 这里是FileManager的context
+                      trailingBuilder: (fileCtx) {
+                        return Material(
+                          child: InkWell(
+                            onTap: () async {
+                              MixUtils.safePop(fileCtx);
+                              SelfFileEntity file = _commonModel.pickedFiles[0];
+
+                              if (file != null && file.ext == '.zip') {
+                                showText(
+                                  '资源安装中...',
+                                  duration: Duration(seconds: 8),
+                                );
+                                CodeSrvUtils cutils =
+                                    await CodeSrvUtils().init();
+                                await AndroidMix.archive.unzip(
+                                  _commonModel.pickedFiles[0].entity.path,
+                                  cutils.filesPath,
+                                );
+                                if (await File(
+                                        '${cutils.filesPath}/${cutils.tarName}')
+                                    .exists()) {
+                                  bool installed =
+                                      await cutils.installResource();
+
+                                  if (installed != true) {
+                                    await cutils.rmAllResource().catchError(
+                                      (err) {
+                                        recordError(text: 'rm all resource');
+                                      },
+                                    );
+                                    showText('资源安装失败 已删除');
+                                    MixUtils.safePop(context);
+                                    return;
+                                  }
+
+                                  await cutils.installNodeJs().catchError(
+                                    (err) {
+                                      showText('node 安装失败');
+                                      recordError(
+                                        text: 'node 安装失败',
+                                        exception: err,
+                                        methodName: 'installNodeJs',
+                                      );
+                                    },
+                                  );
+                                  showText('安装成功');
+                                }
+                              } else {
+                                showText('资源包必须名为zip格式');
+                              }
+                              await _commonModel.clearPickedFiles();
+                            },
+                            child: NoResizeText(
+                              '确定',
+                              style: TextStyle(
+                                color: Color(0xFF007AFF),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),

@@ -605,7 +605,6 @@ Future<dynamic> showLoadingModal(
   BuildContext context,
   ThemeModel provider, {
   bool popPreviousWindow = false,
-  bool transparent = false,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
   dynamic themeData = provider.themeData;

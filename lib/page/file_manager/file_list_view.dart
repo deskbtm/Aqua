@@ -11,6 +11,7 @@ import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_item.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/file_manager/file_manager.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -27,27 +28,23 @@ class ListFileItemInfo {
 
 class FileListView extends StatefulWidget {
   final List<SelfFileEntity> fileList;
-  final Function(
-    int,
-    /* Function(bool) */
-  ) itemOnLongPress;
+  final Function(int) itemOnLongPress;
   final Function(LongPressStartDetails) onLongPressEmpty;
   final Function(int, double) onHozDrag;
-  final Function(
-    int,
-    /* Function(bool) */
-  ) onItemTap;
+  final Function(int) onItemTap;
+  final FileManagerMode mode;
   final Function onUpdateView;
 
-  const FileListView(
-      {Key key,
-      @required this.fileList,
-      this.itemOnLongPress,
-      @required this.onHozDrag,
-      this.onItemTap,
-      this.onLongPressEmpty,
-      this.onUpdateView})
-      : super(key: key);
+  const FileListView({
+    Key key,
+    @required this.fileList,
+    this.itemOnLongPress,
+    @required this.onHozDrag,
+    this.onItemTap,
+    this.onLongPressEmpty,
+    this.onUpdateView,
+    @required this.mode,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -167,6 +164,7 @@ class _FileListViewState extends State<FileListView> {
                     );
 
                     return FileItem(
+                      mode: widget.mode,
                       type: item.file.isDir
                           ? FileItemType.folder
                           : FileItemType.file,
@@ -204,9 +202,9 @@ class _FileListViewState extends State<FileListView> {
                             index, /* itemUpdate */
                           );
                       },
-                      onHozDrag: (dir) {
+                      onHozDrag: (dir) async {
                         /// [index] 位数 [dir] 方向 1 向右 -1 左
-                        widget.onHozDrag(index, dir);
+                        await widget.onHozDrag(index, dir);
                       },
                     );
                   },

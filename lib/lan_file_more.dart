@@ -7,8 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/utils/error.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 
+import 'constant/constant.dart';
 import 'generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -81,12 +83,19 @@ class _LanFileMoreWrapperState extends State {
       debugPrint(payload);
     });
 
-    _connectSubscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) async {
-      String internalIp = await Connectivity().getWifiIP();
-      await _commonModel.setInternalIp(internalIp);
-    });
+    _connectSubscription =
+        Connectivity().onConnectivityChanged.listen(_setInternalIp);
+  }
+
+  Future<void> _setInternalIp(ConnectivityResult result) async {
+    try {
+      if (_commonModel.enableConnect != null) {
+        String internalIp = await Connectivity().getWifiIP() ??
+            await MixUtils.getIntenalIp() ??
+            LOOPBACK_ADDR;
+        await _commonModel.setInternalIp(internalIp);
+      }
+    } catch (e) {}
   }
 
   @override
@@ -105,10 +114,8 @@ class _LanFileMoreWrapperState extends State {
         recordError(text: '', exception: err, methodName: 'initCommon');
       });
 
-      if (_commonModel.enableConnect != null) {
-        String internalIp = await Connectivity().getWifiIP();
-        await _commonModel.setInternalIp(internalIp);
-      }
+      await _setInternalIp(null);
+
       setState(() {
         _prepared = true;
       });

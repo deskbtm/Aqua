@@ -126,7 +126,7 @@ Widget getPreviewIcon(
             path: file.entity.path, quality: 50),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
+            if (snapshot.hasError || snapshot.data == null) {
               return Container(
                 width: 40,
                 height: 40,

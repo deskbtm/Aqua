@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:android_mix/android_mix.dart';
 import 'package:device_info/device_info.dart';
-import 'package:lan_file_more/page/file_manager/file_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as pathLib;
 
@@ -107,6 +106,8 @@ class MixUtils {
 
   static Future<String> getExternalRootPath() async {
     String path;
+
+    /// android 会把 外存路径挂到环境变量中
     path = Platform.environment['EXTERNAL_STORAGE'];
     if (path == null) {
       try {
@@ -141,5 +142,52 @@ class MixUtils {
     }
 
     return path;
+  }
+
+  // RFC1918私有网络地址分配
+  static Future<String> getIntenalIp() async {
+    String ip;
+
+    for (var interface in await NetworkInterface.list()) {
+      for (var addr in interface.addresses) {
+        if (!addr.isLoopback && addr.type.name == 'IPv4') {
+          String pureAddr = addr.address.replaceAll(RegExp(r"\/\d+"), '');
+
+          List block = pureAddr.split(RegExp(r"\."));
+
+          if (block != null && block.length == 4) {
+            if (block[0] == '192' &&
+                block[1] == '168' &&
+                int.parse(block[2]) >= 0 &&
+                int.parse(block[2]) <= 255 &&
+                int.parse(block[3]) >= 0 &&
+                int.parse(block[3]) <= 255) {
+              ip = addr.address;
+            }
+
+            if (block[0] == '172' &&
+                int.parse(block[1]) >= 16 &&
+                int.parse(block[1]) <= 33 &&
+                int.parse(block[2]) >= 0 &&
+                int.parse(block[2]) <= 255 &&
+                int.parse(block[3]) >= 0 &&
+                int.parse(block[3]) <= 255) {
+              ip = addr.address;
+            }
+
+            if (block[0] == '10' &&
+                int.parse(block[1]) >= 0 &&
+                int.parse(block[1]) <= 255 &&
+                int.parse(block[2]) >= 0 &&
+                int.parse(block[2]) <= 255 &&
+                int.parse(block[3]) >= 0 &&
+                int.parse(block[3]) <= 255) {
+              ip = addr.address;
+            }
+          }
+        }
+      }
+    }
+    return ip;
   }
 }

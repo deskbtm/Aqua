@@ -47,19 +47,24 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:url_launcher/url_launcher.dart';
 import 'show_more.dart';
 
+enum FileManagerMode {
+  surf,
+  pick,
+}
+
 class FileManagerPage extends StatefulWidget {
   final String appointPath;
-  final Function(SelfFileEntity) onSelectItem;
   final Widget Function(BuildContext) trailingBuilder;
   final int selectLimit;
+  final FileManagerMode mode;
 
   ///  * [appointPath] 默认外存的根目录
   const FileManagerPage({
     Key key,
     this.appointPath,
-    this.onSelectItem,
     this.selectLimit,
     this.trailingBuilder,
+    @required this.mode,
   }) : super(key: key);
 
   @override
@@ -102,7 +107,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
     WidgetsBinding.instance.addObserver(this);
     _modalKey = GlobalKey<SplitSelectionModalState>();
-    BackButtonInterceptor.add(willPop);
+    BackButtonInterceptor.add(_willPopFileRoute);
   }
 
   @override
@@ -113,10 +118,13 @@ class _FileManagerPageState extends State<FileManagerPage>
     _fileModel = Provider.of<FileModel>(context);
     if (_initMutex) {
       _initMutex = false;
-      await _fileModel.init();
-      String initialPath = widget.appointPath != null
-          ? widget.appointPath
-          : _commonModel.storageRootPath;
+      String initialPath;
+      if (widget.mode == FileManagerMode.surf || widget.appointPath == null) {
+        await _fileModel.init();
+        initialPath = _commonModel.storageRootPath;
+      } else {
+        initialPath = widget.appointPath;
+      }
 
       log("file-root_path ========= $initialPath");
       await _changeRootPath(initialPath);
@@ -128,7 +136,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    BackButtonInterceptor.remove(willPop);
+    BackButtonInterceptor.remove(_willPopFileRoute);
   }
 
   @override
@@ -146,52 +154,51 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<List<SelfFileEntity>> readdir(Directory dir) async {
-    // FileStat fileStat = await dir.stat();
-    // print(fileStat.modeString());
-    print(_fileModel.sortReversed);
-    SelfFileList result = await FileAction.readdir(
-      dir,
-      sortType: _fileModel.sortType,
-      showHidden: _fileModel.isDisplayHidden,
-      reversed: _fileModel.sortReversed,
-    ).catchError((err) async {
-      String errorString = err.toString().toLowerCase();
-      bool overAndroid11 =
-          int.parse((await DeviceInfoPlugin().androidInfo).version.release) >=
-              11;
-      bool isChildOfRootPath = pathLib.isWithin(_rootDir.path, dir.path);
+    if (pathLib.isWithin(_rootDir.path, dir.path) ||
+        pathLib.equals(_rootDir.path, dir.path)) {
+      SelfFileList result = await FileAction.readdir(
+        dir,
+        sortType: _fileModel.sortType,
+        showHidden: _fileModel.isDisplayHidden,
+        reversed: _fileModel.sortReversed,
+      ).catchError((err) async {
+        String errorString = err.toString().toLowerCase();
+        bool overAndroid11 =
+            int.parse((await DeviceInfoPlugin().androidInfo).version.release) >=
+                11;
 
-      if (errorString.contains('permission') &&
-          errorString.contains('denied')) {
-        showTipTextModal(
-          context,
-          _themeModel,
-          title: '错误',
-          tip: (overAndroid11 && isChildOfRootPath)
-              ? '安卓11以上data / obb 没有权限'
-              : '没有该目录权限',
-          onCancel: null,
+        if (errorString.contains('permission') &&
+            errorString.contains('denied')) {
+          showTipTextModal(
+            context,
+            _themeModel,
+            title: '错误',
+            tip: (overAndroid11) ? '安卓11以上data / obb 没有权限' : '没有该目录权限',
+            onCancel: null,
+          );
+        }
+        recordError(
+          text: '',
+          exception: err,
+          methodName: 'readdir',
+          className: 'FileManager',
         );
-      }
-      recordError(
-        text: '',
-        exception: err,
-        methodName: 'readdir',
-        className: 'FileManager',
-      );
-    });
+      });
 
-    switch (_fileModel.showOnlyType) {
-      case ShowOnlyType.all:
-        return result?.allList ?? [];
-      case ShowOnlyType.file:
-        return result?.fileList ?? [];
-      case ShowOnlyType.folder:
-        return result?.folderList ?? [];
-      case ShowOnlyType.link:
-        return result?.linkList ?? [];
-      default:
-        return result?.allList ?? [];
+      switch (_fileModel.showOnlyType) {
+        case ShowOnlyType.all:
+          return result?.allList ?? [];
+        case ShowOnlyType.file:
+          return result?.fileList ?? [];
+        case ShowOnlyType.folder:
+          return result?.folderList ?? [];
+        case ShowOnlyType.link:
+          return result?.linkList ?? [];
+        default:
+          return result?.allList ?? [];
+      }
+    } else {
+      return [];
     }
   }
 
@@ -366,12 +373,52 @@ class _FileManagerPageState extends State<FileManagerPage>
     }
   }
 
+  bool _isBeyondLimit() {
+    if (widget.mode == FileManagerMode.pick && widget.selectLimit != null) {
+      if (_commonModel.pickedFiles.length >= widget.selectLimit) {
+        showText('选中数量不可超过 ${widget.selectLimit}');
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<void> handleSelectedSingle(BuildContext context, SelfFileEntity file,
       {Function(bool) updateItem}) async {
-    showText('请选择目标目录');
-    _commonModel.addSelectedFile(file);
+    if (_isBeyondLimit()) {
+      return;
+    }
+
+    if (widget.mode == FileManagerMode.pick) {
+      await _commonModel.addPickedFile(file);
+    } else {
+      showText('请选择目标目录');
+      await _commonModel.addSelectedFile(file);
+    }
+
     // updateItem(true);
     MixUtils.safePop(context);
+  }
+
+  Future<void> handleHozDragItem(
+      int index, double dir, List<SelfFileEntity> list) async {
+    SelfFileEntity file = list[index];
+    if (widget.mode == FileManagerMode.pick) {
+      if (dir == 1) {
+        if (_isBeyondLimit()) {
+          return;
+        }
+        await _commonModel.addPickedFile(file);
+      } else if (dir == -1) {
+        await _commonModel.removePickedFile(file);
+      }
+    } else {
+      if (dir == 1) {
+        await _commonModel.addSelectedFile(file);
+      } else if (dir == -1) {
+        await _commonModel.removeSelectedFile(file);
+      }
+    }
   }
 
   Future<void> copyModal(BuildContext context) async {
@@ -882,8 +929,7 @@ class _FileManagerPageState extends State<FileManagerPage>
               ActionButton(
                 content: '选中',
                 onTap: () {
-                  handleSelectedSingle(
-                      context, file /*  , updateItem: updateItem */);
+                  handleSelectedSingle(context, file);
                 },
               ),
               if (sharedNotEmpty)
@@ -1011,42 +1057,55 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  void changeSidesRole(SelfFileEntity file) {
+  Future<void> _changeSidesRole(SelfFileEntity file) async {
     _currentDir = file.entity;
     _parentDir = _currentDir.parent;
   }
 
   /// tag
-  Future<bool> willPop(stopDefaultButtonEvent, routeInfo) async {
-    if (_currentDir.path == _rootDir.path) {
-      return false;
+  Future<bool> _willPopFileRoute(stopDefaultButtonEvent, routeInfo) async {
+    if (pathLib.equals(_parentDir.path, _rootDir.path)) {
+      _leftFileList = await readdir(_rootDir);
+      if (mounted) {
+        setState(() {
+          _rightFileList = [];
+          _currentDir = _rootDir;
+        });
+      }
     }
 
-    if (_parentDir.path == _rootDir.path) {
-      _leftFileList = await readdir(_rootDir);
-      _rightFileList = [];
-      _currentDir = _rootDir;
-    } else {
+    if (pathLib.isWithin(_rootDir.path, _currentDir.path) &&
+        pathLib.isWithin(_rootDir.path, _parentDir.path)) {
       _leftFileList = await readdir(_parentDir.parent);
       _rightFileList = await readdir(_parentDir);
-      _currentDir = _parentDir;
-      _parentDir = _parentDir.parent;
+      if (mounted) {
+        setState(() {
+          if (_currentDir.path == '/') {
+            var a = 1;
+          }
+          if (_parentDir.path == '/') {
+            var a = 1;
+          }
+          _currentDir = _parentDir;
+          _parentDir = _parentDir.parent;
+        });
+      }
     }
 
-    setState(() {});
+    // if(_)
+
     return false;
   }
 
   Future<void> update2Side({updateView = true}) async {
+    /// 只有curentPath 存在的时候才读取
+    if (_currentDir.path == _rootDir.path) {
+      _leftFileList = await readdir(_currentDir);
+    } else {
+      _leftFileList = await readdir(_parentDir);
+      _rightFileList = await readdir(_currentDir);
+    }
     if (mounted) {
-      /// 只有curentPath 存在的时候才读取
-      if (_currentDir.path == _rootDir.path) {
-        _leftFileList = await readdir(_currentDir);
-      } else {
-        _leftFileList = await readdir(_parentDir);
-        _rightFileList = await readdir(_currentDir);
-      }
-
       if (updateView) {
         setState(() {});
         await getValidAndTotalStorageSize();
@@ -1057,9 +1116,12 @@ class _FileManagerPageState extends State<FileManagerPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    log('==============================');
 
     LanFileMoreTheme themeData = _themeModel?.themeData;
+
+    // print(_currentDir.path);
+    // print(_parentDir.path);
+    // print(_rootDir.path);
 
     return _leftFileList.isEmpty
         ? Container()
@@ -1078,9 +1140,9 @@ class _FileManagerPageState extends State<FileManagerPage>
                         size: 25,
                       ),
                     ),
-              leading: _rootDir.path != _currentDir.path
+              leading: pathLib.isWithin(_rootDir.path, _currentDir.path)
                   ? GestureDetector(
-                      onTap: () => {willPop(1, 1)},
+                      onTap: () => {_willPopFileRoute(1, 1)},
                       child: Icon(
                         Icons.arrow_left,
                         color: themeData?.topNavIconColor,
@@ -1107,6 +1169,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   Expanded(
                     flex: 1,
                     child: FileListView(
+                      mode: widget.mode,
                       onUpdateView: () async {
                         await update2Side();
                       },
@@ -1114,13 +1177,8 @@ class _FileManagerPageState extends State<FileManagerPage>
                       onLongPressEmpty: (d) async {
                         await _showOptionsWhenPressedEmpty(context, left: true);
                       },
-                      onHozDrag: (index, dir) {
-                        SelfFileEntity file = _leftFileList[index];
-                        if (dir == 1) {
-                          _commonModel.addSelectedFile(file);
-                        } else if (dir == -1) {
-                          _commonModel.removeSelectedFile(file);
-                        }
+                      onHozDrag: (index, dir) async {
+                        await handleHozDragItem(index, dir, _leftFileList);
                       },
                       itemOnLongPress: (index) {
                         SelfFileEntity file = _leftFileList[index];
@@ -1130,7 +1188,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                         SelfFileEntity file = _leftFileList[index];
                         if (file.isDir) {
                           // 点击后交换两边角色
-                          changeSidesRole(file);
+                          _changeSidesRole(file);
                           List<SelfFileEntity> list =
                               await readdir(file.entity);
                           if (mounted) {
@@ -1143,16 +1201,16 @@ class _FileManagerPageState extends State<FileManagerPage>
                             file,
                             left: true,
                             index: index,
-                            /* updateItem: updateItem, */
                           );
                         }
                       },
                     ),
                   ),
-                  if (_rootDir.path != _currentDir.path)
+                  if (!pathLib.equals(_rootDir.path, _currentDir.path))
                     Expanded(
                       flex: 1,
                       child: FileListView(
+                        mode: widget.mode,
                         onUpdateView: () async {
                           await update2Side();
                         },
@@ -1161,13 +1219,8 @@ class _FileManagerPageState extends State<FileManagerPage>
                               left: false);
                         },
                         fileList: _rightFileList,
-                        onHozDrag: (index, dir) {
-                          SelfFileEntity file = _rightFileList[index];
-                          if (dir == 1) {
-                            _commonModel.addSelectedFile(file);
-                          } else if (dir == -1) {
-                            _commonModel.removeSelectedFile(file);
-                          }
+                        onHozDrag: (index, dir) async {
+                          await handleHozDragItem(index, dir, _rightFileList);
                         },
                         itemOnLongPress: (index) {
                           SelfFileEntity file = _rightFileList[index];
@@ -1176,20 +1229,20 @@ class _FileManagerPageState extends State<FileManagerPage>
                         onItemTap: (index) async {
                           SelfFileEntity file = _rightFileList[index];
                           if (file.isDir) {
-                            changeSidesRole(file);
+                            await _changeSidesRole(file);
                             List<SelfFileEntity> list =
                                 await readdir(file.entity);
                             if (mounted) {
-                              _leftFileList = _rightFileList;
-                              _rightFileList = list;
-                              setState(() {});
+                              setState(() {
+                                _leftFileList = _rightFileList;
+                                _rightFileList = list;
+                              });
                             }
                           } else {
                             _openFileActionByExt(
                               file,
                               left: false,
                               index: index,
-                              /* updateItem: updateItem, */
                             );
                           }
                         },

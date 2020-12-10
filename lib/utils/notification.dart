@@ -10,9 +10,8 @@ class LocalNotification {
   static Future<FlutterLocalNotificationsPlugin> initLocalNotification(
       {@required Function onSelected}) async {
     plugin = FlutterLocalNotificationsPlugin();
-    var android = AndroidInitializationSettings('@mipmap/ic_launcher_round');
-    var ios = IOSInitializationSettings();
-    var initSetttings = InitializationSettings(android, ios);
+    var android = AndroidInitializationSettings('ic_baseline_folder_24');
+    var initSetttings = InitializationSettings(android: android);
     await plugin.initialize(initSetttings, onSelectNotification: onSelected);
     return plugin;
   }
@@ -34,16 +33,16 @@ class LocalNotification {
       id,
       name,
       'CHANNEL DESCRIPTION',
-      priority: Priority.High,
-      importance: Importance.Max,
+      priority: Priority.high,
+      importance: Importance.max,
       ongoing: ongoing,
       autoCancel: autoCancel,
       onlyAlertOnce: onlyAlertOnce,
       showProgress: showProgress,
       indeterminate: indeterminate,
+      color: Color(0xFF007AFF),
     );
-    var ios = IOSNotificationDetails();
-    var platform = NotificationDetails(android, ios);
+    var platform = NotificationDetails(android: android);
     await plugin.show(index, title, subTitle, platform, payload: payload);
   }
 }

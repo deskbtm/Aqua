@@ -50,7 +50,7 @@ dependencies:
   url_launcher: ^5.7.8
   dotted_border: ^1.0.6
   # zefyr: ^0.12.0
-  flutter_local_notifications: ^1.4.4+2
+  flutter_local_notifications: ^3.0.2
   flutter_secure_storage: ^3.3.5
   device_apps: ^1.2.0
   intent:
@@ -69,14 +69,17 @@ dependencies:
   storage_mount_listener: 
     path: plugins/storage_mount_listener
   connectivity: ^0.4.9+3
-  shelf_body_parser: ^1.0.6
   share_extend: ^1.1.9
   quick_actions: ^0.4.0+10
   wakelock: ^0.1.2
   vibration: ^1.7.1
-  # fullscreen: ^1.0.1
   photo_manager:
     path: plugins/photo_manager
+  joystick_editor:
+    path: plugins/joystick_editor
+  clipboard: ^0.1.2+8
+
+  
   # android_tile_service:
   #   path: plugins/android_tile_service
   # flutter_bugly:

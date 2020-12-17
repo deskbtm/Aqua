@@ -31,6 +31,7 @@ class _LanControlPageState extends State<LanControlPage>
     _mutex = true;
     _shareSwitch = false;
     _vscodeSwitch = false;
+    BotToast.showText(text: '本页 功能未实现 敬请期待', duration: Duration(seconds: 4));
   }
 
   @override

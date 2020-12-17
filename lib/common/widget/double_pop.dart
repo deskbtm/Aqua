@@ -23,7 +23,6 @@ class DoublePop extends StatelessWidget {
           return false;
         }
         exit(0);
-        return false;
       },
     );
   }

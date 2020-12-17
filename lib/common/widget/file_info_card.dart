@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
+import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/theme.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class FileInfoCard extends StatefulWidget {
@@ -32,6 +35,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
   SelfFileEntity get file => widget.file;
   bool get showSize => widget.showSize;
   StreamSubscription<FileSystemEntity> _listener;
+  ThemeModel _themeModel;
   int _totalSize;
   int _fileCount;
   bool _mutex;
@@ -54,6 +58,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _themeModel = Provider.of<ThemeModel>(context);
 
     if (showSize) {
       if (file.isDir) {
@@ -80,7 +85,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    CupertinoThemeData themeData = CupertinoTheme.of(context);
+    LanFileMoreTheme themeData = _themeModel?.themeData;
 
     List<List> info = [
       ['文件名', file.filename],
@@ -104,49 +109,43 @@ class _FileInfoCardState extends State<FileInfoCard> {
       ]);
     }
 
-    return CupertinoTheme(
-      data: CupertinoThemeData(textTheme: themeData.textTheme),
-      child: Scrollbar(
-        child: ListView.builder(
-          itemCount: info.length,
-          itemBuilder: (context, index) {
-            List cur = info[index];
-            return GestureDetector(
-              onLongPressStart: (details) async {
-                await Clipboard.setData(ClipboardData(text: cur[1]));
-                BotToast.showText(text: '已复制到剪贴板');
-              },
-              child: Container(
-                padding:
-                    EdgeInsets.only(left: 30, right: 20, top: 3, bottom: 3),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    NoResizeText('${cur[0]}'),
-                    SizedBox(width: 20),
-                    Container(
-                      constraints: BoxConstraints(
-                          maxWidth:
-                              (MediaQuery.of(context).size.width * 2) / 3 - 15),
-                      child: NoResizeText(
-                        '${cur[1]}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    )
-                  ],
-                ),
+    return Scrollbar(
+      child: ListView.builder(
+        itemCount: info.length,
+        itemBuilder: (context, index) {
+          List cur = info[index];
+          return GestureDetector(
+            onLongPressStart: (details) async {
+              await Clipboard.setData(ClipboardData(text: cur[1]));
+              BotToast.showText(text: '已复制到剪贴板');
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 5),
+              padding: EdgeInsets.only(left: 15, right: 15, top: 6, bottom: 6),
+              decoration: BoxDecoration(
+                color: themeData.actionButtonColor,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
               ),
-            );
-          },
-        ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  NoResizeText('${cur[0]}'),
+                  SizedBox(width: 20),
+                  Container(
+                    constraints: BoxConstraints(
+                        maxWidth:
+                            (MediaQuery.of(context).size.width * 2) / 3 - 15),
+                    child: NoResizeText(
+                      '${cur[1]}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
       ),
-
-      // FadeIn(
-      //   // Optional paramaters
-      //   duration: Duration(milliseconds: 500),
-      //   curve: Curves.easeIn,
-      //   child:
-      //   ),
     );
   }
 }

@@ -45,7 +45,7 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
         children: <Widget>[
           SizedBox(height: 30),
           ListTile(
-            title: LanText('自动搜索常用IP'),
+            title: LanText('自动连接常用IP'),
             subtitle: LanText('多台PC设备 3s后自动选择 弹窗消失'),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(

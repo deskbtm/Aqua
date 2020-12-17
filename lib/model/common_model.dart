@@ -55,11 +55,20 @@ class CommonModel extends ChangeNotifier {
   }
 
   // app 初始化
-  bool _isAppInit = true;
-  bool get isAppInit => _isAppInit;
+  bool _isAppNotInit = true;
+  bool get isAppNotInit => _isAppNotInit;
 
   Future<void> setAppInit(bool arg) async {
-    _isAppInit = arg;
+    _isAppNotInit = arg;
+    await Store.setBool(APP_INIT, arg);
+  }
+
+  // 菜单初始化
+  bool _isFileOptionNotInit = true;
+  bool get isFileOptionNotInit => _isFileOptionNotInit;
+
+  Future<void> setFileOptionNotInit(bool arg) async {
+    _isFileOptionNotInit = arg;
     await Store.setBool(APP_INIT, arg);
   }
 
@@ -230,7 +239,6 @@ class CommonModel extends ChangeNotifier {
     } else {
       await secureStorage.write(key: CODE_SERVER_PWD, value: arg);
     }
-    // notifyListeners();
   }
 
   String _codeSrvPort;
@@ -328,9 +336,8 @@ class CommonModel extends ChangeNotifier {
     _webDavUsername = await Store.getString(WEBDAV_USERNAME);
     _webDavPwd = await secureStorage.read(key: WEBDAV_PWD);
     _enableClipboard = (await Store.getBool(ENABLE_CLIPBOARD)) ?? true;
-    _isPurchased =
-        true /* (await secureStorage.read(key: PURCHASED)) == 'true' */;
-    _isAppInit = (await Store.getBool(APP_INIT)) ?? true;
+    _isPurchased = (await secureStorage.read(key: PURCHASED)) == 'true';
+    _isAppNotInit = (await Store.getBool(APP_INIT)) ?? true;
     _baseUrl = (await Store.getString(BASE_URL_KEY)) ?? DEF_BASE_URL;
     _username = await Store.getString(LOGIN_USERNMAE);
     _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;

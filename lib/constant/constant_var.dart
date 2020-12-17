@@ -23,6 +23,7 @@ const String ALPINE_REPO = 'alpine';
 
 const String PURCHASED = 'purchased';
 const String APP_INIT = 'app-init';
+const String FILE_OPTION_INIT = 'file-option-init';
 const String BASE_URL_KEY = 'base-url-key';
 const String AUTO_CONNECT_EXPRESS = 'auto-connect-express';
 const String ENABLE_CONNECT = 'auto-connect';
@@ -33,7 +34,7 @@ const WEBDAV_USERNAME = 'webdav-username';
 const WEBDAV_PWD = 'webdav-pwd';
 const REMEMBER_NO_UPDATE_TIP = 'remember-no-update-tip';
 
-const String APP_NAME = 'lan-express';
+const String APP_NAME = 'lan_file_more';
 
 const String THEME_KEY = 'theme';
 const String LIGHT_THEME = 'light';

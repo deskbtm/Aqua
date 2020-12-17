@@ -66,15 +66,38 @@ class MixUtils {
   //   }
   // }
 
-  static safePop(BuildContext context) {
+  static void safePop(BuildContext context) {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     }
   }
 
+  static String webMessage(dynamic data) {
+    String msg;
+    if (data is List) {
+      msg = data.join(',');
+    } else {
+      msg = data;
+    }
+    return '$msg';
+  }
+
   static Future<String> getAndroidId() async {
     AndroidDeviceInfo info = await DeviceInfoPlugin().androidInfo;
     return info.androidId;
+  }
+
+  static Future<Map> deviceInfo() async {
+    AndroidDeviceInfo info = await DeviceInfoPlugin().androidInfo;
+
+    return {
+      'android_id': info.androidId,
+      'release_version': info.version.release,
+      'sdk_version': info.version.sdkInt,
+      'brand': info.brand,
+      'model': info.model,
+      'name': info.product
+    };
   }
 
   static bool isEmail(String em) {

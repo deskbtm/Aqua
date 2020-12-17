@@ -251,7 +251,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                 onOk: () async {
                   await cutils.rmAllResource().catchError((err) {
                     showText('删除出现异常');
-                    recordError(text: 'rm all resource', exception: err);
+                    recordError(text: 'rm all resource');
                   });
                   showText('删除完成');
                 },

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
-// import 'package:android_tile_service/android_tile_service.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
@@ -9,7 +7,6 @@ import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
-
 import 'constant/constant.dart';
 import 'generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +56,7 @@ class LanFileMoreWrapper extends StatefulWidget {
   }
 }
 
-class _LanFileMoreWrapperState extends State {
+class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
   ThemeModel _themeModel;
   CommonModel _commonModel;
 
@@ -73,11 +70,6 @@ class _LanFileMoreWrapperState extends State {
     super.initState();
     _prepared = false;
     _settingMutex = true;
-
-    // AndroidTileService.init(tileIcon: 'vscode', label: 'vscode');
-    // AndroidTileService.listen(onClick: () async {
-    //   print("demo ===============================");
-    // });
 
     LocalNotification.initLocalNotification(onSelected: (String payload) {
       debugPrint(payload);
@@ -108,10 +100,10 @@ class _LanFileMoreWrapperState extends State {
       _settingMutex = false;
       String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
       await _themeModel.setTheme(theme).catchError((err) {
-        recordError(text: '', exception: err, methodName: 'setTheme');
+        recordError(text: '', methodName: 'setTheme');
       });
       await _commonModel.initCommon().catchError((err) {
-        recordError(text: '', exception: err, methodName: 'initCommon');
+        recordError(text: '', methodName: 'initCommon');
       });
 
       await _setInternalIp(null);
@@ -126,6 +118,7 @@ class _LanFileMoreWrapperState extends State {
   void dispose() {
     super.dispose();
     _connectSubscription?.cancel();
+    _commonModel.setAppInit(false);
   }
 
   @override

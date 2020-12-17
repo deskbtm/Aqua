@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
@@ -16,22 +18,27 @@ import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/req.dart';
 import 'package:lan_file_more/utils/store.dart';
 import 'package:lan_file_more/utils/theme.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PurchasePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return PurchasePageState();
+    return _PurchasePageState();
   }
 }
 
-class PurchasePageState extends State<PurchasePage> {
+class _PurchasePageState extends State<PurchasePage> {
   ThemeModel _themeModel;
   CommonModel _commonModel;
-  Map _qrcodeData = {};
-  bool _mutex = true;
+  Map _qrcodeData;
+  bool _mutex;
+
+  @override
+  void initState() {
+    super.initState();
+    _qrcodeData = {'data': {}};
+    _mutex = true;
+  }
 
   @override
   void didChangeDependencies() async {
@@ -39,29 +46,26 @@ class PurchasePageState extends State<PurchasePage> {
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
     if (_commonModel.username != null) {
-      if (mounted) {
-        _qrcodeData = await fetchQrcode();
-        if (_qrcodeData.isNotEmpty) {
-          if (_mutex) {
-            _mutex = false;
-            // await _commonModel.setPurchase(true);
-          }
+      _qrcodeData = await _fetchQrcode();
+      if (_mutex) {
+        _mutex = false;
+        if (mounted) {
+          setState(() {});
         }
-        setState(() {});
       }
     }
   }
 
-  Future<Map> fetchQrcode() async {
+  Future<Map> _fetchQrcode() async {
     Response rec =
         await req().get(_commonModel.baseUrl + '/pay/qrcode', queryParameters: {
       'app_name': APP_NAME,
-      'device_id': await MixUtils.getAndroidId(),
+      'android_id': await MixUtils.getAndroidId(),
     }).catchError((err) {
       showText('登录失败');
-      recordError(text: '', exception: err);
+      recordError(text: '');
     });
-    return rec?.data;
+    return rec.data['data'] ?? {'data': {}};
   }
 
   void showText(String content, {int duration = 4}) {
@@ -93,30 +97,58 @@ class PurchasePageState extends State<PurchasePage> {
             child: NoResizeText('激活'),
             color: Color(0xFF007AFF),
             onPressed: () async {
-              await req()
-                  .get(_commonModel.baseUrl + '/pay/own_app', queryParameters: {
+              await req().post(_commonModel.baseUrl + '/pay/active', data: {
                 'app_name': APP_NAME,
-                'device_id': await MixUtils.getAndroidId(),
+                ...?(await MixUtils.deviceInfo()),
               }).then((value) {
                 dynamic data = value.data;
-                if (data['purchased']) {
-                  _qrcodeData = {};
-                  _commonModel.setPurchase(true);
-                  showText('购买成功');
-                  MixUtils.safePop(context);
-                } else {
-                  String msg;
-                  if (data['message'] is List) {
-                    msg = (data['message'] as List).join(',');
+                if (data['data'] != null) {
+                  if (data['data']['purchased']) {
+                    _commonModel.setPurchase(true);
+                    showText('购买成功, 即将前往下载pc端');
+
+                    MixUtils.safePop(context);
                   } else {
-                    msg = data['message'];
+                    showText(MixUtils.webMessage(data['message']));
                   }
-                  showText('$msg 未购买');
                 }
+              }).catchError((err) {
+                showText('激活失败');
               });
             },
           ),
         ],
+      );
+
+  Widget followBilibiliButton(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CupertinoButton(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+            child: NoResizeText(
+                '关注bilibili 可享${_qrcodeData['favour'] ?? DEF_AMOUNT}元优惠'),
+            padding: EdgeInsets.only(left: 20, right: 20),
+            color: Color(0xFFFB7299),
+            onPressed: () async {},
+          ),
+        ],
+      );
+
+  Widget payButton() => CupertinoButton(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        child: NoResizeText('直接跳转支付'),
+        padding: EdgeInsets.only(left: 20, right: 20),
+        color: Color(0xFF007AFF),
+        onPressed: () async {
+          String url =
+              'alipayqr://platformapi/startapp?saId=10000007&qrcode=${_qrcodeData['details']['alipay_trade_precreate_response']['qr_code']}';
+          if (await canLaunch(url)) {
+            await launch(url);
+          } else {
+            showText('链接打开失败');
+            recordError(text: '链接打开失败');
+          }
+        },
       );
 
   @override
@@ -230,7 +262,7 @@ class PurchasePageState extends State<PurchasePage> {
                         if (_qrcodeData.isNotEmpty &&
                             _qrcodeData['purchased'] == false) ...[
                           LanText(
-                            '立刻购买(${_commonModel?.gWebData['amount'] ?? DEF_AMOUNT}￥)',
+                            '立刻购买(${_qrcodeData['amount'] ?? DEF_AMOUNT}￥)',
                             fontSize: 22,
                           ),
                           Column(
@@ -263,21 +295,13 @@ class PurchasePageState extends State<PurchasePage> {
                                 alignX: 0,
                               ),
                               SizedBox(height: 10),
-                              CupertinoButton(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5)),
-                                child: NoResizeText('直接跳转支付'),
-                                color: Color(0xFF007AFF),
-                                onPressed: () async {
-                                  String url =
-                                      'alipayqr://platformapi/startapp?saId=10000007&qrcode=${_qrcodeData['details']['alipay_trade_precreate_response']['qr_code']}';
-                                  if (await canLaunch(url)) {
-                                    await launch(url);
-                                  } else {
-                                    showText('链接打开失败');
-                                    recordError(text: 'markdown url');
-                                  }
-                                },
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  payButton(),
+                                  followBilibiliButton(context)
+                                ],
                               ),
                               SizedBox(height: 10),
                               LanText(
@@ -288,10 +312,7 @@ class PurchasePageState extends State<PurchasePage> {
                             ],
                           ),
                           SizedBox(height: 20),
-                          LanText(
-                            '激活',
-                            fontSize: 22,
-                          ),
+                          LanText('激活', fontSize: 22),
                           activeButton(context),
                         ],
                         if (_qrcodeData.isNotEmpty &&
@@ -305,9 +326,8 @@ class PurchasePageState extends State<PurchasePage> {
                         ],
                         if (_commonModel.username == null) ...[
                           LanText(
-                            '立刻购买',
-                            fontSize: 22,
-                          ),
+                              '立刻购买(${_commonModel?.gWebData['amount'] ?? DEF_AMOUNT}￥)',
+                              fontSize: 22),
                           Row(
                             children: <Widget>[
                               CupertinoButton(
@@ -333,7 +353,7 @@ class PurchasePageState extends State<PurchasePage> {
                                         return;
                                       }
 
-                                      await req().post(baseUrl + '/auth/login',
+                                      await req().post(baseUrl + '/user/login',
                                           data: {
                                             'username': f.trim(),
                                             'password': s.trim()
@@ -350,7 +370,9 @@ class PurchasePageState extends State<PurchasePage> {
                                         }
                                       }).catchError((err) {
                                         showText('登录失败');
-                                        recordError(text: '', exception: err);
+                                        recordError(
+                                            text: '登录失败',
+                                            className: '_PurchasePageState');
                                       });
                                     },
                                   );
@@ -382,13 +404,15 @@ class PurchasePageState extends State<PurchasePage> {
                                           baseUrl + '/user/register',
                                           data: {
                                             'username': f.trim(),
-                                            'password': s.trim()
+                                            'password': s.trim(),
+                                            ...?(await MixUtils.deviceInfo()),
                                           }).then((value) {
                                         dynamic data = value.data;
-                                        showText('${data['message']}');
+                                        showText(MixUtils.webMessage(
+                                            data['message']));
                                       }).catchError((err) {
                                         showText('注册出错');
-                                        recordError(text: '', exception: err);
+                                        recordError(text: '注册出错');
                                       });
                                     },
                                     onCancel: () {},

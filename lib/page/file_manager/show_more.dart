@@ -70,7 +70,7 @@ Future<void> showMoreModal(
               }
               await uploadToWebDAV(file).catchError((err) {
                 showText('上传失败');
-                recordError(text: '', exception: err);
+                recordError(text: '');
               });
               showText('上传成功');
             },

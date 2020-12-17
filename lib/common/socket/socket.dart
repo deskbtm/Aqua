@@ -23,7 +23,6 @@ class SocketConnecter {
   SocketConnecter(this.commonProvider);
 
   Future<void> _clipboardListener() async {
-    
     if (commonProvider.enableClipboard) {
       ClipboardData content = await Clipboard.getData(Clipboard.kTextPlain);
       // 防止重复发
@@ -85,7 +84,7 @@ class SocketConnecter {
     });
 
     socket.on('connect_error', (error) {
-      recordError(text: '', exception: error, methodName: 'createClient');
+      recordError(text: '', methodName: 'createClient');
       if (onNotExpected != null) onNotExpected("连接出现错误");
       socket.destroy();
     });

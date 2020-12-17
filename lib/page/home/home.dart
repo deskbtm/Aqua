@@ -20,7 +20,6 @@ import 'package:lan_file_more/utils/req.dart';
 import 'package:lan_file_more/utils/store.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,14 +39,12 @@ class _HomePageState extends State<HomePage> {
   CupertinoTabController _tabController;
   CommonModel _commonModel;
   bool _mutex;
-  bool _updateModalMutex;
 
   @override
   void initState() {
     super.initState();
     _tabController = CupertinoTabController();
     _mutex = true;
-    _updateModalMutex = true;
 
     QuickActions quickActions = QuickActions();
 
@@ -85,6 +82,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> showUpdateModal(Map data) async {
+    if (data.isEmpty) {
+      return;
+    }
+
     PackageInfo pkgInfo = await PackageInfo.fromPlatform();
     String packageName = pkgInfo.packageName;
     String remoteVersion = data['mobile']['latest']['version'];
@@ -160,7 +161,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _preLoadMsg() async {
+  Future<void> _preloadWebData() async {
     String baseUrl = _commonModel?.baseUrl;
     if (baseUrl != null) {
       await req().get(baseUrl + '/assets/index.json').then((receive) async {
@@ -173,9 +174,33 @@ class _HomePageState extends State<HomePage> {
         await _commonModel.setGobalWebData(receive.data);
       }).catchError((err) {
         BotToast.showText(text: '首次请求出现错误, 导出日志与开发者联系');
-        recordError(text: '', exception: err, methodName: '_preLoadMsg');
+        recordError(text: '', methodName: '_preloadWebData');
       });
+    } else {
+      BotToast.showText(text: '地址错误, 导出日志与开发者联系');
+      recordError(text: 'baseUrl为null', methodName: '_preloadWebData');
     }
+  }
+
+  Future<void> _forceReadTutorialModal() async {
+    await showForceScopeModal(
+      context,
+      _themeModel,
+      title: '请仔细阅读教程',
+      tip: '该界面无返返回, 需前往教程后, 方可消失',
+      defaultOkText: '前往教程',
+      onOk: () async {
+        if (await canLaunch(TUTORIAL_BASIC_URL)) {
+          await launch(TUTORIAL_BASIC_URL);
+        }
+      },
+      defaultCancelText: '前往bilibili',
+      onCancel: () async {
+        if (await canLaunch(TUTORIAL_BASIC_URL)) {
+          await launch(TUTORIAL_BASIC_URL);
+        }
+      },
+    );
   }
 
   @override
@@ -183,38 +208,19 @@ class _HomePageState extends State<HomePage> {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
-    Map data = _commonModel.gWebData;
-
-    if (_updateModalMutex && data.isNotEmpty) {
-      _updateModalMutex = false;
-      // 显示更新弹窗
-      if (data != null) {
-        await showUpdateModal(data);
-      }
-
-      // 设计稿 为 Nokia x6
-      // ScreenUtil.init(context,
-      //     designSize: Size(1080, 2280), allowFontScaling: false);
-    }
 
     if (_mutex) {
       _mutex = false;
 
       // PermissionStatus status = await PermissionHandler()
       //     .checkPermissionStatus(PermissionGroup.microphone);
-      if (_commonModel.isAppInit) {
-        //   if (PermissionStatus.granted != status) {
-        //     // 提示用户 需要麦克风 权限 否则 无法进入
-        //     await _requestMicphonePermissionModal(context);
-        //   }
-        //   // 强制阅读使用教程 跳转后取消
-        //   // await _forceReadTutorialModal(context);
-      }
-
-      await _preLoadMsg().catchError((err) {});
+      //   if (PermissionStatus.granted != status) {
+      //     // 提示用户 需要麦克风 权限 否则 无法进入
+      //     await _requestMicphonePermissionModal(context);
+      //   }
+      //   // 强制阅读使用教程 跳转后取消
 
       if (_commonModel.enableConnect) {
-        // 延迟一秒 不阻塞UI
         Timer(Duration(seconds: 1), () async {
           await SocketConnecter(_commonModel).searchDevicesAndConnect(
             context,
@@ -225,41 +231,36 @@ class _HomePageState extends State<HomePage> {
           ).catchError((err) {});
         });
       }
+
+      await _preloadWebData().catchError((err) {});
+
+      if (_commonModel.isAppNotInit) {
+        await _forceReadTutorialModal();
+        _commonModel.setAppInit(false);
+      }
+
+      Timer(Duration(seconds: 8), () async {
+        await showUpdateModal(_commonModel.gWebData);
+      });
     }
   }
 
-  Future<void> _requestMicphonePermissionModal(context) async {
-    await showTipTextModal(
-      context,
-      _themeModel,
-      title: '权限请求',
-      tip: '由于软件支持录屏功能, 需要麦克风的权限',
-      defaultOkText: '获取权限',
-      onOk: () async {
-        await PermissionHandler()
-            .requestPermissions(<PermissionGroup>[PermissionGroup.microphone]);
-      },
-      onCancel: () {
-        MixUtils.safePop(context);
-      },
-    );
-  }
-
-  Future<void> _forceReadTutorialModal(context) async {
-    await showScopeModal(
-      context,
-      _themeModel,
-      title: '请仔细阅读教程',
-      tip: '该界面无返返回, 需前往教程后, 方可消失',
-      withCancel: false,
-      defaultOkText: '前往教程',
-      onOk: () async {
-        if (await canLaunch(TUTORIAL_BASIC_URL)) {
-          await launch(TUTORIAL_BASIC_URL);
-        }
-      },
-    );
-  }
+  // Future<void> _requestMicphonePermissionModal() async {
+  //   await showTipTextModal(
+  //     context,
+  //     _themeModel,
+  //     title: '权限请求',
+  //     tip: '由于软件支持录屏功能, 需要麦克风的权限',
+  //     defaultOkText: '获取权限',
+  //     onOk: () async {
+  //       await PermissionHandler()
+  //           .requestPermissions(<PermissionGroup>[PermissionGroup.microphone]);
+  //     },
+  //     onCancel: () {
+  //       MixUtils.safePop(context);
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

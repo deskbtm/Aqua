@@ -8,6 +8,7 @@ import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/text_field.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/theme.dart';
 
 class SplitSelectionModal extends StatefulWidget {
   final List<Widget> leftChildren;
@@ -137,7 +138,7 @@ class SplitSelectionModalState extends State<SplitSelectionModal> {
   }
 }
 
-Future<void> showScopeModal(
+Future<void> showForceScopeModal(
   BuildContext context,
   ThemeModel provider, {
   String title = '',
@@ -152,12 +153,12 @@ Future<void> showScopeModal(
   bool withCancel = true,
 }) async {
   MixUtils.safePop(context);
-  dynamic themeData = provider.themeData;
+  LanFileMoreTheme themeData = provider.themeData;
   bool popAble = false;
 
-  showCupertinoModal(
+  return showCupertinoModal(
     context: context,
-    semanticsDismissible: true,
+    // semanticsDismissible: true,
     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
     builder: (context) {
       return StatefulBuilder(

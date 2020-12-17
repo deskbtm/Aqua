@@ -83,9 +83,10 @@ class _FileManagerPageState extends State<FileManagerPage>
   List<SelfFileEntity> _leftFileList;
   List<SelfFileEntity> _rightFileList;
   Directory _currentDir;
-  Directory _parentDir;
+  // Directory _parentDir;
   Directory _rootDir;
   bool _useSandboxDir;
+  bool _popRouteLocker;
   bool _initMutex;
   double _totalSize;
   double _validSize;
@@ -99,9 +100,10 @@ class _FileManagerPageState extends State<FileManagerPage>
     _leftFileList = [];
     _rightFileList = [];
     _currentDir = null;
-    _parentDir = null;
+    // _parentDir = null;
     _initMutex = true;
     _useSandboxDir = false;
+    _popRouteLocker = true;
     _totalSize = 0;
     _validSize = 0;
 
@@ -142,7 +144,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    //切回来刷新下 以防文件变化
+    //切回来刷新下
     if (state == AppLifecycleState.resumed) {
       if (mounted) update2Side();
     }
@@ -205,7 +207,6 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<void> _changeRootPath(String path) async {
     _rootDir = Directory(path);
     _currentDir = _rootDir;
-    _parentDir = _currentDir.parent;
     _leftFileList = await readdir(_currentDir);
     _rightFileList = [];
     if (mounted) setState(() {});
@@ -325,9 +326,17 @@ class _FileManagerPageState extends State<FileManagerPage>
     ]);
   }
 
-  void showText(String content) {
+  void showText(
+    String content, {
+    Duration duration = const Duration(seconds: 3),
+    align: const Alignment(0, 0.8),
+  }) {
     BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+      text: content,
+      contentColor: _themeModel.themeData?.toastColor,
+      duration: duration,
+      align: align,
+    );
   }
 
   Future<void> showRenameModal(
@@ -361,7 +370,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
         await item.entity.rename(newPath).catchError((err) {
           showText('$err');
-          recordError(text: '', exception: err, methodName: 'handleMove');
+          recordError(text: '', methodName: 'handleMove');
         });
       }
       if (mounted) {
@@ -536,7 +545,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                       //删除后 已经不存在了 交换一下
                       if (item.entity.path != _rootDir.path) {
                         _currentDir = item.entity.parent;
-                        _parentDir = _currentDir.parent;
+                        // _parentDir = _currentDir.parent;
                       }
                     }
                   } else {
@@ -565,7 +574,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     createFileModal(
       context,
       provider: _themeModel,
-      willCreateDir: left ? _parentDir.path : _currentDir.path,
+      willCreateDir: left ? _currentDir.parent.path : _currentDir.path,
       onExists: () {
         showText('已存在, 请重新命名');
       },
@@ -872,6 +881,15 @@ class _FileManagerPageState extends State<FileManagerPage>
     bool showSize = false;
     bool sharedNotEmpty = _commonModel.selectedFiles.isNotEmpty;
 
+    if (_commonModel.isFileOptionNotInit) {
+      showText(
+        '可长按详情 复制内容',
+        duration: Duration(seconds: 4),
+        align: const Alignment(0, 0),
+      );
+      _commonModel.setFileOptionNotInit(false);
+    }
+
     await showCupertinoModal(
       context: context,
       filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -1057,43 +1075,32 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  Future<void> _changeSidesRole(SelfFileEntity file) async {
-    _currentDir = file.entity;
-    _parentDir = _currentDir.parent;
-  }
-
   /// tag
   Future<bool> _willPopFileRoute(stopDefaultButtonEvent, routeInfo) async {
-    if (pathLib.equals(_parentDir.path, _rootDir.path)) {
-      _leftFileList = await readdir(_rootDir);
+    if (pathLib.equals(_currentDir.path, _rootDir.path)) {
+      return false;
+    }
+
+    if (pathLib.equals(_currentDir.parent.path, _rootDir.path)) {
+      _currentDir = _rootDir;
+      _leftFileList = await readdir(_currentDir);
+
       if (mounted) {
         setState(() {
           _rightFileList = [];
-          _currentDir = _rootDir;
         });
       }
+      return false;
     }
 
-    if (pathLib.isWithin(_rootDir.path, _currentDir.path) &&
-        pathLib.isWithin(_rootDir.path, _parentDir.path)) {
-      _leftFileList = await readdir(_parentDir.parent);
-      _rightFileList = await readdir(_parentDir);
+    if (pathLib.isWithin(_rootDir.path, _currentDir.path)) {
+      _currentDir = _currentDir.parent;
+      _leftFileList = await readdir(_currentDir.parent);
+      _rightFileList = await readdir(_currentDir);
       if (mounted) {
-        setState(() {
-          if (_currentDir.path == '/') {
-            var a = 1;
-          }
-          if (_parentDir.path == '/') {
-            var a = 1;
-          }
-          _currentDir = _parentDir;
-          _parentDir = _parentDir.parent;
-        });
+        setState(() {});
       }
     }
-
-    // if(_)
-
     return false;
   }
 
@@ -1102,7 +1109,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     if (_currentDir.path == _rootDir.path) {
       _leftFileList = await readdir(_currentDir);
     } else {
-      _leftFileList = await readdir(_parentDir);
+      _leftFileList = await readdir(_currentDir.parent);
       _rightFileList = await readdir(_currentDir);
     }
     if (mounted) {
@@ -1119,9 +1126,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
     LanFileMoreTheme themeData = _themeModel?.themeData;
 
-    // print(_currentDir.path);
-    // print(_parentDir.path);
-    // print(_rootDir.path);
+    print(_currentDir?.path);
 
     return _leftFileList.isEmpty
         ? Container()
@@ -1188,7 +1193,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                         SelfFileEntity file = _leftFileList[index];
                         if (file.isDir) {
                           // 点击后交换两边角色
-                          _changeSidesRole(file);
+                          _currentDir = file.entity;
                           List<SelfFileEntity> list =
                               await readdir(file.entity);
                           if (mounted) {
@@ -1229,7 +1234,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                         onItemTap: (index) async {
                           SelfFileEntity file = _rightFileList[index];
                           if (file.isDir) {
-                            await _changeSidesRole(file);
+                            _currentDir = file.entity;
                             List<SelfFileEntity> list =
                                 await readdir(file.entity);
                             if (mounted) {

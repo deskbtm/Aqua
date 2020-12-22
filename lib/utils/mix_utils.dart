@@ -66,7 +66,7 @@ class MixUtils {
   //   }
   // }
 
-  static void safePop(BuildContext context) {
+  static safePop(BuildContext context) {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     }

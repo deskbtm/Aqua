@@ -265,7 +265,6 @@ class CommonModel extends ChangeNotifier {
   Future<void> setLinuxRepo(String arg) async {
     _linuxRepo = arg;
     await Store.setString(LINUX_REPO, arg);
-    notifyListeners();
   }
 
   ///WEBDAV

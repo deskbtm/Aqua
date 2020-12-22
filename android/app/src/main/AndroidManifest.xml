@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-  xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sewerganger.lan_file_more" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  package="com.sewerganger.lan_file_more">
   <!--
      io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -24,36 +24,41 @@
   <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
   <!-- android 10 读取剪贴板 -->
-  <uses-permission android:name="android.permission.READ_LOGS" />
+  <uses-permission
+    android:name="android.permission.READ_LOGS"
+    tools:ignore="ProtectedPermissions" />
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
   <supports-screens
-        android:largeScreens="true"
-        android:smallScreens="true"
-        android:xlargeScreens="true" />
+    android:largeScreens="true"
+    android:smallScreens="true"
+    android:xlargeScreens="true" />
   <application
-        android:name="io.flutter.app.FlutterApplication"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:label="@string/appName"
-        android:networkSecurityConfig="@xml/network_security_config"
-        android:persistent="true "
-        android:requestLegacyExternalStorage="true"
-        android:supportsRtl="false"
-        android:usesCleartextTraffic="true" >
+    android:name="io.flutter.app.FlutterApplication"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/appName"
+    android:networkSecurityConfig="@xml/network_security_config"
+    android:persistent="true"
+    android:requestLegacyExternalStorage="true"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="false"
+    android:usesCleartextTraffic="true">
     <!-- <service
             android:name=".ClipboardService"
             android:enabled="true"
             android:exported="true" ><intent-filter><action android:name=".ClipboardService"/></intent-filter></service> -->
     <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
-            android:theme="@style/LaunchTheme"
-            android:windowSoftInputMode="adjustResize"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true">
-      <meta-data android:name="io.flutter.app.android.SplashScreenUntilFirstFrame" android:value="true" />
+      android:name=".MainActivity"
+      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+      android:hardwareAccelerated="true"
+      android:launchMode="singleTop"
+      android:showWhenLocked="true"
+      android:theme="@style/LaunchTheme"
+      android:turnScreenOn="true"
+      android:windowSoftInputMode="adjustResize">
+      <meta-data
+        android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
+        android:value="true" />
       <!--
            Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
@@ -61,8 +66,8 @@
                  to determine the Window background behind the Flutter UI.
             -->
       <meta-data
-                android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme" />
+        android:name="io.flutter.embedding.android.NormalTheme"
+        android:resource="@style/NormalTheme" />
       <!--
            Displays an Android View that continues showing the launch screen
                  Drawable until Flutter paints its first frame, then this splash
@@ -71,23 +76,45 @@
                  Flutter's first frame.
             -->
       <meta-data
-                android:name="io.flutter.embedding.android.SplashScreenDrawable"
-                android:resource="@drawable/launch_background" />
+        android:name="io.flutter.embedding.android.SplashScreenDrawable"
+        android:resource="@drawable/launch_background" />
+
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+
+        <data android:scheme="file" />
+        <data android:mimeType="*/*" />
+      </intent-filter>
     </activity>
-    <!-- <receiver android:name=".SDCardBroadcastReceiver" ><intent-filter><data android:scheme="file" /><action android:name="android.intent.action.MEDIA_REMOVED" /><action android:name="android.intent.action.MEDIA_MOUNTED" /><action android:name="android.intent.action.MEDIA_EJECT" /><action android:name="android.intent.action.MEDIA_BAD_REMOVAL" /></intent-filter></receiver> -->
+    <!--    <receiver-->
+    <!--      android:name=".OpenFileByApp"-->
+    <!--      tools:ignore="Instantiatable">-->
+    <!--      <intent-filter>-->
+    <!--        <action android:name="android.intent.action.VIEW" />-->
+    <!--        <category android:name="android.intent.category.DEFAULT" />-->
+    <!--        <data android:scheme="file" />-->
+    <!--        <data android:mimeType="*/*" />-->
+    <!--      </intent-filter>-->
+    <!--    </receiver>-->
     <!--
  Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
         -->
     <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
+      android:name="flutterEmbedding"
+      android:value="2" />
     <meta-data
-            android:name="UMENG_APPKEY"
-            android:value="5f96e3c41c520d30739904f0" />
+      android:name="UMENG_APPKEY"
+      android:value="5f96e3c41c520d30739904f0" />
   </application>
 </manifest>

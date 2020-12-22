@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:android_mix/android_mix.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lan_file_more/common/show_modal_entity.dart';
 import 'package:lan_file_more/common/widget/function_widget.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
@@ -344,13 +345,16 @@ class SettingPageState extends State<SettingPage> {
                           child: InkWell(
                             onTap: () async {
                               MixUtils.safePop(fileCtx);
+                              CodeSrvUtils cutils = await CodeSrvUtils().init();
+                              await cutils.rmAllResource().catchError((err) {
+                                showText('删除出现异常');
+                                recordError(text: 'rm all resource');
+                              });
                               SelfFileEntity file = _commonModel.pickedFiles[0];
 
                               if (file != null && file.ext == '.zip') {
-                                showText(
-                                  '资源安装中...',
-                                  duration: Duration(seconds: 8),
-                                );
+                                showText('资源安装中...',
+                                    duration: Duration(seconds: 8));
                                 CodeSrvUtils cutils =
                                     await CodeSrvUtils().init();
                                 await AndroidMix.archive.unzip(
@@ -649,7 +653,14 @@ class SettingPageState extends State<SettingPage> {
             ),
           ),
           InkWell(
-            onTap: () {},
+            onTap: () async {
+              await showUpdateModal(
+                context,
+                _themeModel,
+                _commonModel.gWebData,
+                tipRemember: false,
+              );
+            },
             child: ListTile(
               title: LanText('检查更新'),
               subtitle: LanText('当前版本: v$_version', small: true),

@@ -64,15 +64,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
         text: content, contentColor: _themeModel.themeData?.toastColor);
   }
 
-  // Future<String> copyResolveClipboard() async {
-  //   String pkg = PackageInfo().packageName;
-  //   return """
-  //   adb -d shell appops set $pkg SYSTEM_ALERT_WINDOW allow
-  //   adb -d shell pm grant $pkg android.permission.READ_LOGS
-  //   adb shell am force-stop $pkg
-  //   """;
-  // }
-
   @override
   Widget build(BuildContext context) {
     dynamic themeData = _themeModel?.themeData;
@@ -189,34 +180,69 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('清华'),
                     onPressed: () async {
-                      await cutils.setChineseRepo(TSINGHUA_REPO);
-                      await _commonModel.setLinuxRepo(TSINGHUA_REPO);
+                      await cutils
+                          .setChineseRepo(TSINGHUA_REPO)
+                          .then((value) async {
+                        await _commonModel.setLinuxRepo(TSINGHUA_REPO);
+                      }).catchError((e) {
+                        showText('设置失败');
+                      });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('阿里云'),
                     onPressed: () async {
-                      await cutils.setChineseRepo(ALIYUN_REPO);
-                      await _commonModel.setLinuxRepo(ALIYUN_REPO);
+                      await cutils
+                          .setChineseRepo(ALIYUN_REPO)
+                          .then((value) async {
+                        await _commonModel.setLinuxRepo(ALIYUN_REPO);
+                        setState(() {});
+                      }).catchError((e) {
+                        showText('设置失败');
+                      });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('中科大'),
                     onPressed: () async {
-                      await cutils.setChineseRepo(USTC_REPO);
-                      await _commonModel.setLinuxRepo(USTC_REPO);
+                      await cutils.setChineseRepo(USTC_REPO).then((val) async {
+                        await _commonModel.setLinuxRepo(USTC_REPO);
+                        setState(() {});
+                      }).catchError((e) {
+                        showText('设置失败');
+                      });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('Alpine(不推荐)'),
                     onPressed: () async {
-                      await cutils.setChineseRepo(ALPINE_REPO);
-                      await _commonModel.setLinuxRepo(ALPINE_REPO);
+                      await cutils
+                          .setChineseRepo(ALPINE_REPO)
+                          .then((value) async {
+                        await _commonModel.setLinuxRepo(ALPINE_REPO);
+                        setState(() {});
+                      }).catchError((e) {
+                        showText('设置失败');
+                      });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
                     title: LanText('自定义'),
-                    onPressed: () {}),
+                    onPressed: () async {
+                      await showSingleTextFieldModal(
+                        context,
+                        _themeModel,
+                        title: 'alpine 源',
+                        onOk: (val) async {
+                          await cutils.setChineseRepo(val).then((value) async {
+                            await _commonModel.setLinuxRepo(val);
+                          }).catchError((e) {
+                            showText('设置失败');
+                          });
+                        },
+                        onCancel: () {},
+                      );
+                    }),
               ],
               child: Container(
                 padding: EdgeInsets.only(left: 16, right: 16),

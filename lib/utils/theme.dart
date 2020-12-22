@@ -19,6 +19,7 @@ abstract class LanFileMoreTheme {
   Color photoNavColor;
   Brightness systemNavigationBarIconBrightness;
   Color systemNavigationBarColor;
+  Color divideColor;
 }
 
 class LightTheme implements LanFileMoreTheme {
@@ -41,6 +42,7 @@ class LightTheme implements LanFileMoreTheme {
   Color photoNavColor = Color(0x4BF3ECEC);
   Brightness systemNavigationBarIconBrightness = Brightness.dark;
   Color systemNavigationBarColor = Colors.white;
+  Color divideColor = Colors.grey[100];
 }
 
 class DarkTheme implements LanFileMoreTheme {
@@ -63,4 +65,5 @@ class DarkTheme implements LanFileMoreTheme {
   Color photoNavColor = Color(0xCC0000000);
   Brightness systemNavigationBarIconBrightness = Brightness.light;
   Color systemNavigationBarColor = Colors.black;
+  Color divideColor = Color(0xff222222);
 }

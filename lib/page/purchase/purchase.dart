@@ -46,14 +46,33 @@ class _PurchasePageState extends State<PurchasePage> {
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
     if (_commonModel.username != null) {
-      _qrcodeData = await _fetchQrcode();
       if (_mutex) {
         _mutex = false;
+        _qrcodeData = await _fetchQrcode();
         if (mounted) {
           setState(() {});
         }
       }
     }
+  }
+
+  Future<Map> _followBilibiliStatus(val) async {
+    Response rec =
+        await req().post(_commonModel.baseUrl + '/user/follow_bilibili', data: {
+      'uid': val,
+    }).catchError((err) {
+      showText('请求失败');
+    });
+    if (rec.data['data'] != null) {
+      showText(rec.data['message']);
+      if (rec.data['data']['isFollowing']) {
+        _qrcodeData = await _fetchQrcode();
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    }
+    return rec.data['data'] ?? {};
   }
 
   Future<Map> _fetchQrcode() async {
@@ -120,16 +139,34 @@ class _PurchasePageState extends State<PurchasePage> {
         ],
       );
 
-  Widget followBilibiliButton(BuildContext context) => Column(
+  Widget _followBilibiliButton(ThemeModel provider) => Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CupertinoButton(
             borderRadius: BorderRadius.all(Radius.circular(5)),
             child: NoResizeText(
-                '关注bilibili 可享${_qrcodeData['favour'] ?? DEF_AMOUNT}元优惠'),
+                '关注bilibili 可享${_qrcodeData['favour'] ?? DEF_FAVOUR}元优惠'),
             padding: EdgeInsets.only(left: 20, right: 20),
             color: Color(0xFFFB7299),
-            onPressed: () async {},
+            onPressed: () async {
+              await showSingleTextFieldModal(
+                context,
+                provider,
+                title: '确认关注',
+                tip: '个人主页 详情按钮 长按复制',
+                defaultCancelText: '跳转bilibili',
+                placeholder: 'uid',
+                onOk: _followBilibiliStatus,
+                onCancel: () async {
+                  if (await canLaunch(BILIBILI_SPACE)) {
+                    await launch(BILIBILI_SPACE);
+                  } else {
+                    showText('链接打开失败');
+                    recordError(text: '链接打开失败');
+                  }
+                },
+              );
+            },
           ),
         ],
       );
@@ -146,7 +183,6 @@ class _PurchasePageState extends State<PurchasePage> {
             await launch(url);
           } else {
             showText('链接打开失败');
-            recordError(text: '链接打开失败');
           }
         },
       );
@@ -300,7 +336,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                     MainAxisAlignment.spaceAround,
                                 children: [
                                   payButton(),
-                                  followBilibiliButton(context)
+                                  _followBilibiliButton(_themeModel)
                                 ],
                               ),
                               SizedBox(height: 10),
@@ -326,7 +362,7 @@ class _PurchasePageState extends State<PurchasePage> {
                         ],
                         if (_commonModel.username == null) ...[
                           LanText(
-                              '立刻购买(${_commonModel?.gWebData['amount'] ?? DEF_AMOUNT}￥)',
+                              '立刻购买(${_qrcodeData['amount'] ?? DEF_AMOUNT}￥)',
                               fontSize: 22),
                           Row(
                             children: <Widget>[

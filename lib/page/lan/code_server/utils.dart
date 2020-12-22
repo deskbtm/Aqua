@@ -216,7 +216,7 @@ ff02::3     ipv6-allhosts
     );
   }
 
-  Future<File> setChineseRepo([String mirror]) async {
+  Future<void> setChineseRepo([String mirror]) async {
     String mirrorUrl;
     switch (mirror) {
       case TSINGHUA_REPO:
@@ -240,8 +240,13 @@ ff02::3     ipv6-allhosts
             'http://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/main\nhttp://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/community';
     }
 
-    return File('$filesPath/rootfs/etc/apk/repositories')
-        .writeAsString(mirrorUrl);
+    File repoFile = File('$filesPath/rootfs/etc/apk/repositories');
+
+    if (repoFile.existsSync()) {
+      await repoFile.writeAsString(mirrorUrl);
+    } else {
+      throw Exception('不存在 ${repoFile.path}');
+    }
   }
 
   Future<ProcessResult> installNodeJs() async {

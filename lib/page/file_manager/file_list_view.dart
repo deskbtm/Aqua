@@ -52,7 +52,8 @@ class FileListView extends StatefulWidget {
   }
 }
 
-class _FileListViewState extends State<FileListView> {
+class _FileListViewState extends State<FileListView>
+    with AutomaticKeepAliveClientMixin {
   ThemeModel _themeModel;
   ScrollController _scrollController;
   bool _mutex;
@@ -116,6 +117,8 @@ class _FileListViewState extends State<FileListView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     LanFileMoreTheme themeData = _themeModel.themeData;
 
     /// 如果文件数量变化，更新否则使用缓存的[_cachedFileList]，防止读取照片文件
@@ -191,16 +194,13 @@ class _FileListViewState extends State<FileListView> {
                       filename: item.file.filename,
                       path: item.file.entity.path,
                       subTitle: MixUtils.formatFileTime(item.file.modified),
-                      onLongPress: (details /* , update */) {
+                      onLongPress: (details) {
                         if (widget.itemOnLongPress != null) {
-                          widget.itemOnLongPress(index /* , update */);
+                          widget.itemOnLongPress(index);
                         }
                       },
-                      onTap: (/* itemUpdate */) {
-                        if (widget.onItemTap != null)
-                          widget.onItemTap(
-                            index, /* itemUpdate */
-                          );
+                      onTap: () {
+                        if (widget.onItemTap != null) widget.onItemTap(index);
                       },
                       onHozDrag: (dir) async {
                         /// [index] 位数 [dir] 方向 1 向右 -1 左
@@ -214,8 +214,8 @@ class _FileListViewState extends State<FileListView> {
           );
   }
 
-  // @override
-  // bool get wantKeepAlive => true;
+  @override
+  bool get wantKeepAlive => true;
 }
 
 // FutureBuilder<Widget>(

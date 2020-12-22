@@ -21,7 +21,7 @@ class StorageCard extends StatelessWidget {
         padding: EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 3),
         child: ProgressBar(
           padding: 5,
-          barColor: Color(0xF38B8B8B),
+          barColor: Color(0x91181A1A),
           backgroundColor: Color(0x13FFFFFFf),
           barHeight: 7,
           extraSize: 40,
@@ -34,7 +34,7 @@ class StorageCard extends StatelessWidget {
           titleStyle: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF444444),
+            color: Colors.cyanAccent,
           ),
           boarderColor: Colors.grey,
         ),

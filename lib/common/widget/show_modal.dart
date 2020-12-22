@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -313,10 +314,11 @@ Future<dynamic> showSingleTextFieldModal(
   ThemeModel provider, {
   bool popPreviousWindow = false,
   String title = '',
+  String tip,
   String placeholder,
   String initText,
-  @required Function(String) onOk,
-  @required Function onCancel,
+  @required FutureOr Function(String) onOk,
+  @required FutureOr Function() onCancel,
   bool transparent = false,
   String defaultCancelText,
 }) async {
@@ -340,6 +342,10 @@ Future<dynamic> showSingleTextFieldModal(
             title: LanDialogTitle(title: title),
             action: true,
             children: <Widget>[
+              if (tip != null) ...[
+                NoResizeText(tip),
+                SizedBox(height: 10),
+              ],
               LanTextField(
                 controller: textEditingController,
                 placeholder: placeholder,
@@ -347,12 +353,12 @@ Future<dynamic> showSingleTextFieldModal(
               SizedBox(height: 10),
             ],
             onOk: () async {
-              onOk(textEditingController.text);
-              await MixUtils.safePop(context);
+              await onOk(textEditingController.text);
+              MixUtils.safePop(context);
             },
             onCancel: () async {
-              onCancel();
-              await MixUtils.safePop(context);
+              await onCancel();
+              MixUtils.safePop(context);
             },
             defaultCancelText: defaultCancelText,
           );

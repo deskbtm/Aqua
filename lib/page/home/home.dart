@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:lan_file_more/common/show_modal_entity.dart';
 import 'package:lan_file_more/common/socket/socket.dart';
-import 'package:lan_file_more/common/widget/checkbox.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
@@ -17,15 +17,11 @@ import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/req.dart';
-import 'package:lan_file_more/utils/store.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
-import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
+import 'package:storage_mount_listener/storage_mount_listener.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:version/version.dart';
-import 'package:intent/intent.dart' as intent;
-import 'package:intent/action.dart' as action;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -35,130 +31,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  MethodChannel platform = const MethodChannel(SHARED_CHANNEL);
   ThemeModel _themeModel;
   CupertinoTabController _tabController;
   CommonModel _commonModel;
   bool _mutex;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = CupertinoTabController();
-    _mutex = true;
-
-    QuickActions quickActions = QuickActions();
-
-    quickActions.setShortcutItems(
-      <ShortcutItem>[
-        const ShortcutItem(
-          type: 'static-server',
-          localizedTitle: '静态服务',
-          icon: 'content',
-        ),
-        const ShortcutItem(
-          type: 'vscode-server',
-          localizedTitle: 'Vscode Server',
-          icon: 'vscode',
-        ),
-      ],
-    );
-
-    quickActions.initialize((String shortcutType) {
-      switch (shortcutType) {
-        case 'static-server':
-          _tabController.index = 1;
-          break;
-        case 'vscode-server':
-          _tabController.index = 1;
-          break;
-        default:
-      }
-    });
-  }
+  String dataShared = "No data";
+  StreamSubscription storageSubscription;
 
   void showText(String content) {
     BotToast.showText(
         text: content, contentColor: _themeModel.themeData?.toastColor);
-  }
-
-  Future<void> showUpdateModal(Map data) async {
-    if (data.isEmpty) {
-      return;
-    }
-
-    PackageInfo pkgInfo = await PackageInfo.fromPlatform();
-    String packageName = pkgInfo.packageName;
-    String remoteVersion = data['mobile']['latest']['version'];
-    List desc = data['mobile']['latest']['desc'];
-    String url = data['mobile']['latest']['url'];
-    bool forceUpdate = data['mobile']['latest']['forceUpdate'];
-
-    bool isNotTip = await Store.getBool(REMEMBER_NO_UPDATE_TIP) ?? false;
-
-    if (isNotTip) {
-      if (!forceUpdate) {
-        /// 强制更新 不显示
-        return;
-      } else {
-        await Store.setBool(REMEMBER_NO_UPDATE_TIP, false);
-      }
-    }
-
-    String descMsg = desc.map((e) => e + '\n').toList().join('');
-    if (Version.parse(remoteVersion) > Version.parse(pkgInfo.version)) {
-      bool checked = false;
-      await showTipTextModal(
-        context,
-        _themeModel,
-        tip: '发现新版本 v$remoteVersion\n$descMsg',
-        title: '更新',
-        defaultOkText: '下载',
-        defaultCancelText: '应用市场',
-        additionList: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              StatefulBuilder(builder: (context, changeState) {
-                return SizedBox(
-                  height: 30,
-                  child: LanCheckBox(
-                    value: checked,
-                    borderColor: _themeModel.themeData.itemFontColor,
-                    onChanged: (val) async {
-                      await Store.setBool(REMEMBER_NO_UPDATE_TIP, val);
-                      if (mounted) {
-                        changeState(() {
-                          checked = val;
-                        });
-                      }
-                    },
-                  ),
-                );
-              }),
-              NoResizeText(
-                '不再提示, 遇到强制更新则提示',
-                style: TextStyle(
-                  color: _themeModel.themeData.itemFontColor,
-                ),
-              )
-            ],
-          ),
-        ],
-        onCancel: () async {
-          intent.Intent()
-            ..setAction(action.Action.ACTION_VIEW)
-            ..setData(Uri.parse('market://details?id=' + packageName))
-            ..startActivity().catchError((e) => print(e));
-        },
-        onOk: () async {
-          if (await canLaunch(url)) {
-            await launch(url);
-          } else {
-            showText('链接打开失败');
-          }
-        },
-      );
-    }
   }
 
   Future<void> _preloadWebData() async {
@@ -204,6 +87,50 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _tabController = CupertinoTabController();
+    _mutex = true;
+
+    storageSubscription = StorageMountListener.channel
+        .receiveBroadcastStream()
+        .listen((event) {});
+
+    // AndroidIncomingFile.channel.receiveBroadcastStream().listen((event) {
+    //   print(event);
+    // });
+
+    QuickActions quickActions = QuickActions();
+
+    quickActions.setShortcutItems(
+      <ShortcutItem>[
+        const ShortcutItem(
+          type: 'static-server',
+          localizedTitle: '静态服务',
+          icon: 'content',
+        ),
+        const ShortcutItem(
+          type: 'vscode-server',
+          localizedTitle: 'Vscode Server',
+          icon: 'vscode',
+        ),
+      ],
+    );
+
+    quickActions.initialize((String shortcutType) {
+      switch (shortcutType) {
+        case 'static-server':
+          _tabController.index = 1;
+          break;
+        case 'vscode-server':
+          _tabController.index = 1;
+          break;
+        default:
+      }
+    });
+  }
+
+  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
@@ -211,6 +138,12 @@ class _HomePageState extends State<HomePage> {
 
     if (_mutex) {
       _mutex = false;
+
+      StorageMountListener.channel.receiveBroadcastStream().listen((event) {});
+
+      Map sharedData = await platform.invokeMethod("getSharedText");
+
+      
 
       // PermissionStatus status = await PermissionHandler()
       //     .checkPermissionStatus(PermissionGroup.microphone);
@@ -240,9 +173,15 @@ class _HomePageState extends State<HomePage> {
       }
 
       Timer(Duration(seconds: 8), () async {
-        await showUpdateModal(_commonModel.gWebData);
+        await showUpdateModal(context, _themeModel, _commonModel.gWebData);
       });
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    storageSubscription?.cancel();
   }
 
   // Future<void> _requestMicphonePermissionModal() async {

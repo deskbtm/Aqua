@@ -83,10 +83,8 @@ class _FileManagerPageState extends State<FileManagerPage>
   List<SelfFileEntity> _leftFileList;
   List<SelfFileEntity> _rightFileList;
   Directory _currentDir;
-  // Directory _parentDir;
   Directory _rootDir;
   bool _useSandboxDir;
-  bool _popRouteLocker;
   bool _initMutex;
   double _totalSize;
   double _validSize;
@@ -100,10 +98,8 @@ class _FileManagerPageState extends State<FileManagerPage>
     _leftFileList = [];
     _rightFileList = [];
     _currentDir = null;
-    // _parentDir = null;
     _initMutex = true;
     _useSandboxDir = false;
-    _popRouteLocker = true;
     _totalSize = 0;
     _validSize = 0;
 
@@ -545,7 +541,6 @@ class _FileManagerPageState extends State<FileManagerPage>
                       //删除后 已经不存在了 交换一下
                       if (item.entity.path != _rootDir.path) {
                         _currentDir = item.entity.parent;
-                        // _parentDir = _currentDir.parent;
                       }
                     }
                   } else {
@@ -966,7 +961,6 @@ class _FileManagerPageState extends State<FileManagerPage>
                 },
               ),
               if (sharedNotEmpty &&
-
                   // 在判断下 不然移动下 sharedNotEmpty有问题
                   _commonModel.selectedFiles.length != 0 &&
                   ARCHIVE_EXTS.contains(_commonModel.selectedFiles.first.ext))
@@ -1106,7 +1100,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
   Future<void> update2Side({updateView = true}) async {
     /// 只有curentPath 存在的时候才读取
-    if (_currentDir.path == _rootDir.path) {
+    if (pathLib.equals(_currentDir.path, _rootDir.path)) {
       _leftFileList = await readdir(_currentDir);
     } else {
       _leftFileList = await readdir(_currentDir.parent);
@@ -1124,12 +1118,10 @@ class _FileManagerPageState extends State<FileManagerPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    LanFileMoreTheme themeData = _themeModel?.themeData;
-
-    print(_currentDir?.path);
+    LanFileMoreTheme themeData = _themeModel.themeData;
 
     return _leftFileList.isEmpty
-        ? Container()
+        ? Container(color: themeData?.scaffoldBackgroundColor)
         : CupertinoPageScaffold(
             backgroundColor: themeData?.scaffoldBackgroundColor,
             navigationBar: CupertinoNavigationBar(

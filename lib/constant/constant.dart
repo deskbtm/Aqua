@@ -21,6 +21,8 @@ const String TUTORIAL_BASIC_URL =
 const String FIX_CLIPBOARD_URL =
     'http://sewerganger.gitee.io/lan-file-more/2020/08/31/安卓10以上剪贴板监听/';
 
+const String BILIBILI_SPACE = 'https://space.bilibili.com/178944900';
+
 // // bugly
 // const BUGLY_ID = 'b6055da02c';
 // const BUGLY_KEY = '91eb2f3a-639b-4f92-93fa-aef7fc802a94';

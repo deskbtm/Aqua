@@ -93,139 +93,141 @@ class _AboutPageState extends State<AboutPage> {
           ),
         ),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: Container(
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Image.asset(
-                          'assets/images/logo.png',
-                          width: 80,
-                          height: 80,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            LanText('局域网.文件.更多', fontSize: 18),
-                            LanText('版本: v$_version', small: true),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 15),
-                    Column(
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            Navigator.of(context, rootNavigator: true).push(
-                              CupertinoPageRoute(
-                                builder: (BuildContext context) {
-                                  return PrivacyPolicyPage();
-                                },
-                              ),
-                            );
-                          },
-                          child: ListTile(
-                            title: LanText('隐私政策'),
-                            contentPadding:
-                                EdgeInsets.only(left: 15, right: 10),
-                            trailing: Icon(
-                              OMIcons.chevronRight,
-                              color: themeData?.itemFontColor,
-                              size: 16,
-                            ),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () async {
-                            String url =
-                                "mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3D$_qqGroupKey";
-                            if (await canLaunch(url)) {
-                              launch(url);
-                            }
-                          },
-                          child: ListTile(
-                            title: LanText('加入组织'),
-                            subtitle: LanText(
-                              'QQ群: $_qqGroupNumber',
-                              small: true,
-                            ),
-                            contentPadding:
-                                EdgeInsets.only(left: 15, right: 10),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 5),
-              Container(
-                height: 20,
-                decoration: BoxDecoration(color: Colors.grey[100]),
-              ),
-              Container(
-                // padding: EdgeInsets.only(left: 10, right: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListTile(
-                      leading: Container(
-                        width: 45,
-                        height: 45,
-                        child: ClipOval(
-                          child: Image.network(
-                            _authorAvatar,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      title: NoResizeText('御神装.勿干涉'),
-                      subtitle: LanText('开发&设计', small: true),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              await Clipboard.setData(
-                                  ClipboardData(text: _authorEmail));
-                              showText('复制到剪贴板');
-                            },
-                            child: NoResizeText('Email: $_authorEmail'),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              await Clipboard.setData(
-                                ClipboardData(text: 'UTTERcreator'),
-                              );
-                              showText('复制到剪贴板');
-                            },
-                            child: NoResizeText('微信: UTTERcreator'),
+      child: SafeArea(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset(
+                            'assets/images/logo.png',
+                            width: 80,
+                            height: 80,
                           ),
                         ],
                       ),
-                    )
-                  ],
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              LanText('局域网.文件.更多', fontSize: 18),
+                              LanText('版本: v$_version', small: true),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 15),
+                      Column(
+                        children: [
+                          InkWell(
+                            onTap: () async {
+                              Navigator.of(context, rootNavigator: true).push(
+                                CupertinoPageRoute(
+                                  builder: (BuildContext context) {
+                                    return PrivacyPolicyPage();
+                                  },
+                                ),
+                              );
+                            },
+                            child: ListTile(
+                              title: LanText('隐私政策'),
+                              contentPadding:
+                                  EdgeInsets.only(left: 15, right: 10),
+                              trailing: Icon(
+                                OMIcons.chevronRight,
+                                color: themeData?.itemFontColor,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () async {
+                              String url =
+                                  "mqqopensdkapi://bizAgent/qm/qr?url=http%3A%2F%2Fqm.qq.com%2Fcgi-bin%2Fqm%2Fqr%3Ffrom%3Dapp%26p%3Dandroid%26jump_from%3Dwebapi%26k%3D$_qqGroupKey";
+                              if (await canLaunch(url)) {
+                                launch(url);
+                              }
+                            },
+                            child: ListTile(
+                              title: LanText('加入组织'),
+                              subtitle: LanText(
+                                'QQ群: $_qqGroupNumber',
+                                small: true,
+                              ),
+                              contentPadding:
+                                  EdgeInsets.only(left: 15, right: 10),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              )
-            ],
+                SizedBox(height: 5),
+                Container(
+                  height: 20,
+                  decoration: BoxDecoration(color: themeData.divideColor),
+                ),
+                Container(
+                  // padding: EdgeInsets.only(left: 10, right: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        leading: Container(
+                          width: 45,
+                          height: 45,
+                          child: ClipOval(
+                            child: Image.network(
+                              _authorAvatar,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        title: LanText('御神装.勿干涉'),
+                        subtitle: LanText('开发&设计', small: true),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                await Clipboard.setData(
+                                    ClipboardData(text: _authorEmail));
+                                showText('复制到剪贴板');
+                              },
+                              child: NoResizeText('Email: $_authorEmail'),
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                await Clipboard.setData(
+                                  ClipboardData(text: 'UTTERcreator'),
+                                );
+                                showText('复制到剪贴板');
+                              },
+                              child: NoResizeText('微信: UTTERcreator'),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

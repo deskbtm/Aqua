@@ -48,3 +48,6 @@ const String SORT_CASE = 'sort_case';
 const String SORT_SIZE = 'sort_size';
 const String SORT_TYPE = 'sort_type';
 const String SORT_REVERSED = 'sort_reversed';
+
+// ntaive 通信
+const String SHARED_CHANNEL = 'app.channel.shared.data';

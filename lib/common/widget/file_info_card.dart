@@ -121,23 +121,33 @@ class _FileInfoCardState extends State<FileInfoCard> {
             },
             child: Container(
               margin: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 5),
-              padding: EdgeInsets.only(left: 15, right: 15, top: 6, bottom: 6),
-              decoration: BoxDecoration(
-                color: themeData.actionButtonColor,
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  NoResizeText('${cur[0]}'),
-                  SizedBox(width: 20),
-                  Container(
-                    constraints: BoxConstraints(
-                        maxWidth:
-                            (MediaQuery.of(context).size.width * 2) / 3 - 15),
-                    child: NoResizeText(
-                      '${cur[1]}',
-                      overflow: TextOverflow.ellipsis,
+                  Expanded(
+                    flex: 2,
+                    child: Wrap(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(
+                              left: 15, right: 15, top: 6, bottom: 6),
+                          decoration: BoxDecoration(
+                            color: themeData.actionButtonColor,
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                          ),
+                          child: NoResizeText('${cur[0]}'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      constraints: BoxConstraints(minWidth: double.infinity),
+                      child: NoResizeText(
+                        '${cur[1]}',
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   )
                 ],

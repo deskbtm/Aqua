@@ -22,8 +22,13 @@ Future<void> searchDevice(List msg) async {
       sendPort.send(NOT_FOUND_DEVICES);
     } else {
       _counter++;
-      final stream = NetworkAnalyzer.discover2(subnet, int.parse(filePort));
+      Stream<NetworkAddress> stream = NetworkAnalyzer.discover2(
+        subnet,
+        int.parse(filePort),
+        timeout: Duration(milliseconds: 3000),
+      );
       await for (var addr in stream) {
+        await Future.delayed(Duration(milliseconds: 150));
         if (addr.exists) {
           availIps.add(addr.ip);
         }
@@ -32,7 +37,7 @@ Future<void> searchDevice(List msg) async {
       if (availIps.isNotEmpty) {
         sendPort.send(availIps.toList());
       } else {
-        await Future.delayed(Duration(milliseconds: 600));
+        await Future.delayed(Duration(milliseconds: 400));
         await searchDeviceInnerLoop();
       }
     }

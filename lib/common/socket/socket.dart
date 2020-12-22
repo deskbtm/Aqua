@@ -96,7 +96,7 @@ class SocketConnecter {
 
   Future<void> searchDevicesAndConnect(
     BuildContext context, {
-    int limit = 10,
+    int limit = 8,
     ThemeModel themeProvider,
     Function(String) onNotExpected,
     bool initiativeConnect = true,

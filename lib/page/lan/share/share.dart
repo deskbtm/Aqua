@@ -326,7 +326,14 @@ class _LanSharePageState extends State<LanSharePage>
                           CupertinoButton(
                             child: Text('测试按钮'),
                             onPressed: () async {
-                              print(await MixUtils.getIntenalIp());
+                              // print(await MixUtils.getIntenalIp());
+                              // Navigator.of(context, rootNavigator: true).push(
+                              //   CupertinoPageRoute(
+                              //     builder: (BuildContext context) {
+                              //       return PtyPage();
+                              //     },
+                              //   ),
+                              // );
 
                               // Color(0x9999);
 

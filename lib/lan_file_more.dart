@@ -4,6 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/model/file_model.dart';
+import 'package:lan_file_more/page/home/home.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
@@ -16,7 +17,6 @@ import 'external/bot_toast/src/toast_navigator_observer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'external/bot_toast/src/bot_toast_init.dart';
 import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/page/home/home.dart';
 import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/store.dart';
@@ -166,6 +166,6 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
               ),
             ),
           )
-        : Container();
+        : Container(color: themeData?.scaffoldBackgroundColor ?? Colors.white);
   }
 }

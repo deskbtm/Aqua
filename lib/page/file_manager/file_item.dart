@@ -76,9 +76,7 @@ class FileItemState extends State<FileItem>
   Color get fontColor => widget.fontColor;
   bool get withAnimation => widget.withAnimation;
   Function get onHozDrag => widget.onHozDrag;
-  Function(
-    LongPressStartDetails,
-  ) get onLongPress => widget.onLongPress;
+  Function(LongPressStartDetails) get onLongPress => widget.onLongPress;
 
   FileItemType get type => widget.type;
   bool get justDisplay => widget.justDisplay;
@@ -192,28 +190,12 @@ class FileItemState extends State<FileItem>
               : GestureDetector(
                   onTap: () {
                     if (onTap != null) {
-                      onTap(
-                          /* (b) {
-                        if (mounted) {
-                          setState(() {
-                            _selected = b;
-                          });
-                        }
-                      } */
-                          );
+                      onTap();
                     }
                   },
                   onLongPressStart: (d) {
                     if (onLongPress != null) {
-                      onLongPress(
-                        d, /* (b) {
-                        if (mounted) {
-                          setState(() {
-                            _selected = b;
-                          });
-                        }
-                      } */
-                      );
+                      onLongPress(d);
                     }
                   },
                   onHorizontalDragDown: (details) {
@@ -253,9 +235,6 @@ class FileItemState extends State<FileItem>
                         // 等待执行完成再更新 否则可能出现installed_apps 中 onHozDrag 异步没执行好
                         // setState 就执行的情况
                         await onHozDrag(dir);
-                        // setState(() {
-                        //   _selected = _commonModel.hasSelectedFile(path);
-                        // });
                       }
                     }
                   },

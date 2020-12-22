@@ -13,3 +13,15 @@
 	path = dev-progress
 	url = https://github.com/lan-file-more/dev-progress.git
 	ignore = dirty
+[submodule "plugins/xterm"]
+	path = plugins/xterm
+	url = https://github.com/lan-file-more/xterm.dart.git
+[submodule "plugins/pty"]
+	path = plugins/pty
+	url = https://github.com/lan-file-more/pty.git
+[submodule "plugins/storage_mount_listener"]
+	path = plugins/storage_mount_listener
+	url = https://github.com/lan-file-more/storage_mount_listener.git
+[submodule "plugins/android_incoming_file"]
+	path = plugins/android_incoming_file
+	url = https://github.com/lan-file-more/android_incoming_file.git

@@ -6,28 +6,33 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
+import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
+
+import 'cache_file_info.dart';
 
 enum FileItemType { folder, file }
 
 class FileItem extends StatefulWidget {
-  final String subTitle;
   final int index;
+  final String subTitle;
   final Function() onTap;
   final Color itemBgColor;
   final Color fontColor;
   final bool withAnimation;
-  final String path;
-  final String filename;
+  // final String path;
+  // final String filename;
+  final SelfFileEntity file;
   final bool justDisplay;
   final double subTitleSize;
   final double titleSize;
   final bool autoWrap;
   final Function(LongPressStartDetails) onLongPress;
   final Function(double) onHozDrag;
-  final FileItemType type;
+  final bool isDir;
   final Widget leading;
   final FileManagerMode mode;
 
@@ -37,7 +42,6 @@ class FileItem extends StatefulWidget {
     Key key,
     this.index,
     this.onTap,
-    this.subTitle,
     this.fontColor,
     this.onHozDrag,
     this.itemBgColor,
@@ -47,11 +51,11 @@ class FileItem extends StatefulWidget {
     this.autoWrap = true,
     this.justDisplay = false,
     this.withAnimation = false,
-    @required this.filename,
     @required this.leading,
-    @required this.path,
-    @required this.type,
+    @required this.isDir,
     this.mode,
+    this.file,
+    this.subTitle,
   }) : super(key: key);
 
   @override
@@ -62,15 +66,14 @@ class FileItem extends StatefulWidget {
 
 class FileItemState extends State<FileItem>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  String get subTitle => widget.subTitle;
   Animation<Offset> _animation;
   AnimationController _controller;
   double _dragX = 0;
   bool _selected = false;
-  double dir;
+  double _dir;
 
+  SelfFileEntity get file => widget.file;
   int get index => widget.index;
-  String get path => widget.path;
   Function() get onTap => widget.onTap;
   Color get itemBgColor => widget.itemBgColor;
   Color get fontColor => widget.fontColor;
@@ -78,25 +81,29 @@ class FileItemState extends State<FileItem>
   Function get onHozDrag => widget.onHozDrag;
   Function(LongPressStartDetails) get onLongPress => widget.onLongPress;
 
-  FileItemType get type => widget.type;
   bool get justDisplay => widget.justDisplay;
-  String get filename => widget.filename;
   double get subTitleSize => widget.subTitleSize;
   double get titleSize => widget.titleSize;
   bool get autoWrap => widget.autoWrap;
 
   ThemeModel _themeModel;
   CommonModel _commonModel;
-
-  Widget _cacheLeading;
-  String _cachePath;
+  CacheFileInfo _cacheFileInfo;
 
   @override
   bool get wantKeepAlive => true;
 
+  bool compareFile() {
+    return _cacheFileInfo.path == file.path &&
+        _cacheFileInfo.modified == MixUtils.formatFileTime(file.modified) &&
+        _cacheFileInfo.size == file.humanSize;
+  }
+
   @override
   void initState() {
     super.initState();
+    _cacheFileInfo = CacheFileInfo();
+
     if (!justDisplay) {
       _controller = AnimationController(vsync: this);
       _controller.addListener(() {
@@ -134,7 +141,7 @@ class FileItemState extends State<FileItem>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    LanFileMoreTheme themeData = _themeModel?.themeData;
+    LanFileMoreTheme themeData = _themeModel.themeData;
     Color itemfontColor = fontColor ?? themeData?.itemFontColor;
     Color itemColor = itemBgColor ?? themeData?.itemColor;
 
@@ -143,33 +150,55 @@ class FileItemState extends State<FileItem>
       _selected = false;
     } else {
       if (widget.mode == FileManagerMode.pick) {
-        _selected = _commonModel.hasPickFile(path);
+        _selected = _commonModel.hasPickFile(file.path);
       } else {
-        _selected = _commonModel.hasSelectedFile(path);
+        _selected = _commonModel.hasSelectedFile(file.path);
       }
     }
 
-    if (_cachePath != widget.path) {
-      _cacheLeading = widget.leading;
-      _cachePath = widget.path;
+    if (!compareFile()) {
+      _cacheFileInfo = CacheFileInfo(
+        path: file.path,
+        modified: MixUtils.formatFileTime(file.modified),
+        size: file.humanSize,
+        leading: widget.leading,
+        filename: file.filename,
+      );
     }
 
     Widget tile = ListTile(
-      leading: _cacheLeading,
+      leading: widget.isDir
+          ? _cacheFileInfo.leading
+          // 显示文件的大小
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _cacheFileInfo.leading,
+                SizedBox(height: 6),
+                NoResizeText(
+                  _cacheFileInfo.size,
+                  style: TextStyle(
+                    fontSize: 8,
+                    color: themeData?.itemFontColor,
+                  ),
+                )
+              ],
+            ),
       title: NoResizeText(
-        filename,
+        _cacheFileInfo.filename,
         overflow: autoWrap
-            ? filename.length > 30
+            ? _cacheFileInfo.filename.length > 30
                 ? TextOverflow.ellipsis
                 : null
             : null,
         style: TextStyle(fontSize: titleSize, color: itemfontColor),
       ),
       subtitle: NoResizeText(
-        subTitle,
+        widget.subTitle != null ? widget.subTitle : _cacheFileInfo.modified,
         style: TextStyle(fontSize: subTitleSize, color: itemfontColor),
       ),
-      trailing: FileItemType.folder == type
+      trailing: widget.isDir
           ? Icon(Icons.arrow_right, size: 16, color: itemfontColor)
           : null,
     );
@@ -203,9 +232,9 @@ class FileItemState extends State<FileItem>
                   },
                   onHorizontalDragUpdate: (details) {
                     if (details.primaryDelta > 0) {
-                      dir = 1;
+                      _dir = 1;
                     } else {
-                      dir = -1;
+                      _dir = -1;
                     }
 
                     setState(() {
@@ -234,7 +263,7 @@ class FileItemState extends State<FileItem>
                       if (mounted) {
                         // 等待执行完成再更新 否则可能出现installed_apps 中 onHozDrag 异步没执行好
                         // setState 就执行的情况
-                        await onHozDrag(dir);
+                        await onHozDrag(_dir);
                       }
                     }
                   },

@@ -6,6 +6,8 @@ import 'package:android_mix/android_mix.dart';
 import 'package:device_info/device_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as pathLib;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 
 class MixUtils {
   /// 判断开发环境
@@ -43,13 +45,12 @@ class MixUtils {
     return useDouble ? size : size + unitArr[index];
   }
 
-  static String formatFileTime(dynamic time, {int from = 5, int end = 16}) {
-    if (time is String) {
-      DateTime dt = DateTime.parse(time);
-      return '${dt.year}/${dt.month}/${dt.day} ${dt.hour}:${dt.minute}:${dt.second}';
-    } else {
-      return '${time.year}/${time.month}/${time.day} ${time.hour}:${time.minute}:${time.second}';
-    }
+  static String formatFileTime(DateTime time) {
+    // if (time is String) {
+    //   DateTime dt = DateTime.parse(time);
+    //   return '${dt.year}/${dt.month}/${dt.day} ${dt.hour}:${dt.minute}:${dt.second}';
+    // } else {}
+    return '${time.year}/${time.month}/${time.day} ${time.hour}:${time.minute}:${time.second}';
   }
 
   // static Future scanSubnet(CommonModel settingProvider) async {

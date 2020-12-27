@@ -1,8 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lan_file_more/common/widget/draggable_scrollbar.dart';
 import 'package:lan_file_more/common/widget/images.dart';
@@ -13,7 +10,6 @@ import 'package:lan_file_more/page/file_manager/file_item.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class ListFileItemInfo {
@@ -52,8 +48,7 @@ class FileListView extends StatefulWidget {
   }
 }
 
-class _FileListViewState extends State<FileListView>
-    with AutomaticKeepAliveClientMixin {
+class _FileListViewState extends State<FileListView> {
   ThemeModel _themeModel;
   ScrollController _scrollController;
   bool _mutex;
@@ -117,10 +112,6 @@ class _FileListViewState extends State<FileListView>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
-    LanFileMoreTheme themeData = _themeModel.themeData;
-
     /// 如果文件数量变化，更新否则使用缓存的[_cachedFileList]，防止读取照片文件
     /// thumb 时瞎几把闪，提前渲染好leaing
 
@@ -168,32 +159,11 @@ class _FileListViewState extends State<FileListView>
 
                     return FileItem(
                       mode: widget.mode,
-                      type: item.file.isDir
-                          ? FileItemType.folder
-                          : FileItemType.file,
-                      leading: item.file.isDir
-                          ? item.leading
-                          // 显示文件的大小
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                item.leading,
-                                SizedBox(height: 6),
-                                NoResizeText(
-                                  item.file.humanSize,
-                                  style: TextStyle(
-                                    fontSize: 8,
-                                    color: themeData?.itemFontColor,
-                                  ),
-                                )
-                              ],
-                            ),
+                      isDir: item.file.isDir,
+                      leading: item.leading,
                       withAnimation: index < 15,
                       index: index,
-                      filename: item.file.filename,
-                      path: item.file.entity.path,
-                      subTitle: MixUtils.formatFileTime(item.file.modified),
+                      file: item.file,
                       onLongPress: (details) {
                         if (widget.itemOnLongPress != null) {
                           widget.itemOnLongPress(index);
@@ -213,9 +183,6 @@ class _FileListViewState extends State<FileListView>
             ),
           );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
 
 // FutureBuilder<Widget>(

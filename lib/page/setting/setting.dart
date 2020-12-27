@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:android_mix/android_mix.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/show_modal_entity.dart';
+import 'package:lan_file_more/common/widget/show_modal_entity.dart';
 import 'package:lan_file_more/common/widget/function_widget.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';

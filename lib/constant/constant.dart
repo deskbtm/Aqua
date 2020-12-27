@@ -22,6 +22,8 @@ const String FIX_CLIPBOARD_URL =
     'http://sewerganger.gitee.io/lan-file-more/2020/08/31/安卓10以上剪贴板监听/';
 
 const String BILIBILI_SPACE = 'https://space.bilibili.com/178944900';
+const String AUTHOR_ALIPAY =
+    'alipays://platformapi/startapp?appId=09999988&actionType=toAccount&goBack=NO&userId=2088722095158050';
 
 // // bugly
 // const BUGLY_ID = 'b6055da02c';
@@ -34,15 +36,15 @@ const String DEFAULT_AUTHOR_EMAIL = 'wanghan9423@outlook.com';
 const String DEFAULT_AUTHOR_AVATAR =
     'https://oss.turingsenseai.com/1603984097670508746.png?x-oss-process=image/resize,h_200,m_lfit';
 
-//备用资源包下载地址
-const String BAK_RES_URL_AARCH64 = '';
-const String BAK_RES_URL_ARMv7 = '';
-const String BAK_RES_URL_x86 = '';
+// //备用资源包下载地址
+// const String BAK_RES_URL_AARCH64 = '';
+// const String BAK_RES_URL_ARMv7 = '';
+// const String BAK_RES_URL_x86 = '';
 
-const String BAK_BUSYBOX_URL_AARCH64 = '';
-const String BAK_BUSYBOX_URL_ARMv7 = '';
-const String BAK_BUSYBOX_URL_x86 = '';
+// const String BAK_BUSYBOX_URL_AARCH64 = '';
+// const String BAK_BUSYBOX_URL_ARMv7 = '';
+// const String BAK_BUSYBOX_URL_x86 = '';
 
-const String BAK_RES_ZIP_URL_AARCH64 = '';
-const String BAK_RES_ZIP_URL_ARMv7 = '';
-const String BAK_RES_ZIP_URL_x86 = '';
+// const String BAK_RES_ZIP_URL_AARCH64 = '';
+// const String BAK_RES_ZIP_URL_ARMv7 = '';
+// const String BAK_RES_ZIP_URL_x86 = '';

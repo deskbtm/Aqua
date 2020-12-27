@@ -130,7 +130,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                       children: [
                         Container(
                           padding: EdgeInsets.only(
-                              left: 15, right: 15, top: 6, bottom: 6),
+                              left: 10, right: 10, top: 6, bottom: 6),
                           decoration: BoxDecoration(
                             color: themeData.actionButtonColor,
                             borderRadius: BorderRadius.all(Radius.circular(5)),

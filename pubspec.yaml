@@ -45,11 +45,12 @@ dependencies:
   ping_discover_network: ^0.2.0+1
   socket_io_client: ^0.9.11
   catcher: ^0.3.17
-  flutter_markdown: ^0.5.0
-  markdown: ^3.0.0
+  # flutter_markdown: ^0.5.0
+  # markdown: ^3.0.0
   url_launcher: ^5.7.8
   dotted_border: ^1.0.6
-  # zefyr: ^0.12.0
+  zefyr:
+    path: plugins/zefyr
   flutter_local_notifications: ^3.0.2
   flutter_secure_storage: ^3.3.5
   device_apps: ^1.2.0
@@ -57,7 +58,7 @@ dependencies:
     path: plugins/intent
   photo_view:
     path: plugins/photo_view
-  flutter_html: ^1.0.2
+  flutter_html: ^1.1.1
   dio: ^3.0.10
   version: ^1.2.0
   package_info: ^0.4.3
@@ -71,12 +72,15 @@ dependencies:
   connectivity: ^0.4.9+3
   share_extend: ^1.1.9
   quick_actions: ^0.4.0+10
-  wakelock: ^0.1.2
-  vibration: ^1.7.1
+  wakelock: ^0.2.1+1
   photo_manager:
     path: plugins/photo_manager
   joystick_editor:
     path: plugins/joystick_editor
+  markdown_widget: ^1.2.6
+  file_editor: 
+    path: plugins/file_editor
+
   # flutter_boost:
   #   path: plugins/flutter_boost
   

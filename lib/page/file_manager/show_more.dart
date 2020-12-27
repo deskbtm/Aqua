@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:android_mix/android_mix.dart';
+import 'package:file_editor/editor_theme.dart';
+import 'package:file_editor/file_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/common/widget/action_button.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
@@ -24,7 +26,7 @@ Future<void> uploadToWebDAV(SelfFileEntity file) async {
   return client.uploadFile(path, '/lan-file-more/${pathLib.basename(path)}');
 }
 
-Future<void> showMoreModal(
+Future<dynamic> showMoreModal(
   BuildContext context,
   StateSetter setState, {
   @required ThemeModel themeProvider,
@@ -39,7 +41,7 @@ Future<void> showMoreModal(
 
   String filesPath = await AndroidMix.storage.getFilesDir;
 
-  showCupertinoModal(
+  return showCupertinoModal(
     context: context,
     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
     builder: (BuildContext context) {
@@ -77,6 +79,35 @@ Future<void> showMoreModal(
           ),
         ],
         rightChildren: <Widget>[
+          ActionButton(
+            content: '编辑器打开',
+            onTap: () async {
+              // MixUtils.safePop(context);
+              Navigator.of(context, rootNavigator: true).push(
+                CupertinoPageRoute(builder: (BuildContext context) {
+                  return FileEditorPage(
+                    path: file.entity.path,
+                    language: file.ext.replaceFirst(RegExp(r'.'), ''),
+                    bottomNavColor: themeProvider.themeData?.bottomNavColor,
+                    dialogBgColor: themeProvider.themeData?.dialogBgColor,
+                    backgroundColor:
+                        themeProvider.themeData?.scaffoldBackgroundColor,
+                    fontColor: themeProvider.themeData?.itemFontColor,
+                    selectItemColor: themeProvider.themeData?.itemColor,
+                    popMenuColor: themeProvider.themeData?.menuItemColor,
+                    highlightTheme: setEditorTheme(
+                      themeProvider.isDark,
+                      TextStyle(
+                        color: themeProvider.themeData?.itemFontColor,
+                        backgroundColor:
+                            themeProvider.themeData?.scaffoldBackgroundColor,
+                      ),
+                    ),
+                  );
+                }),
+              );
+            },
+          ),
           ActionButton(
             content: '打开方式',
             onTap: () async {

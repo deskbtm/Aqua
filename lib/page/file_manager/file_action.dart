@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:android_mix/android_mix.dart';
-import 'package:flutter/widgets.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:path/path.dart' as pathLib;
@@ -15,6 +14,7 @@ class SelfFileEntity {
   final FileSystemEntityType type;
   final int mode;
   final int size;
+  final String path;
   final FileSystemEntity entity;
   final String filename;
   final String ext;
@@ -27,6 +27,7 @@ class SelfFileEntity {
   final bool isFile;
 
   SelfFileEntity({
+    this.path,
     this.pureName,
     this.apkIcon,
     this.isLink,
@@ -37,11 +38,11 @@ class SelfFileEntity {
     this.accessed,
     this.mode,
     this.size,
-    @required this.isDir,
-    @required this.filename,
-    @required this.modified,
-    @required this.type,
-    @required this.entity,
+    this.isDir,
+    this.filename,
+    this.modified,
+    this.type,
+    this.entity,
     this.modeString,
   });
 }
@@ -98,6 +99,7 @@ class FileAction {
           changed: stat.changed,
           modified: stat.modified,
           accessed: stat.accessed,
+          path: content.path,
           type: stat.type,
           mode: stat.mode,
           modeString: stat.modeString(),

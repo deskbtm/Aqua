@@ -5,11 +5,11 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:device_info/device_info.dart';
+import 'package:file_editor/editor_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:android_mix/android_mix.dart';
 import 'package:android_mix/archive/enums.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:lan_file_more/common/widget/action_button.dart';
 import 'package:lan_file_more/common/widget/dialog.dart';
 import 'package:lan_file_more/common/widget/file_info_card.dart';
@@ -43,8 +43,9 @@ import 'package:file_utils/file_utils.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:share_extend/share_extend.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:markdown/markdown.dart' as md;
-import 'package:url_launcher/url_launcher.dart';
+// import 'package:markdown/markdown.dart' as md;
+// import 'package:url_launcher/url_launcher.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import 'show_more.dart';
 
 enum FileManagerMode {
@@ -871,18 +872,17 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  Future<void> _showFileOptionsModal(
-      {SelfFileEntity file /* , Function(bool) updateItem */}) async {
+  Future<void> _showFileOptionsModal({SelfFileEntity file}) async {
     bool showSize = false;
     bool sharedNotEmpty = _commonModel.selectedFiles.isNotEmpty;
 
-    if (_commonModel.isFileOptionNotInit) {
+    if (_commonModel.isFileOptionPromptNotInit) {
       showText(
         '可长按详情 复制内容',
         duration: Duration(seconds: 4),
         align: const Alignment(0, 0),
       );
-      _commonModel.setFileOptionNotInit(false);
+      _commonModel.setFileOptionPromptInit(false);
     }
 
     await showCupertinoModal(
@@ -980,13 +980,16 @@ class _FileManagerPageState extends State<FileManagerPage>
               ActionButton(
                 content: '更多选项',
                 onTap: () async {
-                  await showMoreModal(
-                    context,
-                    setState,
-                    file: file,
-                    themeProvider: _themeModel,
-                    commonProvider: _commonModel,
-                  );
+                  if (file.isFile) {
+                    await showMoreModal(
+                      context,
+                      setState,
+                      file: file,
+                      themeProvider: _themeModel,
+                      commonProvider: _commonModel,
+                    );
+                    await update2Side();
+                  }
                 },
               ),
             ],
@@ -1000,7 +1003,6 @@ class _FileManagerPageState extends State<FileManagerPage>
     SelfFileEntity file, {
     bool left,
     int index = 0,
-    /* Function(bool) updateItem */
   }) {
     String path = file.entity.path;
     matchSupportFileExt(
@@ -1045,19 +1047,24 @@ class _FileManagerPageState extends State<FileManagerPage>
           builder: (BuildContext context) {
             return Container(
               padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              color: Color(0x83FFFFFF),
-              child: Markdown(
-                selectable: true,
+              child: MarkdownWidget(
                 data: data,
-                extensionSet: md.ExtensionSet.gitHubWeb,
-                onTapLink: (text, url, title) async {
-                  if (await canLaunch(url)) {
-                    await launch(url);
-                  } else {
-                    showText('链接打开失败');
-                    recordError(text: 'markdown url');
-                  }
-                },
+                padding: EdgeInsets.all(15),
+                styleConfig: StyleConfig(
+                  codeConfig: CodeConfig(
+                    decoration: BoxDecoration(color: Colors.transparent),
+                  ),
+                  preConfig: PreConfig(
+                    theme: setEditorTheme(
+                      _themeModel.isDark,
+                      TextStyle(
+                        color: _themeModel.themeData?.itemFontColor,
+                        backgroundColor:
+                            _themeModel.themeData?.scaffoldBackgroundColor,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             );
           },
@@ -1177,9 +1184,9 @@ class _FileManagerPageState extends State<FileManagerPage>
                       onHozDrag: (index, dir) async {
                         await handleHozDragItem(index, dir, _leftFileList);
                       },
-                      itemOnLongPress: (index) {
+                      itemOnLongPress: (index) async {
                         SelfFileEntity file = _leftFileList[index];
-                        _showFileOptionsModal(file: file);
+                        await _showFileOptionsModal(file: file);
                       },
                       onItemTap: (index) async {
                         SelfFileEntity file = _leftFileList[index];
@@ -1219,9 +1226,9 @@ class _FileManagerPageState extends State<FileManagerPage>
                         onHozDrag: (index, dir) async {
                           await handleHozDragItem(index, dir, _rightFileList);
                         },
-                        itemOnLongPress: (index) {
+                        itemOnLongPress: (index) async {
                           SelfFileEntity file = _rightFileList[index];
-                          _showFileOptionsModal(file: file);
+                          await _showFileOptionsModal(file: file);
                         },
                         onItemTap: (index) async {
                           SelfFileEntity file = _rightFileList[index];

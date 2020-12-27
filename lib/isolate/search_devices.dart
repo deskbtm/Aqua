@@ -28,7 +28,7 @@ Future<void> searchDevice(List msg) async {
         timeout: Duration(milliseconds: 3000),
       );
       await for (var addr in stream) {
-        await Future.delayed(Duration(milliseconds: 150));
+        await Future.delayed(Duration(milliseconds: 50));
         if (addr.exists) {
           availIps.add(addr.ip);
         }

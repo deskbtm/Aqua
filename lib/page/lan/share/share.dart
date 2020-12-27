@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'package:file_editor/editor_theme.dart';
+import 'package:file_editor/file_editor.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
 import 'package:lan_file_more/utils/error.dart';
@@ -24,7 +27,6 @@ import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/web/web_handler.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
-
 import 'package:wakelock/wakelock.dart';
 
 class LanSharePage extends StatefulWidget {
@@ -136,7 +138,7 @@ class _LanSharePageState extends State<LanSharePage>
         debugPrint('Serving at http://${_server.address.host}:${_server.port}');
 
         // 保持唤醒状态
-        bool isWakeEnabled = await Wakelock.isEnabled;
+        bool isWakeEnabled = await Wakelock.enabled;
         if (!isWakeEnabled) {
           Wakelock.enable();
         }
@@ -267,7 +269,7 @@ class _LanSharePageState extends State<LanSharePage>
                                         ongoing: true,
                                       );
                                       bool isWakeEnabled =
-                                          await Wakelock.isEnabled;
+                                          await Wakelock.enabled;
                                       if (!isWakeEnabled) {
                                         Wakelock.enable();
                                       }
@@ -307,19 +309,51 @@ class _LanSharePageState extends State<LanSharePage>
                           trailing: (_commonModel.socket?.connected != null &&
                                   _commonModel.socket.connected == true)
                               ? Container(width: 1, height: 1)
-                              : CupertinoButton(
-                                  child: NoResizeText('连接'),
-                                  onPressed: () async {
-                                    LocalNotification.showNotification(
-                                        name: 'SEARCH_DEVICE',
-                                        title: '搜寻设备中...');
-                                    await SocketConnecter(_commonModel)
-                                        .searchDevicesAndConnect(
-                                      context,
-                                      themeProvider: _themeModel,
-                                      initiativeConnect: false,
-                                    );
-                                  },
+                              : Wrap(
+                                  children: [
+                                    CupertinoButton(
+                                      child: NoResizeText('手动'),
+                                      onPressed: () async {
+                                        showSingleTextFieldModal(
+                                          context,
+                                          _themeModel,
+                                          title: '手动设置IP',
+                                          onOk: (val) async {
+                                            await _commonModel
+                                                .setCurrentConnectIp(
+                                                    val?.trim());
+
+                                            SocketConnecter(_commonModel)
+                                                .createClient(
+                                                    _commonModel
+                                                        .currentConnectIp,
+                                                    onNotExpected: (val) {
+                                              showText(val);
+                                            }, onConnected: () {
+                                              _commonModel.addToCommonIps(
+                                                  _commonModel
+                                                      .currentConnectIp);
+                                            });
+                                          },
+                                          onCancel: () {},
+                                        );
+                                      },
+                                    ),
+                                    CupertinoButton(
+                                      child: NoResizeText('搜索'),
+                                      onPressed: () async {
+                                        LocalNotification.showNotification(
+                                            name: 'SEARCH_DEVICE',
+                                            title: '搜寻设备中...');
+                                        await SocketConnecter(_commonModel)
+                                            .searchDevicesAndConnect(
+                                          context,
+                                          themeProvider: _themeModel,
+                                          initiativeConnect: false,
+                                        );
+                                      },
+                                    ),
+                                  ],
                                 ),
                         ),
                         if (MixUtils.isDev) ...[
@@ -327,13 +361,30 @@ class _LanSharePageState extends State<LanSharePage>
                             child: Text('测试按钮'),
                             onPressed: () async {
                               // print(await MixUtils.getIntenalIp());
-                              // Navigator.of(context, rootNavigator: true).push(
-                              //   CupertinoPageRoute(
-                              //     builder: (BuildContext context) {
-                              //       return PtyPage();
-                              //     },
-                              //   ),
-                              // );
+                              Navigator.of(context, rootNavigator: true).push(
+                                CupertinoPageRoute(
+                                    builder: (BuildContext context) {
+                                  return FileEditorPage(
+                                    path: '/sdcard/x86-stderr.txt',
+                                    language: 'dart',
+                                    bottomNavColor:
+                                        _themeModel.themeData?.bottomNavColor,
+                                    backgroundColor: _themeModel
+                                        .themeData?.scaffoldBackgroundColor,
+                                    fontColor:
+                                        _themeModel.themeData?.itemFontColor,
+                                    highlightTheme: setEditorTheme(
+                                      false,
+                                      TextStyle(
+                                        color: _themeModel
+                                            .themeData?.itemFontColor,
+                                        backgroundColor: _themeModel
+                                            .themeData?.scaffoldBackgroundColor,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              );
 
                               // Color(0x9999);
 
@@ -387,14 +438,12 @@ class _LanSharePageState extends State<LanSharePage>
                             }
                           },
                           child: FileItem(
-                            type: FileItemType.file,
+                            isDir: file.isDir,
                             leading: previewIcon,
                             withAnimation: index < 15,
                             index: index,
-                            subTitle: MixUtils.formatFileTime(file.modified),
                             justDisplay: true,
-                            filename: file.filename,
-                            path: file.entity.path,
+                            file: file,
                           ),
                         );
                       },

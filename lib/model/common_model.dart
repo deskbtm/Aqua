@@ -64,12 +64,12 @@ class CommonModel extends ChangeNotifier {
   }
 
   // 菜单初始化
-  bool _isFileOptionNotInit = true;
-  bool get isFileOptionNotInit => _isFileOptionNotInit;
+  bool _isFileOptionPromptNotInit = true;
+  bool get isFileOptionPromptNotInit => _isFileOptionPromptNotInit;
 
-  Future<void> setFileOptionNotInit(bool arg) async {
-    _isFileOptionNotInit = arg;
-    await Store.setBool(APP_INIT, arg);
+  Future<void> setFileOptionPromptInit(bool arg) async {
+    _isFileOptionPromptNotInit = arg;
+    await Store.setBool(FILE_OPTION_INIT, arg);
   }
 
   bool _enableClipboard = true;
@@ -337,6 +337,8 @@ class CommonModel extends ChangeNotifier {
     _enableClipboard = (await Store.getBool(ENABLE_CLIPBOARD)) ?? true;
     _isPurchased = (await secureStorage.read(key: PURCHASED)) == 'true';
     _isAppNotInit = (await Store.getBool(APP_INIT)) ?? true;
+    _isFileOptionPromptNotInit =
+        (await Store.getBool(FILE_OPTION_INIT)) ?? true;
     _baseUrl = (await Store.getString(BASE_URL_KEY)) ?? DEF_BASE_URL;
     _username = await Store.getString(LOGIN_USERNMAE);
     _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;

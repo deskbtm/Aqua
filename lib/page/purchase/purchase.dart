@@ -162,7 +162,6 @@ class _PurchasePageState extends State<PurchasePage> {
                     await launch(BILIBILI_SPACE);
                   } else {
                     showText('链接打开失败');
-                    recordError(text: '链接打开失败');
                   }
                 },
               );
@@ -255,7 +254,7 @@ class _PurchasePageState extends State<PurchasePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               LanText(
-                                '普通的用户',
+                                '普通用户',
                                 fontSize: 22,
                               ),
                               ListTile(
@@ -361,9 +360,16 @@ class _PurchasePageState extends State<PurchasePage> {
                           activeButton(context),
                         ],
                         if (_commonModel.username == null) ...[
-                          LanText(
-                              '立刻购买(${_qrcodeData['amount'] ?? DEF_AMOUNT}￥)',
-                              fontSize: 22),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              LanText(
+                                '立刻购买(${_qrcodeData['amount'] ?? DEF_AMOUNT}￥)',
+                                fontSize: 22,
+                              ),
+                              LanText('登录后显示优惠'),
+                            ],
+                          ),
                           Row(
                             children: <Widget>[
                               CupertinoButton(
@@ -458,11 +464,29 @@ class _PurchasePageState extends State<PurchasePage> {
                             ],
                           ),
                         ],
-                        SizedBox(height: 20),
-                        LanText(
-                          '注意',
-                          fontSize: 22,
+                        Column(
+                          children: [
+                            SizedBox(height: 10),
+                            CupertinoButton(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              color: Color(0xFF007AFF),
+                              child: NoResizeText('打赏'),
+                              onPressed: () async {
+                                if (await canLaunch(AUTHOR_ALIPAY)) {
+                                  await launch(AUTHOR_ALIPAY);
+                                } else {
+                                  showText('链接打开失败');
+                                  recordError(text: '链接打开失败');
+                                }
+                              },
+                            ),
+                            SizedBox(height: 10),
+                            NoResizeText('打赏大于等于购买价, 可直接联系本人激活')
+                          ],
                         ),
+                        SizedBox(height: 20),
+                        LanText('注意', fontSize: 22),
                         SizedBox(height: 10),
                         LanText(
                           '1. 已经购买过的直接登录',
@@ -480,10 +504,7 @@ class _PurchasePageState extends State<PurchasePage> {
                           '5. 如果更换设备, 联系我',
                         ),
                         SizedBox(height: 20),
-                        LanText(
-                          '其他',
-                          fontSize: 22,
-                        ),
+                        LanText('其他', fontSize: 22),
                         SizedBox(height: 10),
                         Row(
                           children: <Widget>[

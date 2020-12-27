@@ -117,8 +117,10 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                     SelfFileEntity fileEntity = SelfFileEntity(
                       modified: file.statSync().modified,
                       entity: file,
+                      path: app.apkFilePath,
                       filename: '${app.appName} (${app.packageName})',
                       ext: ext,
+                      humanSize: '',
                       apkIcon: app is ApplicationWithIcon ? app.icon : null,
                       isDir: file.statSync().type ==
                           FileSystemEntityType.directory,
@@ -129,7 +131,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                     return Column(
                       children: <Widget>[
                         FileItem(
-                          type: FileItemType.file,
+                          isDir: false,
                           leading: app is ApplicationWithIcon
                               ? CircleAvatar(
                                   backgroundImage: MemoryImage(app.icon),
@@ -144,7 +146,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                               '数据目录: ${app.dataDir}\n'
                               '安装时间: ${DateTime.fromMillisecondsSinceEpoch(app.installTimeMillis).toString()}\n'
                               '更新时间: ${DateTime.fromMillisecondsSinceEpoch(app.updateTimeMillis).toString()}\n',
-                          onLongPress: (details /* , update */) async {
+                          onLongPress: (details) async {
                             showCupertinoModal(
                               filter:
                                   ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -185,14 +187,15 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                               },
                             );
                           },
-                          onTap: (/* itemUpdate */) {
+                          onTap: () {
                             DeviceApps.openApp(app.packageName);
                           },
                           subTitleSize: 12,
                           titleSize: 16,
                           autoWrap: false,
-                          path: app.apkFilePath,
-                          filename: '${app.appName} (${app.packageName})',
+                          file: fileEntity,
+                          // path: app.apkFilePath,
+                          // filename: '${app.appName} (${app.packageName})',
                           onHozDrag: (dir) async {
                             if (await file.exists()) {
                               if (dir == 1) {

@@ -113,10 +113,10 @@ class SocketConnecter {
         'internalIp': commonProvider.internalIp,
       };
 
+      _resourceLocker = true;
       ReceivePort recPort = ReceivePort();
       SendPort sendPort = recPort.sendPort;
       Isolate isolate = await Isolate.spawn(searchDevice, [sendPort, data]);
-      _resourceLocker = true;
       recPort.listen(
         (message) {
           if (message == NOT_FOUND_DEVICES) {
@@ -132,8 +132,6 @@ class SocketConnecter {
           if (message is List<String> && message.isNotEmpty) {
             isolate?.kill();
             _resourceLocker = false;
-            // message
-            //     .addAll(['122.123.123.12', '122.123.123.11', '122.123.123.10']);
             if (message.length > 1) {
               Timer timer;
               showSelectModal(

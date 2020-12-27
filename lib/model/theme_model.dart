@@ -10,7 +10,7 @@ class ThemeModel extends ChangeNotifier {
   bool _isDark = false;
   bool get isDark => _isDark;
 
-  dynamic get themeData => _themeData;
+  LanFileMoreTheme get themeData => _themeData;
   String get theme => _theme;
 
   Future<void> setTheme(String theme) async {

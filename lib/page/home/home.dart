@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_file_more/common/show_modal_entity.dart';
+import 'package:lan_file_more/common/widget/show_modal_entity.dart';
 import 'package:lan_file_more/common/socket/socket.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
@@ -141,9 +141,7 @@ class _HomePageState extends State<HomePage> {
 
       StorageMountListener.channel.receiveBroadcastStream().listen((event) {});
 
-      Map sharedData = await platform.invokeMethod("getSharedText");
-
-      
+      // Map sharedData = await platform.invokeMethod("getSharedText");
 
       // PermissionStatus status = await PermissionHandler()
       //     .checkPermissionStatus(PermissionGroup.microphone);

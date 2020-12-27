@@ -296,8 +296,8 @@ Future<T> showCupertinoModal<T>({
           ? Color(0x00382F2F)
           : CupertinoDynamicColor.resolve(
               CupertinoDynamicColor.withBrightness(
-                color: Color(0x33000000),
-                darkColor: Color(0x7A000000),
+                color: Color(0x17000000),
+                darkColor: Color(0x33000000),
               ),
               context,
             ),
@@ -323,7 +323,7 @@ Future<dynamic> showSingleTextFieldModal(
   String defaultCancelText,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  dynamic themeData = provider.themeData;
+  LanFileMoreTheme themeData = provider.themeData;
   TextEditingController textEditingController = TextEditingController();
 
   if (initText != null) textEditingController.text = initText;
@@ -381,7 +381,7 @@ Future<dynamic> showTwoTextFieldModal(
   String defaultCancelText,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  dynamic themeData = provider.themeData;
+  LanFileMoreTheme themeData = provider.themeData;
   TextEditingController fEditingController = TextEditingController();
   TextEditingController sEditingController = TextEditingController();
 
@@ -452,7 +452,7 @@ Future<dynamic> showTipTextModal(
   List<Widget> additionList,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  dynamic themeData = provider.themeData;
+  LanFileMoreTheme themeData = provider.themeData;
   bool confirm = false;
 
   return showCupertinoModal(
@@ -523,7 +523,7 @@ Future<dynamic> showSelectModal(
   List<Widget> leadingList,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  dynamic themeData = provider.themeData;
+  LanFileMoreTheme themeData = provider.themeData;
   if (doAction != null) doAction(context);
   List<dynamic> tmpOptions = options;
 
@@ -614,7 +614,7 @@ Future<dynamic> showLoadingModal(
   bool popPreviousWindow = false,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  dynamic themeData = provider.themeData;
+  LanFileMoreTheme themeData = provider.themeData;
 
   return showCupertinoModal(
     context: context,

@@ -82,11 +82,6 @@ class LanPageState extends State<LanPage> {
             LanControlPage(),
           ],
         ),
-
-        // SafeArea(
-        //   /// 解决有透明时tabbarview上移
-        //   child:
-        // ),
       ),
     );
   }

@@ -10,8 +10,6 @@ abstract class LanFileMoreTheme {
   Color itemColor;
   Color itemFontColor = Colors.black54;
   Color navTitleColor = Colors.black87;
-  Color toastColor = Colors.black54;
-  Color toastNotificationColor = Colors.black54;
   Color dialogBgColor;
   Color inputColor;
   Color inputBorderColor;
@@ -33,8 +31,6 @@ class LightTheme implements LanFileMoreTheme {
   Color itemColor = Color(0x83EBEBEB);
   Color itemFontColor = Colors.black54;
   Color navTitleColor = Colors.black87;
-  Color toastColor = Colors.black54;
-  Color toastNotificationColor = Colors.black54;
   Color dialogBgColor = Color(0xC0FFFFFF);
   Color inputColor = Color(0xC0FFFFFF);
   Color inputBorderColor = Color(0x33000000);
@@ -56,8 +52,6 @@ class DarkTheme implements LanFileMoreTheme {
   Color itemColor = Color(0xff222222);
   Color itemFontColor = Color(0xFFFFFFFFF);
   Color navTitleColor = Color(0xFFFFFFFFF);
-  Color toastColor = Color(0x23F0F0F0);
-  Color toastNotificationColor = Color(0x23F0F0F0);
   Color dialogBgColor = Color(0x9F000000);
   Color inputColor = Color(0xFF000000);
   Color inputBorderColor = Color(0x4FFFFFFF);

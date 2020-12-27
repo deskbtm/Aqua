@@ -14,3 +14,7 @@
 	path = plugins/storage_mount_listener
 	url = https://github.com/lan-file-more/storage_mount_listener.git
 	ignore = dirty
+[submodule "plugins/file_editor"]
+	path = plugins/file_editor
+	url = https://github.com/lan-file-more/file_editor.git
+	ignore = dirty

@@ -115,7 +115,31 @@ void matchFileExt(
   }
 }
 
-void matchSupportFileExt(
+void matchFileByMimeType(
+  String mime, {
+  Function caseText,
+  Function caseImage,
+  Function caseAudio,
+  Function caseVideo,
+  Function caseBinary,
+  Function caseDefault,
+}) {
+  if (RegExp(r"text/.*").hasMatch(mime) && caseText != null) {
+    caseText();
+  } else if (RegExp(r"image/.*").hasMatch(mime) && caseImage != null) {
+    caseImage();
+  } else if (RegExp(r"audio/.*").hasMatch(mime) && caseAudio != null) {
+    caseAudio();
+  } else if (RegExp(r"video/.*").hasMatch(mime) && caseVideo != null) {
+    caseVideo();
+  } else if (RegExp(r"application/.*").hasMatch(mime) && caseBinary != null) {
+    caseBinary();
+  } else {
+    caseDefault();
+  }
+}
+
+void matchFileByExt(
   String ext, {
   Function caseImage,
   Function caseText,
@@ -289,5 +313,3 @@ List<String> filterImages(List<SelfFileEntity> list) {
   }
   return result;
 }
-
-// List<String> PRINTABLE_EXT = ['.txt', ''];

@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/services.dart';
+import 'package:lan_file_more/common/widget/double_pop.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/page/home/home.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
+import 'common/widget/double_tap_back.dart';
 import 'constant/constant.dart';
 import 'generated/l10n.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +61,6 @@ class LanFileMoreWrapper extends StatefulWidget {
 class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
   ThemeModel _themeModel;
   CommonModel _commonModel;
-
   bool _prepared;
   bool _settingMutex;
 
@@ -85,6 +86,7 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
         String internalIp = await Connectivity().getWifiIP() ??
             await MixUtils.getIntenalIp() ??
             LOOPBACK_ADDR;
+
         await _commonModel.setInternalIp(internalIp);
       }
     } catch (e) {}
@@ -105,7 +107,7 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
       await _commonModel.initCommon().catchError((err) {
         recordError(text: '', methodName: 'initCommon');
       });
-
+      // print('============================================');
       await _setInternalIp(null);
 
       setState(() {
@@ -158,11 +160,10 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
                   ),
                 ),
               ),
-              home: WillPopScope(
+              home: DoublePop(
+                commonModel: _commonModel,
+                themeModel: _themeModel,
                 child: HomePage(),
-                onWillPop: () async {
-                  return false;
-                },
               ),
             ),
           )

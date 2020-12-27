@@ -53,7 +53,8 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+      text: content,
+    );
   }
 
   @override

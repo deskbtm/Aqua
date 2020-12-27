@@ -40,7 +40,6 @@ class _AboutPageState extends State<AboutPage> {
   void showText(String content, {int duration = 4}) {
     BotToast.showText(
       text: content,
-      contentColor: _themeModel.themeData?.toastColor,
       duration: Duration(seconds: duration),
     );
   }

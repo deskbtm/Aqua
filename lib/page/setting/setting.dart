@@ -81,7 +81,6 @@ class SettingPageState extends State<SettingPage> {
       {Duration duration = const Duration(seconds: 3)}) {
     BotToast.showText(
       text: content,
-      contentColor: _themeModel.themeData?.toastColor,
       duration: duration,
     );
   }

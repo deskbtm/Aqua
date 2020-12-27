@@ -27,3 +27,9 @@
 -keep class net.lingala.** {*;}
 -keep class org.apache.** {*;}
 -keep class org.rauschig.** {*;}
+
+
+ 
+
+
+

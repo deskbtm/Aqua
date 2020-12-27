@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 
 const COMMON_CHANNEL = '0';
 const ARCHIVE_CHANNEL = '1';
@@ -28,6 +30,7 @@ class LocalNotification {
     bool showProgress = false,
     bool indeterminate = false,
     bool autoCancel = false,
+    NotificationVisibility visibility = NotificationVisibility.public,
   }) async {
     var android = AndroidNotificationDetails(
       id,
@@ -40,6 +43,7 @@ class LocalNotification {
       onlyAlertOnce: onlyAlertOnce,
       showProgress: showProgress,
       indeterminate: indeterminate,
+      visibility: visibility,
       color: Color(0xFF007AFF),
     );
     var platform = NotificationDetails(android: android);

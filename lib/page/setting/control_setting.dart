@@ -31,7 +31,8 @@ class ControlSettingPageState extends State<ControlSettingPage> {
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+      text: content,
+    );
   }
 
   @override

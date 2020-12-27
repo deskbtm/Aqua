@@ -43,8 +43,6 @@ import 'package:file_utils/file_utils.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:share_extend/share_extend.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-// import 'package:markdown/markdown.dart' as md;
-// import 'package:url_launcher/url_launcher.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'show_more.dart';
 
@@ -87,6 +85,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Directory _rootDir;
   bool _useSandboxDir;
   bool _initMutex;
+  bool _popLocker;
   double _totalSize;
   double _validSize;
 
@@ -101,6 +100,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     _currentDir = null;
     _initMutex = true;
     _useSandboxDir = false;
+    _popLocker = false;
     _totalSize = 0;
     _validSize = 0;
 
@@ -330,7 +330,6 @@ class _FileManagerPageState extends State<FileManagerPage>
   }) {
     BotToast.showText(
       text: content,
-      contentColor: _themeModel.themeData?.toastColor,
       duration: duration,
       align: align,
     );
@@ -853,13 +852,20 @@ class _FileManagerPageState extends State<FileManagerPage>
               ),
           ],
           rightChildren: <Widget>[
-            if (sharedNotEmpty)
+            if (sharedNotEmpty) ...[
               ActionButton(
                 content: '复制到此',
                 onTap: () {
                   copyModal(context);
                 },
               ),
+              ActionButton(
+                content: '提取到此',
+                onTap: () async {
+                  await handleExtractArchive(context);
+                },
+              ),
+            ],
             ActionButton(
               content: '新建',
               onTap: () {
@@ -985,7 +991,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                       context,
                       setState,
                       file: file,
-                      themeProvider: _themeModel,
+                      themeModel: _themeModel,
                       commonProvider: _commonModel,
                     );
                     await update2Side();
@@ -1005,16 +1011,17 @@ class _FileManagerPageState extends State<FileManagerPage>
     int index = 0,
   }) {
     String path = file.entity.path;
-    matchSupportFileExt(
+    matchFileByExt(
       file.ext,
-      caseImage: () {
+      caseImage: () async {
         List<String> images;
         if (left) {
           images = filterImages(_leftFileList);
         } else {
           images = filterImages(_rightFileList);
         }
-        Navigator.of(context, rootNavigator: true).push(
+        _popLocker = true;
+        await Navigator.of(context, rootNavigator: true).push(
           CupertinoPageRoute(
             builder: (context) {
               return PhotoViewer(
@@ -1024,6 +1031,7 @@ class _FileManagerPageState extends State<FileManagerPage>
             },
           ),
         );
+        _popLocker = false;
       },
       caseText: () {
         OpenFile.open(path);
@@ -1076,8 +1084,11 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
-  /// tag
   Future<bool> _willPopFileRoute(stopDefaultButtonEvent, routeInfo) async {
+    if (_popLocker) {
+      return false;
+    }
+
     if (pathLib.equals(_currentDir.path, _rootDir.path)) {
       return false;
     }
@@ -1126,6 +1137,16 @@ class _FileManagerPageState extends State<FileManagerPage>
     super.build(context);
 
     LanFileMoreTheme themeData = _themeModel.themeData;
+
+    if (widget.mode == FileManagerMode.surf) {
+      if (_currentDir != null && _rootDir != null) {
+        if (pathLib.equals(_currentDir.path, _rootDir.path)) {
+          _commonModel.setCanPopToDesktop(true);
+        } else {
+          _commonModel.setCanPopToDesktop(false);
+        }
+      }
+    }
 
     return _leftFileList.isEmpty
         ? Container(color: themeData?.scaffoldBackgroundColor)

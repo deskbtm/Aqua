@@ -2,6 +2,7 @@ import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -570,8 +571,7 @@ class _LanTextFieldState extends State<LanTextField>
         return Row(children: <Widget>[
           // Insert a prefix at the front if the prefix visibility mode matches
           // the current text state.
-          if (_showPrefixWidget(text))
-            widget.prefix,
+          if (_showPrefixWidget(text)) widget.prefix,
           // In the middle part, stack the placeholder on top of the main EditableText
           // if needed.
           Expanded(
@@ -730,7 +730,7 @@ class _LanTextFieldState extends State<LanTextField>
           selectionColor:
               CupertinoTheme.of(context).primaryColor.withOpacity(0.2),
           selectionControls:
-              widget.selectionEnabled ? cupertinoTextSelectionControls : null,
+              widget.selectionEnabled ? materialTextSelectionControls : null,
           onChanged: widget.onChanged,
           onSelectionChanged: _handleSelectionChanged,
           onEditingComplete: widget.onEditingComplete,

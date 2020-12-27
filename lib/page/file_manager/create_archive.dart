@@ -35,8 +35,7 @@ Future<void> createArchiveModal(
     String pwd;
 
     void showText(String content) {
-      BotToast.showText(
-          text: content, contentColor: themeProvider.themeData?.toastColor);
+      BotToast.showText(text: content);
     }
 
     Future<void> runAfterArchive(BuildContext context, bool result) async {

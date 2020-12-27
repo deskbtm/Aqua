@@ -28,7 +28,7 @@ Future<void> searchDevice(List msg) async {
         timeout: Duration(milliseconds: 3000),
       );
       await for (var addr in stream) {
-        await Future.delayed(Duration(milliseconds: 50));
+        await Future.delayed(Duration(milliseconds: 5));
         if (addr.exists) {
           availIps.add(addr.ip);
         }
@@ -37,7 +37,7 @@ Future<void> searchDevice(List msg) async {
       if (availIps.isNotEmpty) {
         sendPort.send(availIps.toList());
       } else {
-        await Future.delayed(Duration(milliseconds: 400));
+        await Future.delayed(Duration(milliseconds: 200));
         await searchDeviceInnerLoop();
       }
     }

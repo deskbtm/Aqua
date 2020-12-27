@@ -42,8 +42,7 @@ class _LanControlPageState extends State<LanControlPage>
   }
 
   void showText(String content) {
-    BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+    BotToast.showText(text: content);
   }
 
   @override

@@ -156,8 +156,7 @@ class _LanSharePageState extends State<LanSharePage>
   void showText(
     String content,
   ) {
-    BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+    BotToast.showText(text: content);
   }
 
   @override
@@ -320,8 +319,7 @@ class _LanSharePageState extends State<LanSharePage>
                                           title: '手动设置IP',
                                           onOk: (val) async {
                                             await _commonModel
-                                                .setCurrentConnectIp(
-                                                    val?.trim());
+                                                .setCurrentConnectIp(val);
 
                                             SocketConnecter(_commonModel)
                                                 .createClient(
@@ -343,13 +341,16 @@ class _LanSharePageState extends State<LanSharePage>
                                       child: NoResizeText('搜索'),
                                       onPressed: () async {
                                         LocalNotification.showNotification(
-                                            name: 'SEARCH_DEVICE',
-                                            title: '搜寻设备中...');
-                                        await SocketConnecter(_commonModel)
+                                          name: 'SEARCH_DEVICE',
+                                          title: '搜寻设备中...',
+                                        );
+
+                                        await SocketConnecter
                                             .searchDevicesAndConnect(
                                           context,
-                                          themeProvider: _themeModel,
+                                          themeModel: _themeModel,
                                           initiativeConnect: false,
+                                          commonModel: _commonModel,
                                         );
                                       },
                                     ),
@@ -360,31 +361,37 @@ class _LanSharePageState extends State<LanSharePage>
                           CupertinoButton(
                             child: Text('测试按钮'),
                             onPressed: () async {
-                              // print(await MixUtils.getIntenalIp());
-                              Navigator.of(context, rootNavigator: true).push(
-                                CupertinoPageRoute(
-                                    builder: (BuildContext context) {
-                                  return FileEditorPage(
-                                    path: '/sdcard/x86-stderr.txt',
-                                    language: 'dart',
-                                    bottomNavColor:
-                                        _themeModel.themeData?.bottomNavColor,
-                                    backgroundColor: _themeModel
-                                        .themeData?.scaffoldBackgroundColor,
-                                    fontColor:
-                                        _themeModel.themeData?.itemFontColor,
-                                    highlightTheme: setEditorTheme(
-                                      false,
-                                      TextStyle(
-                                        color: _themeModel
-                                            .themeData?.itemFontColor,
-                                        backgroundColor: _themeModel
-                                            .themeData?.scaffoldBackgroundColor,
-                                      ),
-                                    ),
-                                  );
-                                }),
+                              LocalNotification.showNotification(
+                                name: 'SOCKET_UNCONNECT',
+                                title: '未找到可用设备',
+                                subTitle: '请在更多中 手动连接',
+                                ongoing: true,
                               );
+                              // print(await MixUtils.getIntenalIp());
+                              // Navigator.of(context, rootNavigator: true).push(
+                              //   CupertinoPageRoute(
+                              //       builder: (BuildContext context) {
+                              //     return FileEditorPage(
+                              //       path: '/sdcard/x86-stderr.txt',
+                              //       language: 'dart',
+                              //       bottomNavColor:
+                              //           _themeModel.themeData?.bottomNavColor,
+                              //       backgroundColor: _themeModel
+                              //           .themeData?.scaffoldBackgroundColor,
+                              //       fontColor:
+                              //           _themeModel.themeData?.itemFontColor,
+                              //       highlightTheme: setEditorTheme(
+                              //         false,
+                              //         TextStyle(
+                              //           color: _themeModel
+                              //               .themeData?.itemFontColor,
+                              //           backgroundColor: _themeModel
+                              //               .themeData?.scaffoldBackgroundColor,
+                              //         ),
+                              //       ),
+                              //     );
+                              //   }),
+                              // );
 
                               // Color(0x9999);
 

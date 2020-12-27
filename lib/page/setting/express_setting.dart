@@ -32,7 +32,8 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
 
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+      text: content,
+    );
   }
 
   @override

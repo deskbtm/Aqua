@@ -55,14 +55,17 @@ public class MainActivity extends FlutterActivity {
     new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
       .setMethodCallHandler(
         (call, result) -> {
-          Log.i("DEMO#", call.method);
-          Log.i("=++SS++", (call.method.contentEquals("getSharedText")) + "" + (incomingIntent != null));
-          if (call.method.contentEquals("getSharedText")) {
+          if (call.method.contentEquals("getIncomingFile")) {
             if (incomingIntent != null) {
-              Log.i("DEMO#", incomingIntent.toString());
+              Log.i("INCOMING", incomingIntent.toString());
               result.success(incomingIntent);
               incomingIntent = null;
+            } else {
+              Log.i("INCOMING", "null");
+              result.success(null); 
             }
+          } else {
+            result.success(null); 
           }
         }
       );

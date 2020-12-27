@@ -11,6 +11,13 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class CommonModel extends ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
 
+  bool _canPopToDesktop = true;
+  bool get canPopToDesktop => _canPopToDesktop;
+
+  void setCanPopToDesktop(bool val) {
+    _canPopToDesktop = val;
+  }
+
   String _storageRootPath = '';
   String get storageRootPath => _storageRootPath;
 
@@ -61,6 +68,13 @@ class CommonModel extends ChangeNotifier {
   Future<void> setAppInit(bool arg) async {
     _isAppNotInit = arg;
     await Store.setBool(APP_INIT, arg);
+  }
+
+  Map _incomingFile;
+  Map get incomingFile => _incomingFile;
+
+  Future<void> setIncomingFile(Map file) async {
+    _incomingFile = file;
   }
 
   // 菜单初始化

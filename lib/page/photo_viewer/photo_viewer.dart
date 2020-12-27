@@ -43,8 +43,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
   List<String> get imagesRes => widget.imageRes;
 
   void showText(String content) {
-    BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+    BotToast.showText(text: content);
   }
 
   @override

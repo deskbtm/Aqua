@@ -353,7 +353,7 @@ Future<dynamic> showSingleTextFieldModal(
               SizedBox(height: 10),
             ],
             onOk: () async {
-              await onOk(textEditingController.text);
+              await onOk(textEditingController.text?.trim());
               MixUtils.safePop(context);
             },
             onCancel: () async {

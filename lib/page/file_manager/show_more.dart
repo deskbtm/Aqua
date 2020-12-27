@@ -29,14 +29,15 @@ Future<void> uploadToWebDAV(SelfFileEntity file) async {
 Future<dynamic> showMoreModal(
   BuildContext context,
   StateSetter setState, {
-  @required ThemeModel themeProvider,
+  @required ThemeModel themeModel,
   @required CommonModel commonProvider,
   @required SelfFileEntity file,
 }) async {
   MixUtils.safePop(context);
   void showText(String content) {
     BotToast.showText(
-        text: content, contentColor: themeProvider.themeData?.toastColor);
+      text: content,
+    );
   }
 
   String filesPath = await AndroidMix.storage.getFilesDir;
@@ -88,19 +89,19 @@ Future<dynamic> showMoreModal(
                   return FileEditorPage(
                     path: file.entity.path,
                     language: file.ext.replaceFirst(RegExp(r'.'), ''),
-                    bottomNavColor: themeProvider.themeData?.bottomNavColor,
-                    dialogBgColor: themeProvider.themeData?.dialogBgColor,
+                    bottomNavColor: themeModel.themeData?.bottomNavColor,
+                    dialogBgColor: themeModel.themeData?.dialogBgColor,
                     backgroundColor:
-                        themeProvider.themeData?.scaffoldBackgroundColor,
-                    fontColor: themeProvider.themeData?.itemFontColor,
-                    selectItemColor: themeProvider.themeData?.itemColor,
-                    popMenuColor: themeProvider.themeData?.menuItemColor,
+                        themeModel.themeData?.scaffoldBackgroundColor,
+                    fontColor: themeModel.themeData?.itemFontColor,
+                    selectItemColor: themeModel.themeData?.itemColor,
+                    popMenuColor: themeModel.themeData?.menuItemColor,
                     highlightTheme: setEditorTheme(
-                      themeProvider.isDark,
+                      themeModel.isDark,
                       TextStyle(
-                        color: themeProvider.themeData?.itemFontColor,
+                        color: themeModel.themeData?.itemFontColor,
                         backgroundColor:
-                            themeProvider.themeData?.scaffoldBackgroundColor,
+                            themeModel.themeData?.scaffoldBackgroundColor,
                       ),
                     ),
                   );

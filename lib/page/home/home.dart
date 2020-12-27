@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:file_editor/editor_theme.dart';
+import 'package:file_editor/file_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +12,7 @@ import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
+import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/page/lan/lan.dart';
 import 'package:lan_file_more/page/setting/setting.dart';
 import 'package:lan_file_more/model/common_model.dart';
@@ -22,6 +25,7 @@ import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:storage_mount_listener/storage_mount_listener.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path/path.dart' as pathLib;
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -31,7 +35,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  MethodChannel platform = const MethodChannel(SHARED_CHANNEL);
+  MethodChannel _platform = const MethodChannel(SHARED_CHANNEL);
   ThemeModel _themeModel;
   CupertinoTabController _tabController;
   CommonModel _commonModel;
@@ -40,8 +44,7 @@ class _HomePageState extends State<HomePage> {
   StreamSubscription storageSubscription;
 
   void showText(String content) {
-    BotToast.showText(
-        text: content, contentColor: _themeModel.themeData?.toastColor);
+    BotToast.showText(text: content);
   }
 
   Future<void> _preloadWebData() async {
@@ -96,10 +99,6 @@ class _HomePageState extends State<HomePage> {
         .receiveBroadcastStream()
         .listen((event) {});
 
-    // AndroidIncomingFile.channel.receiveBroadcastStream().listen((event) {
-    //   print(event);
-    // });
-
     QuickActions quickActions = QuickActions();
 
     quickActions.setShortcutItems(
@@ -130,6 +129,43 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void handleIncomingFileNavigation(Map file) {
+    String ext = pathLib.extension(file['path']).toLowerCase();
+
+    matchFileByMimeType(
+      file['type'],
+      caseImage: () {},
+      caseText: () {
+        Navigator.of(context, rootNavigator: true).push(
+          CupertinoPageRoute(builder: (BuildContext context) {
+            return FileEditorPage(
+              path: file['path'],
+              language: ext.replaceFirst(RegExp(r'.'), ''),
+              bottomNavColor: _themeModel.themeData?.bottomNavColor,
+              dialogBgColor: _themeModel.themeData?.dialogBgColor,
+              backgroundColor: _themeModel.themeData?.scaffoldBackgroundColor,
+              fontColor: _themeModel.themeData?.itemFontColor,
+              selectItemColor: _themeModel.themeData?.itemColor,
+              popMenuColor: _themeModel.themeData?.menuItemColor,
+              highlightTheme: setEditorTheme(
+                _themeModel.isDark,
+                TextStyle(
+                  color: _themeModel.themeData?.itemFontColor,
+                  backgroundColor:
+                      _themeModel.themeData?.scaffoldBackgroundColor,
+                ),
+              ),
+            );
+          }),
+        );
+      },
+      caseAudio: () {},
+      caseVideo: () {},
+      caseBinary: () {},
+      caseDefault: () {},
+    );
+  }
+
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
@@ -141,7 +177,11 @@ class _HomePageState extends State<HomePage> {
 
       StorageMountListener.channel.receiveBroadcastStream().listen((event) {});
 
-      // Map sharedData = await platform.invokeMethod("getSharedText");
+      Map incomingFile = await _platform.invokeMethod('getIncomingFile');
+
+      if (incomingFile != null) {
+        handleIncomingFileNavigation(incomingFile);
+      }
 
       // PermissionStatus status = await PermissionHandler()
       //     .checkPermissionStatus(PermissionGroup.microphone);
@@ -151,17 +191,18 @@ class _HomePageState extends State<HomePage> {
       //   }
       //   // 强制阅读使用教程 跳转后取消
 
-      if (_commonModel.enableConnect) {
-        Timer(Duration(seconds: 1), () async {
-          await SocketConnecter(_commonModel).searchDevicesAndConnect(
-            context,
-            themeProvider: _themeModel,
-            onNotExpected: (String msg) {
-              showText(msg);
-            },
-          ).catchError((err) {});
-        });
-      }
+      // if (_commonModel.enableConnect && incomingFile == null) {
+      //   Timer(Duration(seconds: 1), () async {
+      //     await SocketConnecter.searchDevicesAndConnect(
+      //       context,
+      //       themeModel: _themeModel,
+      //       commonModel: _commonModel,
+      //       onNotExpected: (String msg) {
+      //         showText(msg);
+      //       },
+      //     ).catchError((err) {});
+      //   });
+      // }
 
       await _preloadWebData().catchError((err) {});
 

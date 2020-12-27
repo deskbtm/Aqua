@@ -87,7 +87,8 @@ Future<void> showUpdateModal(
           await launch(url);
         } else {
           BotToast.showText(
-              text: '链接打开失败', contentColor: provider.themeData?.toastColor);
+            text: '链接打开失败',
+          );
         }
       },
     );

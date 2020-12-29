@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/common/widget/show_modal_entity.dart';
-import 'package:lan_file_more/common/socket/socket.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
@@ -14,12 +13,15 @@ import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
 import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/page/lan/lan.dart';
+import 'package:lan_file_more/page/not_support/not_support.dart';
+import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
 import 'package:lan_file_more/page/setting/setting.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/req.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
@@ -40,8 +42,9 @@ class _HomePageState extends State<HomePage> {
   CupertinoTabController _tabController;
   CommonModel _commonModel;
   bool _mutex;
-  String dataShared = "No data";
-  StreamSubscription storageSubscription;
+
+  StreamSubscription _storageSubscription;
+  Map _appIncoming;
 
   void showText(String content) {
     BotToast.showText(text: content);
@@ -95,7 +98,7 @@ class _HomePageState extends State<HomePage> {
     _tabController = CupertinoTabController();
     _mutex = true;
 
-    storageSubscription = StorageMountListener.channel
+    _storageSubscription = StorageMountListener.channel
         .receiveBroadcastStream()
         .listen((event) {});
 
@@ -129,100 +132,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void handleIncomingFileNavigation(Map file) {
-    String ext = pathLib.extension(file['path']).toLowerCase();
-
-    matchFileByMimeType(
-      file['type'],
-      caseImage: () {},
-      caseText: () {
-        Navigator.of(context, rootNavigator: true).push(
-          CupertinoPageRoute(builder: (BuildContext context) {
-            return FileEditorPage(
-              path: file['path'],
-              language: ext.replaceFirst(RegExp(r'.'), ''),
-              bottomNavColor: _themeModel.themeData?.bottomNavColor,
-              dialogBgColor: _themeModel.themeData?.dialogBgColor,
-              backgroundColor: _themeModel.themeData?.scaffoldBackgroundColor,
-              fontColor: _themeModel.themeData?.itemFontColor,
-              selectItemColor: _themeModel.themeData?.itemColor,
-              popMenuColor: _themeModel.themeData?.menuItemColor,
-              highlightTheme: setEditorTheme(
-                _themeModel.isDark,
-                TextStyle(
-                  color: _themeModel.themeData?.itemFontColor,
-                  backgroundColor:
-                      _themeModel.themeData?.scaffoldBackgroundColor,
-                ),
-              ),
-            );
-          }),
-        );
-      },
-      caseAudio: () {},
-      caseVideo: () {},
-      caseBinary: () {},
-      caseDefault: () {},
-    );
-  }
-
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
-
-    if (_mutex) {
-      _mutex = false;
-
-      StorageMountListener.channel.receiveBroadcastStream().listen((event) {});
-
-      Map incomingFile = await _platform.invokeMethod('getIncomingFile');
-
-      if (incomingFile != null) {
-        handleIncomingFileNavigation(incomingFile);
-      }
-
-      // PermissionStatus status = await PermissionHandler()
-      //     .checkPermissionStatus(PermissionGroup.microphone);
-      //   if (PermissionStatus.granted != status) {
-      //     // 提示用户 需要麦克风 权限 否则 无法进入
-      //     await _requestMicphonePermissionModal(context);
-      //   }
-      //   // 强制阅读使用教程 跳转后取消
-
-      // if (_commonModel.enableConnect && incomingFile == null) {
-      //   Timer(Duration(seconds: 1), () async {
-      //     await SocketConnecter.searchDevicesAndConnect(
-      //       context,
-      //       themeModel: _themeModel,
-      //       commonModel: _commonModel,
-      //       onNotExpected: (String msg) {
-      //         showText(msg);
-      //       },
-      //     ).catchError((err) {});
-      //   });
-      // }
-
-      await _preloadWebData().catchError((err) {});
-
-      if (_commonModel.isAppNotInit) {
-        await _forceReadTutorialModal();
-        _commonModel.setAppInit(false);
-      }
-
-      Timer(Duration(seconds: 8), () async {
-        await showUpdateModal(context, _themeModel, _commonModel.gWebData);
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    storageSubscription?.cancel();
-  }
-
   // Future<void> _requestMicphonePermissionModal() async {
   //   await showTipTextModal(
   //     context,
@@ -241,55 +150,166 @@ class _HomePageState extends State<HomePage> {
   // }
 
   @override
-  Widget build(BuildContext context) {
-    dynamic themeData = _themeModel?.themeData;
-    return themeData == null
-        ? Container()
-        : CupertinoTabScaffold(
-            controller: _tabController,
-            tabBar: CupertinoTabBar(
-              backgroundColor: themeData.bottomNavColor,
-              items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  label: '文件',
-                  icon: Icon(OMIcons.folder),
-                ),
-                BottomNavigationBarItem(
-                  label: '更多',
-                  icon: Icon(Icons.devices),
-                ),
-                BottomNavigationBarItem(
-                  label: '设置',
-                  icon: Icon(OMIcons.settings),
-                )
-              ],
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    _themeModel = Provider.of<ThemeModel>(context);
+    _commonModel = Provider.of<CommonModel>(context);
+
+    if (_mutex) {
+      _mutex = false;
+
+      StorageMountListener.channel.receiveBroadcastStream().listen((event) {});
+
+      // PermissionStatus status = await PermissionHandler()
+      //     .checkPermissionStatus(PermissionGroup.microphone);
+      //   if (PermissionStatus.granted != status) {
+      //     // 提示用户 需要麦克风 权限 否则 无法进入
+      //     await _requestMicphonePermissionModal(context);
+      //   }
+      //   // 强制阅读使用教程 跳转后取消
+
+      await _preloadWebData().catchError((err) {});
+
+      _appIncoming = await _platform.invokeMethod('getIncomingFile');
+
+      setState(() {});
+
+      if (_commonModel.isAppNotInit) {
+        await _forceReadTutorialModal();
+        _commonModel.setAppInit(false);
+      }
+
+      Timer(Duration(seconds: 8), () async {
+        await showUpdateModal(context, _themeModel, _commonModel.gWebData);
+      });
+
+      // if (_commonModel.enableConnect && (_appIncoming == null || _appIncoming['appMode'] == 'incoming')) {
+      //   Timer(Duration(seconds: 1), () async {
+      //     await SocketConnecter.searchDevicesAndConnect(
+      //       context,
+      //       themeModel: _themeModel,
+      //       commonModel: _commonModel,
+      //       onNotExpected: (String msg) {
+      //         showText(msg);
+      //       },
+      //     ).catchError((err) {});
+      //   });
+      // }
+
+    }
+  }
+
+  Widget switchEntryPage(Map _incomingFile, {LanFileMoreTheme themeData}) {
+    if (_incomingFile != null && _incomingFile['appMode'] == 'incoming') {
+      String ext = pathLib.extension(_incomingFile['path']).toLowerCase();
+
+      return matchEntryByMimeType(
+        _incomingFile['type'],
+        caseImage: () {
+          return PhotoViewer(
+            imageRes: [_incomingFile['path']],
+            index: 0,
+          );
+        },
+        caseText: () {
+          return FileEditorPage(
+            path: _incomingFile['path'],
+            language: ext.replaceFirst(RegExp(r'.'), ''),
+            bottomNavColor: _themeModel.themeData?.bottomNavColor,
+            dialogBgColor: _themeModel.themeData?.dialogBgColor,
+            backgroundColor: _themeModel.themeData?.scaffoldBackgroundColor,
+            fontColor: _themeModel.themeData?.itemFontColor,
+            selectItemColor: _themeModel.themeData?.itemColor,
+            popMenuColor: _themeModel.themeData?.menuItemColor,
+            highlightTheme: setEditorTheme(
+              _themeModel.isDark,
+              TextStyle(
+                color: _themeModel.themeData?.itemFontColor,
+                backgroundColor: _themeModel.themeData?.scaffoldBackgroundColor,
+              ),
             ),
-            tabBuilder: (BuildContext context, int index) {
-              switch (index) {
-                case 0:
-                  return CupertinoTabView(
-                    builder: (context) => FileManagerPage(
-                      mode: FileManagerMode.surf,
-                    ),
-                  );
-                case 1:
-                  return CupertinoTabView(
-                    builder: (context) => LanPage(),
-                  );
-                case 2:
-                  return CupertinoTabView(
-                    builder: (context) => ChangeNotifierProvider(
-                      create: (_) => FileModel(),
-                      child: SettingPage(
-                        gTabController: _tabController,
-                      ),
-                    ),
-                  );
-                default:
-                  assert(false, 'Unexpected tab');
-                  return null;
-              }
-            },
+          );
+        },
+        caseAudio: () {
+          // return
+        },
+        caseVideo: () {},
+        caseBinary: () {
+          return NotSupportPage(
+            content: '不支持打开二进制文件',
+            path: _incomingFile['path'],
+          );
+        },
+        caseDefault: () {
+          return NotSupportPage(
+            path: _incomingFile['path'],
+          );
+        },
+      );
+    } else {
+      return CupertinoTabScaffold(
+        controller: _tabController,
+        tabBar: CupertinoTabBar(
+          backgroundColor: themeData.bottomNavColor,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              label: '文件',
+              icon: Icon(OMIcons.folder),
+            ),
+            BottomNavigationBarItem(
+              label: '更多',
+              icon: Icon(Icons.devices),
+            ),
+            BottomNavigationBarItem(
+              label: '设置',
+              icon: Icon(OMIcons.settings),
+            )
+          ],
+        ),
+        tabBuilder: (BuildContext context, int index) {
+          switch (index) {
+            case 0:
+              return CupertinoTabView(
+                builder: (context) => FileManagerPage(
+                  mode: FileManagerMode.surf,
+                ),
+              );
+            case 1:
+              return CupertinoTabView(
+                builder: (context) => LanPage(),
+              );
+            case 2:
+              return CupertinoTabView(
+                builder: (context) => ChangeNotifierProvider(
+                  create: (_) => FileModel(),
+                  child: SettingPage(
+                    gTabController: _tabController,
+                  ),
+                ),
+              );
+            default:
+              assert(false, 'Unexpected tab');
+              return null;
+          }
+        },
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _storageSubscription?.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    LanFileMoreTheme themeData = _themeModel?.themeData;
+    return themeData == null
+        ? Container(color: themeData.scaffoldBackgroundColor)
+        : switchEntryPage(
+            _appIncoming,
+            themeData: themeData,
           );
   }
 }

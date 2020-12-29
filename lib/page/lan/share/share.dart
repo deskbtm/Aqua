@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'package:file_editor/editor_theme.dart';
-import 'package:file_editor/file_editor.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
+import 'package:lan_file_more/page/not_support/not_support.dart';
+import 'package:lan_file_more/page/video/video.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/web/body_parser/src/shelf_body_parser.dart';
 import 'package:provider/provider.dart';
@@ -368,30 +368,13 @@ class _LanSharePageState extends State<LanSharePage>
                                 ongoing: true,
                               );
                               // print(await MixUtils.getIntenalIp());
-                              // Navigator.of(context, rootNavigator: true).push(
-                              //   CupertinoPageRoute(
-                              //       builder: (BuildContext context) {
-                              //     return FileEditorPage(
-                              //       path: '/sdcard/x86-stderr.txt',
-                              //       language: 'dart',
-                              //       bottomNavColor:
-                              //           _themeModel.themeData?.bottomNavColor,
-                              //       backgroundColor: _themeModel
-                              //           .themeData?.scaffoldBackgroundColor,
-                              //       fontColor:
-                              //           _themeModel.themeData?.itemFontColor,
-                              //       highlightTheme: setEditorTheme(
-                              //         false,
-                              //         TextStyle(
-                              //           color: _themeModel
-                              //               .themeData?.itemFontColor,
-                              //           backgroundColor: _themeModel
-                              //               .themeData?.scaffoldBackgroundColor,
-                              //         ),
-                              //       ),
-                              //     );
-                              //   }),
-                              // );
+                              Navigator.of(context, rootNavigator: true).push(
+                                CupertinoPageRoute(
+                                  builder: (BuildContext context) {
+                                    return VideoPage();
+                                  },
+                                ),
+                              );
 
                               // Color(0x9999);
 

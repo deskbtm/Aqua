@@ -9,9 +9,7 @@ import 'package:lan_file_more/page/home/home.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
-import 'common/widget/double_tap_back.dart';
 import 'constant/constant.dart';
-import 'generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
@@ -137,14 +135,11 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
               systemNavigationBarColor: themeData.systemNavigationBarColor,
             ),
             child: CupertinoApp(
-              // navigatorKey: Catcher.navigatorKey,
               localizationsDelegates: [
-                S.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: S.delegate.supportedLocales,
               builder: BotToastInit(),
               navigatorObservers: [
                 BotToastNavigatorObserver(),

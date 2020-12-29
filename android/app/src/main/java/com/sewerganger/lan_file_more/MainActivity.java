@@ -21,6 +21,8 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 public class MainActivity extends FlutterActivity {
   private Map incomingIntent;
   private static final String CHANNEL = "app.channel.shared.data";
+  private String APP_NORMAL_MODE = "normal";
+  private String APP_INCOMING_MODE = "incoming";
 
   @Override
   public void onResume() {
@@ -40,12 +42,14 @@ public class MainActivity extends FlutterActivity {
     Intent intent = getIntent();
     String action = intent.getAction();
     String type = intent.getType();
-    
+    incomingIntent = new HashMap();
     if (Intent.ACTION_VIEW.equals(action) && type != null) {
       Uri uri = intent.getData();
-      incomingIntent = new HashMap();
       incomingIntent.put("path", Uri.decode(uri.getEncodedPath()));
       incomingIntent.put("type", type);
+      incomingIntent.put("appMode", APP_INCOMING_MODE);
+    } else {
+      incomingIntent.put("appMode", APP_NORMAL_MODE);
     }
   }
 
@@ -56,16 +60,14 @@ public class MainActivity extends FlutterActivity {
       .setMethodCallHandler(
         (call, result) -> {
           if (call.method.contentEquals("getIncomingFile")) {
-            if (incomingIntent != null) {
-              Log.i("INCOMING", incomingIntent.toString());
-              result.success(incomingIntent);
-              incomingIntent = null;
-            } else {
-              Log.i("INCOMING", "null");
-              result.success(null); 
-            }
-          } else {
-            result.success(null); 
+            result.success(incomingIntent); 
+            incomingIntent = null;
+            // if (incomingIntent != null) {
+            //   Log.i("INCOMING", incomingIntent.toString());
+            //   result.success(incomingIntent);
+            // } else {
+            //   Log.i("INCOMING", "null");
+            // }
           }
         }
       );

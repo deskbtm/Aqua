@@ -210,7 +210,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<void> _clearAllSelected(BuildContext context) async {
-    await _commonModel.clearSelectedFiles(update: true);
+    await _commonModel.clearSelectedFiles();
 
     if (mounted) {
       setState(() {});
@@ -372,7 +372,7 @@ class _FileManagerPageState extends State<FileManagerPage>
       if (mounted) {
         showText('移动完成');
         await update2Side();
-        await _commonModel.clearSelectedFiles(update: true);
+        await _commonModel.clearSelectedFiles();
         MixUtils.safePop(context);
       }
     }
@@ -482,7 +482,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                     });
                     MixUtils.safePop(context);
                     showText('粘贴完成');
-                    await _commonModel.clearSelectedFiles(update: true);
+                    await _commonModel.clearSelectedFiles();
                     await update2Side();
                   }
                   return;
@@ -552,7 +552,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   MixUtils.safePop(context);
                 }
                 showText('删除完成');
-                _commonModel.clearSelectedFiles(update: true);
+                _commonModel.clearSelectedFiles();
               }
             },
             onCancel: () {
@@ -593,7 +593,7 @@ class _FileManagerPageState extends State<FileManagerPage>
       currentDir: _currentDir,
       onSuccessUpdate: (context) async {
         if (mounted) {
-          _commonModel.clearSelectedFiles(update: true);
+          _commonModel.clearSelectedFiles();
           await update2Side();
           MixUtils.safePop(context);
         }
@@ -795,7 +795,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         showText('提取失败');
       }
       if (mounted) {
-        await _commonModel.clearSelectedFiles(update: true);
+        await _commonModel.clearSelectedFiles();
         await update2Side();
         MixUtils.safePop(context);
       }
@@ -1036,12 +1036,14 @@ class _FileManagerPageState extends State<FileManagerPage>
       caseText: () {
         OpenFile.open(path);
       },
-      caseAudio: () {},
+      caseAudio: () {
+        OpenFile.open(path);
+      },
       caseVideo: () {
         OpenFile.open(path);
       },
       caseArchive: () {
-        _commonModel.clearSelectedFiles(update: true);
+        _commonModel.clearSelectedFiles();
         _commonModel.addSelectedFile(file);
         // updateItem(true);
         setState(() {});

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 abstract class LanFileMoreTheme {
+  Color iconColor;
   Color bottomNavColor;
   Color scaffoldBackgroundColor;
   Color navBackgroundColor;
@@ -21,7 +22,7 @@ abstract class LanFileMoreTheme {
 }
 
 class LightTheme implements LanFileMoreTheme {
-  Color activeIconColor = Color(0xFF007AFF);
+  Color iconColor = Color(0xFF007AFF);
   Color inactiveIconColor = Color(0xFF959596);
   Color bottomNavColor = Color(0x94F3ECEC);
   Color scaffoldBackgroundColor = Color(0xFFFFFFFFF);
@@ -42,7 +43,7 @@ class LightTheme implements LanFileMoreTheme {
 }
 
 class DarkTheme implements LanFileMoreTheme {
-  Color activeIconColor = Color(0xFF007AFF);
+  Color iconColor = Color(0xFF007AFF);
   Color inactiveIconColor = Color(0xFF959596);
   Color bottomNavColor = Color(0xB00E0D0D);
   Color scaffoldBackgroundColor = Color(0xFF0000000);

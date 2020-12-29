@@ -11,6 +11,15 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class CommonModel extends ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
 
+  /// 进入app的方式 正常打开'normal'
+  /// 从其他APP打开方式'incoming'
+  Map _appIncoming;
+  Map get appIncoming => _appIncoming;
+
+  Future<void> setAppIncoming(Map data) async {
+    _appIncoming = data;
+  }
+
   bool _canPopToDesktop = true;
   bool get canPopToDesktop => _canPopToDesktop;
 
@@ -68,13 +77,6 @@ class CommonModel extends ChangeNotifier {
   Future<void> setAppInit(bool arg) async {
     _isAppNotInit = arg;
     await Store.setBool(APP_INIT, arg);
-  }
-
-  Map _incomingFile;
-  Map get incomingFile => _incomingFile;
-
-  Future<void> setIncomingFile(Map file) async {
-    _incomingFile = file;
   }
 
   // 菜单初始化

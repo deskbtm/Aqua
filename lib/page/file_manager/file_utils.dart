@@ -115,28 +115,31 @@ void matchFileExt(
   }
 }
 
-void matchFileByMimeType(
+Widget matchEntryByMimeType(
   String mime, {
-  Function caseText,
-  Function caseImage,
-  Function caseAudio,
-  Function caseVideo,
-  Function caseBinary,
-  Function caseDefault,
+  Widget Function() caseText,
+  Widget Function() caseImage,
+  Widget Function() caseAudio,
+  Widget Function() caseVideo,
+  Widget Function() caseBinary,
+  Widget Function() caseDefault,
 }) {
+  Widget result;
   if (RegExp(r"text/.*").hasMatch(mime) && caseText != null) {
-    caseText();
+    result = caseText();
   } else if (RegExp(r"image/.*").hasMatch(mime) && caseImage != null) {
-    caseImage();
+    result = caseImage();
   } else if (RegExp(r"audio/.*").hasMatch(mime) && caseAudio != null) {
-    caseAudio();
+    result = caseAudio();
   } else if (RegExp(r"video/.*").hasMatch(mime) && caseVideo != null) {
-    caseVideo();
+    result = caseVideo();
   } else if (RegExp(r"application/.*").hasMatch(mime) && caseBinary != null) {
-    caseBinary();
+    result = caseBinary();
   } else {
-    caseDefault();
+    result = caseDefault();
   }
+
+  return result;
 }
 
 void matchFileByExt(

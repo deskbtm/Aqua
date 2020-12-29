@@ -49,8 +49,8 @@ class _PhotoViewerState extends State<PhotoViewer> {
   @override
   void initState() {
     // imagesRes = widget.imageRes;
-    _controller = PreloadPageController(initialPage: widget.index);
     _currentIndex = widget.index;
+    _controller = PreloadPageController(initialPage: _currentIndex);
     _navCurrentIndex = 0;
     super.initState();
   }

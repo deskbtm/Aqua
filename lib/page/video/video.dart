@@ -1,4 +1,4 @@
-import 'package:better_player/better_player.dart';
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,8 +7,11 @@ import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 class VideoPage extends StatefulWidget {
+  final dynamic path;
+
   const VideoPage({
     Key key,
+    this.path,
   }) : super(key: key);
 
   @override
@@ -19,23 +22,27 @@ class VideoPage extends StatefulWidget {
 
 class _VideoPageState extends State<VideoPage> {
   ThemeModel _themeModel;
-  BetterPlayerController _betterPlayerController;
+  FijkPlayer player = FijkPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+    player.setDataSource(widget.path, showCover: true);
+    player.setOption(FijkOption.hostCategory, "enable-snapshot", 1);
+    player.setOption(FijkOption.hostCategory, "request-screen-on", 1);
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.file, '/sdcard/1.mp4');
+  }
 
-    _betterPlayerController = BetterPlayerController(
-      BetterPlayerConfiguration(
-        controlsConfiguration: BetterPlayerControlsConfiguration(
-          controlBarColor: Colors.transparent,
-        ),
-      ),
-      betterPlayerDataSource: betterPlayerDataSource,
-    );
+  @override
+  void dispose() {
+    super.dispose();
+    player?.release();
+    player = null;
   }
 
   @override
@@ -46,8 +53,15 @@ class _VideoPageState extends State<VideoPage> {
       child: Center(
         child: AspectRatio(
           aspectRatio: 16 / 9,
-          child: BetterPlayer(
-            controller: _betterPlayerController,
+          child: Material(
+            child: FijkView(
+              player: player,
+              fit: FijkFit.fill,
+              fsFit: FijkFit.fill,
+              panelBuilder: fijkPanel2Builder(
+                snapShot: true,
+              ),
+            ),
           ),
         ),
       ),

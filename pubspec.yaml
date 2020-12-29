@@ -35,7 +35,7 @@ dependencies:
   http_parser: '>=0.0.2+2 <4.0.0'
   mime: '>=0.9.0 <0.10.0'
   path: '>=1.1.0 <2.0.0'
-  intl: ^0.16.0
+  intl: ^0.16.1
   android_mix:
     path: plugins/android_mix
   clipboard_listener:
@@ -77,10 +77,11 @@ dependencies:
     path: plugins/markdown_weight
   file_editor:
     path: plugins/file_editor
+  fijkplayer:
+    path: plugins/fijkplayer
   # flutter_vlc_player:
   #   path: plugins/flutter_vlc_player
-  better_player:
-    path: plugins/better_player
+  
   # flutter_boost:
   #   path: plugins/flutter_boost
   
@@ -135,7 +136,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
+  generate: true
   # To add assets to your application, add an assets section, like this:
   assets:
   - assets/images/

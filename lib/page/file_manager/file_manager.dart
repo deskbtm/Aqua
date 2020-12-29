@@ -33,6 +33,7 @@ import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/video/video.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/notification.dart';
@@ -1040,7 +1041,13 @@ class _FileManagerPageState extends State<FileManagerPage>
         OpenFile.open(path);
       },
       caseVideo: () {
-        OpenFile.open(path);
+        Navigator.of(context, rootNavigator: true).push(
+          CupertinoPageRoute(
+            builder: (BuildContext context) {
+              return VideoPage(path: path);
+            },
+          ),
+        );
       },
       caseArchive: () {
         _commonModel.clearSelectedFiles();

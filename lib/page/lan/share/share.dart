@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
-import 'package:lan_file_more/page/not_support/not_support.dart';
 import 'package:lan_file_more/page/video/video.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/web/body_parser/src/shelf_body_parser.dart';

@@ -140,6 +140,12 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
+              supportedLocales: [
+                const Locale.fromSubtags(languageCode: 'zh'),
+                const Locale.fromSubtags(
+                    languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
+                const Locale('en', ''),
+              ],
               builder: BotToastInit(),
               navigatorObservers: [
                 BotToastNavigatorObserver(),

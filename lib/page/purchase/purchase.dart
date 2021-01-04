@@ -299,6 +299,7 @@ class _PurchasePageState extends State<PurchasePage> {
                             '立刻购买(${_qrcodeData['amount'] ?? DEF_AMOUNT}￥)',
                             fontSize: 22,
                           ),
+                          SizedBox(height: 5),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -497,7 +498,7 @@ class _PurchasePageState extends State<PurchasePage> {
                           '3. 务必记住用户名,密码',
                         ),
                         LanText(
-                          '4. 每个账号只能激活一台设备',
+                          '4. 每个账号只支持两台设备',
                         ),
                         LanText(
                           '5. 如果更换设备, 联系我',

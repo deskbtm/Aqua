@@ -71,7 +71,6 @@ class _GameComponentEditorState extends State<GameComponentEditor> {
 
   @override
   Widget build(BuildContext context) {
-    log('789797979s============================');
     return Stack(
       overflow: Overflow.visible,
       children: <Widget>[

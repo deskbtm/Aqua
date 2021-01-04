@@ -112,12 +112,12 @@ Widget getPreviewIcon(
           gaplessPlayback: true,
         );
       } else {
-        previewIcon = matchFileIcon(file.ext);
+        previewIcon = LanFileUtils.matchFileIcon(file.ext);
       }
     } catch (err) {
-      previewIcon = matchFileIcon(file.ext);
+      previewIcon = LanFileUtils.matchFileIcon(file.ext);
     }
-  } else if (IMG_EXTS.contains(file.ext?.toLowerCase())) {
+  } else if (LanFileUtils.IMG_EXTS.contains(file.ext?.toLowerCase())) {
     previewIcon = ClipRRect(
       borderRadius: BorderRadius.all(Radius.circular(5)),
       child: FutureBuilder<Uint8List>(
@@ -155,9 +155,9 @@ Widget getPreviewIcon(
       ),
     );
   } else if (file.isLink) {
-    previewIcon = matchFileIcon('link');
+    previewIcon = LanFileUtils.matchFileIcon('link');
   } else {
-    previewIcon = matchFileIcon(file.isDir ? 'folder' : file.ext);
+    previewIcon = LanFileUtils.matchFileIcon(file.isDir ? 'folder' : file.ext);
   }
   return previewIcon;
 }

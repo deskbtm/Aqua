@@ -3,6 +3,7 @@ import 'dart:math' as _math;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joystick_editor/single_button_item.dart';
+import 'package:joystick_editor/utils.dart';
 
 import 'circle_view.dart';
 import 'joystick_gestures.dart';
@@ -18,6 +19,7 @@ class GroupButtonsController extends StatelessWidget {
   final Map<int, Color> buttonsStateMap = HashMap<int, Color>();
   final double buttonsPadding;
   final Color backgroundPadButtonsColor;
+  final bool withVibration;
 
   GroupButtonsController({
     this.minSize = 180,
@@ -26,6 +28,7 @@ class GroupButtonsController extends StatelessWidget {
     this.buttonsPadding = 0,
     this.backgroundPadButtonsColor = Colors.transparent,
     this.rotate = 0,
+    this.withVibration = true,
   }) : assert(buttons != null && buttons.isNotEmpty) {
     buttons.forEach(
         (button) => buttonsStateMap[button.index] = button.backgroundColor);
@@ -136,6 +139,9 @@ class GroupButtonsController extends StatelessWidget {
     if (onGroupButtonPressed != null &&
         button.supportedGestures.contains(gesture)) {
       print('${button.index} $gesture');
+      if (withVibration) {
+        await pressVibrate();
+      }
       await onGroupButtonPressed(button.index, gesture);
       print("$gesture paddbutton id =  ${[button.index]}");
     }

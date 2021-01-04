@@ -20,6 +20,8 @@ import 'package:lan_file_more/common/widget/storage_card.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/back_button_interceptor/back_button_interceptor.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
+import 'package:lan_file_more/external/breadcrumb/src/breadcrumb.dart';
+import 'package:lan_file_more/external/breadcrumb/src/breadcrumb_item.dart';
 import 'package:lan_file_more/isolate/airdrop.dart';
 import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/page/file_manager/create_archive.dart';
@@ -33,6 +35,7 @@ import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/video/meida_info.dart';
 import 'package:lan_file_more/page/video/video.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
@@ -604,9 +607,9 @@ class _FileManagerPageState extends State<FileManagerPage>
 
   Future<void> shareFile(BuildContext context, SelfFileEntity file) async {
     String path = file.entity.path;
-    if (IMG_EXTS.contains(file.ext)) {
+    if (LanFileUtils.IMG_EXTS.contains(file.ext)) {
       await ShareExtend.share(path, 'image');
-    } else if (VIDEO_EXTS.contains(file.ext)) {
+    } else if (LanFileUtils.VIDEO_EXTS.contains(file.ext)) {
       await ShareExtend.share(path, 'video');
     } else {
       await ShareExtend.share(path, 'file');
@@ -970,7 +973,8 @@ class _FileManagerPageState extends State<FileManagerPage>
               if (sharedNotEmpty &&
                   // 在判断下 不然移动下 sharedNotEmpty有问题
                   _commonModel.selectedFiles.length != 0 &&
-                  ARCHIVE_EXTS.contains(_commonModel.selectedFiles.first.ext))
+                  LanFileUtils.ARCHIVE_EXTS
+                      .contains(_commonModel.selectedFiles.first.ext))
                 ActionButton(
                   content: '提取到此',
                   onTap: () async {
@@ -1012,14 +1016,14 @@ class _FileManagerPageState extends State<FileManagerPage>
     int index = 0,
   }) {
     String path = file.entity.path;
-    matchFileByExt(
+    LanFileUtils.matchFileByExt(
       file.ext,
       caseImage: () async {
         List<String> images;
         if (left) {
-          images = filterImages(_leftFileList);
+          images = LanFileUtils.filterImages(_leftFileList);
         } else {
-          images = filterImages(_rightFileList);
+          images = LanFileUtils.filterImages(_rightFileList);
         }
         _popLocker = true;
         await Navigator.of(context, rootNavigator: true).push(
@@ -1044,7 +1048,12 @@ class _FileManagerPageState extends State<FileManagerPage>
         Navigator.of(context, rootNavigator: true).push(
           CupertinoPageRoute(
             builder: (BuildContext context) {
-              return VideoPage(path: path);
+              return VideoPage(
+                info: MediaInfo(
+                  name: file.filename,
+                  path: file.path,
+                ),
+              );
             },
           ),
         );
@@ -1071,6 +1080,9 @@ class _FileManagerPageState extends State<FileManagerPage>
                   codeConfig: CodeConfig(
                     decoration: BoxDecoration(color: Colors.transparent),
                   ),
+                  markdownTheme: _themeModel.isDark
+                      ? MarkdownTheme.darkTheme
+                      : MarkdownTheme.lightTheme,
                   preConfig: PreConfig(
                     theme: setEditorTheme(
                       _themeModel.isDark,
@@ -1141,6 +1153,72 @@ class _FileManagerPageState extends State<FileManagerPage>
     }
   }
 
+  Future<void> _showBreadcrumb() async {
+    LanFileMoreTheme themeData = _themeModel.themeData;
+    List<String> paths = pathLib.split(_currentDir.path);
+    return showCupertinoModal(
+      context: context,
+      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+      builder: (BuildContext context) {
+        return LanDialog(
+          fontColor: themeData.itemFontColor,
+          bgColor: themeData.dialogBgColor,
+          title: LanDialogTitle(title: '选择'),
+          action: true,
+          withOk: false,
+          withCancel: false,
+          children: <Widget>[
+            BreadCrumb.builder(
+              itemCount: paths.length,
+              builder: (index) {
+                return BreadCrumbItem(
+                  margin: EdgeInsets.only(top: 5, bottom: 5),
+                  content: InkWell(
+                    onTap: () async {
+                      List<String> willNav =
+                          paths.getRange(0, index + 1).toList();
+                      String path = pathLib.joinAll(willNav);
+                      Directory dir = Directory(path);
+
+                      if (pathLib.equals(path, _rootDir.path)) {
+                        _leftFileList = await readdir(dir);
+                        _rightFileList = [];
+                        _currentDir = dir;
+                      } else if (pathLib.isWithin(_rootDir.path, path)) {
+                        _leftFileList = await readdir(dir.parent);
+                        _rightFileList = await readdir(dir);
+                        _currentDir = dir;
+                      }
+                      setState(() {});
+                      MixUtils.safePop(context);
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.only(top: 4, bottom: 4, right: 6, left: 6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        color: themeData.itemColor,
+                      ),
+                      constraints: BoxConstraints(maxWidth: 100),
+                      child: NoResizeText(
+                        paths[index],
+                        style: TextStyle(
+                            fontSize: 16, color: themeData.itemFontColor),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              divider: Icon(Icons.chevron_right),
+            ),
+            SizedBox(height: 25),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -1170,7 +1248,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                       },
                       child: Icon(
                         Icons.hdr_strong,
-                        color: themeData?.topNavIconColor,
+                        color: Color(0xFF007AFF),
                         size: 25,
                       ),
                     ),
@@ -1179,25 +1257,29 @@ class _FileManagerPageState extends State<FileManagerPage>
                       onTap: () => {_willPopFileRoute(1, 1)},
                       child: Icon(
                         Icons.arrow_left,
-                        color: themeData?.topNavIconColor,
+                        color: Color(0xFF007AFF),
                         size: 35,
                       ),
                     )
                   : Container(),
-              middle: NoResizeText(
-                FileAction.filename(_currentDir.path ?? ''),
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20,
-                  color: themeData?.navTitleColor,
+              middle: CupertinoButton(
+                padding: EdgeInsets.all(0),
+                onPressed: _showBreadcrumb,
+                child: NoResizeText(
+                  FileAction.filename(_currentDir.path ?? ''),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 20,
+                    // color: themeData?.navTitleColor,
+                  ),
                 ),
               ),
               backgroundColor: themeData?.navBackgroundColor,
               border: null,
             ),
             child: Container(
-              padding: EdgeInsets.only(top: 15),
+              padding: EdgeInsets.only(top: 5),
               child: Row(
                 children: <Widget>[
                   Expanded(

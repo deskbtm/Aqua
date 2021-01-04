@@ -3,6 +3,7 @@ package com.sewerganger.lan_file_more;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -41,6 +42,7 @@ public class MainActivity extends FlutterActivity {
     String action = intent.getAction();
     String type = intent.getType();
     incomingIntent = new HashMap();
+
     if (Intent.ACTION_VIEW.equals(action) && type != null) {
       Uri uri = intent.getData();
       incomingIntent.put("path", Uri.decode(uri.getEncodedPath()));
@@ -58,14 +60,8 @@ public class MainActivity extends FlutterActivity {
       .setMethodCallHandler(
         (call, result) -> {
           if (call.method.contentEquals("getIncomingFile")) {
-            result.success(incomingIntent); 
+            result.success(incomingIntent);
             incomingIntent = null;
-            // if (incomingIntent != null) {
-            //   Log.i("INCOMING", incomingIntent.toString());
-            //   result.success(incomingIntent);
-            // } else {
-            //   Log.i("INCOMING", "null");
-            // }
           }
         }
       );

@@ -10,7 +10,7 @@ const dark_theme = {
   'TableBorderColor': Color(0xffD7DBDF),
   'DividerColor': Color(0xFF646464),
   'BlockColor': Color(0xff646464),
-  'PreBackground': Color(0xff555555),
+  'PreBackground': Color(0xF8000000f),
   'TitleColor': Color(0xffFAFAFA),
   'UlDotColor': Color(0xffFAFAFA),
   'HightLightCodeTheme': darkTheme,

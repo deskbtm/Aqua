@@ -10,6 +10,7 @@ import 'joystick_component_editor.dart';
 import 'joystick_component_recorder.dart';
 import 'joystick_controller.dart';
 import 'no_resize_text.dart';
+import 'dart:math' as math;
 
 class JoystickBoard extends StatefulWidget {
   @override
@@ -104,7 +105,7 @@ class _JoystickBoardState extends State<JoystickBoard> {
             rotateCount: 3,
             child: GroupButtonsController(
               minSize: 180,
-              onGroupButtonPressed: (index, gesture) async {  
+              onGroupButtonPressed: (index, gesture) async {
                 print(index);
                 print(gesture);
               },
@@ -137,17 +138,31 @@ class _JoystickBoardState extends State<JoystickBoard> {
           child: Stack(
             overflow: Overflow.visible,
             children: [
-              Row(
-                children: [
-                  CupertinoButton(
-                    onPressed: () {},
-                    child: Text('编辑'),
+              Align(
+                alignment: Alignment(-1, 0),
+                child: Transform.rotate(
+                  angle: math.pi / 2,
+                  child: Wrap(
+                    children: [
+                      CupertinoButton(
+                        onPressed: () {
+                          setState(() {
+                            _editMode = true;
+                          });
+                        },
+                        child: Text('编辑'),
+                      ),
+                      CupertinoButton(
+                        onPressed: () {
+                          setState(() {
+                            _editMode = false;
+                          });
+                        },
+                        child: Text('保存'),
+                      ),
+                    ],
                   ),
-                  CupertinoButton(
-                    onPressed: () {},
-                    child: Text('保存'),
-                  ),
-                ],
+                ),
               ),
               ...createComponents(),
             ],

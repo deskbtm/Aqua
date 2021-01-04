@@ -16,10 +16,12 @@ const String LOOPBACK_ADDR = '127.0.0.1';
 
 const String TUTORIAL_URL =
     'http://sewerganger.gitee.io/lan-file-more/archives';
-const String TUTORIAL_BASIC_URL =
-    'http://sewerganger.gitee.io/lan-file-more/archives';
+
 const String FIX_CLIPBOARD_URL =
     'http://sewerganger.gitee.io/lan-file-more/2020/08/31/安卓10以上剪贴板监听/';
+
+const String RES_DOWNLOAD_URL =
+    'http://sewerganger.gitee.io/lan-file-more/lan-file-more/2020/12/30/资源下载/';
 
 const String BILIBILI_SPACE = 'https://space.bilibili.com/178944900';
 const String AUTHOR_ALIPAY =

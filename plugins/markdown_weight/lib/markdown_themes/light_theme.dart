@@ -10,7 +10,7 @@ const light_theme = {
   'TableBorderColor': Color(0xffD7DBDF),
   'DividerColor': Color(0xffE5E6EB),
   'BlockColor': Color(0xffD7DBDF),
-  'PreBackground': Color(0xffF3F6F9),
+  'PreBackground': Color(0x36FFFFFFf),
   'TitleColor': Color(0xff000000),
   'UlDotColor': Color(0xff000000),
   'HightLightCodeTheme': arduinoLightTheme,

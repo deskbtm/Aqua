@@ -14,6 +14,7 @@ import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/utils/webdav.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as pathLib;
@@ -71,10 +72,20 @@ Future<dynamic> showMoreModal(
                 showText('请先设置WebDAV');
                 return;
               }
+              LocalNotification.showNotification(
+                index: 1,
+                name: 'WEBDAV_UPLOAD',
+                title: '文件上传中.....',
+                onlyAlertOnce: true,
+                showProgress: true,
+                indeterminate: true,
+              );
               await uploadToWebDAV(file).catchError((err) {
+                LocalNotification.plugin?.cancel(1);
                 showText('上传失败');
-                recordError(text: '');
+                recordError(text: 'webdav上床失败');
               });
+              LocalNotification.plugin?.cancel(1);
               showText('上传成功');
             },
           ),

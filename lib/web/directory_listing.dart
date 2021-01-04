@@ -675,7 +675,7 @@ Future<Map> _loadIcons() async {
 
 String matchIcon(String ext, Map icons) {
   String iconImg;
-  matchFileExt(
+  LanFileUtils.matchFileExt(
     ext,
     casePPT: () {
       iconImg = icons['ppt'];
@@ -787,7 +787,7 @@ Future<Response> listDirectory(String fileSystemPath, String dirPath,
         <li class="item ${isDir ? 'click-scale' : ''}">
           <a class="link-item" onclick='clickItem(event, "$sanitizedName", this)' href="${isDir ? sanitizedName : 'javascript:void(0)'}">
             <div class="content-wrapper">
-              <img class="icon" src="${IMG_EXTS.any((val) => sanitizedName.endsWith(val)) ? sanitizedName : base64Icon}"/>
+              <img class="icon" src="${LanFileUtils.IMG_EXTS.any((val) => sanitizedName.endsWith(val)) ? sanitizedName : base64Icon}"/>
               <div class="file-name">$sanitizedName</div>
             </div>
           </a>
@@ -838,7 +838,7 @@ Future<Response> listFiles(List<String> paths,
       <li class="item ${isDir ? 'click-scale' : ''}">
         <a class="link-item" onclick='clickItem(event, "$sanitizedName", this)' href="${isDir ? sanitizedName : 'javascript:void(0)'}">
           <div class="content-wrapper">
-            <img class="icon" src="${IMG_EXTS.any((val) => sanitizedName.endsWith(val)) ? sanitizedName : base64Icon}"/>
+            <img class="icon" src="${LanFileUtils.IMG_EXTS.any((val) => sanitizedName.endsWith(val)) ? sanitizedName : base64Icon}"/>
             <div class="file-name">$sanitizedName</div>
           </div>
         </a>

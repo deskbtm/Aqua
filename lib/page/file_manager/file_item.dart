@@ -23,8 +23,7 @@ class FileItem extends StatefulWidget {
   final Color itemBgColor;
   final Color fontColor;
   final bool withAnimation;
-  // final String path;
-  // final String filename;
+
   final SelfFileEntity file;
   final bool justDisplay;
   final double subTitleSize;
@@ -119,17 +118,6 @@ class FileItemState extends State<FileItem>
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _commonModel = Provider.of<CommonModel>(context);
-    // 每次渲染的时候就判断下
-    // if (!justDisplay) {
-    //   if (mounted) {
-    //     log(path +
-    //         '-----------' +
-    //         _commonModel.hasSelectedFile(path).toString());
-    //     setState(() {
-    //       _selected = _commonModel.hasSelectedFile(path);
-    //     });
-    //   }
-    // }
   }
 
   @override

@@ -341,9 +341,14 @@ class SettingPageState extends State<SettingPage> {
                       // 这里是FileManager的context
                       trailingBuilder: (fileCtx) {
                         return Material(
+                          color: Colors.transparent,
                           child: InkWell(
                             onTap: () async {
                               MixUtils.safePop(fileCtx);
+                              if (!_commonModel.isPurchased) {
+                                showText('请先购买 "局域网.文件.更多" for developer');
+                                return;
+                              }
                               CodeSrvUtils cutils = await CodeSrvUtils().init();
                               await cutils.rmAllResource().catchError((err) {
                                 showText('删除出现异常');
@@ -410,13 +415,6 @@ class SettingPageState extends State<SettingPage> {
             },
             child: ListTile(
               title: LanText('手动安装'),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
-            ),
-          ),
-          InkWell(
-            onTap: () async {},
-            child: ListTile(
-              title: LanText('下载资源包'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
@@ -502,20 +500,20 @@ class SettingPageState extends State<SettingPage> {
               },
             ),
           ),
-          InkWell(
-            onTap: () async {
-              if (await canLaunch(FIX_CLIPBOARD_URL)) {
-                await launch(FIX_CLIPBOARD_URL);
-              } else {
-                showText('链接打开失败');
-              }
-            },
-            child: ListTile(
-              title: LanText('问题解决'),
-              subtitle: LanText('安卓10以上用户', small: true),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
-            ),
-          )
+          // InkWell(
+          //   onTap: () async {
+          //     if (await canLaunch(FIX_CLIPBOARD_URL)) {
+          //       await launch(FIX_CLIPBOARD_URL);
+          //     } else {
+          //       showText('链接打开失败');
+          //     }
+          //   },
+          //   child: ListTile(
+          //     title: LanText('问题解决'),
+          //     subtitle: LanText('安卓10以上用户', small: true),
+          //     contentPadding: EdgeInsets.only(left: 15, right: 10),
+          //   ),
+          // )
         ],
       ),
       Column(
@@ -611,6 +609,19 @@ class SettingPageState extends State<SettingPage> {
           SizedBox(height: 30),
           blockTitle('其他'),
           SizedBox(height: 15),
+          InkWell(
+            onTap: () async {
+              if (await canLaunch(RES_DOWNLOAD_URL)) {
+                await launch(RES_DOWNLOAD_URL);
+              } else {
+                showText('链接打开失败');
+              }
+            },
+            child: ListTile(
+              title: LanText('资源下载'),
+              contentPadding: EdgeInsets.only(left: 15, right: 10),
+            ),
+          ),
           InkWell(
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(

@@ -4,6 +4,7 @@ import 'package:file_editor/file_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lan_file_more/common/socket/socket.dart';
 import 'package:lan_file_more/common/widget/show_modal_entity.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
@@ -18,6 +19,8 @@ import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
 import 'package:lan_file_more/page/setting/setting.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/video/meida_info.dart';
+import 'package:lan_file_more/page/video/video.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/req.dart';
@@ -79,14 +82,14 @@ class _HomePageState extends State<HomePage> {
       tip: '该界面无返返回, 需前往教程后, 方可消失',
       defaultOkText: '前往教程',
       onOk: () async {
-        if (await canLaunch(TUTORIAL_BASIC_URL)) {
-          await launch(TUTORIAL_BASIC_URL);
+        if (await canLaunch(TUTORIAL_URL)) {
+          await launch(TUTORIAL_URL);
         }
       },
       defaultCancelText: '前往bilibili',
       onCancel: () async {
-        if (await canLaunch(TUTORIAL_BASIC_URL)) {
-          await launch(TUTORIAL_BASIC_URL);
+        if (await canLaunch(TUTORIAL_URL)) {
+          await launch(TUTORIAL_URL);
         }
       },
     );
@@ -183,37 +186,39 @@ class _HomePageState extends State<HomePage> {
         await showUpdateModal(context, _themeModel, _commonModel.gWebData);
       });
 
-      // if (_commonModel.enableConnect && (_appIncoming == null || _appIncoming['appMode'] == 'incoming')) {
-      //   Timer(Duration(seconds: 1), () async {
-      //     await SocketConnecter.searchDevicesAndConnect(
-      //       context,
-      //       themeModel: _themeModel,
-      //       commonModel: _commonModel,
-      //       onNotExpected: (String msg) {
-      //         showText(msg);
-      //       },
-      //     ).catchError((err) {});
-      //   });
-      // }
-
+      if (_commonModel.enableConnect &&
+          (_appIncoming == null || _appIncoming['appMode'] == 'normal')) {
+        Timer(Duration(seconds: 1), () async {
+          await SocketConnecter.searchDevicesAndConnect(
+            context,
+            themeModel: _themeModel,
+            commonModel: _commonModel,
+            onNotExpected: (String msg) {
+              showText(msg);
+            },
+          ).catchError((err) {});
+        });
+      }
     }
   }
 
   Widget switchEntryPage(Map _incomingFile, {LanFileMoreTheme themeData}) {
     if (_incomingFile != null && _incomingFile['appMode'] == 'incoming') {
       String ext = pathLib.extension(_incomingFile['path']).toLowerCase();
+      String filename = pathLib.basename(_incomingFile['path']);
+      String path = _incomingFile['path'];
 
-      return matchEntryByMimeType(
+      return LanFileUtils.matchEntryByMimeType(
         _incomingFile['type'],
         caseImage: () {
           return PhotoViewer(
-            imageRes: [_incomingFile['path']],
+            imageRes: [path],
             index: 0,
           );
         },
         caseText: () {
           return FileEditorPage(
-            path: _incomingFile['path'],
+            path: path,
             language: ext.replaceFirst(RegExp(r'.'), ''),
             bottomNavColor: _themeModel.themeData?.bottomNavColor,
             dialogBgColor: _themeModel.themeData?.dialogBgColor,
@@ -230,19 +235,24 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
-        caseAudio: () {
-          // return
+        // caseAudio: () {},
+        caseVideo: () {
+          return VideoPage(
+            info: MediaInfo(
+              name: filename,
+              path: path,
+            ),
+          );
         },
-        caseVideo: () {},
         caseBinary: () {
           return NotSupportPage(
             content: '不支持打开二进制文件',
-            path: _incomingFile['path'],
+            path: path,
           );
         },
         caseDefault: () {
           return NotSupportPage(
-            path: _incomingFile['path'],
+            path: path,
           );
         },
       );
@@ -251,6 +261,7 @@ class _HomePageState extends State<HomePage> {
         controller: _tabController,
         tabBar: CupertinoTabBar(
           backgroundColor: themeData.bottomNavColor,
+          border: Border(),
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               label: '文件',

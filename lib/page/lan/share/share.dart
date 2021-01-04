@@ -222,7 +222,7 @@ class _LanSharePageState extends State<LanSharePage>
                           trailing: LanSwitch(
                             value: _vscodeSwitch,
                             onChanged: (val) async {
-                              if (/* !_commonModel.isPurchased */ false) {
+                              if (!_commonModel.isPurchased) {
                                 showText('请先购买 "局域网.文件.更多" for developer');
                                 return;
                               }

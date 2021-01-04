@@ -6,12 +6,14 @@ import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
+import 'meida_info.dart';
+
 class VideoPage extends StatefulWidget {
-  final dynamic path;
+  final MediaInfo info;
 
   const VideoPage({
     Key key,
-    this.path,
+    this.info,
   }) : super(key: key);
 
   @override
@@ -24,10 +26,12 @@ class _VideoPageState extends State<VideoPage> {
   ThemeModel _themeModel;
   FijkPlayer player = FijkPlayer();
 
+  MediaInfo get info => widget.info;
+
   @override
   void initState() {
     super.initState();
-    player.setDataSource(widget.path, showCover: true);
+    player.setDataSource(info.path, showCover: true);
     player.setOption(FijkOption.hostCategory, "enable-snapshot", 1);
     player.setOption(FijkOption.hostCategory, "request-screen-on", 1);
   }
@@ -57,10 +61,11 @@ class _VideoPageState extends State<VideoPage> {
             child: FijkView(
               player: player,
               fit: FijkFit.fill,
-              fsFit: FijkFit.fill,
+              fsFit: FijkFit.fitHeight,
               panelBuilder: fijkPanel2Builder(
                 snapShot: true,
               ),
+              color: Colors.black,
             ),
           ),
         ),

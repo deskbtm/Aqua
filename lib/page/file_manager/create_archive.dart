@@ -270,7 +270,7 @@ Future<void> createArchiveModal(
                     try {
                       bool result = await AndroidMix.archive
                           .createArchive(
-                        paths.first,
+                        paths,
                         currentDir.path,
                         FileAction.getName(generatedArchivePath),
                         type,

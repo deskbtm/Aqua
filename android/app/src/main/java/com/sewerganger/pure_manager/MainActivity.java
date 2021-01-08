@@ -1,5 +1,6 @@
-package com.sewerganger.lan_file_more;
+package com.sewerganger.pure_manager;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import java.util.Map;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
@@ -22,6 +25,7 @@ public class MainActivity extends FlutterActivity {
   private static final String CHANNEL = "app.channel.shared.data";
   private String APP_NORMAL_MODE = "normal";
   private String APP_INCOMING_MODE = "incoming";
+  private Activity activity;
 
   @Override
   public void onResume() {
@@ -43,6 +47,18 @@ public class MainActivity extends FlutterActivity {
     String type = intent.getType();
     incomingIntent = new HashMap();
 
+    if(action != null){
+      Log.i("ACTION======", action);
+    }else{
+      Log.i("ACTION======", "null");
+    }
+
+    if(type != null){
+      Log.i("TYPE====", type);
+    }else{
+      Log.i("TYPE======", "null");
+    }
+    
     if (Intent.ACTION_VIEW.equals(action) && type != null) {
       Uri uri = intent.getData();
       incomingIntent.put("path", Uri.decode(uri.getEncodedPath()));
@@ -66,5 +82,4 @@ public class MainActivity extends FlutterActivity {
         }
       );
   }
-
 }

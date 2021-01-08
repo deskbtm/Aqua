@@ -3,10 +3,10 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:lan_file_more/common/widget/action_button.dart';
 import 'package:lan_file_more/common/widget/fade_in.dart';
 import 'package:lan_file_more/common/widget/file_info_card.dart';
-import 'package:lan_file_more/common/widget/function_widget.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
@@ -15,29 +15,31 @@ import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
-import 'package:photo_view/photo_view_gallery.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:share_extend/share_extend.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
-class PhotoViewer extends StatefulWidget {
+class PhotoViewerPage extends StatefulWidget {
   final List<String> imageRes;
   final int index;
 
-  const PhotoViewer({Key key, this.imageRes, this.index = 0}) : super(key: key);
+  const PhotoViewerPage({Key key, this.imageRes, this.index = 0})
+      : super(key: key);
 
   @override
-  _PhotoViewerState createState() => _PhotoViewerState();
+  _PhotoViewerPageState createState() => _PhotoViewerPageState();
 }
 
-class _PhotoViewerState extends State<PhotoViewer> {
+class _PhotoViewerPageState extends State<PhotoViewerPage> {
   int _currentIndex;
   PreloadPageController _controller;
   ThemeModel _themeModel;
   final _barFader = FadeInController(autoStart: true);
   final _topFader = FadeInController(autoStart: true);
-  bool _viewFaded = false;
+  bool _viewFaded;
+  bool _navButtonLocker;
   int _navCurrentIndex;
 
   List<String> get imagesRes => widget.imageRes;
@@ -48,10 +50,12 @@ class _PhotoViewerState extends State<PhotoViewer> {
 
   @override
   void initState() {
-    // imagesRes = widget.imageRes;
     _currentIndex = widget.index;
-    _controller = PreloadPageController(initialPage: _currentIndex);
+    _controller =
+        PreloadPageController(initialPage: _currentIndex, keepPage: true);
     _navCurrentIndex = 0;
+    _viewFaded = false;
+    _navButtonLocker = false;
     super.initState();
   }
 
@@ -72,7 +76,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
     ui.Image imgRes =
         await decodeImageFromList(await File(img.entity.path).readAsBytes());
 
-    showCupertinoModal(
+    return showCupertinoModal(
       filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
       context: context,
       builder: (BuildContext context) {
@@ -115,7 +119,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
 
   Future<void> _showDeleteModal(
       BuildContext context, SelfFileEntity img) async {
-    showTipTextModal(
+    return showTipTextModal(
       context,
       _themeModel,
       tip: '确定删除此照片?',
@@ -126,54 +130,62 @@ class _PhotoViewerState extends State<PhotoViewer> {
         });
         showText('已删除');
       },
-      onCancel: () {},
     );
+  }
+
+  PhotoViewScaleState customScaleStateCycle(PhotoViewScaleState actual) {
+    switch (actual) {
+      case PhotoViewScaleState.initial:
+        return PhotoViewScaleState.originalSize;
+      default:
+        return PhotoViewScaleState.initial;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     LanFileMoreTheme themeData = _themeModel.themeData;
     return Scaffold(
+      backgroundColor: themeData?.scaffoldBackgroundColor,
       body: Stack(
         children: <Widget>[
           Positioned(
-            child: GestureDetector(
-              onTap: () {
-                if (_viewFaded) {
-                  _topFader.fadeIn();
-                  _barFader.fadeIn();
-                } else {
-                  _topFader.fadeOut();
-                  _barFader.fadeOut();
-                }
-                _viewFaded = !_viewFaded;
-              },
-              child: Container(
-                alignment: Alignment.center,
-                child: PhotoViewGallery.builder(
-                  preloadCount: 3,
-                  scrollPhysics: const BouncingScrollPhysics(),
-                  builder: (BuildContext context, int index) {
-                    File img = File(imagesRes[index]);
-                    return PhotoViewGalleryPageOptions(
-                      imageProvider: FileImage(img),
-                    );
-                  },
-                  itemCount: imagesRes.length,
-                  loadingBuilder: (context, event) {
-                    return loadingIndicator(context, _themeModel);
-                  },
-                  backgroundDecoration: BoxDecoration(
-                    color: themeData?.scaffoldBackgroundColor,
-                  ),
-                  pageController: _controller,
-                  enableRotation: true,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentIndex = index;
-                    });
-                  },
-                ),
+            child: Container(
+              alignment: Alignment.center,
+              child: PreloadPageView.builder(
+                preloadPagesCount: 3,
+                controller: _controller,
+                itemCount: imagesRes.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  File img = File(imagesRes[index]);
+                  return PhotoView(
+                    backgroundDecoration: BoxDecoration(
+                      color: themeData?.scaffoldBackgroundColor,
+                    ),
+                    imageProvider: FileImage(img),
+                    minScale: PhotoViewComputedScale.contained * 0.8,
+                    maxScale: PhotoViewComputedScale.contained * 3,
+                    initialScale: PhotoViewComputedScale.contained * 1,
+                    scaleStateCycle: customScaleStateCycle,
+                    enableRotation: true,
+                    onTapUp: (context, details, value) {
+                      if (_viewFaded) {
+                        _topFader.fadeIn();
+                        _barFader.fadeIn();
+                      } else {
+                        _topFader.fadeOut();
+                        _barFader.fadeOut();
+                      }
+                      _viewFaded = !_viewFaded;
+                    },
+                  );
+                },
+                physics: const BouncingScrollPhysics(),
               ),
             ),
           ),
@@ -240,13 +252,21 @@ class _PhotoViewerState extends State<PhotoViewer> {
 
                     switch (index) {
                       case 0:
-                        _showDeleteModal(context, image);
+                        if (!_navButtonLocker) {
+                          _navButtonLocker = true;
+                          await _showDeleteModal(context, image);
+                          _navButtonLocker = false;
+                        }
                         break;
                       case 1:
                         showText('下一个大版本中更新');
                         break;
                       case 2:
-                        _showMoreOptions(context, image);
+                        if (!_navButtonLocker) {
+                          _navButtonLocker = true;
+                          await _showMoreOptions(context, image);
+                          _navButtonLocker = false;
+                        }
                         break;
                     }
                   },
@@ -254,15 +274,15 @@ class _PhotoViewerState extends State<PhotoViewer> {
                   backgroundColor: themeData.photoNavColor,
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
-                      title: NoResizeText('删除'),
+                      label: '删除',
                       icon: Icon(OMIcons.delete),
                     ),
                     BottomNavigationBarItem(
-                      title: NoResizeText('编辑'),
+                      label: '编辑',
                       icon: Icon(OMIcons.create),
                     ),
                     BottomNavigationBarItem(
-                      title: NoResizeText('更多'),
+                      label: '更多',
                       icon: Icon(Icons.hdr_weak),
                     )
                   ],

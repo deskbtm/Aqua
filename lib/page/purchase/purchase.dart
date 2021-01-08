@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
@@ -126,6 +127,21 @@ class _PurchasePageState extends State<PurchasePage> {
                     showText('购买成功, 即将前往下载pc端');
 
                     MixUtils.safePop(context);
+
+                    Timer(Duration(seconds: 1), () async {
+                      String url;
+                      if (_commonModel.gWebData['pc'] == null) {
+                        url = PC_BAK_DOWNLOAD_URL;
+                      } else {
+                        url = _commonModel.gWebData['pc']['latest']['url'];
+                      }
+
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        showText('链接打开失败');
+                      }
+                    });
                   } else {
                     showText(MixUtils.webMessage(data['message']));
                   }
@@ -234,7 +250,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    LanText('局域网.文件.更多', fontSize: 18),
+                                    LanText('pure管理器', fontSize: 18),
                                     SizedBox(width: 4),
                                     LanText('for developer', fontSize: 12),
                                   ],

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:f_logs/model/flog/flog.dart';
 import 'package:file_editor/editor_theme.dart';
 import 'package:file_editor/file_editor.dart';
 import 'package:flutter/cupertino.dart';
@@ -75,6 +76,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _forceReadTutorialModal() async {
+    String tutorialUrl;
+    if (_commonModel.gWebData['tutorial'] == null) {
+      tutorialUrl = BILIBILI_SPACE;
+    } else {
+      tutorialUrl = _commonModel.gWebData['tutorial'];
+    }
+
     await showForceScopeModal(
       context,
       _themeModel,
@@ -86,10 +94,10 @@ class _HomePageState extends State<HomePage> {
           await launch(TUTORIAL_URL);
         }
       },
-      defaultCancelText: '前往bilibili',
+      defaultCancelText: 'bilibili(关注优惠)',
       onCancel: () async {
-        if (await canLaunch(TUTORIAL_URL)) {
-          await launch(TUTORIAL_URL);
+        if (await canLaunch(tutorialUrl)) {
+          await launch(tutorialUrl);
         }
       },
     );
@@ -98,7 +106,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _tabController = CupertinoTabController();
+    _tabController = CupertinoTabController(initialIndex: 0);
     _mutex = true;
 
     _storageSubscription = StorageMountListener.channel
@@ -125,8 +133,6 @@ class _HomePageState extends State<HomePage> {
     quickActions.initialize((String shortcutType) {
       switch (shortcutType) {
         case 'static-server':
-          _tabController.index = 1;
-          break;
         case 'vscode-server':
           _tabController.index = 1;
           break;
@@ -171,7 +177,9 @@ class _HomePageState extends State<HomePage> {
       //   }
       //   // 强制阅读使用教程 跳转后取消
 
-      await _preloadWebData().catchError((err) {});
+      await _preloadWebData().catchError((err) {
+        FLog.error(text: '请求配置出错', methodName: '_preloadWebData');
+      });
 
       _appIncoming = await _platform.invokeMethod('getIncomingFile');
 
@@ -202,7 +210,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget switchEntryPage(Map _incomingFile, {LanFileMoreTheme themeData}) {
+  Widget _switchEntryPage(Map _incomingFile, {LanFileMoreTheme themeData}) {
     if (_incomingFile != null && _incomingFile['appMode'] == 'incoming') {
       String ext = pathLib.extension(_incomingFile['path']).toLowerCase();
       String filename = pathLib.basename(_incomingFile['path']);
@@ -211,7 +219,7 @@ class _HomePageState extends State<HomePage> {
       return LanFileUtils.matchEntryByMimeType(
         _incomingFile['type'],
         caseImage: () {
-          return PhotoViewer(
+          return PhotoViewerPage(
             imageRes: [path],
             index: 0,
           );
@@ -244,12 +252,12 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
-        caseBinary: () {
-          return NotSupportPage(
-            content: '不支持打开二进制文件',
-            path: path,
-          );
-        },
+        // caseBinary: () {
+        //   return NotSupportPage(
+        //     content: '不支持打开二进制文件',
+        //     path: path,
+        //   );
+        // },
         caseDefault: () {
           return NotSupportPage(
             path: path,
@@ -268,7 +276,7 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(OMIcons.folder),
             ),
             BottomNavigationBarItem(
-              label: '更多',
+              label: '传输',
               icon: Icon(Icons.devices),
             ),
             BottomNavigationBarItem(
@@ -318,7 +326,7 @@ class _HomePageState extends State<HomePage> {
     LanFileMoreTheme themeData = _themeModel?.themeData;
     return themeData == null
         ? Container(color: themeData.scaffoldBackgroundColor)
-        : switchEntryPage(
+        : _switchEntryPage(
             _appIncoming,
             themeData: themeData,
           );

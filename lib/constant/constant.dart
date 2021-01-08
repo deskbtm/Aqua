@@ -17,11 +17,14 @@ const String LOOPBACK_ADDR = '127.0.0.1';
 const String TUTORIAL_URL =
     'http://sewerganger.gitee.io/lan-file-more/archives';
 
-const String FIX_CLIPBOARD_URL =
-    'http://sewerganger.gitee.io/lan-file-more/2020/08/31/安卓10以上剪贴板监听/';
+// const String FIX_CLIPBOARD_URL =
+//     'http://sewerganger.gitee.io/lan-file-more/2020/08/31/安卓10以上剪贴板监听/';
 
 const String RES_DOWNLOAD_URL =
-    'http://sewerganger.gitee.io/lan-file-more/lan-file-more/2020/12/30/资源下载/';
+    'http://sewerganger.gitee.io/lan-file-more/2020/12/30/资源下载/';
+
+const String PC_BAK_DOWNLOAD_URL =
+    'https://qcloudc5d77d.coding.net/s/466139a0-d01d-4e45-bc6c-d1f07285068a';
 
 const String BILIBILI_SPACE = 'https://space.bilibili.com/178944900';
 const String AUTHOR_ALIPAY =

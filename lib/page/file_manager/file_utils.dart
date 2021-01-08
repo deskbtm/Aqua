@@ -122,7 +122,7 @@ class LanFileUtils {
     Widget Function() caseImage,
     // Widget Function() caseAudio,
     Widget Function() caseVideo,
-    Widget Function() caseBinary,
+    // Widget Function() caseBinary,
     Widget Function() caseDefault,
   }) {
     Widget result;
@@ -135,9 +135,10 @@ class LanFileUtils {
   } */
     else if (RegExp(r"video/.*").hasMatch(mime) && caseVideo != null) {
       result = caseVideo();
-    } else if (RegExp(r"application/.*").hasMatch(mime) && caseBinary != null) {
+    } /* else if (RegExp(r"application/.*").hasMatch(mime) && caseBinary != null) {
       result = caseBinary();
-    } else {
+    }  */
+    else {
       result = caseDefault();
     }
 

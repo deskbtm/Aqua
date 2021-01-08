@@ -120,7 +120,7 @@ class _AboutPageState extends State<AboutPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              LanText('局域网.文件.更多', fontSize: 18),
+                              LanText('pure管理器', fontSize: 18),
                               LanText('版本: v$_version', small: true),
                             ],
                           ),

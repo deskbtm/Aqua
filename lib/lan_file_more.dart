@@ -152,7 +152,7 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
               ],
 
               /// 灵感来自爱死亡机器人
-              title: '局域网.文件.更多',
+              title: 'pure管理器',
               theme: CupertinoThemeData(
                 scaffoldBackgroundColor: themeData.scaffoldBackgroundColor,
                 textTheme: CupertinoTextThemeData(

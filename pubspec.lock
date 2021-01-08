@@ -596,7 +596,7 @@ packages:
     source: hosted
     version: "1.0.3"
   preload_page_view:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: preload_page_view
       url: "https://pub.flutter-io.cn"
@@ -711,7 +711,7 @@ packages:
       name: socket_io_client
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.9.11"
+    version: "0.9.12"
   socket_io_common:
     dependency: transitive
     description:

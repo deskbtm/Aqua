@@ -157,10 +157,10 @@ class MixUtils {
         // 触发检查权限
         Directory(path).list();
       } catch (err) {
-        path = '/sdcard/Android/data/com.sewerganger.lan_file_more/files';
+        path = '/sdcard/Android/data/com.sewerganger.pure_manager/files';
         if (!Directory(path).existsSync()) {
           path =
-              '/storage/self/primary/Android/data/com.sewerganger.lan_file_more/files';
+              '/storage/self/primary/Android/data/com.sewerganger.pure_manager/files';
         }
       }
     }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:android_mix/android_mix.dart';
+import 'package:f_logs/f_logs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_file_more/common/widget/show_modal_entity.dart';
@@ -24,6 +25,7 @@ import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
@@ -346,23 +348,42 @@ class SettingPageState extends State<SettingPage> {
                             onTap: () async {
                               MixUtils.safePop(fileCtx);
                               if (!_commonModel.isPurchased) {
-                                showText('请先购买 "局域网.文件.更多" for developer');
+                                showText('请先购买 "pure管理器" for developer');
                                 return;
                               }
+
+                              if (_commonModel.pickedFiles.isEmpty) {
+                                showText('请先选中资源');
+                                return;
+                              }
+                              SelfFileEntity file = _commonModel.pickedFiles[0];
+
+                              await _commonModel.clearPickedFiles();
+
                               CodeSrvUtils cutils = await CodeSrvUtils().init();
                               await cutils.rmAllResource().catchError((err) {
                                 showText('删除出现异常');
-                                recordError(text: 'rm all resource');
+                                FLog.error(
+                                  text: '删除安装资源出现异常',
+                                  className: 'SettingPageState',
+                                );
                               });
-                              SelfFileEntity file = _commonModel.pickedFiles[0];
 
                               if (file != null && file.ext == '.zip') {
-                                showText('资源安装中...',
-                                    duration: Duration(seconds: 8));
+                                LocalNotification.showNotification(
+                                  index: 10,
+                                  name: 'CODE_INSTALL',
+                                  title: '安装中.....',
+                                  onlyAlertOnce: true,
+                                  showProgress: true,
+                                  indeterminate: true,
+                                );
+                                // showText('资源安装中...',
+                                //     duration: Duration(seconds: 8));
                                 CodeSrvUtils cutils =
                                     await CodeSrvUtils().init();
                                 await AndroidMix.archive.unzip(
-                                  _commonModel.pickedFiles[0].entity.path,
+                                  file.entity.path,
                                   cutils.filesPath,
                                 );
                                 if (await File(
@@ -393,11 +414,11 @@ class SettingPageState extends State<SettingPage> {
                                     },
                                   );
                                   showText('安装成功');
+                                  LocalNotification.plugin?.cancel(10);
                                 }
                               } else {
                                 showText('资源包必须名为zip格式');
                               }
-                              await _commonModel.clearPickedFiles();
                             },
                             child: NoResizeText(
                               '确定',
@@ -433,7 +454,7 @@ class SettingPageState extends State<SettingPage> {
                 ),
               );
               if (!(await cutils.existsAllResource())) {
-                gTabController.index = 1;
+                gTabController.index = 0;
                 // 确保删除干净了
                 await cutils.rmAllResource();
                 showText('请先安装完整的环境');
@@ -619,6 +640,7 @@ class SettingPageState extends State<SettingPage> {
             },
             child: ListTile(
               title: LanText('资源下载'),
+              subtitle: LanText('pc端 code server...', small: true),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),

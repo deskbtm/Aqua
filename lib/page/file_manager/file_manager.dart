@@ -32,9 +32,9 @@ import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/page/file_manager/create_rename.dart';
 import 'package:lan_file_more/page/installed_apps/installed_apps.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
-import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
 import 'package:lan_file_more/page/video/meida_info.dart';
 import 'package:lan_file_more/page/video/video.dart';
 import 'package:lan_file_more/utils/error.dart';
@@ -1029,7 +1029,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         await Navigator.of(context, rootNavigator: true).push(
           CupertinoPageRoute(
             builder: (context) {
-              return PhotoViewer(
+              return PhotoViewerPage(
                 imageRes: images,
                 index: images.indexOf(file.entity.path),
               );
@@ -1278,51 +1278,11 @@ class _FileManagerPageState extends State<FileManagerPage>
               backgroundColor: themeData?.navBackgroundColor,
               border: null,
             ),
-            child: Container(
-              padding: EdgeInsets.only(top: 5),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: FileListView(
-                      mode: widget.mode,
-                      onUpdateView: () async {
-                        await update2Side();
-                      },
-                      fileList: _leftFileList,
-                      onLongPressEmpty: (d) async {
-                        await _showOptionsWhenPressedEmpty(context, left: true);
-                      },
-                      onHozDrag: (index, dir) async {
-                        await handleHozDragItem(index, dir, _leftFileList);
-                      },
-                      itemOnLongPress: (index) async {
-                        SelfFileEntity file = _leftFileList[index];
-                        await _showFileOptionsModal(file: file);
-                      },
-                      onItemTap: (index) async {
-                        SelfFileEntity file = _leftFileList[index];
-                        if (file.isDir) {
-                          // 点击后交换两边角色
-                          _currentDir = file.entity;
-                          List<SelfFileEntity> list =
-                              await readdir(file.entity);
-                          if (mounted) {
-                            setState(() {
-                              _rightFileList = list;
-                            });
-                          }
-                        } else {
-                          _openFileActionByExt(
-                            file,
-                            left: true,
-                            index: index,
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                  if (!pathLib.equals(_rootDir.path, _currentDir.path))
+            child: SafeArea(
+              child: Container(
+                padding: EdgeInsets.only(top: 5),
+                child: Row(
+                  children: <Widget>[
                     Expanded(
                       flex: 1,
                       child: FileListView(
@@ -1330,41 +1290,84 @@ class _FileManagerPageState extends State<FileManagerPage>
                         onUpdateView: () async {
                           await update2Side();
                         },
+                        fileList: _leftFileList,
                         onLongPressEmpty: (d) async {
                           await _showOptionsWhenPressedEmpty(context,
-                              left: false);
+                              left: true);
                         },
-                        fileList: _rightFileList,
                         onHozDrag: (index, dir) async {
-                          await handleHozDragItem(index, dir, _rightFileList);
+                          await handleHozDragItem(index, dir, _leftFileList);
                         },
                         itemOnLongPress: (index) async {
-                          SelfFileEntity file = _rightFileList[index];
+                          SelfFileEntity file = _leftFileList[index];
                           await _showFileOptionsModal(file: file);
                         },
                         onItemTap: (index) async {
-                          SelfFileEntity file = _rightFileList[index];
+                          SelfFileEntity file = _leftFileList[index];
                           if (file.isDir) {
+                            // 点击后交换两边角色
                             _currentDir = file.entity;
                             List<SelfFileEntity> list =
                                 await readdir(file.entity);
                             if (mounted) {
                               setState(() {
-                                _leftFileList = _rightFileList;
                                 _rightFileList = list;
                               });
                             }
                           } else {
                             _openFileActionByExt(
                               file,
-                              left: false,
+                              left: true,
                               index: index,
                             );
                           }
                         },
                       ),
                     ),
-                ],
+                    if (!pathLib.equals(_rootDir.path, _currentDir.path))
+                      Expanded(
+                        flex: 1,
+                        child: FileListView(
+                          mode: widget.mode,
+                          onUpdateView: () async {
+                            await update2Side();
+                          },
+                          onLongPressEmpty: (d) async {
+                            await _showOptionsWhenPressedEmpty(context,
+                                left: false);
+                          },
+                          fileList: _rightFileList,
+                          onHozDrag: (index, dir) async {
+                            await handleHozDragItem(index, dir, _rightFileList);
+                          },
+                          itemOnLongPress: (index) async {
+                            SelfFileEntity file = _rightFileList[index];
+                            await _showFileOptionsModal(file: file);
+                          },
+                          onItemTap: (index) async {
+                            SelfFileEntity file = _rightFileList[index];
+                            if (file.isDir) {
+                              _currentDir = file.entity;
+                              List<SelfFileEntity> list =
+                                  await readdir(file.entity);
+                              if (mounted) {
+                                setState(() {
+                                  _leftFileList = _rightFileList;
+                                  _rightFileList = list;
+                                });
+                              }
+                            } else {
+                              _openFileActionByExt(
+                                file,
+                                left: false,
+                                index: index,
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           );

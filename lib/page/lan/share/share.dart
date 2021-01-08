@@ -223,7 +223,7 @@ class _LanSharePageState extends State<LanSharePage>
                             value: _vscodeSwitch,
                             onChanged: (val) async {
                               if (!_commonModel.isPurchased) {
-                                showText('请先购买 "局域网.文件.更多" for developer');
+                                showText('请先购买 "pure管理器" for developer');
                                 return;
                               }
                               CodeSrvUtils utils = await CodeSrvUtils().init();

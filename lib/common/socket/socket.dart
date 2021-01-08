@@ -47,18 +47,12 @@ class SocketConnecter {
     IO.Socket socket = IO.io(url, {
       'transports': ['websocket'],
       'autoConnect': _commonModel.autoConnectExpress,
+      'timeout': 20000,
     });
 
     _commonModel.setSocket(socket);
 
     socket.on('connect', (_) {
-      // BotToast.showSimpleNotification(
-      //   title: '自动连接至',
-      //   subTitle: url,
-      //   closeIcon: Icon(Icons.close),
-      //   duration: Duration(seconds: 8),
-      // );
-
       LocalNotification.showNotification(
         name: 'SOCKET_CONNECT_ID',
         title: '自动连接至',

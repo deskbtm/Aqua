@@ -2,7 +2,7 @@
 <manifest
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
-  package="com.sewerganger.lan_file_more">
+  package="com.sewerganger.pure_manager">
   <!--
      io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -35,12 +35,12 @@
     android:xlargeScreens="true" />
   <application
     android:name="io.flutter.app.FlutterApplication"
-    android:icon="@mipmap/ic_launcher"
+    android:icon="@drawable/ic_launcher"
     android:label="@string/appName"
     android:networkSecurityConfig="@xml/network_security_config"
     android:persistent="true"
     android:requestLegacyExternalStorage="true"
-    android:roundIcon="@mipmap/ic_launcher_round"
+    android:roundIcon="@drawable/ic_launcher"
     android:supportsRtl="false"
     android:usesCleartextTraffic="true">
     <!-- <service
@@ -82,14 +82,14 @@
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-      <intent-filter tools:ignore="AppLinkUrlError">
-        <category android:name="android.intent.category.DEFAULT"
-          tools:ignore="AppLinkUrlError" />
-        <action android:name="android.intent.action.VIEW"
-          tools:ignore="AppLinkUrlError" />
-        <!-- <data android:scheme="file" /> -->
-        <data android:mimeType="*/*"
-          tools:ignore="AppLinkUrlError" />
+      <intent-filter>
+        <category android:name="android.intent.category.DEFAULT" />
+        <action android:name="android.intent.action.VIEW" />
+        <data android:mimeType="text/*" />
+        <data android:mimeType="image/*" />
+        <data android:mimeType="video/*" />
+        <data android:mimeType="application/xhtml+xml" />
+        <data android:mimeType="application/vnd.wap.xhtml+xml" />
       </intent-filter>
     </activity>
     <!--    <receiver-->
@@ -102,7 +102,6 @@
     <!--        <data android:mimeType="*/*" />-->
     <!--      </intent-filter>-->
     <!--    </receiver>-->
-
     <!--
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
         -->

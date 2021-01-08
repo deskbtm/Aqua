@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:lan_file_more/common/widget/self_list_title.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
@@ -154,7 +155,7 @@ class FileItemState extends State<FileItem>
       );
     }
 
-    Widget tile = ListTile(
+    Widget tile = SelfListTile(
       leading: widget.isDir
           ? _cacheFileInfo.leading
           // 显示文件的大小

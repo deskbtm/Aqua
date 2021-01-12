@@ -250,7 +250,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    LanText('pure管理器', fontSize: 18),
+                                    LanText('Pure管理器', fontSize: 18),
                                     SizedBox(width: 4),
                                     LanText('for developer', fontSize: 12),
                                   ],

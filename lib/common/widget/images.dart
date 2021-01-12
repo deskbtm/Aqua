@@ -1,12 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_glide/flutter_glide.dart';
 import 'package:lan_file_more/common/widget/function_widget.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
-import 'package:photo_manager/photo_manager.dart';
 
 class AppImages {
   static Widget folder({double width = 30, double height = 30}) =>
@@ -47,10 +47,6 @@ class AppImages {
 
   static Widget image({double width = 30, double height = 30}) =>
       Image.asset('assets/images/image.png',
-          width: width, height: height, fit: BoxFit.cover);
-
-  static Widget mp4({double width = 30, double height = 30}) =>
-      Image.asset('assets/images/mp4.png',
           width: width, height: height, fit: BoxFit.cover);
 
   static Widget unknown({double width = 30, double height = 30}) =>
@@ -101,7 +97,7 @@ class AppImages {
 Widget getPreviewIcon(
     BuildContext context, ThemeModel themeModel, SelfFileEntity file) {
   Widget previewIcon;
-  if (file.ext?.toLowerCase() == '.apk') {
+  if (file.ext == '.apk') {
     try {
       if (file.apkIcon != null) {
         previewIcon = Image.memory(
@@ -117,42 +113,65 @@ Widget getPreviewIcon(
     } catch (err) {
       previewIcon = LanFileUtils.matchFileIcon(file.ext);
     }
-  } else if (LanFileUtils.IMG_EXTS.contains(file.ext?.toLowerCase())) {
-    previewIcon = ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(5)),
-      child: FutureBuilder<Uint8List>(
-        future: PhotoManager.getThumbnailByPath(
-            path: file.entity.path, quality: 50),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError || snapshot.data == null) {
-              return Container(
-                width: 40,
-                height: 40,
-                child: Center(
-                  child: Icon(OMIcons.errorOutline),
-                ),
-              );
-            } else {
-              return Image.memory(
-                snapshot.data,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.low,
-              );
-            }
-          } else {
+  } else if (LanFileUtils.HAVE_THUMBNAIL.contains(file.ext)) {
+    previewIcon = FutureBuilder<Uint8List>(
+      future: FlutterGlide.getLocalThumbnail(
+        path: file.entity.path,
+        width: 50,
+        height: 50,
+        // quality: 20,
+      ),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError || snapshot.data == null) {
             return Container(
               width: 40,
               height: 40,
               child: Center(
-                child: Center(child: loadingIndicator(context, themeModel)),
+                child: Icon(OMIcons.errorOutline),
               ),
             );
+          } else {
+            Widget img = ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              child: Image.memory(
+                snapshot.data,
+                width: 35,
+                height: 35,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.low,
+              ),
+            );
+
+            return Container(
+              width: 35,
+              height: 35,
+              child: LanFileUtils.VIDEO_EXTS.contains(file.ext)
+                  ? Stack(
+                      children: [
+                        img,
+                        Align(
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    )
+                  : img,
+            );
           }
-        },
-      ),
+        } else {
+          return Container(
+            width: 40,
+            height: 40,
+            child: Center(
+              child: Center(child: loadingIndicator(context, themeModel)),
+            ),
+          );
+        }
+      },
     );
   } else if (file.isLink) {
     previewIcon = LanFileUtils.matchFileIcon('link');

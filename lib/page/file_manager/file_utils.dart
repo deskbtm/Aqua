@@ -15,7 +15,6 @@ class LanFileUtils {
     Function caseImage,
     Function caseText,
     Function caseAudio,
-    Function caseMP4,
     Function caseVideo,
     Function caseArchive,
     Function casePs,
@@ -69,12 +68,10 @@ class LanFileUtils {
       case '.mid':
         if (caseAudio != null) caseAudio();
         break;
-      case '.mp4':
-        if (caseMP4 != null) caseMP4();
-        break;
       case '.md':
         if (caseMd != null) caseMd();
         break;
+      case '.mp4':
       case '.flv':
       case '.avi':
       case '.mov':
@@ -120,9 +117,7 @@ class LanFileUtils {
     String mime, {
     Widget Function() caseText,
     Widget Function() caseImage,
-    // Widget Function() caseAudio,
     Widget Function() caseVideo,
-    // Widget Function() caseBinary,
     Widget Function() caseDefault,
   }) {
     Widget result;
@@ -145,7 +140,7 @@ class LanFileUtils {
     return result;
   }
 
-  static void matchFileByExt(
+  static void matchFileActionByExt(
     String ext, {
     Function caseImage,
     Function caseText,
@@ -241,9 +236,6 @@ class LanFileUtils {
       caseAudio: () {
         iconImg = AppImages.audio();
       },
-      caseMP4: () {
-        iconImg = AppImages.mp4();
-      },
       caseVideo: () {
         iconImg = AppImages.video();
       },
@@ -308,6 +300,11 @@ class LanFileUtils {
     '.asf',
     '.mpg',
     '.mpeg',
+  ];
+
+  static List<String> HAVE_THUMBNAIL = [
+    ...IMG_EXTS,
+    ...VIDEO_EXTS,
   ];
 
   static List<String> filterImages(List<SelfFileEntity> list) {

@@ -348,7 +348,7 @@ class SettingPageState extends State<SettingPage> {
                             onTap: () async {
                               MixUtils.safePop(fileCtx);
                               if (!_commonModel.isPurchased) {
-                                showText('请先购买 "pure管理器" for developer');
+                                showText('请先购买 "Pure管理器" for developer');
                                 return;
                               }
 

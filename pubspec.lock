@@ -204,13 +204,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.1.3"
-  fijkplayer:
-    dependency: "direct main"
-    description:
-      path: "plugins/fijkplayer"
-      relative: true
-    source: path
-    version: "0.8.7"
   file:
     dependency: transitive
     description:
@@ -237,6 +230,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_glide:
+    dependency: "direct main"
+    description:
+      path: "plugins/flutter_glide"
+      relative: true
+    source: path
+    version: "0.0.1"
   flutter_highlight:
     dependency: transitive
     description:
@@ -284,6 +284,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.3.5"
+  flutter_spinkit:
+    dependency: transitive
+    description:
+      name: flutter_spinkit
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.1.2+1"
   flutter_staggered_animations:
     dependency: "direct main"
     description:
@@ -315,6 +322,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "7.1.1"
+  get:
+    dependency: transitive
+    description:
+      name: get
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.24.0"
   globbing:
     dependency: transitive
     description:
@@ -560,13 +574,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.1.0"
-  photo_manager:
-    dependency: "direct main"
-    description:
-      path: "plugins/photo_manager"
-      relative: true
-    source: path
-    version: "0.5.8"
   photo_view:
     dependency: "direct main"
     description:
@@ -616,6 +623,27 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.3.2+2"
+  pure_video_player:
+    dependency: "direct main"
+    description:
+      path: "plugins/pure_video_player"
+      relative: true
+    source: path
+    version: "0.0.1"
+  qr:
+    dependency: transitive
+    description:
+      name: qr
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.3.0"
+  qr_flutter:
+    dependency: "direct main"
+    description:
+      name: qr_flutter
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.2.0"
   quick_actions:
     dependency: "direct main"
     description:

@@ -93,6 +93,7 @@ class _LanSharePageState extends State<LanSharePage>
       int port = int.parse(_commonModel?.filePort ?? FILE_DEFAULT_PORT);
       String savePath = _commonModel?.staticUploadSavePath;
       FutureOr<Response> Function(Request) handlerFunc;
+      String addr = '$ip:$port';
 
       if (_commonModel.selectedFiles.isNotEmpty) {
         SelfFileEntity first = _commonModel.selectedFiles.first;
@@ -102,14 +103,14 @@ class _LanSharePageState extends State<LanSharePage>
             first.entity.path,
             isDark: _themeModel.isDark,
             uploadSavePath: savePath,
-            serverUrl: '$ip:$port',
+            serverUrl: addr,
             onUploadResult: _uploadNotification,
           );
         } else {
           handlerFunc = createFilesHandler(
             _commonModel.selectedFiles.map((e) => e.entity.path).toList(),
             isDark: _themeModel.isDark,
-            serverUrl: '$ip:$port',
+            serverUrl: addr,
             uploadSavePath: savePath,
             onUploadResult: _uploadNotification,
           );
@@ -118,7 +119,7 @@ class _LanSharePageState extends State<LanSharePage>
         handlerFunc = createWebHandler(
           _commonModel.storageRootPath,
           isDark: _themeModel.isDark,
-          serverUrl: '$ip:$port',
+          serverUrl: addr,
           uploadSavePath: savePath,
           onUploadResult: _uploadNotification,
         );
@@ -130,17 +131,21 @@ class _LanSharePageState extends State<LanSharePage>
       if (_shareSwitch) {
         _server = await shelf.serve(handler, ip, port, shared: true);
         LocalNotification.showNotification(
-            index: 0,
-            name: 'STATIC_SHARING',
-            title: '静态文件共享中.....',
-            ongoing: true);
+          index: 0,
+          name: 'STATIC_SHARING',
+          title: '静态文件共享中.....',
+          ongoing: true,
+        );
         debugPrint('Serving at http://${_server.address.host}:${_server.port}');
 
         // 保持唤醒状态
         bool isWakeEnabled = await Wakelock.enabled;
+
         if (!isWakeEnabled) {
           Wakelock.enable();
         }
+
+        await showQrcodeModal(context, 'http://$addr', _themeModel);
       } else {
         _server?.close();
         showText('共享关闭');
@@ -152,10 +157,82 @@ class _LanSharePageState extends State<LanSharePage>
     }
   }
 
-  void showText(
-    String content,
-  ) {
+  void showText(String content) {
     BotToast.showText(text: content);
+  }
+
+  Future<void> _openCodeServer(BuildContext context, bool val,
+      {String codeAddr}) async {
+    if (!_commonModel.isPurchased) {
+      showText('请先购买 "Pure管理器" for developer');
+      return;
+    }
+    CodeSrvUtils utils = await CodeSrvUtils().init();
+    bool outLocker = true;
+    bool errLocker = true;
+
+    if (await utils.existsAllResource()) {
+      setState(() {
+        _vscodeSwitch = !_vscodeSwitch;
+      });
+      if (val) {
+        LocalNotification.showNotification(
+          index: 1,
+          name: 'VSCODE_SHARING',
+          title: 'vscode server 开启中.....',
+          onlyAlertOnce: true,
+          showProgress: true,
+          indeterminate: true,
+        );
+
+        Process result = await utils
+            .runServer(
+          codeAddr,
+          pwd: _commonModel.codeSrvPwd,
+        )
+            .catchError((err) {
+          showText('开启出现错误');
+        });
+
+        result.stdout.transform(utf8.decoder).listen((data) async {
+          if (outLocker) {
+            LocalNotification.plugin?.cancel(1);
+            LocalNotification.showNotification(
+              index: 2,
+              name: 'VSCODE_RUNNING',
+              title: 'vscode server 运行中',
+              ongoing: true,
+            );
+            bool isWakeEnabled = await Wakelock.enabled;
+            if (!isWakeEnabled) {
+              Wakelock.enable();
+            }
+            outLocker = false;
+          }
+          debugPrint(data);
+        });
+        result.stderr.transform(utf8.decoder).listen((data) {
+          if (data != '') {
+            if (errLocker) {
+              errLocker = false;
+              showText('错误 $data');
+              LocalNotification.plugin?.cancel(1);
+              Wakelock.disable();
+            }
+          }
+          debugPrint(data);
+        });
+
+        await showQrcodeModal(context, 'http://$codeAddr', _themeModel);
+      } else {
+        await utils.killNodeServer();
+        LocalNotification.plugin?.cancel(2);
+        showText('vscode 服务已关闭');
+        Wakelock.disable();
+      }
+    } else {
+      await showDownloadResourceModal(context);
+    }
   }
 
   @override
@@ -165,9 +242,7 @@ class _LanSharePageState extends State<LanSharePage>
     String internalIp = _commonModel.internalIp;
     String filePort = _commonModel.filePort ?? FILE_DEFAULT_PORT;
     String codeSrvPort = _commonModel.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
-
     String fileAddr = '$internalIp:$filePort';
-
     String codeAddr = '$internalIp:$codeSrvPort';
 
     String firstAliveIp =
@@ -222,81 +297,7 @@ class _LanSharePageState extends State<LanSharePage>
                           trailing: LanSwitch(
                             value: _vscodeSwitch,
                             onChanged: (val) async {
-                              if (!_commonModel.isPurchased) {
-                                showText('请先购买 "pure管理器" for developer');
-                                return;
-                              }
-                              CodeSrvUtils utils = await CodeSrvUtils().init();
-                              bool outLocker = true;
-                              bool errLocker = true;
-
-                              if (await utils.existsAllResource()) {
-                                setState(() {
-                                  _vscodeSwitch = !_vscodeSwitch;
-                                });
-                                if (val) {
-                                  // String srvUrl = '$internalIp:$codeSrvPort';
-
-                                  LocalNotification.showNotification(
-                                    index: 1,
-                                    name: 'VSCODE_SHARING',
-                                    title: 'vscode server 开启中.....',
-                                    onlyAlertOnce: true,
-                                    showProgress: true,
-                                    indeterminate: true,
-                                  );
-
-                                  Process result = await utils
-                                      .runServer(
-                                    codeAddr,
-                                    pwd: _commonModel.codeSrvPwd,
-                                  )
-                                      .catchError((err) {
-                                    showText('开启出现错误');
-                                  });
-
-                                  result.stdout
-                                      .transform(utf8.decoder)
-                                      .listen((data) async {
-                                    if (outLocker) {
-                                      LocalNotification.plugin?.cancel(1);
-                                      LocalNotification.showNotification(
-                                        index: 2,
-                                        name: 'VSCODE_RUNNING',
-                                        title: 'vscode server 运行中',
-                                        ongoing: true,
-                                      );
-                                      bool isWakeEnabled =
-                                          await Wakelock.enabled;
-                                      if (!isWakeEnabled) {
-                                        Wakelock.enable();
-                                      }
-                                      outLocker = false;
-                                    }
-                                    debugPrint(data);
-                                  });
-                                  result.stderr
-                                      .transform(utf8.decoder)
-                                      .listen((data) {
-                                    if (data != '') {
-                                      if (errLocker) {
-                                        errLocker = false;
-                                        showText('错误 $data');
-                                        LocalNotification.plugin?.cancel(1);
-                                        Wakelock.disable();
-                                      }
-                                    }
-                                    debugPrint(data);
-                                  });
-                                } else {
-                                  await utils.killNodeServer();
-                                  LocalNotification.plugin?.cancel(2);
-                                  showText('vscode 服务已关闭');
-                                  Wakelock.disable();
-                                }
-                              } else {
-                                await showDownloadResourceModal(context);
-                              }
+                              _openCodeServer(context, val, codeAddr: codeAddr);
                             },
                           ),
                         ),
@@ -356,34 +357,10 @@ class _LanSharePageState extends State<LanSharePage>
                                   ],
                                 ),
                         ),
-                        if (MixUtils.isDev) ...[
+                        ...[
                           CupertinoButton(
                             child: Text('测试按钮'),
-                            onPressed: () async {
-                              LocalNotification.showNotification(
-                                name: 'SOCKET_UNCONNECT',
-                                title: '未找到可用设备',
-                                subTitle: '请在更多中 手动连接',
-                                ongoing: true,
-                              );
-                              // print(await MixUtils.getIntenalIp());
-                              Navigator.of(context, rootNavigator: true).push(
-                                CupertinoPageRoute(
-                                  builder: (BuildContext context) {
-                                    return VideoPage();
-                                  },
-                                ),
-                              );
-
-                              // Color(0x9999);
-
-                              // CodeSrvUtils utils = await CodeSrvUtils().init();
-                              // recordError(
-                              //     text: "demomodemo",
-                              //     className: "",
-                              //     methodName: "");
-                              // print(MediaQuery.of(context).padding.top);
-                            },
+                            onPressed: () async {},
                           )
                         ]
                       ],

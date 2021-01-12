@@ -6,8 +6,6 @@ import 'package:android_mix/android_mix.dart';
 import 'package:device_info/device_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as pathLib;
-import 'package:url_launcher/url_launcher.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 
 class MixUtils {
   /// 判断开发环境
@@ -99,6 +97,11 @@ class MixUtils {
       'model': info.model,
       'name': info.product
     };
+  }
+
+  static Future<bool> isSDKOverAndroidN() async {
+    AndroidDeviceInfo info = await DeviceInfoPlugin().androidInfo;
+    return info.version.sdkInt >= 25;
   }
 
   static bool isEmail(String em) {

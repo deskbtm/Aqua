@@ -271,14 +271,6 @@ class FileAction {
     return newPath;
   }
 
-  // static Map getType(File file) {
-  //   return {
-  //     'isDir': file.statSync().type == FileSystemEntityType.directory,
-  //     'isLink': file.statSync().type == FileSystemEntityType.link,
-  //     'isFile': file.statSync().type == FileSystemEntityType.file,
-  //   };
-  // }
-
   static String getName(String name) {
     if (name.contains('.')) {
       return getName(pathLib.basenameWithoutExtension(name));

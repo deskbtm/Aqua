@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_glide/flutter_glide.dart';
 import 'package:lan_file_more/common/widget/action_button.dart';
 import 'package:lan_file_more/common/widget/fade_in.dart';
 import 'package:lan_file_more/common/widget/file_info_card.dart';
@@ -50,19 +51,19 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
 
   @override
   void initState() {
+    super.initState();
     _currentIndex = widget.index;
     _controller =
         PreloadPageController(initialPage: _currentIndex, keepPage: true);
     _navCurrentIndex = 0;
     _viewFaded = false;
     _navButtonLocker = false;
-    super.initState();
   }
 
   @override
-  void didChangeDependencies() {
-    _themeModel = Provider.of<ThemeModel>(context);
+  void didChangeDependencies() async {
     super.didChangeDependencies();
+    _themeModel = Provider.of<ThemeModel>(context);
   }
 
   @override
@@ -75,7 +76,6 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
       BuildContext context, SelfFileEntity img) async {
     ui.Image imgRes =
         await decodeImageFromList(await File(img.entity.path).readAsBytes());
-
     return showCupertinoModal(
       filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
       context: context,
@@ -156,18 +156,18 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                 preloadPagesCount: 3,
                 controller: _controller,
                 itemCount: imagesRes.length,
-                onPageChanged: (index) {
+                onPageChanged: (index) async {
                   setState(() {
                     _currentIndex = index;
                   });
                 },
                 itemBuilder: (context, index) {
-                  File img = File(imagesRes[index]);
+                  File file = File(imagesRes[index]);
                   return PhotoView(
                     backgroundDecoration: BoxDecoration(
                       color: themeData?.scaffoldBackgroundColor,
                     ),
-                    imageProvider: FileImage(img),
+                    imageProvider: FileImage(file),
                     minScale: PhotoViewComputedScale.contained * 0.8,
                     maxScale: PhotoViewComputedScale.contained * 3,
                     initialScale: PhotoViewComputedScale.contained * 1,
@@ -184,6 +184,52 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                       _viewFaded = !_viewFaded;
                     },
                   );
+                  // return FutureBuilder(
+                  //   future: FlutterGlide.getLocalThumbnail(
+                  //     path: imagesRes[index],
+                  //     quality: 100,
+                  //     width: MediaQuery.of(context).size.width.toInt(),
+                  //     height: MediaQuery.of(context).size.height.toInt(),
+                  //   ),
+                  //   builder: (BuildContext context,
+                  //       AsyncSnapshot<dynamic> snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.done) {
+                  //       if (snapshot.hasError || snapshot.data == null) {
+                  //         return Container(
+                  //           width: 40,
+                  //           height: 40,
+                  //           child: Center(
+                  //             child: Icon(OMIcons.errorOutline),
+                  //           ),
+                  //         );
+                  //       } else {
+                  //         return PhotoView(
+                  //           backgroundDecoration: BoxDecoration(
+                  //             color: themeData?.scaffoldBackgroundColor,
+                  //           ),
+                  //           imageProvider: MemoryImage(snapshot.data),
+                  //           minScale: PhotoViewComputedScale.contained * 0.8,
+                  //           maxScale: PhotoViewComputedScale.contained * 3,
+                  //           initialScale: PhotoViewComputedScale.contained * 1,
+                  //           scaleStateCycle: customScaleStateCycle,
+                  //           enableRotation: true,
+                  //           onTapUp: (context, details, value) {
+                  //             if (_viewFaded) {
+                  //               _topFader.fadeIn();
+                  //               _barFader.fadeIn();
+                  //             } else {
+                  //               _topFader.fadeOut();
+                  //               _barFader.fadeOut();
+                  //             }
+                  //             _viewFaded = !_viewFaded;
+                  //           },
+                  //         );
+                  //       }
+                  //     } else {
+                  //       return Container();
+                  //     }
+                  //   },
+                  // );
                 },
                 physics: const BouncingScrollPhysics(),
               ),

@@ -1016,7 +1016,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     int index = 0,
   }) {
     String path = file.entity.path;
-    LanFileUtils.matchFileByExt(
+    LanFileUtils.matchFileActionByExt(
       file.ext,
       caseImage: () async {
         List<String> images;
@@ -1026,6 +1026,7 @@ class _FileManagerPageState extends State<FileManagerPage>
           images = LanFileUtils.filterImages(_rightFileList);
         }
         _popLocker = true;
+        
         await Navigator.of(context, rootNavigator: true).push(
           CupertinoPageRoute(
             builder: (context) {
@@ -1044,8 +1045,9 @@ class _FileManagerPageState extends State<FileManagerPage>
       caseAudio: () {
         OpenFile.open(path);
       },
-      caseVideo: () {
-        Navigator.of(context, rootNavigator: true).push(
+      caseVideo: () async {
+        _popLocker = true;
+        await Navigator.of(context, rootNavigator: true).push(
           CupertinoPageRoute(
             builder: (BuildContext context) {
               return VideoPage(
@@ -1057,6 +1059,7 @@ class _FileManagerPageState extends State<FileManagerPage>
             },
           ),
         );
+        _popLocker = false;
       },
       caseArchive: () {
         _commonModel.clearSelectedFiles();

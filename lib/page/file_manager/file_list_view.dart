@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -9,7 +11,6 @@ import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_item.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:provider/provider.dart';
 
 class ListFileItemInfo {
@@ -52,7 +53,6 @@ class _FileListViewState extends State<FileListView> {
   ThemeModel _themeModel;
   ScrollController _scrollController;
   bool _mutex;
-  // List<ListFileItemInfo> _cachedFileList;
 
   @override
   void initState() {
@@ -62,15 +62,15 @@ class _FileListViewState extends State<FileListView> {
 
     _scrollController = ScrollController()
       ..addListener(() {
-        if (_scrollController.offset < -140) {
-          _mutex = true;
-        }
-        if (_scrollController.offset >= 0 && _scrollController.offset <= 10) {
-          if (_mutex) {
-            if (widget.onUpdateView != null) widget.onUpdateView();
-          }
-          _mutex = false;
-        }
+        // if (_scrollController.offset < -140) {
+        //   _mutex = true;
+        // }
+        // if (_scrollController.offset >= 0 && _scrollController.offset <= 10) {
+        //   // if (_mutex) {
+        //   //   if (widget.onUpdateView != null) widget.onUpdateView();
+        //   // }
+        //   _mutex = false;
+        // }
       });
   }
 
@@ -90,40 +90,12 @@ class _FileListViewState extends State<FileListView> {
     // _cachedFileList = [];
   }
 
-  // bool compareFileListChanged() {
-  //   if (widget.fileList.length != _cachedFileList.length) {
-  //     return true;
-  //   } else {
-  //     bool longer = widget.fileList.length > _cachedFileList.length;
-  //     List shorterList = longer ? _cachedFileList : widget.fileList;
-  //     // print(shorterList);
-  //     for (var i = 0; i < shorterList.length; i++) {
-  //       print(
-  //           '-----------------------${_cachedFileList[i].file.entity.path != widget.fileList[i].entity.path}');
-  //       if (_cachedFileList[i].file.entity.path !=
-  //           widget.fileList[i].entity.path) {
-  //         return true;
-  //       }
-  //     }
-  //     return false;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     /// 如果文件数量变化，更新否则使用缓存的[_cachedFileList]，防止读取照片文件
     /// thumb 时瞎几把闪，提前渲染好leaing
 
-    // if(widget)
-    // print('${compareFileListChanged()}%%%%%%%%%%%%%%');
-    // if (compareFileListChanged()) {
-    //   _cachedFileList.clear();
-    //   for (var i = 0; i < widget.fileList.length; i++) {
-    //     SelfFileEntity file = widget.fileList[i];
-    //     _cachedFileList.add(ListFileItemInfo(
-    //         leading: getPreviewIcon(context, _themeModel, file), file: file));
-    //   }
-    // }
+    log("====================================");
 
     return widget.fileList.isEmpty
         ? GestureDetector(
@@ -183,35 +155,3 @@ class _FileListViewState extends State<FileListView> {
           );
   }
 }
-
-// FutureBuilder<Widget>(
-//                       future: getPreviewIcon(file),
-//                       builder: (BuildContext context, AsyncSnapshot snapshot) {
-//                         if (snapshot.connectionState == ConnectionState.done) {
-//                           if (snapshot.hasError) {
-//                             return loadingIndicator(context, _themeModel);
-//                           } else {
-//                             return file.isDir
-//                                 ? snapshot.data
-//                                 : Column(
-//                                     crossAxisAlignment:
-//                                         CrossAxisAlignment.center,
-//                                     mainAxisAlignment: MainAxisAlignment.center,
-//                                     children: <Widget>[
-//                                       snapshot.data,
-//                                       SizedBox(height: 6),
-//                                       NoResizeText(
-//                                         file.humanSize,
-//                                         style: TextStyle(
-//                                           fontSize: 8,
-//                                           color: themeData?.itemFontColor,
-//                                         ),
-//                                       )
-//                                     ],
-//                                   );
-//                           }
-//                         } else {
-//                           return loadingIndicator(context, _themeModel);
-//                         }
-//                       },
-//                     ),

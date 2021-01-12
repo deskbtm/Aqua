@@ -10,6 +10,7 @@ import 'package:lan_file_more/common/widget/text_field.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class SplitSelectionModal extends StatefulWidget {
   final List<Widget> leftChildren;
@@ -634,6 +635,51 @@ Future<dynamic> showLoadingModal(
                   backgroundColor: Color(0xFF007AFF),
                 ),
               )
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+Future<dynamic> showQrcodeModal(
+  BuildContext context,
+  String data,
+  ThemeModel provider, {
+  bool popPreviousWindow = false,
+  String title = '扫描二维码',
+}) async {
+  if (popPreviousWindow) MixUtils.safePop(context);
+  LanFileMoreTheme themeData = provider.themeData;
+
+  return showCupertinoModal(
+    context: context,
+    filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder:
+            (BuildContext context, void Function(void Function()) changeState) {
+          return LanDialog(
+            actionPos: MainAxisAlignment.end,
+            fontColor: themeData.itemFontColor,
+            bgColor: themeData.dialogBgColor,
+            title: LanDialogTitle(title: title),
+            action: false,
+            children: [
+              Center(
+                child: QrImage(
+                  data: data,
+                  version: QrVersions.auto,
+                  size: 200.0,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  LanText('地址已经复制到剪贴板'),
+                ],
+              ),
             ],
           );
         },

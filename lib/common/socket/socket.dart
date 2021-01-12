@@ -116,7 +116,7 @@ class SocketConnecter {
       );
     } else {
       BotToast.showText(
-        text: '资源占用中....',
+        text: '搜索设备中....',
       );
     }
   }

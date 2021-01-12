@@ -1,11 +1,15 @@
-import 'package:fijkplayer/fijkplayer.dart';
+// import 'package:fijkplayer/fijkplayer.dart';
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
-
+import 'package:pure_video_player/pure_video_player.dart';
+import 'package:wakelock/wakelock.dart';
 import 'meida_info.dart';
 
 class VideoPage extends StatefulWidget {
@@ -24,16 +28,45 @@ class VideoPage extends StatefulWidget {
 
 class _VideoPageState extends State<VideoPage> {
   ThemeModel _themeModel;
-  FijkPlayer player = FijkPlayer();
+  // FijkPlayer player = FijkPlayer();
+  final _purePlayerController = PurePlayerController(
+    controlsStyle: ControlsStyle.primary,
+    pipEnabled: true,
+    showPipButton: true,
+  );
+
+  StreamSubscription _playerEventSub;
 
   MediaInfo get info => widget.info;
+
+  void _init() {
+    _purePlayerController.setDataSource(
+      DataSource(
+        type: DataSourceType.file,
+        file: File(info.path),
+      ),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
-    player.setDataSource(info.path, showCover: true);
-    player.setOption(FijkOption.hostCategory, "enable-snapshot", 1);
-    player.setOption(FijkOption.hostCategory, "request-screen-on", 1);
+    _playerEventSub = _purePlayerController.onPlayerStatusChanged.listen(
+      (PlayerStatus status) {
+        if (status == PlayerStatus.playing) {
+          Wakelock.enable();
+        } else {
+          Wakelock.disable();
+        }
+      },
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _init();
+    });
+    // player.setDataSource(info.path, showCover: true);
+    // player.setOption(FijkOption.hostCategory, "enable-snapshot", 1);
+    // player.setOption(FijkOption.hostCategory, "request-screen-on", 1);
   }
 
   @override
@@ -45,8 +78,11 @@ class _VideoPageState extends State<VideoPage> {
   @override
   void dispose() {
     super.dispose();
-    player?.release();
-    player = null;
+    _playerEventSub?.cancel();
+    Wakelock.disable();
+    _purePlayerController.dispose();
+    // player?.release();
+    // player = null;
   }
 
   @override
@@ -58,15 +94,18 @@ class _VideoPageState extends State<VideoPage> {
         child: AspectRatio(
           aspectRatio: 16 / 9,
           child: Material(
-            child: FijkView(
-              player: player,
-              fit: FijkFit.fill,
-              fsFit: FijkFit.fitHeight,
-              panelBuilder: fijkPanel2Builder(
-                snapShot: true,
-              ),
-              color: Colors.black,
+            child: PureVideoPlayer(
+              controller: _purePlayerController,
             ),
+            // FijkView(
+            //   player: player,
+            //   fit: FijkFit.fill,
+            //   fsFit: FijkFit.fitHeight,
+            //   panelBuilder: fijkPanel2Builder(
+            //     snapShot: true,
+            //   ),
+            //   color: Colors.black,
+            // ),
           ),
         ),
       ),

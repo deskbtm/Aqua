@@ -53,7 +53,7 @@ class LanDialog extends Dialog {
     this.defaultOkText,
     this.defaultCancelText,
     this.title,
-    this.action,
+    this.action = true,
     @required this.fontColor,
     @required this.children,
     @required this.bgColor,

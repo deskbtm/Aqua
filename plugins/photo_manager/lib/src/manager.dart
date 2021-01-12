@@ -16,8 +16,8 @@ class PhotoManager {
   static Editor editor = Editor();
 
   static Future<Uint8List> getThumbnailByPath({
-    int width = 100,
-    int height = 100,
+    @required int width,
+    @required int height,
     ThumbFormat format = ThumbFormat.png,
     String path,
     int quality = 100,

@@ -643,8 +643,6 @@ Future<Map> _loadIcons() async {
     'image': base64Encode((await rootBundle.load('assets/images/image.png'))
         .buffer
         .asUint8List()),
-    'mp4': base64Encode(
-        (await rootBundle.load('assets/images/mp4.png')).buffer.asUint8List()),
     'unknown': base64Encode((await rootBundle.load('assets/images/unknown.png'))
         .buffer
         .asUint8List()),
@@ -706,9 +704,6 @@ String matchIcon(String ext, Map icons) {
     },
     caseAudio: () {
       iconImg = icons['audio'];
-    },
-    caseMP4: () {
-      iconImg = icons['mp4'];
     },
     caseVideo: () {
       iconImg = icons['video'];

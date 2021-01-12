@@ -105,9 +105,7 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
       await _commonModel.initCommon().catchError((err) {
         recordError(text: '', methodName: 'initCommon');
       });
-      // print('============================================');
       await _setInternalIp(null);
-
       setState(() {
         _prepared = true;
       });
@@ -152,7 +150,7 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
               ],
 
               /// 灵感来自爱死亡机器人
-              title: 'pure管理器',
+              title: 'Pure管理器',
               theme: CupertinoThemeData(
                 scaffoldBackgroundColor: themeData.scaffoldBackgroundColor,
                 textTheme: CupertinoTextThemeData(

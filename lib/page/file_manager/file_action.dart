@@ -68,12 +68,46 @@ class FileAction {
 
   FileAction({this.externalStoragePath});
 
+  static Future<SelfFileEntity> createSelfFileEntity(
+      FileSystemEntity content) async {
+    FileStat stat = await content.stat();
+
+    String filename = pathLib.basename(content.path);
+    String ext = pathLib.extension(content.path).trim().toLowerCase();
+    Uint8List icon;
+
+    if (ext == '.apk') {
+      icon = (await AndroidMix.packager.getApkInfo(content.path))['icon'];
+    }
+
+    return SelfFileEntity(
+      changed: stat.changed,
+      modified: stat.modified,
+      accessed: stat.accessed,
+      path: content.path,
+      type: stat.type,
+      mode: stat.mode,
+      modeString: stat.modeString(),
+      size: stat.size,
+      entity: content,
+      filename: filename,
+      ext: ext,
+      humanSize: MixUtils.humanStorageSize(stat.size.toDouble()),
+      apkIcon: icon,
+      isDir: stat.type == FileSystemEntityType.directory,
+      isFile: stat.type == FileSystemEntityType.file,
+      isLink: stat.type == FileSystemEntityType.link,
+      pureName: pathLib.basenameWithoutExtension(filename),
+    );
+  }
+
   static Future<SelfFileList> readdir(
     Directory currentDir, {
     bool autoSort = true,
     String sortType = SORT_CASE,
     bool showHidden = false,
     bool reversed = false,
+    bool recursive = false,
   }) async {
     if (!await currentDir.exists()) {
       return null;
@@ -83,44 +117,26 @@ class FileAction {
     List<SelfFileEntity> fileList = [];
     List<SelfFileEntity> linkList = [];
 
-    await for (var content in currentDir.list()) {
+    await for (var content in currentDir.list(recursive: recursive)) {
       if (await content.exists()) {
-        FileStat stat = await content.stat();
+        // FileStat stat = await content.stat();
 
-        String filename = pathLib.basename(content.path);
-        String ext = pathLib.extension(content.path).trim().toLowerCase();
-        Uint8List icon;
+        // String filename = pathLib.basename(content.path);
+        // String ext = pathLib.extension(content.path).trim().toLowerCase();
+        // Uint8List icon;
 
-        if (ext == '.apk') {
-          icon = (await AndroidMix.packager.getApkInfo(content.path))['icon'];
-        }
+        // if (ext == '.apk') {
+        //   icon = (await AndroidMix.packager.getApkInfo(content.path))['icon'];
+        // }
 
-        SelfFileEntity fileEntity = SelfFileEntity(
-          changed: stat.changed,
-          modified: stat.modified,
-          accessed: stat.accessed,
-          path: content.path,
-          type: stat.type,
-          mode: stat.mode,
-          modeString: stat.modeString(),
-          size: stat.size,
-          entity: content,
-          filename: filename,
-          ext: ext,
-          humanSize: MixUtils.humanStorageSize(stat.size.toDouble()),
-          apkIcon: icon,
-          isDir: stat.type == FileSystemEntityType.directory,
-          isFile: stat.type == FileSystemEntityType.file,
-          isLink: stat.type == FileSystemEntityType.link,
-          pureName: pathLib.basenameWithoutExtension(filename),
-        );
+        SelfFileEntity fileEntity = await createSelfFileEntity(content);
 
         // 如果时隐藏文件就跳过
         if (!showHidden && fileEntity.filename[0] == '.') {
           continue;
         }
 
-        switch (stat.type) {
+        switch (fileEntity.type) {
           case FileSystemEntityType.directory:
             folderList.add(fileEntity);
             break;

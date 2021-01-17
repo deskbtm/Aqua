@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
-import 'package:lan_file_more/page/video/video.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/web/body_parser/src/shelf_body_parser.dart';
 import 'package:provider/provider.dart';
@@ -135,6 +134,7 @@ class _LanSharePageState extends State<LanSharePage>
           name: 'STATIC_SHARING',
           title: '静态文件共享中.....',
           ongoing: true,
+          autoCancel: true,
         );
         debugPrint('Serving at http://${_server.address.host}:${_server.port}');
 
@@ -202,6 +202,7 @@ class _LanSharePageState extends State<LanSharePage>
               name: 'VSCODE_RUNNING',
               title: 'vscode server 运行中',
               ongoing: true,
+              autoCancel: true,
             );
             bool isWakeEnabled = await Wakelock.enabled;
             if (!isWakeEnabled) {

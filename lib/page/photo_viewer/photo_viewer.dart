@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_glide/flutter_glide.dart';
 import 'package:lan_file_more/common/widget/action_button.dart';
 import 'package:lan_file_more/common/widget/fade_in.dart';
 import 'package:lan_file_more/common/widget/file_info_card.dart';

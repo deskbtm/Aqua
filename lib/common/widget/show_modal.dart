@@ -674,12 +674,21 @@ Future<dynamic> showQrcodeModal(
                   size: 200.0,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  LanText('地址已经复制到剪贴板'),
-                ],
-              ),
+              Container(
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        LanText(data, small: true),
+                        SizedBox(height: 10),
+                        LanText('地址已经复制到剪贴板'),
+                      ],
+                    )
+                  ],
+                ),
+              )
             ],
           );
         },

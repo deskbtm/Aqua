@@ -197,14 +197,14 @@ class _HomePageState extends State<HomePage> {
       if (_commonModel.enableConnect &&
           (_appIncoming == null || _appIncoming['appMode'] == 'normal')) {
         Timer(Duration(seconds: 1), () async {
-          await SocketConnecter.searchDevicesAndConnect(
-            context,
-            themeModel: _themeModel,
-            commonModel: _commonModel,
-            onNotExpected: (String msg) {
-              showText(msg);
-            },
-          ).catchError((err) {});
+          // await SocketConnecter.searchDevicesAndConnect(
+          //   context,
+          //   themeModel: _themeModel,
+          //   commonModel: _commonModel,
+          //   onNotExpected: (String msg) {
+          //     showText(msg);
+          //   },
+          // ).catchError((err) {});
         });
       }
     }

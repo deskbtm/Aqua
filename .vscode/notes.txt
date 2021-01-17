@@ -1,0 +1,33 @@
+ListView.builder(
+  controller: _scrollController,
+  physics: BouncingScrollPhysics(),
+  itemCount: widget.fileList.length,
+  itemBuilder: (BuildContext context, int index) {
+    SelfFileEntity file = widget.fileList[index];
+    ListFileItemInfo item = ListFileItemInfo(
+      leading: getPreviewIcon(context, _themeModel, file),
+      file: file,
+    );
+
+    return FileItem(
+      mode: widget.mode,
+      isDir: item.file.isDir,
+      leading: item.leading,
+      withAnimation: index < 15,
+      index: index,
+      file: item.file,
+      onLongPress: (details) {
+        if (widget.itemOnLongPress != null) {
+          widget.itemOnLongPress(index);
+        }
+      },
+      onTap: () {
+        if (widget.onItemTap != null) widget.onItemTap(index);
+      },
+      onHozDrag: (dir) async {
+        /// [index] 位数 [dir] 方向 1 向右 -1 左
+        await widget.onHozDrag(index, dir);
+      },
+    );
+  },
+),

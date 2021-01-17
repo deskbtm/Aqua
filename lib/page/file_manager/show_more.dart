@@ -28,8 +28,7 @@ Future<void> uploadToWebDAV(SelfFileEntity file) async {
 }
 
 Future<dynamic> showMoreModal(
-  BuildContext context,
-  StateSetter setState, {
+  BuildContext context, {
   @required ThemeModel themeModel,
   @required CommonModel commonProvider,
   @required SelfFileEntity file,

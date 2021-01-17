@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 export 'package:flutter/services.dart'
@@ -756,7 +757,7 @@ class _LanTextFieldState extends State<LanTextField>
         ),
       ),
     );
-    dynamic theme = _themeModel.themeData;
+    LanFileMoreTheme theme = _themeModel.themeData;
 
     return Semantics(
       enabled: enabled,

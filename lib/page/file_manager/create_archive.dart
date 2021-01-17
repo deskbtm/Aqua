@@ -308,6 +308,7 @@ Future<void> showWaitForArchiveNotification(String val) async {
     title: val,
     onlyAlertOnce: true,
     ongoing: true,
+    autoCancel: true,
     showProgress: true,
     indeterminate: true,
   );

@@ -463,7 +463,7 @@ packages:
     source: hosted
     version: "1.3.0-nullsafety.3"
   mime:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: mime
       url: "https://pub.flutter-io.cn"

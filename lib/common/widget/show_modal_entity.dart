@@ -13,8 +13,11 @@ import 'package:intent/intent.dart' as intent;
 import 'package:intent/action.dart' as action;
 
 Future<void> showUpdateModal(
-    BuildContext context, ThemeModel provider, Map data,
-    {bool tipRemember = true}) async {
+  BuildContext context,
+  ThemeModel provider,
+  Map data, {
+  bool tipRemember = true,
+}) async {
   if (data.isEmpty) {
     return;
   }
@@ -42,7 +45,6 @@ Future<void> showUpdateModal(
     bool checked = false;
     await showTipTextModal(
       context,
-      provider,
       tip: '发现新版本 v$remoteVersion\n$descMsg',
       title: '更新',
       defaultOkText: '下载',

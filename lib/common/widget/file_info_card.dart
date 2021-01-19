@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
+import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';

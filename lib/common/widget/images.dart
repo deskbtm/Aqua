@@ -7,6 +7,7 @@ import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:provider/provider.dart';
 
 class AppImages {
   static Widget folder({double width = 30, double height = 30}) =>
@@ -94,9 +95,9 @@ class AppImages {
           width: width, height: height, fit: BoxFit.cover);
 }
 
-Widget getPreviewIcon(
-    BuildContext context, ThemeModel themeModel, SelfFileEntity file) {
+Widget getPreviewIcon(BuildContext context, SelfFileEntity file) {
   Widget previewIcon;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
   if (file.ext == '.apk') {
     try {
       if (file.apkIcon != null) {

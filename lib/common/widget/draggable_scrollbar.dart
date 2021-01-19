@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -88,42 +89,6 @@ class DraggableScrollbar extends StatefulWidget {
             _thumbRRectBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
         super(key: key);
 
-  // DraggableScrollbar.arrows({
-  //   Key key,
-  //   Key scrollThumbKey,
-  //   this.alwaysVisibleScrollThumb = false,
-  //   @required this.child,
-  //   @required this.controller,
-  //   this.heightScrollThumb = 48.0,
-  //   this.backgroundColor = Colors.white,
-  //   this.padding,
-  //   this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
-  //   this.scrollbarTimeToFade = const Duration(milliseconds: 600),
-  //   this.labelTextBuilder,
-  //   this.labelConstraints,
-  // })  : assert(child.scrollDirection == Axis.vertical),
-  //       scrollThumbBuilder =
-  //           _thumbArrowBuilder(scrollThumbKey, alwaysVisibleScrollThumb),
-  //       super(key: key);
-
-  // DraggableScrollbar.semicircle({
-  //   Key key,
-  //   Key scrollThumbKey,
-  //   this.alwaysVisibleScrollThumb = false,
-  //   @required this.child,
-  //   @required this.controller,
-  //   this.heightScrollThumb = 48.0,
-  //   this.backgroundColor = Colors.white,
-  //   this.padding,
-  //   this.scrollbarAnimationDuration = const Duration(milliseconds: 300),
-  //   this.scrollbarTimeToFade = const Duration(milliseconds: 600),
-  //   this.labelTextBuilder,
-  //   this.labelConstraints,
-  // })  : assert(child.scrollDirection == Axis.vertical),
-  //       scrollThumbBuilder = _thumbSemicircleBuilder(
-  //           heightScrollThumb * 0.6, scrollThumbKey, alwaysVisibleScrollThumb),
-  //       super(key: key);
-
   @override
   _DraggableScrollbarState createState() => _DraggableScrollbarState();
 
@@ -159,82 +124,6 @@ class DraggableScrollbar extends StatefulWidget {
       child: scrollThumbAndLabel,
     );
   }
-
-  // static ScrollThumbBuilder _thumbSemicircleBuilder(
-  //     double width, Key scrollThumbKey, bool alwaysVisibleScrollThumb) {
-  //   return (
-  //     Color backgroundColor,
-  //     Animation<double> thumbAnimation,
-  //     Animation<double> labelAnimation,
-  //     double height, {
-  //     Text labelText,
-  //     BoxConstraints labelConstraints,
-  //   }) {
-  //     final scrollThumb = CustomPaint(
-  //       key: scrollThumbKey,
-  //       foregroundPainter: ArrowCustomPainter(Colors.grey),
-  //       child: Material(
-  //         elevation: 4.0,
-  //         child: Container(
-  //           constraints: BoxConstraints.tight(Size(width, height)),
-  //         ),
-  //         color: backgroundColor,
-  //         borderRadius: BorderRadius.only(
-  //           topLeft: Radius.circular(height),
-  //           bottomLeft: Radius.circular(height),
-  //           topRight: Radius.circular(4.0),
-  //           bottomRight: Radius.circular(4.0),
-  //         ),
-  //       ),
-  //     );
-
-  //     return buildScrollThumbAndLabel(
-  //       scrollThumb: scrollThumb,
-  //       backgroundColor: backgroundColor,
-  //       thumbAnimation: thumbAnimation,
-  //       labelAnimation: labelAnimation,
-  //       labelText: labelText,
-  //       labelConstraints: labelConstraints,
-  //       alwaysVisibleScrollThumb: alwaysVisibleScrollThumb,
-  //     );
-  //   };
-  // }
-
-  // static ScrollThumbBuilder _thumbArrowBuilder(
-  //     Key scrollThumbKey, bool alwaysVisibleScrollThumb) {
-  //   return (
-  //     Color backgroundColor,
-  //     Animation<double> thumbAnimation,
-  //     Animation<double> labelAnimation,
-  //     double height, {
-  //     Text labelText,
-  //     BoxConstraints labelConstraints,
-  //   }) {
-  //     final scrollThumb = ClipPath(
-  //       child: Container(
-  //         height: height,
-  //         width: 20.0,
-  //         decoration: BoxDecoration(
-  //           color: backgroundColor,
-  //           borderRadius: BorderRadius.all(
-  //             Radius.circular(12.0),
-  //           ),
-  //         ),
-  //       ),
-  //       clipper: ArrowClipper(),
-  //     );
-
-  //     return buildScrollThumbAndLabel(
-  //       scrollThumb: scrollThumb,
-  //       backgroundColor: backgroundColor,
-  //       thumbAnimation: thumbAnimation,
-  //       labelAnimation: labelAnimation,
-  //       labelText: labelText,
-  //       labelConstraints: labelConstraints,
-  //       alwaysVisibleScrollThumb: alwaysVisibleScrollThumb,
-  //     );
-  //   };
-  // }
 
   static ScrollThumbBuilder _thumbRRectBuilder(
       Key scrollThumbKey, bool alwaysVisibleScrollThumb) {

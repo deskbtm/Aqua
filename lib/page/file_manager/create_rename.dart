@@ -6,20 +6,23 @@ import 'package:lan_file_more/common/widget/dialog.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/common/widget/text_field.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/theme.dart';
+import 'package:provider/provider.dart';
+
+import 'file_utils.dart';
 
 Future<void> createRenameModal(
   BuildContext context,
   SelfFileEntity file, {
-  @required ThemeModel provider,
   @required VoidCallback onExists,
   @required Function(String) onSuccess,
   @required Function(dynamic) onError,
 }) async {
   MixUtils.safePop(context);
-  dynamic themeData = provider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
   TextEditingController textEditingController = TextEditingController();
 
   showCupertinoModal(
@@ -40,7 +43,7 @@ Future<void> createRenameModal(
           SizedBox(height: 10),
         ],
         onOk: () async {
-          String newPath = FileAction.renameNewPath(
+          String newPath = LanFileUtils.renameNewPath(
               file.entity.path, textEditingController.text);
           if (await File(newPath).exists() ||
               await Directory(newPath).exists()) {

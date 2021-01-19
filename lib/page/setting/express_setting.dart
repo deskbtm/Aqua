@@ -98,7 +98,6 @@ class ExpressSettingPageState extends State<ExpressSettingPage> {
 
               showSelectModal(
                 context,
-                _themeModel,
                 title: '常用IP列表',
                 subTitle: '长按移除',
                 options: ipStatisticsWidget,

@@ -12,6 +12,7 @@ import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/model/theme_model.dart';
+import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -120,7 +121,6 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
       BuildContext context, SelfFileEntity img) async {
     return showTipTextModal(
       context,
-      _themeModel,
       tip: '确定删除此照片?',
       onOk: () async {
         await img.entity.delete();

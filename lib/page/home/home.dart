@@ -85,7 +85,6 @@ class _HomePageState extends State<HomePage> {
 
     await showForceScopeModal(
       context,
-      _themeModel,
       title: '请仔细阅读教程',
       tip: '该界面无返返回, 需前往教程后, 方可消失',
       defaultOkText: '前往教程',

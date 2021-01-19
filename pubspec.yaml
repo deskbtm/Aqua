@@ -33,7 +33,6 @@ dependencies:
   device_info: ^0.4.2+9
   shared_preferences: ^0.5.12+2
   http_parser: '>=0.0.2+2 <4.0.0'
-  mime: '>=0.9.0 <0.10.0'
   path: '>=1.1.0 <2.0.0'
   intl: ^0.16.1
   android_mix:
@@ -86,6 +85,8 @@ dependencies:
   pure_video_player: 
     path: plugins/pure_video_player
   flutter_easyrefresh: ^2.1.8
+  # mime: ^0.9.7
+
 
   # wechat_assets_picker: ^4.2.2
 

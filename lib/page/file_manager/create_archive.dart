@@ -11,23 +11,27 @@ import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/external/menu/menu.dart';
 import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/notification.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:path/path.dart' as pathLib;
+import 'package:provider/provider.dart';
+
+import 'file_utils.dart';
 
 Future<void> createArchiveModal(
   BuildContext context, {
-  @required CommonModel commonProvider,
-  @required ThemeModel themeProvider,
   @required Directory currentDir,
   @required Function(BuildContext) onSuccessUpdate,
 }) async {
   MixUtils.safePop(context);
-  if (commonProvider.selectedFiles.isNotEmpty) {
-    dynamic themeData = themeProvider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
+
+  if (commonModel.selectedFiles.isNotEmpty) {
+    LanFileMoreTheme themeData = themeModel.themeData;
     bool popAble = true;
     String archiveType = 'zip';
     String archiveText = 'zip';
@@ -97,7 +101,6 @@ Future<void> createArchiveModal(
 
                                 await showSingleTextFieldModal(
                                   context,
-                                  themeProvider,
                                   title: '输入密码',
                                   transparent: true,
                                   onOk: (val) async {
@@ -204,7 +207,7 @@ Future<void> createArchiveModal(
                             ),
                           ),
                         )
-                      : loadingIndicator(context, themeProvider),
+                      : loadingIndicator(context, themeModel),
                   SizedBox(height: 10),
                 ],
                 defaultOkText: '确定',
@@ -217,14 +220,14 @@ Future<void> createArchiveModal(
                     popAble = false;
                   });
                   await Future.delayed(Duration(milliseconds: 50));
-                  List<String> paths = commonProvider.selectedFiles
+                  List<String> paths = commonModel.selectedFiles
                       .map((e) => e.entity.path)
                       .toList();
 
-                  String generatedArchivePath = FileAction.newPathWhenExists(
+                  String generatedArchivePath = LanFileUtils.newPathWhenExists(
                       pathLib.join(
                         currentDir.path,
-                        FileAction.getArchiveName(paths, currentDir.path),
+                        LanFileUtils.getArchiveName(paths, currentDir.path),
                       ),
                       '.' + archiveType);
 
@@ -272,7 +275,7 @@ Future<void> createArchiveModal(
                           .createArchive(
                         paths,
                         currentDir.path,
-                        FileAction.getName(generatedArchivePath),
+                        LanFileUtils.getName(generatedArchivePath),
                         type,
                         compressionType: cType,
                       )

@@ -3,62 +3,75 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/common/widget/text_field.dart';
+import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:lan_file_more/utils/theme.dart';
 import 'package:path/path.dart' as pathLib;
+import 'package:provider/provider.dart';
 import 'file_list_view.dart';
+import 'file_utils.dart';
 
 Future<void> createSearchModal(
   BuildContext context, {
-  // @required List<SelfFileEntity> fileList,
-  @required Directory currentDir,
-  @required ThemeModel provider,
+  @required Function(bool) onChangePopLocker,
 }) async {
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  FileModel fileModel = Provider.of<FileModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
+
   TextEditingController textEditingController = TextEditingController();
   StreamSubscription<FileSystemEntity> listener;
   List<SelfFileEntity> fileList = [];
-
+  Timer timer;
   bool visible = false;
+  bool mutex = true;
+  onChangePopLocker(true);
 
-  await showCupertinoModalPopup(
+  await showCupertinoModal(
     context: context,
     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
     builder: (BuildContext context) {
       return StatefulBuilder(
         builder:
             (BuildContext context, void Function(void Function()) changeState) {
-          Timer(Duration(milliseconds: 250), () {
-            changeState(() {
-              visible = true;
-            });
-          });
-
-          textEditingController.addListener(() {
+          void submitSearch([text]) {
             listener?.cancel();
             fileList = [];
-            listener = currentDir.list(recursive: false).listen((event) async {
+            listener = fileModel.currentDir.list(recursive: false).listen(
+                (event) async {
               String name = pathLib.basename(event.path);
               if (textEditingController.text != '' &&
-                  name.contains(RegExp(textEditingController.text,
-                      caseSensitive: false))) {
+                  name.contains(
+                    RegExp(textEditingController.text, caseSensitive: false),
+                  )) {
                 SelfFileEntity file =
-                    await FileAction.createSelfFileEntity(event);
+                    await LanFileUtils.createSelfFileEntity(event);
                 fileList.insert(0, file);
               }
             }, onDone: () {
               changeState(() {});
             });
-          });
+          }
+
+          if (mutex) {
+            mutex = false;
+            timer = Timer(Duration(milliseconds: 250), () {
+              changeState(() {
+                visible = true;
+              });
+            });
+          }
 
           return WillPopScope(
             onWillPop: () async {
               changeState(() {
                 visible = false;
               });
-              // textEditingController = null;
+
               return true;
             },
             child: SafeArea(
@@ -71,30 +84,62 @@ Future<void> createSearchModal(
                       height: 40,
                       margin: EdgeInsets.only(
                           left: 8, right: 8, top: 12, bottom: 12),
-                      child: LanTextField(
-                        style: TextStyle(fontSize: 16),
-                        // focusNode: ,
-                        controller: textEditingController,
-                        placeholder: '搜索...',
-                        maxLines: 1,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 40,
+                              child: LanTextField(
+                                style: TextStyle(fontSize: 16),
+                                controller: textEditingController,
+                                placeholder: '搜索...',
+                                onSubmitted: submitSearch,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          GestureDetector(
+                            onTap: submitSearch,
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                color: themeData.inputColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5)),
+                              ),
+                              alignment: Alignment.center,
+                              child: Icon(Icons.search),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(
                       child: Container(
                         child: FileListView(
+                          left: true,
                           onScroll: () {
                             FocusScope.of(context).requestFocus(FocusNode());
                           },
                           fileList: fileList,
                           itemBgColor:
-                              provider.isDark ? null : Color(0xF3EBEBEB),
-                          mode: FileManagerMode.surf,
-                          onItemTap: (index) async {
+                              themeModel.isDark ? null : Color(0xFFFFFFFF),
+                          mode: FileManagerMode.search,
+                          onDirItemTap: (index) async {
                             FocusScope.of(context).requestFocus(FocusNode());
                           },
                           onTapEmpty: () {
                             FocusScope.of(context).requestFocus(FocusNode());
                             MixUtils.safePop(context);
+                          },
+                          // fileModel: fileModel,
+                          onChangeCurrentDir: (dir) {},
+                          selectLimit: null,
+                          onChangePopLocker: onChangePopLocker,
+                          update2Side: () async {
+                            submitSearch();
                           },
                         ),
                       ),
@@ -108,4 +153,6 @@ Future<void> createSearchModal(
       );
     },
   );
+  timer?.cancel();
+  onChangePopLocker(false);
 }

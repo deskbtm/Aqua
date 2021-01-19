@@ -9,7 +9,6 @@ import 'package:lan_file_more/common/widget/action_button.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/external/webdav/webdav.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/error.dart';
@@ -18,6 +17,9 @@ import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/utils/webdav.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as pathLib;
+import 'package:provider/provider.dart';
+
+import 'file_utils.dart';
 
 Future<void> uploadToWebDAV(SelfFileEntity file) async {
   Client client = (await WebDavUtils().init()).client;
@@ -29,8 +31,6 @@ Future<void> uploadToWebDAV(SelfFileEntity file) async {
 
 Future<dynamic> showMoreModal(
   BuildContext context, {
-  @required ThemeModel themeModel,
-  @required CommonModel commonProvider,
   @required SelfFileEntity file,
 }) async {
   MixUtils.safePop(context);
@@ -40,6 +40,8 @@ Future<dynamic> showMoreModal(
     );
   }
 
+  CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
   String filesPath = await AndroidMix.storage.getFilesDir;
 
   return showCupertinoModal(
@@ -55,7 +57,7 @@ Future<dynamic> showMoreModal(
               Directory sandbox = Directory('$filesPath/rootfs/root');
               if (sandbox.existsSync()) {
                 showText('复制中, 请等待');
-                await FileAction.copy(file, sandbox.path);
+                await LanFileUtils.copy(file, sandbox.path);
                 showText('复制完成');
               } else {
                 showText('沙盒不存在');
@@ -65,9 +67,9 @@ Future<dynamic> showMoreModal(
           ActionButton(
             content: '上传WebDAV',
             onTap: () async {
-              if (commonProvider.webDavAddr == null ||
-                  commonProvider.webDavPwd == null ||
-                  commonProvider.webDavUsername == null) {
+              if (commonModel.webDavAddr == null ||
+                  commonModel.webDavPwd == null ||
+                  commonModel.webDavUsername == null) {
                 showText('请先设置WebDAV');
                 return;
               }
@@ -93,7 +95,6 @@ Future<dynamic> showMoreModal(
           ActionButton(
             content: '编辑器打开',
             onTap: () async {
-              // MixUtils.safePop(context);
               Navigator.of(context, rootNavigator: true).push(
                 CupertinoPageRoute(builder: (BuildContext context) {
                   return FileEditorPage(

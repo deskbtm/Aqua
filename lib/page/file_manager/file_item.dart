@@ -14,6 +14,7 @@ import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 import 'cache_file_info.dart';
+import 'file_utils.dart';
 
 enum FileItemType { folder, file }
 

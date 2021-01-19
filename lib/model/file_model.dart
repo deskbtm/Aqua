@@ -1,11 +1,27 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
+import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/utils/store.dart';
 
 class FileModel extends ChangeNotifier {
   String _sortType;
   String get sortType => _sortType;
+
+  Directory _currentDir;
+  Directory get currentDir => _currentDir;
+
+  void setCurrentDir(Directory dir) {
+    _currentDir = dir;
+  }
+
+  Directory _rootDir;
+  Directory get rootDir => _rootDir;
+
+  void setRootDir(Directory dir) {
+    _rootDir = dir;
+  }
 
   Future<void> setSortType(String arg) async {
     _sortType = arg;

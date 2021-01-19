@@ -158,8 +158,8 @@ class SocketConnecter {
             Timer timer;
             showSelectModal(
               context,
-              themeModel,
               options: message,
+
               title: '选择连接IP',
               onSelected: (index) {
                 // 点击了就取消 2.5s 后自动消失的任务

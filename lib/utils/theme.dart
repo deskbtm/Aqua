@@ -19,6 +19,7 @@ abstract class LanFileMoreTheme {
   Brightness systemNavigationBarIconBrightness;
   Color systemNavigationBarColor;
   Color divideColor;
+  Color modalColor(context);
 }
 
 class LightTheme implements LanFileMoreTheme {
@@ -40,6 +41,16 @@ class LightTheme implements LanFileMoreTheme {
   Brightness systemNavigationBarIconBrightness = Brightness.dark;
   Color systemNavigationBarColor = Colors.white;
   Color divideColor = Colors.grey[100];
+
+  Color modalColor(context) {
+    return CupertinoDynamicColor.resolve(
+      CupertinoDynamicColor.withBrightness(
+        color: Color(0x2A9B9B9B),
+        darkColor: Color(0x5D8F8F8F),
+      ),
+      context,
+    );
+  }
 }
 
 class DarkTheme implements LanFileMoreTheme {
@@ -61,4 +72,13 @@ class DarkTheme implements LanFileMoreTheme {
   Brightness systemNavigationBarIconBrightness = Brightness.light;
   Color systemNavigationBarColor = Colors.black;
   Color divideColor = Color(0xff222222);
+  Color modalColor(context) {
+    return CupertinoDynamicColor.resolve(
+      CupertinoDynamicColor.withBrightness(
+        color: Color(0x17000000),
+        darkColor: Color(0x33000000),
+      ),
+      context,
+    );
+  }
 }

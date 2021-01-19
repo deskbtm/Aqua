@@ -12,8 +12,8 @@ import 'package:lan_file_more/common/widget/switch.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
+import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/purchase/purchase.dart';
 import 'package:lan_file_more/page/setting/about.dart';
@@ -167,7 +167,6 @@ class SettingPageState extends State<SettingPage> {
                 onPressed: () async {
                   await showTipTextModal(
                     context,
-                    _themeModel,
                     title: '用户退出',
                     tip: '确定退出？退出后购买也会被删除',
                     onOk: () async {
@@ -228,7 +227,6 @@ class SettingPageState extends State<SettingPage> {
               onPressed: () async {
                 await showSingleTextFieldModal(
                   context,
-                  _themeModel,
                   title: '更改端口',
                   placeholder: _commonModel.filePort,
                   onOk: (val) async {
@@ -304,7 +302,6 @@ class SettingPageState extends State<SettingPage> {
                 onPressed: () {
                   showSingleTextFieldModal(
                     context,
-                    _themeModel,
                     title: '静态上传保存路径',
                     initText: _commonModel.storageRootPath + '/',
                     placeholder: '以 ${_commonModel.storageRootPath}/ 开头',
@@ -547,7 +544,6 @@ class SettingPageState extends State<SettingPage> {
             onTap: () async {
               await showSingleTextFieldModal(
                 context,
-                _themeModel,
                 title: '服务器地址',
                 placeholder: _commonModel.webDavAddr,
                 onOk: (val) {
@@ -571,7 +567,6 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                _themeModel,
                 title: '账号',
                 placeholder: _commonModel.webDavUsername,
                 onOk: (val) {
@@ -598,7 +593,6 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                _themeModel,
                 title: '密码',
                 onOk: (val) {
                   _commonModel.setWebDavPwd(val);

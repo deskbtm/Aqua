@@ -54,7 +54,7 @@ Handler createWebHandler(
               if (!uri.path.endsWith('/'))
                 return _redirectToAddTrailingSlash(uri);
               return listDirectory(fileSystemPath, fsPath,
-                  isDark: isDark, serverUrl: serverUrl);
+                  serverUrl: serverUrl);
             }
           }
 
@@ -195,7 +195,7 @@ Handler createFilesHandler(
     if (file.existsSync()) {
       return _handleFile(request, file, () => contentType);
     }
-    return listFiles(pathList, isDark: isDark, serverUrl: serverUrl);
+    return listFiles(pathList, serverUrl: serverUrl);
   };
 }
 

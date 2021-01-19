@@ -166,7 +166,6 @@ class _PurchasePageState extends State<PurchasePage> {
             onPressed: () async {
               await showSingleTextFieldModal(
                 context,
-                provider,
                 title: '确认关注',
                 tip: '个人主页 详情按钮 长按复制',
                 defaultCancelText: '跳转bilibili',
@@ -393,7 +392,6 @@ class _PurchasePageState extends State<PurchasePage> {
                                 onPressed: () async {
                                   await showTwoTextFieldModal(
                                     context,
-                                    _themeModel,
                                     fPlaceholder: '邮箱',
                                     sPlaceholder: '密码',
                                     title: '登录',
@@ -441,7 +439,6 @@ class _PurchasePageState extends State<PurchasePage> {
                                 onPressed: () async {
                                   await showTwoTextFieldModal(
                                     context,
-                                    _themeModel,
                                     fPlaceholder: '使用邮箱',
                                     sPlaceholder: '密码(数字加英文)',
                                     title: '注册',

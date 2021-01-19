@@ -12,11 +12,13 @@ import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
 import 'package:lan_file_more/model/common_model.dart';
+import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/page/file_manager/file_action.dart';
-import 'package:lan_file_more/page/file_manager/file_action_ui.dart';
 import 'package:lan_file_more/page/file_manager/file_item.dart';
-import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/file_manager/file_manager.dart';
+import 'package:provider/provider.dart';
+
+import 'file_utils.dart';
 
 class ListFileItemInfo {
   final Widget leading;
@@ -30,30 +32,33 @@ class ListFileItemInfo {
 
 class FileListView extends StatefulWidget {
   final List<SelfFileEntity> fileList;
-  final Function(int) onItemTap;
+  final Function(SelfFileEntity) onDirItemTap;
   final FileManagerMode mode;
-  final Function onUpdateView;
+  final Function update2Side;
   final Color itemBgColor;
   final Function onScroll;
   final Function onTapEmpty;
-  final ThemeModel themeModel;
-  final CommonModel commonModel;
-  final Directory currentDir;
+  // final FileModel fileModel;
+
   final Function(Directory) onChangeCurrentDir;
+  final Function(bool) onChangePopLocker;
+  final int selectLimit;
+  final bool left;
 
   const FileListView({
     Key key,
-    @required this.fileList,
-    this.onItemTap,
-    this.onUpdateView,
-    @required this.mode,
-    this.itemBgColor,
     this.onScroll,
     this.onTapEmpty,
-    this.themeModel,
-    this.commonModel,
-    @required this.currentDir,
+    this.itemBgColor,
+    this.onDirItemTap,
+    @required this.fileList,
+    @required this.update2Side,
+    @required this.mode,
+    @required this.left,
+    @required this.selectLimit,
     @required this.onChangeCurrentDir,
+    @required this.onChangePopLocker,
+    // @required this.fileModel,
   }) : super(key: key);
 
   @override
@@ -65,38 +70,27 @@ class FileListView extends StatefulWidget {
 class _FileListViewState extends State<FileListView> {
   ScrollController _scrollController;
   EasyRefreshController _controller;
-
-  ThemeModel get themeModel => widget.themeModel;
-  CommonModel get commonModel => widget.commonModel;
-  Function get onUpdateView => widget.onUpdateView;
-  FileManagerMode get mode => widget.mode;
-  Directory get currentDir => widget.currentDir;
-  Function(Directory) get onChangeCurrentDir => widget.onChangeCurrentDir;
+  FileModel fileModel;
 
   FileActionUI _fileActionUI;
 
   @override
   void initState() {
     super.initState();
+    fileModel = Provider.of<FileModel>(context, listen: false);
     _controller = EasyRefreshController();
     _scrollController = ScrollController();
     _fileActionUI = FileActionUI(
-      commonModel: commonModel,
-      themeModel: themeModel,
-      update2Side: onUpdateView,
-      mode: mode,
+      update2Side: widget.update2Side,
+      selectLimit: widget.selectLimit,
+      mode: widget.mode,
+      fileModel: fileModel,
+      left: widget.left,
     );
     if (widget.onScroll != null) {
       _scrollController.addListener(widget.onScroll);
     }
   }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   // _themeModel = Provider.of<ThemeModel>(context);
-  //   // _commonModel = Provider.of<CommonModel>(context);
-  // }
 
   void showText(String content) {
     BotToast.showText(text: content);
@@ -110,8 +104,8 @@ class _FileListViewState extends State<FileListView> {
     _controller = null;
   }
 
-  Future<void> _showOptionsWhenPressedEmpty(BuildContext context,
-      {bool left = false}) async {
+  Future<void> _showOptionsWhenPressedEmpty(BuildContext context) async {
+    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
     bool sharedNotEmpty = commonModel.selectedFiles.isNotEmpty;
     showCupertinoModal(
       context: context,
@@ -123,14 +117,20 @@ class _FileListViewState extends State<FileListView> {
               ActionButton(
                 content: '归档到此',
                 onTap: () async {
-                  await _fileActionUI.showCreateArchiveModal(context);
+                  await _fileActionUI.showCreateArchiveModal(
+                    context,
+                    mounted: mounted,
+                  );
                 },
               ),
             if (sharedNotEmpty)
               ActionButton(
                 content: '移动到此',
                 onTap: () async {
-                  await _fileActionUI.handleMove(context);
+                  await _fileActionUI.handleMove(
+                    context,
+                    mounted: mounted,
+                  );
                 },
               ),
           ],
@@ -139,7 +139,10 @@ class _FileListViewState extends State<FileListView> {
               ActionButton(
                 content: '复制到此',
                 onTap: () async {
-                  await _fileActionUI.copyModal(context);
+                  await _fileActionUI.copyModal(
+                    context,
+                    mounted: mounted,
+                  );
                 },
               ),
               ActionButton(
@@ -147,7 +150,6 @@ class _FileListViewState extends State<FileListView> {
                 onTap: () async {
                   await _fileActionUI.handleExtractArchive(
                     context,
-                    currentDir: null,
                     mounted: mounted,
                   );
                 },
@@ -156,7 +158,7 @@ class _FileListViewState extends State<FileListView> {
             ActionButton(
               content: '新建',
               onTap: () async {
-                await _fileActionUI.showCreateFileModal(context, left: left);
+                await _fileActionUI.showCreateFileModal(context);
               },
             ),
           ],
@@ -198,14 +200,14 @@ class _FileListViewState extends State<FileListView> {
                   controller: _controller,
                   scrollController: _scrollController,
                   header: TaurusHeader(),
-                  onRefresh: widget.onUpdateView,
+                  onRefresh: widget.update2Side,
                   slivers: [
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           SelfFileEntity file = widget.fileList[index];
                           ListFileItemInfo item = ListFileItemInfo(
-                            leading: getPreviewIcon(context, themeModel, file),
+                            leading: getPreviewIcon(context, file),
                             file: file,
                           );
                           return FileItem(
@@ -220,17 +222,30 @@ class _FileListViewState extends State<FileListView> {
                               await _fileActionUI.showFileActionModal(
                                 context,
                                 file: item.file,
-                                currentDir: currentDir,
-                                onChangeCurrentDir: onChangeCurrentDir,
+                                onChangeCurrentDir: widget.onChangeCurrentDir,
+                                mounted: mounted,
                               );
                             },
                             onTap: () {
-                              if (widget.onItemTap != null)
-                                widget.onItemTap(index);
+                              if (file.isDir) {
+                                if (widget.onDirItemTap != null) {
+                                  widget.onDirItemTap(item.file);
+                                }
+                              } else {
+                                _fileActionUI.openFileActionByExt(
+                                  context,
+                                  item.file,
+                                  index: index,
+                                  fileList: widget.fileList,
+                                  onChangePopLocker: widget.onChangePopLocker,
+                                  updateView: setState,
+                                );
+                              }
                             },
                             onHozDrag: (dir) async {
                               /// [index] 位数 [dir] 方向 1 向右 -1 左
-                              _fileActionUI.handleHozDragItem(item.file, dir);
+                              _fileActionUI.handleHozDragItem(
+                                  context, item.file, dir);
                             },
                           );
                         },

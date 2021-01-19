@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lan_file_more/common/widget/dialog.dart';
 import 'package:lan_file_more/common/widget/loading_flipping.dart';
@@ -10,6 +11,7 @@ import 'package:lan_file_more/common/widget/text_field.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class SplitSelectionModal extends StatefulWidget {
@@ -141,11 +143,9 @@ class SplitSelectionModalState extends State<SplitSelectionModal> {
 }
 
 Future<void> showForceScopeModal(
-  BuildContext context,
-  ThemeModel provider, {
+  BuildContext context, {
   String title = '',
   String tip = '',
-  @required Function onOk,
   Function onCancel,
   bool transparent = false,
   String defaultOkText,
@@ -153,14 +153,15 @@ Future<void> showForceScopeModal(
   List<Widget> additionList,
   bool withOk = true,
   bool withCancel = true,
+  @required Function onOk,
 }) async {
   MixUtils.safePop(context);
-  LanFileMoreTheme themeData = provider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
   bool popAble = false;
 
   return showCupertinoModal(
     context: context,
-    // semanticsDismissible: true,
     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
     builder: (context) {
       return StatefulBuilder(
@@ -290,18 +291,13 @@ Future<T> showCupertinoModal<T>({
   bool semanticsDismissible,
   bool transparent = false,
 }) {
-  assert(useRootNavigator != null);
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
+
   return Navigator.of(context, rootNavigator: useRootNavigator).push(
     CupertinoModalPopupRoute<T>(
-      barrierColor: transparent
-          ? Color(0x00382F2F)
-          : CupertinoDynamicColor.resolve(
-              CupertinoDynamicColor.withBrightness(
-                color: Color(0x17000000),
-                darkColor: Color(0x33000000),
-              ),
-              context,
-            ),
+      barrierColor:
+          transparent ? Color(0x00382F2F) : themeData.modalColor(context),
       barrierLabel: 'Dismiss',
       builder: builder,
       filter: filter,
@@ -311,8 +307,7 @@ Future<T> showCupertinoModal<T>({
 }
 
 Future<dynamic> showSingleTextFieldModal(
-  BuildContext context,
-  ThemeModel provider, {
+  BuildContext context, {
   bool popPreviousWindow = false,
   String title = '',
   String tip,
@@ -324,7 +319,8 @@ Future<dynamic> showSingleTextFieldModal(
   String defaultCancelText,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  LanFileMoreTheme themeData = provider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
   TextEditingController textEditingController = TextEditingController();
 
   if (initText != null) textEditingController.text = initText;
@@ -370,8 +366,7 @@ Future<dynamic> showSingleTextFieldModal(
 }
 
 Future<dynamic> showTwoTextFieldModal(
-  BuildContext context,
-  ThemeModel provider, {
+  BuildContext context, {
   bool popPreviousWindow = false,
   String title = '',
   String fPlaceholder,
@@ -382,7 +377,8 @@ Future<dynamic> showTwoTextFieldModal(
   String defaultCancelText,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  LanFileMoreTheme themeData = provider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
   TextEditingController fEditingController = TextEditingController();
   TextEditingController sEditingController = TextEditingController();
 
@@ -439,8 +435,7 @@ Future<dynamic> showTwoTextFieldModal(
 
 /// 展示提示文字
 Future<dynamic> showTipTextModal(
-  BuildContext context,
-  ThemeModel provider, {
+  BuildContext context, {
   bool popPreviousWindow = false,
   String title = '',
   String tip = '',
@@ -453,7 +448,8 @@ Future<dynamic> showTipTextModal(
   List<Widget> additionList,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  LanFileMoreTheme themeData = provider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
   bool confirm = false;
 
   return showCupertinoModal(
@@ -506,8 +502,7 @@ Future<dynamic> showTipTextModal(
 }
 
 Future<dynamic> showSelectModal(
-  BuildContext context,
-  ThemeModel provider, {
+  BuildContext context, {
   bool popPreviousWindow = false,
   String title = '',
   String subTitle = '',
@@ -524,7 +519,8 @@ Future<dynamic> showSelectModal(
   List<Widget> leadingList,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  LanFileMoreTheme themeData = provider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
   if (doAction != null) doAction(context);
   List<dynamic> tmpOptions = options;
 
@@ -610,12 +606,12 @@ Future<dynamic> showSelectModal(
 }
 
 Future<dynamic> showLoadingModal(
-  BuildContext context,
-  ThemeModel provider, {
+  BuildContext context, {
   bool popPreviousWindow = false,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  LanFileMoreTheme themeData = provider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
 
   return showCupertinoModal(
     context: context,
@@ -645,13 +641,13 @@ Future<dynamic> showLoadingModal(
 
 Future<dynamic> showQrcodeModal(
   BuildContext context,
-  String data,
-  ThemeModel provider, {
+  String data, {
   bool popPreviousWindow = false,
   String title = '扫描二维码',
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
-  LanFileMoreTheme themeData = provider.themeData;
+  ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
+  LanFileMoreTheme themeData = themeModel.themeData;
 
   return showCupertinoModal(
     context: context,

@@ -80,7 +80,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                _themeModel,
                 title: '登录密码',
                 onOk: (val) async {
                   await _commonModel.setCodeSrvPwd(val);
@@ -115,7 +114,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                 onPressed: () async {
                   showSingleTextFieldModal(
                     context,
-                    _themeModel,
                     title: '更改端口',
                     placeholder: _commonModel.codeSrvPort,
                     onOk: (val) {
@@ -230,7 +228,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                     onPressed: () async {
                       await showSingleTextFieldModal(
                         context,
-                        _themeModel,
                         title: 'alpine 源',
                         onOk: (val) async {
                           await cutils.setChineseRepo(val).then((value) async {
@@ -269,7 +266,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () async {
               showTipTextModal(
                 context,
-                _themeModel,
                 title: '删除沙盒',
                 tip: '确定删除沙盒以及code server?',
                 confirmedView: loadingIndicator(context, _themeModel),

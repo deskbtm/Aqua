@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
+import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
 import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/web/body_parser/src/shelf_body_parser.dart';
@@ -15,7 +16,6 @@ import 'package:lan_file_more/common/widget/images.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/switch.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_item.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/model/common_model.dart';
@@ -145,7 +145,7 @@ class _LanSharePageState extends State<LanSharePage>
           Wakelock.enable();
         }
 
-        await showQrcodeModal(context, 'http://$addr', _themeModel);
+        await showQrcodeModal(context, 'http://$addr');
       } else {
         _server?.close();
         showText('共享关闭');
@@ -224,7 +224,7 @@ class _LanSharePageState extends State<LanSharePage>
           debugPrint(data);
         });
 
-        await showQrcodeModal(context, 'http://$codeAddr', _themeModel);
+        await showQrcodeModal(context, 'http://$codeAddr');
       } else {
         await utils.killNodeServer();
         LocalNotification.plugin?.cancel(2);
@@ -316,7 +316,6 @@ class _LanSharePageState extends State<LanSharePage>
                                       onPressed: () async {
                                         showSingleTextFieldModal(
                                           context,
-                                          _themeModel,
                                           title: '手动设置IP',
                                           onOk: (val) async {
                                             await _commonModel
@@ -358,12 +357,12 @@ class _LanSharePageState extends State<LanSharePage>
                                   ],
                                 ),
                         ),
-                        ...[
-                          CupertinoButton(
-                            child: Text('测试按钮'),
-                            onPressed: () async {},
-                          )
-                        ]
+                        // ...[
+                        //   CupertinoButton(
+                        //     child: Text('测试按钮'),
+                        //     onPressed: () async {},
+                        //   )
+                        // ]
                       ],
                     );
                   },
@@ -393,8 +392,7 @@ class _LanSharePageState extends State<LanSharePage>
                         SelfFileEntity file =
                             _commonModel.selectedFiles.elementAt(index);
 
-                        Widget previewIcon =
-                            getPreviewIcon(context, _themeModel, file);
+                        Widget previewIcon = getPreviewIcon(context, file);
                         return Dismissible(
                           key: ObjectKey(file),
                           onDismissed: (direction) {

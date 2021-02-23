@@ -164,7 +164,7 @@ class _LanSharePageState extends State<LanSharePage>
   Future<void> _openCodeServer(BuildContext context, bool val,
       {String codeAddr}) async {
     if (!_commonModel.isPurchased) {
-      showText('请先购买 "Pure管理器" for developer');
+      showText('请先购买 "IOS管理器" for developer');
       return;
     }
     CodeSrvUtils utils = await CodeSrvUtils().init();

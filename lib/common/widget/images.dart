@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_glide/flutter_glide.dart';
 import 'package:lan_file_more/common/widget/function_widget.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';

@@ -21,7 +21,6 @@ class PrivacyPolicyPage extends StatefulWidget {
 
 class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   ThemeModel _themeModel;
-  CommonModel _commonModel;
   bool _mutex;
   String _html;
 
@@ -35,11 +34,9 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
     if (_mutex) {
       try {
-        dio.Response res =
-            await req().get(_commonModel.baseUrl + '/assets/privacy.html');
+        dio.Response res = await req().get('/assets/privacy.html');
         if (res.data != null) {
           setState(() {
             _html = res.data;

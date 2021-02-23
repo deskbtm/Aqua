@@ -80,7 +80,7 @@ class _HelperPageState extends State<HelperPage> {
   Future<void> sendMail(String path) async {
     final MailOptions mailOptions = MailOptions(
       attachments: [path],
-      subject: 'Pure管理器 日志',
+      subject: 'IOS管理器 日志',
       recipients: ['wanghan9423@outlook.com'],
       isHTML: false,
     );

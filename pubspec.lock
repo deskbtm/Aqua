@@ -774,7 +774,7 @@ packages:
       path: "plugins/storage_mount_listener"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
   stream_channel:
     dependency: transitive
     description:

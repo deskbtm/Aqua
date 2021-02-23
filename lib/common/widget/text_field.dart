@@ -43,10 +43,10 @@ const BoxDecoration _kDefaultRoundedBorderDecoration = BoxDecoration(
   borderRadius: BorderRadius.all(Radius.circular(5.0)),
 );
 
-const Color _kDisabledBackground = CupertinoDynamicColor.withBrightness(
-  color: Color(0xFFFAFAFA),
-  darkColor: Color(0xFF050505),
-);
+// const Color _kDisabledBackground = CupertinoDynamicColor.withBrightness(
+//   color: Color(0xFFFAFAFA),
+//   darkColor: Color(0xFF050505),
+// );
 
 // Value inspected from Xcode 11 & iOS 13.0 Simulator.
 // Note it may not be consistent with https://developer.apple.com/design/resources/.

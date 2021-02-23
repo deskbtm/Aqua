@@ -6,7 +6,6 @@ import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/store.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class CommonModel extends ChangeNotifier {
@@ -149,13 +148,13 @@ class CommonModel extends ChangeNotifier {
     if (update) notifyListeners();
   }
 
-  String _baseUrl;
-  String get baseUrl => _baseUrl;
+  // String _baseUrl;
+  // String get baseUrl => _baseUrl;
 
-  Future<void> setBaseUrl(String arg) async {
-    _baseUrl = arg;
-    await Store.setString(BASE_URL_KEY, _baseUrl);
-  }
+  // Future<void> setBaseUrl(String arg) async {
+  //   _baseUrl = arg;
+  //   await Store.setString(BASE_URL_KEY, _baseUrl);
+  // }
 
   String _internalIp;
   String get internalIp => _internalIp;
@@ -356,7 +355,6 @@ class CommonModel extends ChangeNotifier {
     _isAppNotInit = (await Store.getBool(APP_INIT)) ?? true;
     _isFileOptionPromptNotInit =
         (await Store.getBool(FILE_OPTION_INIT)) ?? true;
-    _baseUrl = (await Store.getString(BASE_URL_KEY)) ?? DEF_BASE_URL;
     _username = await Store.getString(LOGIN_USERNMAE);
     _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;
     _enableConnect = (await Store.getBool(ENABLE_CONNECT)) ?? true;

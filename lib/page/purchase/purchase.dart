@@ -58,8 +58,7 @@ class _PurchasePageState extends State<PurchasePage> {
   }
 
   Future<Map> _followBilibiliStatus(val) async {
-    Response rec =
-        await req().post(_commonModel.baseUrl + '/user/follow_bilibili', data: {
+    Response rec = await req().post('/user/follow_bilibili', data: {
       'uid': val,
     }).catchError((err) {
       showText('请求失败');
@@ -77,8 +76,7 @@ class _PurchasePageState extends State<PurchasePage> {
   }
 
   Future<Map> _fetchQrcode() async {
-    Response rec =
-        await req().get(_commonModel.baseUrl + '/pay/qrcode', queryParameters: {
+    Response rec = await req().get('/pay/qrcode', queryParameters: {
       'app_name': APP_NAME,
       'android_id': await MixUtils.getAndroidId(),
     }).catchError((err) {
@@ -116,7 +114,7 @@ class _PurchasePageState extends State<PurchasePage> {
             child: NoResizeText('激活'),
             color: Color(0xFF007AFF),
             onPressed: () async {
-              await req().post(_commonModel.baseUrl + '/pay/active', data: {
+              await req().post('/pay/active', data: {
                 'app_name': APP_NAME,
                 ...?(await MixUtils.deviceInfo()),
               }).then((value) {
@@ -203,7 +201,6 @@ class _PurchasePageState extends State<PurchasePage> {
   @override
   Widget build(BuildContext context) {
     LanFileMoreTheme themeData = _themeModel.themeData;
-    String baseUrl = _commonModel.baseUrl;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -249,7 +246,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    LanText('Pure管理器', fontSize: 18),
+                                    LanText('IOS管理器', fontSize: 18),
                                     SizedBox(width: 4),
                                     LanText('for developer', fontSize: 12),
                                   ],
@@ -279,30 +276,42 @@ class _PurchasePageState extends State<PurchasePage> {
                                 title: LanText('免费使用大部功能'),
                               ),
                               SizedBox(height: 10),
-                              LanText(
-                                '付费用户',
-                                fontSize: 22,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  LanText(
+                                    '付费用户',
+                                    fontSize: 22,
+                                  ),
+                                  CupertinoButton(
+                                    onPressed: () async {
+                                      _commonModel.setPurchase(true);
+                                    },
+                                    child: NoResizeText('点击试用'),
+                                  ),
+                                ],
                               ),
                               ListTile(
                                 leading: Icon(
                                   OMIcons.code,
                                   color: themeData?.topNavIconColor,
                                 ),
-                                title: LanText('Code Server'),
+                                title: LanText('Code Server(不稳定)'),
                               ),
                               ListTile(
                                 leading: Icon(
                                   OMIcons.cloudUpload,
                                   color: themeData?.topNavIconColor,
                                 ),
-                                title: LanText('内网快递'),
+                                title: LanText('内网快递(不稳定)'),
                               ),
                               ListTile(
                                 leading: Icon(
-                                  OMIcons.games,
+                                  OMIcons.favoriteBorder,
                                   color: themeData?.topNavIconColor,
                                 ),
-                                title: LanText('远程游戏手柄, 键盘'),
+                                title: LanText('对作者的支持'),
                               ),
                             ],
                           ),
@@ -409,11 +418,10 @@ class _PurchasePageState extends State<PurchasePage> {
                                         return;
                                       }
 
-                                      await req().post(baseUrl + '/user/login',
-                                          data: {
-                                            'username': f.trim(),
-                                            'password': s.trim()
-                                          }).then((value) async {
+                                      await req().post('/user/login', data: {
+                                        'username': f.trim(),
+                                        'password': s.trim()
+                                      }).then((value) async {
                                         dynamic data = value.data;
                                         showText('${data['message']}');
                                         if (data['data']['access_token'] !=
@@ -455,13 +463,11 @@ class _PurchasePageState extends State<PurchasePage> {
                                         showText('密码格式不正确');
                                         return;
                                       }
-                                      await req().post(
-                                          baseUrl + '/user/register',
-                                          data: {
-                                            'username': f.trim(),
-                                            'password': s.trim(),
-                                            ...?(await MixUtils.deviceInfo()),
-                                          }).then((value) {
+                                      await req().post('/user/register', data: {
+                                        'username': f.trim(),
+                                        'password': s.trim(),
+                                        ...?(await MixUtils.deviceInfo()),
+                                      }).then((value) {
                                         dynamic data = value.data;
                                         showText(MixUtils.webMessage(
                                             data['message']));

@@ -5,7 +5,6 @@ import 'package:file_editor/file_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_file_more/common/socket/socket.dart';
 import 'package:lan_file_more/common/widget/show_modal_entity.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
@@ -23,7 +22,6 @@ import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/video/meida_info.dart';
 import 'package:lan_file_more/page/video/video.dart';
 import 'package:lan_file_more/utils/error.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/req.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -55,24 +53,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _preloadWebData() async {
-    String baseUrl = _commonModel?.baseUrl;
-    if (baseUrl != null) {
-      await req().get(baseUrl + '/assets/index.json').then((receive) async {
-        dynamic data = receive.data;
-        if (data['baseUrl'] != null &&
-            data['baseUrl'] != baseUrl &&
-            MixUtils.isHttpUrl(data['baseUrl'])) {
-          await _commonModel.setBaseUrl(data['baseUrl']);
-        }
-        await _commonModel.setGobalWebData(receive.data);
-      }).catchError((err) {
-        BotToast.showText(text: '首次请求出现错误, 导出日志与开发者联系');
-        recordError(text: '', methodName: '_preloadWebData');
-      });
-    } else {
-      BotToast.showText(text: '地址错误, 导出日志与开发者联系');
-      recordError(text: 'baseUrl为null', methodName: '_preloadWebData');
-    }
+    await req().get('/assets/index.json').then((receive) async {
+      await _commonModel.setGobalWebData(receive.data);
+    }).catchError((err) {
+      BotToast.showText(text: '首次请求出现错误');
+      recordError(text: '', methodName: '_preloadWebData');
+    });
   }
 
   Future<void> _forceReadTutorialModal() async {

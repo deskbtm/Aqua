@@ -8,7 +8,7 @@ const String DEV_CODE_SERVER_URL = 'http://192.168.0.104:8080';
 const String CODE_SERVER_PWD = 'code-server-pwd';
 const String DEF_AMOUNT = '7';
 const String DEF_FAVOUR = '2';
-const String DEF_BASE_URL = 'https://dark-flame-bricker.icu:1031';
+const String DEF_BASE_URL = 'http://47.116.67.236:1031';
 
 const String FILE_DEFAULT_PORT = '20201';
 const String CODE_SERVER_DEFAULT_PORT = '20202';

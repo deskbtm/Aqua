@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
@@ -26,10 +27,34 @@ Future<void> createSearchModal(
   TextEditingController textEditingController = TextEditingController();
   StreamSubscription<FileSystemEntity> listener;
   List<SelfFileEntity> fileList = [];
+  Directory currentDir = fileModel.currentDir;
   Timer timer;
   bool visible = false;
   bool mutex = true;
   onChangePopLocker(true);
+
+  readDir(Directory dir) async {
+    fileList = [];
+
+    SelfFileList result =
+        await LanFileUtils.readdir(dir).catchError((err) async {
+      String errorString = err.toString().toLowerCase();
+      bool overAndroid11 =
+          int.parse((await DeviceInfoPlugin().androidInfo).version.release) >=
+              11;
+
+      if (errorString.contains('permission') &&
+          errorString.contains('denied')) {
+        showTipTextModal(
+          context,
+          title: '错误',
+          tip: (overAndroid11) ? '安卓11以上data / obb 没有权限' : '没有该目录权限',
+          onCancel: null,
+        );
+      }
+    });
+    fileList = result.allList;
+  }
 
   await showCupertinoModal(
     context: context,
@@ -41,8 +66,7 @@ Future<void> createSearchModal(
           void submitSearch([text]) {
             listener?.cancel();
             fileList = [];
-            listener = fileModel.currentDir.list(recursive: false).listen(
-                (event) async {
+            listener = currentDir.list(recursive: false).listen((event) async {
               String name = pathLib.basename(event.path);
               if (textEditingController.text != '' &&
                   name.contains(
@@ -68,16 +92,19 @@ Future<void> createSearchModal(
 
           return WillPopScope(
             onWillPop: () async {
-              changeState(() {
-                visible = false;
-              });
-
-              return true;
+              if (pathLib.equals(currentDir.path, fileModel.currentDir.path)) {
+                return true;
+              } else {
+                currentDir = currentDir.parent;
+                await readDir(currentDir);
+                changeState(() {});
+                return false;
+              }
             },
             child: SafeArea(
               child: AnimatedOpacity(
                 opacity: visible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: visible ? 500 : 0),
+                duration: Duration(milliseconds: visible ? 250 : 0),
                 child: Column(
                   children: [
                     Container(
@@ -127,8 +154,10 @@ Future<void> createSearchModal(
                           itemBgColor:
                               themeModel.isDark ? null : Color(0xFFFFFFFF),
                           mode: FileManagerMode.search,
-                          onDirItemTap: (index) async {
-                            FocusScope.of(context).requestFocus(FocusNode());
+                          onDirItemTap: (dir) async {
+                            currentDir = Directory(dir.path);
+                            await readDir(currentDir);
+                            changeState(() {});
                           },
                           onTapEmpty: () {
                             FocusScope.of(context).requestFocus(FocusNode());

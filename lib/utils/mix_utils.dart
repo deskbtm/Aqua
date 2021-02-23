@@ -175,8 +175,6 @@ class MixUtils {
   static Future<String> getIntenalIp() async {
     String ip;
 
-    List a = await NetworkInterface.list();
-
     for (var interface in await NetworkInterface.list()) {
       for (var addr in interface.addresses) {
         if (!addr.isLoopback && addr.type.name == 'IPv4') {

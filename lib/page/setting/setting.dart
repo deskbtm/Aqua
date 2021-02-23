@@ -345,7 +345,7 @@ class SettingPageState extends State<SettingPage> {
                             onTap: () async {
                               MixUtils.safePop(fileCtx);
                               if (!_commonModel.isPurchased) {
-                                showText('请先购买 "Pure管理器" for developer');
+                                showText('请先购买 "IOS管理器" for developer');
                                 return;
                               }
 
@@ -470,37 +470,37 @@ class SettingPageState extends State<SettingPage> {
           ),
         ],
       ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 30),
-          blockTitle('控制', subtitle: '未实现'),
-          SizedBox(height: 15),
-          InkWell(
-            onTap: () async {
-              Navigator.of(context, rootNavigator: true).push(
-                CupertinoPageRoute<void>(
-                  maintainState: false,
-                  builder: (BuildContext context) {
-                    return ControlSettingPage();
-                  },
-                ),
-              );
-            },
-            child: ListTile(
-              leading:
-                  Icon(OMIcons.settingsRemote, color: themeData?.itemFontColor),
-              title: LanText('更多设置', alignX: -1.15),
-              contentPadding: EdgeInsets.only(left: 15, right: 25),
-              trailing: Icon(
-                OMIcons.chevronRight,
-                color: themeData?.itemFontColor,
-                size: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
+      // Column(
+      //   crossAxisAlignment: CrossAxisAlignment.start,
+      //   children: <Widget>[
+      //     SizedBox(height: 30),
+      //     blockTitle('控制', subtitle: '未实现'),
+      //     SizedBox(height: 15),
+      //     InkWell(
+      //       onTap: () async {
+      //         Navigator.of(context, rootNavigator: true).push(
+      //           CupertinoPageRoute<void>(
+      //             maintainState: false,
+      //             builder: (BuildContext context) {
+      //               return ControlSettingPage();
+      //             },
+      //           ),
+      //         );
+      //       },
+      //       child: ListTile(
+      //         leading:
+      //             Icon(OMIcons.settingsRemote, color: themeData?.itemFontColor),
+      //         title: LanText('更多设置', alignX: -1.15),
+      //         contentPadding: EdgeInsets.only(left: 15, right: 25),
+      //         trailing: Icon(
+      //           OMIcons.chevronRight,
+      //           color: themeData?.itemFontColor,
+      //           size: 16,
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

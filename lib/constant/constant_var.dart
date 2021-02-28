@@ -33,6 +33,7 @@ const WEBDAV_ADDR = 'webdav-addr';
 const WEBDAV_USERNAME = 'webdav-username';
 const WEBDAV_PWD = 'webdav-pwd';
 const REMEMBER_NO_UPDATE_TIP = 'remember-no-update-tip';
+const MESSAGE_UPDATE_ID = 'message_update_id';
 
 const String APP_NAME = 'lan_file_more';
 

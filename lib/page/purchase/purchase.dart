@@ -286,7 +286,8 @@ class _PurchasePageState extends State<PurchasePage> {
                                   ),
                                   CupertinoButton(
                                     onPressed: () async {
-                                      _commonModel.setPurchase(true);
+                                      await _commonModel.setPurchase(true);
+                                      showText('无限试用 但每次使用都需要重新操作');
                                     },
                                     child: NoResizeText('点击试用'),
                                   ),

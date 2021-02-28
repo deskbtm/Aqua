@@ -135,10 +135,10 @@ class MixUtils {
     String path;
 
     /// android 会把 外存路径挂到环境变量中
-    path = Platform.environment['EXTERNAL_STORAGE'];
+    path = await AndroidMix.storage.getExternalStorageDirectory;
     if (path == null) {
       try {
-        path = await AndroidMix.storage.getExternalStorageDirectory;
+        path = Platform.environment['EXTERNAL_STORAGE'];
         // 触发检查权限
         Directory(path).list();
       } catch (err) {

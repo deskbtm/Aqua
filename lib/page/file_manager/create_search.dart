@@ -33,29 +33,6 @@ Future<void> createSearchModal(
   bool mutex = true;
   onChangePopLocker(true);
 
-  readDir(Directory dir) async {
-    fileList = [];
-
-    SelfFileList result =
-        await LanFileUtils.readdir(dir).catchError((err) async {
-      String errorString = err.toString().toLowerCase();
-      bool overAndroid11 =
-          int.parse((await DeviceInfoPlugin().androidInfo).version.release) >=
-              11;
-
-      if (errorString.contains('permission') &&
-          errorString.contains('denied')) {
-        showTipTextModal(
-          context,
-          title: '错误',
-          tip: (overAndroid11) ? '安卓11以上data / obb 没有权限' : '没有该目录权限',
-          onCancel: null,
-        );
-      }
-    });
-    fileList = result.allList;
-  }
-
   await showCupertinoModal(
     context: context,
     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -90,14 +67,39 @@ Future<void> createSearchModal(
             });
           }
 
+          Future<void> readCurrentDir(Directory dir) async {
+            fileList = [];
+
+            SelfFileList result =
+                await LanFileUtils.readdir(dir).catchError((err) async {
+              String errorString = err.toString().toLowerCase();
+              bool overAndroid11 = int.parse(
+                      (await DeviceInfoPlugin().androidInfo).version.release) >=
+                  11;
+
+              if (errorString.contains('permission') &&
+                  errorString.contains('denied')) {
+                showTipTextModal(
+                  context,
+                  title: '错误',
+                  tip: (overAndroid11) ? '安卓11以上data / obb 没有权限' : '没有该目录权限',
+                  onCancel: null,
+                );
+              }
+            });
+
+            changeState(() {
+              fileList = result.allList;
+            });
+          }
+
           return WillPopScope(
             onWillPop: () async {
               if (pathLib.equals(currentDir.path, fileModel.currentDir.path)) {
                 return true;
               } else {
                 currentDir = currentDir.parent;
-                await readDir(currentDir);
-                changeState(() {});
+                await readCurrentDir(currentDir);
                 return false;
               }
             },
@@ -156,8 +158,7 @@ Future<void> createSearchModal(
                           mode: FileManagerMode.search,
                           onDirItemTap: (dir) async {
                             currentDir = Directory(dir.path);
-                            await readDir(currentDir);
-                            changeState(() {});
+                            await readCurrentDir(currentDir);
                           },
                           onTapEmpty: () {
                             FocusScope.of(context).requestFocus(FocusNode());

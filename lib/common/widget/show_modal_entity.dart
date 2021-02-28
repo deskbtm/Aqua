@@ -96,3 +96,29 @@ Future<void> showUpdateModal(
     );
   }
 }
+
+Future<void> showRemoteMessageModal(
+  BuildContext context,
+  ThemeModel provider,
+  Map data, {
+  bool tipRemember = true,
+}) async {
+  if (data.isEmpty) return;
+
+  String id = data['mobile']['message']['id'];
+  List content = data['mobile']['message']['content'];
+  String cachedMsgId = await Store.getString(MESSAGE_UPDATE_ID);
+
+  String descMsg = content.map((e) => e + '\n').toList().join('');
+  if (cachedMsgId != id) {
+    await Store.setString(MESSAGE_UPDATE_ID, id);
+
+    await showTipTextModal(
+      context,
+      tip: descMsg,
+      title: '消息通知',
+      defaultOkText: '确定',
+      defaultCancelText: '取消',
+    );
+  }
+}

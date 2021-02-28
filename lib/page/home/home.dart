@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _preloadWebData() async {
-    await req().get('/assets/index.json').then((receive) async {
+    await req().get('/assets/ios_manager.json').then((receive) async {
       await _commonModel.setGobalWebData(receive.data);
     }).catchError((err) {
       BotToast.showText(text: '首次请求出现错误');
@@ -152,7 +152,7 @@ class _HomePageState extends State<HomePage> {
     if (_mutex) {
       _mutex = false;
 
-      StorageMountListener.channel.receiveBroadcastStream().listen((event) {});
+      // StorageMountListener.channel.receiveBroadcastStream().listen((event) {});
 
       // PermissionStatus status = await PermissionHandler()
       //     .checkPermissionStatus(PermissionGroup.microphone);
@@ -175,22 +175,24 @@ class _HomePageState extends State<HomePage> {
         _commonModel.setAppInit(false);
       }
 
-      Timer(Duration(seconds: 8), () async {
+      Timer(Duration(seconds: 6), () async {
+        await showRemoteMessageModal(
+            context, _themeModel, _commonModel.gWebData);
         await showUpdateModal(context, _themeModel, _commonModel.gWebData);
       });
 
       if (_commonModel.enableConnect &&
           (_appIncoming == null || _appIncoming['appMode'] == 'normal')) {
-        Timer(Duration(seconds: 1), () async {
-          // await SocketConnecter.searchDevicesAndConnect(
-          //   context,
-          //   themeModel: _themeModel,
-          //   commonModel: _commonModel,
-          //   onNotExpected: (String msg) {
-          //     showText(msg);
-          //   },
-          // ).catchError((err) {});
-        });
+        // Timer(Duration(seconds: 1), () async {
+        // await SocketConnecter.searchDevicesAndConnect(
+        //   context,
+        //   themeModel: _themeModel,
+        //   commonModel: _commonModel,
+        //   onNotExpected: (String msg) {
+        //     showText(msg);
+        //   },
+        // ).catchError((err) {});
+        // });
       }
     }
   }

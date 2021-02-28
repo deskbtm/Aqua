@@ -596,7 +596,9 @@ class _FileManagerPageState extends State<FileManagerPage>
                 padding: EdgeInsets.all(0),
                 onPressed: _showBreadcrumb,
                 child: NoResizeText(
-                  LanFileUtils.filename(_fileModel.currentDir.path ?? ''),
+                  pathLib.equals(_fileModel.currentDir.path, _rootDir.path)
+                      ? '/'
+                      : LanFileUtils.filename(_fileModel.currentDir.path ?? ''),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,

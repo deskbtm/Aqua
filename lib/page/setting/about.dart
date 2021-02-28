@@ -168,6 +168,24 @@ class _AboutPageState extends State<AboutPage> {
                                   EdgeInsets.only(left: 15, right: 10),
                             ),
                           ),
+                          InkWell(
+                            onTap: () async {
+                              String url =
+                                  'https://github.com/lan-file-more/ios_manager';
+                              if (await canLaunch(url)) {
+                                launch(url);
+                              }
+                            },
+                            child: ListTile(
+                              title: LanText('Github'),
+                              subtitle: LanText(
+                                'https://github.com/lan-file-more/ios_manager',
+                                small: true,
+                              ),
+                              contentPadding:
+                                  EdgeInsets.only(left: 15, right: 10),
+                            ),
+                          ),
                         ],
                       ),
                     ],

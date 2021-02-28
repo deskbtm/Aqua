@@ -451,7 +451,7 @@ class SettingPageState extends State<SettingPage> {
                 ),
               );
               if (!(await cutils.existsAllResource())) {
-                gTabController.index = 0;
+                gTabController.index = 1;
                 // 确保删除干净了
                 await cutils.rmAllResource();
                 showText('请先安装完整的环境');

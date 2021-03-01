@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.sewerganger.storage_mount_listener">
+
+<!--  <application>-->
+<!--    <receiver android:name=".StorageMountListenerPlugin">-->
+<!--      <intent-filter>-->
+<!--        <data android:scheme="file" />-->
+
+<!--        <action android:name="android.intent.action.MEDIA_REMOVED" />-->
+<!--        <action android:name="android.intent.action.MEDIA_MOUNTED" />-->
+<!--        <action android:name="android.intent.action.MEDIA_EJECT" />-->
+<!--        <action android:name="android.i ntent.action.MEDIA_BAD_REMOVAL" />-->
+<!--      </intent-filter>-->
+<!--    </receiver>-->
+<!--  </application>-->
+
+
+</manifest>

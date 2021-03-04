@@ -85,7 +85,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    LanFileMoreTheme themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel?.themeData;
 
     List<List> info = [
       ['文件名', file.filename],

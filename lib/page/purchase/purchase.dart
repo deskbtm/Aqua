@@ -14,7 +14,7 @@ import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/error.dart';
+
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/req.dart';
 import 'package:lan_file_more/utils/store.dart';
@@ -81,7 +81,6 @@ class _PurchasePageState extends State<PurchasePage> {
       'android_id': await MixUtils.getAndroidId(),
     }).catchError((err) {
       showText('登录失败');
-      recordError(text: '');
     });
     return rec.data['data'] ?? {'data': {}};
   }
@@ -200,7 +199,7 @@ class _PurchasePageState extends State<PurchasePage> {
 
   @override
   Widget build(BuildContext context) {
-    LanFileMoreTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -435,9 +434,6 @@ class _PurchasePageState extends State<PurchasePage> {
                                         }
                                       }).catchError((err) {
                                         showText('登录失败');
-                                        recordError(
-                                            text: '登录失败',
-                                            className: '_PurchasePageState');
                                       });
                                     },
                                   );
@@ -474,7 +470,6 @@ class _PurchasePageState extends State<PurchasePage> {
                                             data['message']));
                                       }).catchError((err) {
                                         showText('注册出错');
-                                        recordError(text: '注册出错');
                                       });
                                     },
                                     onCancel: () {},
@@ -497,7 +492,6 @@ class _PurchasePageState extends State<PurchasePage> {
                                   await launch(AUTHOR_ALIPAY);
                                 } else {
                                   showText('链接打开失败');
-                                  recordError(text: '链接打开失败');
                                 }
                               },
                             ),

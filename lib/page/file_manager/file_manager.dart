@@ -22,7 +22,6 @@ import 'package:lan_file_more/page/installed_apps/installed_apps.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -156,12 +155,6 @@ class _FileManagerPageState extends State<FileManagerPage>
             onCancel: null,
           );
         }
-        recordError(
-          text: '',
-          exception: err,
-          methodName: 'readdir',
-          className: 'FileManager',
-        );
       });
 
       switch (_fileModel.showOnlyType) {
@@ -458,7 +451,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<void> _showBreadcrumb() async {
-    LanFileMoreTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _themeModel.themeData;
     List<String> paths = pathLib.split(_fileModel.currentDir.path);
     return showCupertinoModal(
       context: context,
@@ -531,7 +524,7 @@ class _FileManagerPageState extends State<FileManagerPage>
     bool isRootDir = _leftFileList.isEmpty
         ? true
         : pathLib.equals(_rootDir.path, _fileModel.currentDir?.path);
-    LanFileMoreTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     if (widget.mode == FileManagerMode.surf) {
       if (_fileModel.currentDir != null && _rootDir != null) {

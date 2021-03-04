@@ -8,10 +8,8 @@ import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant.dart';
 import 'package:lan_file_more/page/file_manager/file_utils.dart';
 import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
-import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/web/body_parser/src/shelf_body_parser.dart';
 import 'package:provider/provider.dart';
-import 'package:lan_file_more/common/socket/socket.dart';
 import 'package:lan_file_more/common/widget/images.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/switch.dart';
@@ -258,119 +256,43 @@ class _LanSharePageState extends State<LanSharePage>
       child: SafeArea(
         child: Column(
           children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Scrollbar(
-                child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  itemCount: 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          title: LanText('静态文件服务'),
-                          subtitle: LanText(fileAddr, small: true),
-                          contentPadding: EdgeInsets.only(left: 15, right: 10),
-                          trailing: LanSwitch(
-                            value: _shareSwitch,
-                            onChanged: (val) async {
-                              if (mounted) {
-                                setState(() {
-                                  _shareSwitch = !_shareSwitch;
-                                });
-                              }
-                              await createStaticServer().catchError(
-                                (err) {
-                                  recordError(
-                                    text: '静态服务出错',
-                                    methodName: 'createStaticServer',
-                                    exception: err,
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                        ListTile(
-                          title: LanText('Vscode Server'),
-                          subtitle: LanText(codeAddr, small: true),
-                          contentPadding: EdgeInsets.only(left: 15, right: 10),
-                          trailing: LanSwitch(
-                            value: _vscodeSwitch,
-                            onChanged: (val) async {
-                              _openCodeServer(context, val, codeAddr: codeAddr);
-                            },
-                          ),
-                        ),
-                        ListTile(
-                          title: LanText('内网快递'),
-                          subtitle: LanText('$firstAliveIp', small: true),
-                          contentPadding: EdgeInsets.only(left: 15, right: 10),
-                          trailing: (_commonModel.socket?.connected != null &&
-                                  _commonModel.socket.connected == true)
-                              ? Container(width: 1, height: 1)
-                              : Wrap(
-                                  children: [
-                                    CupertinoButton(
-                                      child: NoResizeText('手动'),
-                                      onPressed: () async {
-                                        showSingleTextFieldModal(
-                                          context,
-                                          title: '手动设置IP',
-                                          onOk: (val) async {
-                                            await _commonModel
-                                                .setCurrentConnectIp(val);
-
-                                            SocketConnecter(_commonModel)
-                                                .createClient(
-                                                    _commonModel
-                                                        .currentConnectIp,
-                                                    onNotExpected: (val) {
-                                              showText(val);
-                                            }, onConnected: () {
-                                              _commonModel.addToCommonIps(
-                                                  _commonModel
-                                                      .currentConnectIp);
-                                            });
-                                          },
-                                          onCancel: () {},
-                                        );
-                                      },
-                                    ),
-                                    CupertinoButton(
-                                      child: NoResizeText('搜索'),
-                                      onPressed: () async {
-                                        LocalNotification.showNotification(
-                                          name: 'SEARCH_DEVICE',
-                                          title: '搜寻设备中...',
-                                        );
-
-                                        await SocketConnecter
-                                            .searchDevicesAndConnect(
-                                          context,
-                                          themeModel: _themeModel,
-                                          initiativeConnect: false,
-                                          commonModel: _commonModel,
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                        ),
-                        // ...[
-                        //   CupertinoButton(
-                        //     child: Text('测试按钮'),
-                        //     onPressed: () async {},
-                        //   )
-                        // ]
-                      ],
-                    );
-                  },
+            Column(
+              children: [
+                SizedBox(height: 20),
+                ListTile(
+                  title: LanText('静态文件服务'),
+                  subtitle: LanText(fileAddr, small: true),
+                  contentPadding: EdgeInsets.only(left: 15, right: 10),
+                  trailing: LanSwitch(
+                    value: _shareSwitch,
+                    onChanged: (val) async {
+                      if (mounted) {
+                        setState(() {
+                          _shareSwitch = !_shareSwitch;
+                        });
+                      }
+                      await createStaticServer().catchError(
+                        (err) {},
+                      );
+                    },
+                  ),
                 ),
-              ),
+                ListTile(
+                  title: LanText('Vscode Server'),
+                  subtitle: LanText(codeAddr, small: true),
+                  contentPadding: EdgeInsets.only(left: 15, right: 10),
+                  trailing: LanSwitch(
+                    value: _vscodeSwitch,
+                    onChanged: (val) async {
+                      _openCodeServer(context, val, codeAddr: codeAddr);
+                    },
+                  ),
+                ),
+                SizedBox(height: 40),
+              ],
             ),
             Expanded(
-              flex: 2,
+              flex: 1,
               child: _commonModel.selectedFiles.isEmpty
                   ? Center(
                       child: Column(

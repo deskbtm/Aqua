@@ -12,7 +12,6 @@ import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/external/menu/menu.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/utils/theme.dart';
@@ -31,7 +30,7 @@ Future<void> createArchiveModal(
   CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
 
   if (commonModel.selectedFiles.isNotEmpty) {
-    LanFileMoreTheme themeData = themeModel.themeData;
+    AquaTheme themeData = themeModel.themeData;
     bool popAble = true;
     String archiveType = 'zip';
     String archiveText = 'zip';
@@ -235,13 +234,7 @@ Future<void> createArchiveModal(
                     bool result = await AndroidMix.archive
                         .zip(paths, generatedArchivePath,
                             pwd: pwd?.trim(), encrypt: ZipEncryptionMethod.aes)
-                        .catchError((err) {
-                      recordError(
-                        text: '',
-                        exception: err,
-                        methodName: 'archiveModal',
-                      );
-                    });
+                        .catchError((err) {});
                     await runAfterArchive(context, result);
                   } else {
                     ArchiveFormat type;
@@ -273,18 +266,13 @@ Future<void> createArchiveModal(
                     try {
                       bool result = await AndroidMix.archive
                           .createArchive(
-                        paths,
-                        currentDir.path,
-                        LanFileUtils.getName(generatedArchivePath),
-                        type,
-                        compressionType: cType,
-                      )
-                          .catchError((err) {
-                        recordError(
-                            text: '',
-                            exception: err,
-                            methodName: 'archiveModal');
-                      });
+                            paths,
+                            currentDir.path,
+                            LanFileUtils.getName(generatedArchivePath),
+                            type,
+                            compressionType: cType,
+                          )
+                          .catchError((err) {});
 
                       await runAfterArchive(context, result);
                     } catch (err) {}

@@ -15,7 +15,6 @@ import 'package:lan_file_more/common/widget/function_widget.dart';
 import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/isolate/airdrop.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
@@ -67,33 +66,6 @@ class FileActionUI {
       duration: duration,
       align: align,
     );
-  }
-
-  void isolateSendFile(BuildContext context, SelfFileEntity file) async {
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-
-    IO.Socket socket = commonModel.socket;
-    if (socket != null && socket.connected) {
-      Map data = {
-        'port': commonModel.filePort,
-        'ip': commonModel.currentConnectIp,
-        'filepath': file.entity.path,
-        'filename': file.filename,
-      };
-
-      ReceivePort recPort = ReceivePort();
-      SendPort sendPort = recPort.sendPort;
-      Isolate isolate = await Isolate.spawn(isolateAirDrop, [sendPort, data]);
-      showText('已送入快递站点');
-      recPort.listen((message) {
-        if (message == 'done') {
-          showText('${file.filename} 收货成功');
-          isolate?.kill();
-        }
-      });
-    } else {
-      showText('未发现设备, 请连接后在试');
-    }
   }
 
   Future<void> showCreateArchiveModal(
@@ -307,7 +279,7 @@ class FileActionUI {
     MixUtils.safePop(context);
     ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
     CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-    LanFileMoreTheme themeData = themeModel.themeData;
+    AquaTheme themeData = themeModel.themeData;
     List<SelfFileEntity> selected = commonModel.selectedFiles;
     bool confirmRm = false;
 
@@ -534,7 +506,7 @@ class FileActionUI {
       return;
     }
 
-    LanFileMoreTheme themeData = themeModel.themeData;
+    AquaTheme themeData = themeModel.themeData;
     bool popAble = true;
 
     showCupertinoModal(
@@ -627,17 +599,6 @@ class FileActionUI {
           return SplitSelectionModal(
             topPanel: FileInfoCard(file: file, showSize: showSize),
             leftChildren: [
-              if (!(file.entity is Directory))
-                ActionButton(
-                  content: '内网快递',
-                  onTap: () async {
-                    if (!commonModel.isPurchased) {
-                      showText('此功能为付费功能');
-                      return;
-                    }
-                    isolateSendFile(context, file);
-                  },
-                ),
               ActionButton(
                 content: '新建',
                 onTap: () async {

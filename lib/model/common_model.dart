@@ -148,14 +148,6 @@ class CommonModel extends ChangeNotifier {
     if (update) notifyListeners();
   }
 
-  // String _baseUrl;
-  // String get baseUrl => _baseUrl;
-
-  // Future<void> setBaseUrl(String arg) async {
-  //   _baseUrl = arg;
-  //   await Store.setString(BASE_URL_KEY, _baseUrl);
-  // }
-
   String _internalIp;
   String get internalIp => _internalIp;
 
@@ -210,7 +202,6 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 常用IP
   Map _commonIps = Map();
   Map get commonIps => _commonIps;
 
@@ -290,7 +281,6 @@ class CommonModel extends ChangeNotifier {
   Future<void> setWebDavAddr(String arg) async {
     _webDavAddr = arg;
     await Store.setString(WEBDAV_ADDR, arg);
-    // notifyListeners();
   }
 
   String _webDavUsername;
@@ -299,7 +289,6 @@ class CommonModel extends ChangeNotifier {
   Future<void> setWebDavUsername(String arg) async {
     _webDavUsername = arg;
     await Store.setString(WEBDAV_USERNAME, arg);
-    // notifyListeners();
   }
 
   String _webDavPwd;
@@ -308,7 +297,6 @@ class CommonModel extends ChangeNotifier {
   Future<void> setWebDavPwd(String arg) async {
     _webDavPwd = arg;
     await secureStorage.write(key: WEBDAV_PWD, value: arg);
-    // notifyListeners();
   }
 
   // 默认为{}
@@ -317,7 +305,6 @@ class CommonModel extends ChangeNotifier {
 
   Future<void> setGobalWebData(Map arg) async {
     _gWebData = arg;
-    // notifyListeners();
   }
 
   String _username;
@@ -367,7 +354,5 @@ class CommonModel extends ChangeNotifier {
     _storageRootPath = await MixUtils.getExternalRootPath();
     _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
         await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
-    // _sysDownloadPath = await AndroidMix.storage
-    //     .getExternalStorageDirectories(StorageDirectory.downloads);
   }
 }

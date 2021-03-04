@@ -2,7 +2,7 @@ const String BAK_EXTERNAL_PATH = '/storage/emulated/0';
 
 const String EMAIL = 'wanghan9423@outlook.com';
 
-const String UMENG_APP_KEY = '5f96e3c41c520d30739904f0';
+// const String UMENG_APP_KEY = '5f96e3c41c520d30739904f0';
 
 const String DEV_CODE_SERVER_URL = 'http://192.168.0.104:8080';
 const String CODE_SERVER_PWD = 'code-server-pwd';

@@ -44,26 +44,8 @@ class MixUtils {
   }
 
   static String formatFileTime(DateTime time) {
-    // if (time is String) {
-    //   DateTime dt = DateTime.parse(time);
-    //   return '${dt.year}/${dt.month}/${dt.day} ${dt.hour}:${dt.minute}:${dt.second}';
-    // } else {}
     return '${time.year}/${time.month}/${time.day} ${time.hour}:${time.minute}:${time.second}';
   }
-
-  // static Future scanSubnet(CommonModel settingProvider) async {
-  //   String port = settingProvider?.filePort;
-  //   String internalIp = settingProvider?.internalIp;
-  //   String subnet =
-  //       internalIp?.substring(0, internalIp?.lastIndexOf('.')) ?? '';
-  //   final stream = NetworkAnalyzer.discover2(subnet, int.parse(port));
-  //   await for (var addr in stream) {
-  //     if (addr.exists) {
-  //       settingProvider.pushAliveIps(addr.ip, notify: false);
-  //       return;
-  //     }
-  //   }
-  // }
 
   static safePop(BuildContext context) {
     if (Navigator.canPop(context)) {
@@ -145,25 +127,6 @@ class MixUtils {
         path = '/sdcard';
         if (!Directory(path).existsSync()) {
           path = '/storage/self/primary';
-        }
-      }
-    }
-
-    return path;
-  }
-
-  static Future<String> getAppStoragePath() async {
-    String path;
-    if (path == null) {
-      try {
-        path = await AndroidMix.storage.getStorageDirectory;
-        // 触发检查权限
-        Directory(path).list();
-      } catch (err) {
-        path = '/sdcard/Android/data/com.sewerganger.pure_manager/files';
-        if (!Directory(path).existsSync()) {
-          path =
-              '/storage/self/primary/Android/data/com.sewerganger.pure_manager/files';
         }
       }
     }

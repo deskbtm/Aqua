@@ -131,7 +131,7 @@ class FileItemState extends State<FileItem>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    LanFileMoreTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _themeModel.themeData;
     Color itemfontColor = fontColor ?? themeData?.itemFontColor;
     Color itemColor = itemBgColor ?? themeData?.itemColor;
 

@@ -7,7 +7,6 @@ import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/common/widget/text_field.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:path/path.dart' as pathLib;
@@ -24,7 +23,7 @@ Future<void> createFileModal(
 }) async {
   MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
   TextEditingController textEditingController = TextEditingController();
   bool recursiveCreate = false;
 
@@ -83,7 +82,6 @@ Future<void> createFileModal(
                 MixUtils.safePop(context);
               }).catchError((err) {
                 onError(err);
-                recordError(text: '创建文件失败');
               });
             },
             onCancel: () async {
@@ -99,7 +97,6 @@ Future<void> createFileModal(
                 MixUtils.safePop(context);
               }).catchError((err) {
                 onError(err);
-                recordError(text: '创建文件失败');
               });
             },
           );

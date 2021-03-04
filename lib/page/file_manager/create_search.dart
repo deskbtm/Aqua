@@ -22,7 +22,7 @@ Future<void> createSearchModal(
 }) async {
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
   FileModel fileModel = Provider.of<FileModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
 
   TextEditingController textEditingController = TextEditingController();
   StreamSubscription<FileSystemEntity> listener;

@@ -75,7 +75,7 @@ class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
-    LanFileMoreTheme themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel?.themeData;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(

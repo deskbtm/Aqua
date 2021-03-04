@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:connectivity/connectivity.dart';
+import 'package:f_logs/f_logs.dart';
 import 'package:flutter/services.dart';
 import 'package:lan_file_more/common/widget/double_pop.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/model/file_model.dart';
 import 'package:lan_file_more/page/home/home.dart';
-import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'constant/constant.dart';
@@ -22,14 +22,14 @@ import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/utils/store.dart';
 import 'package:provider/provider.dart';
 
-class LanFileMore extends StatefulWidget {
+class Aqua extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _LanFileMoreState();
+    return _AquaState();
   }
 }
 
-class _LanFileMoreState extends State<LanFileMore> {
+class _AquaState extends State<Aqua> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -44,19 +44,19 @@ class _LanFileMoreState extends State<LanFileMore> {
           create: (_) => FileModel(),
         ),
       ],
-      child: LanFileMoreWrapper(),
+      child: AquaWrapper(),
     );
   }
 }
 
-class LanFileMoreWrapper extends StatefulWidget {
+class AquaWrapper extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _LanFileMoreWrapperState();
+    return _AquaWrapperState();
   }
 }
 
-class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
+class _AquaWrapperState extends State<AquaWrapper> {
   ThemeModel _themeModel;
   CommonModel _commonModel;
   bool _prepared;
@@ -84,7 +84,6 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
         String internalIp = await Connectivity().getWifiIP() ??
             await MixUtils.getIntenalIp() ??
             LOOPBACK_ADDR;
-
         await _commonModel.setInternalIp(internalIp);
       }
     } catch (e) {}
@@ -100,10 +99,10 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
       _settingMutex = false;
       String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
       await _themeModel.setTheme(theme).catchError((err) {
-        recordError(text: '', methodName: 'setTheme');
+        FLog.error(text: '', methodName: 'setTheme');
       });
       await _commonModel.initCommon().catchError((err) {
-        recordError(text: '', methodName: 'initCommon');
+        FLog.error(text: '', methodName: 'initCommon');
       });
       await _setInternalIp(null);
       setState(() {
@@ -122,7 +121,7 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
   @override
   Widget build(BuildContext context) {
     log("root render ====== (prepared = $_prepared)");
-    LanFileMoreTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     return _prepared
         ? AnnotatedRegion<SystemUiOverlayStyle>(
@@ -148,9 +147,7 @@ class _LanFileMoreWrapperState extends State<LanFileMoreWrapper> {
               navigatorObservers: [
                 BotToastNavigatorObserver(),
               ],
-
-              /// 灵感来自爱死亡机器人
-              title: 'IOS管理器',
+              title: 'aqua',
               theme: CupertinoThemeData(
                 scaffoldBackgroundColor: themeData.scaffoldBackgroundColor,
                 textTheme: CupertinoTextThemeData(

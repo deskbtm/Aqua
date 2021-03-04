@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:joystick_editor/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/checkbox.dart';
+import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/constant/constant_var.dart';
 import 'package:lan_file_more/external/bot_toast/src/toast.dart';

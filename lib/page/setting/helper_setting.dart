@@ -89,7 +89,7 @@ class _HelperPageState extends State<HelperPage> {
 
   @override
   Widget build(BuildContext context) {
-    LanFileMoreTheme themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel?.themeData;
 
     List<Widget> helperSettingItem = [
       Column(

@@ -18,12 +18,11 @@ import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/page/purchase/purchase.dart';
 import 'package:lan_file_more/page/setting/about.dart';
 import 'package:lan_file_more/page/setting/code_setting.dart';
-import 'package:lan_file_more/page/setting/control_setting.dart';
 import 'package:lan_file_more/page/setting/express_setting.dart';
 import 'package:lan_file_more/page/setting/helper_setting.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/error.dart';
+
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/utils/theme.dart';
@@ -115,7 +114,7 @@ class SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    LanFileMoreTheme themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel?.themeData;
 
     List<Widget> settingList = [
       if (!_commonModel.isPurchased)
@@ -210,85 +209,6 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('内网传输'),
-          SizedBox(height: 15),
-          ListTile(
-            title: LanText('本机IP'),
-            subtitle: LanText(
-                '${_commonModel?.internalIp != null ? _commonModel.internalIp : '未连接'}'),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
-          ),
-          ListTile(
-            title: LanText('服务端口'),
-            subtitle: LanText('内网快递 静态服务端口', small: true),
-            contentPadding: EdgeInsets.only(left: 15, right: 5),
-            trailing: CupertinoButton(
-              child: NoResizeText('${_commonModel.filePort}'),
-              onPressed: () async {
-                await showSingleTextFieldModal(
-                  context,
-                  title: '更改端口',
-                  placeholder: _commonModel.filePort,
-                  onOk: (val) async {
-                    String port = val.toString();
-                    showText('请更改pc端口为 $port 并重启软件');
-                    await _commonModel.setFilePort(port);
-                  },
-                  onCancel: () {},
-                );
-              },
-            ),
-          ),
-          ListTile(
-            title: LanText('传输服务'),
-            subtitle: LanText('关闭后 需要与PC连接的服务将无法使用', small: true),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
-            trailing: LanSwitch(
-              value: _commonModel.enableConnect,
-              onChanged: (val) async {
-                await _commonModel.setEnableConnect(val);
-              },
-            ),
-          ),
-          ListTile(
-            title: LanText('自动连接'),
-            subtitle: LanText('一台PC设备 自动连接 无弹窗', small: true),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
-            trailing: LanSwitch(
-              value: _commonModel.autoConnectExpress,
-              onChanged: (val) async {
-                await _commonModel.setAutoConnectExpress(val);
-              },
-            ),
-          ),
-          InkWell(
-            onTap: () async {
-              Navigator.of(context, rootNavigator: true).push(
-                CupertinoPageRoute<void>(
-                  maintainState: false,
-                  builder: (BuildContext context) {
-                    return ExpressSettingPage();
-                  },
-                ),
-              );
-            },
-            child: ListTile(
-              leading: Icon(OMIcons.share, color: themeData?.itemFontColor),
-              title: LanText('更多设置', alignX: -1.15),
-              contentPadding: EdgeInsets.only(left: 15, right: 25),
-              trailing: Icon(
-                OMIcons.chevronRight,
-                color: themeData?.itemFontColor,
-                size: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 30),
           blockTitle('静态服务'),
           SizedBox(height: 15),
           InkWell(
@@ -375,8 +295,7 @@ class SettingPageState extends State<SettingPage> {
                                   showProgress: true,
                                   indeterminate: true,
                                 );
-                                // showText('资源安装中...',
-                                //     duration: Duration(seconds: 8));
+
                                 CodeSrvUtils cutils =
                                     await CodeSrvUtils().init();
                                 await AndroidMix.archive.unzip(
@@ -391,10 +310,8 @@ class SettingPageState extends State<SettingPage> {
 
                                   if (installed != true) {
                                     await cutils.rmAllResource().catchError(
-                                      (err) {
-                                        recordError(text: 'rm all resource');
-                                      },
-                                    );
+                                          (err) {},
+                                        );
                                     showText('资源安装失败 已删除');
                                     MixUtils.safePop(context);
                                     return;
@@ -403,11 +320,6 @@ class SettingPageState extends State<SettingPage> {
                                   await cutils.installNodeJs().catchError(
                                     (err) {
                                       showText('node 安装失败');
-                                      recordError(
-                                        text: 'node 安装失败',
-                                        exception: err,
-                                        methodName: 'installNodeJs',
-                                      );
                                     },
                                   );
                                   showText('安装成功');
@@ -470,75 +382,11 @@ class SettingPageState extends State<SettingPage> {
           ),
         ],
       ),
-      // Column(
-      //   crossAxisAlignment: CrossAxisAlignment.start,
-      //   children: <Widget>[
-      //     SizedBox(height: 30),
-      //     blockTitle('控制', subtitle: '未实现'),
-      //     SizedBox(height: 15),
-      //     InkWell(
-      //       onTap: () async {
-      //         Navigator.of(context, rootNavigator: true).push(
-      //           CupertinoPageRoute<void>(
-      //             maintainState: false,
-      //             builder: (BuildContext context) {
-      //               return ControlSettingPage();
-      //             },
-      //           ),
-      //         );
-      //       },
-      //       child: ListTile(
-      //         leading:
-      //             Icon(OMIcons.settingsRemote, color: themeData?.itemFontColor),
-      //         title: LanText('更多设置', alignX: -1.15),
-      //         contentPadding: EdgeInsets.only(left: 15, right: 25),
-      //         trailing: Icon(
-      //           OMIcons.chevronRight,
-      //           color: themeData?.itemFontColor,
-      //           size: 16,
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('剪贴板'),
-          SizedBox(height: 15),
-          ListTile(
-            title: LanText('剪贴板'),
-            subtitle: LanText('开启后可直接(ctrl+v)', small: true),
-            contentPadding: EdgeInsets.only(left: 15, right: 10),
-            trailing: LanSwitch(
-              value: _commonModel.enableClipboard,
-              onChanged: (val) async {
-                await _commonModel.setEnableClipboard(val);
-              },
-            ),
-          ),
-          // InkWell(
-          //   onTap: () async {
-          //     if (await canLaunch(FIX_CLIPBOARD_URL)) {
-          //       await launch(FIX_CLIPBOARD_URL);
-          //     } else {
-          //       showText('链接打开失败');
-          //     }
-          //   },
-          //   child: ListTile(
-          //     title: LanText('问题解决'),
-          //     subtitle: LanText('安卓10以上用户', small: true),
-          //     contentPadding: EdgeInsets.only(left: 15, right: 10),
-          //   ),
-          // )
-        ],
-      ),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(height: 30),
-          blockTitle('WebDAV', subtitle: '(推荐使用坚果云)'),
+          blockTitle('WebDAV'),
           SizedBox(height: 15),
           InkWell(
             onTap: () async {
@@ -624,20 +472,6 @@ class SettingPageState extends State<SettingPage> {
           SizedBox(height: 30),
           blockTitle('其他'),
           SizedBox(height: 15),
-          InkWell(
-            onTap: () async {
-              if (await canLaunch(RES_DOWNLOAD_URL)) {
-                await launch(RES_DOWNLOAD_URL);
-              } else {
-                showText('链接打开失败');
-              }
-            },
-            child: ListTile(
-              title: LanText('资源下载'),
-              subtitle: LanText('pc端 code server...', small: true),
-              contentPadding: EdgeInsets.only(left: 15, right: 10),
-            ),
-          ),
           InkWell(
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(
@@ -726,9 +560,6 @@ class SettingPageState extends State<SettingPage> {
             itemCount: settingList.length,
             itemBuilder: (BuildContext context, int index) {
               return settingList[index];
-              // return StatefulBuilder(builder: (context, changeState) {
-
-              // });
             },
           ),
         ),

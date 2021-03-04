@@ -22,7 +22,7 @@ Future<void> createRenameModal(
 }) async {
   MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
   TextEditingController textEditingController = TextEditingController();
 
   showCupertinoModal(

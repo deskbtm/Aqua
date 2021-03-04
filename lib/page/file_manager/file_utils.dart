@@ -118,19 +118,8 @@ class LanFileUtils {
 
     await for (var content in currentDir.list(recursive: recursive)) {
       if (await content.exists()) {
-        // FileStat stat = await content.stat();
-
-        // String filename = pathLib.basename(content.path);
-        // String ext = pathLib.extension(content.path).trim().toLowerCase();
-        // Uint8List icon;
-
-        // if (ext == '.apk') {
-        //   icon = (await AndroidMix.packager.getApkInfo(content.path))['icon'];
-        // }
-
         SelfFileEntity fileEntity = await createSelfFileEntity(content);
 
-        // 如果时隐藏文件就跳过
         if (!showHidden && fileEntity.filename[0] == '.') {
           continue;
         }

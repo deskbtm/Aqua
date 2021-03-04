@@ -12,7 +12,7 @@ import 'package:lan_file_more/external/menu/menu.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/page/lan/code_server/utils.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/error.dart';
+
 import 'package:provider/provider.dart';
 
 String repoChineseName(String mirror) {
@@ -272,7 +272,6 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                 onOk: () async {
                   await cutils.rmAllResource().catchError((err) {
                     showText('删除出现异常');
-                    recordError(text: 'rm all resource');
                   });
                   showText('删除完成');
                 },

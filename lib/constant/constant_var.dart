@@ -35,7 +35,7 @@ const WEBDAV_PWD = 'webdav-pwd';
 const REMEMBER_NO_UPDATE_TIP = 'remember-no-update-tip';
 const MESSAGE_UPDATE_ID = 'message_update_id';
 
-const String APP_NAME = 'lan_file_more';
+const String APP_NAME = 'aqua';
 
 const String THEME_KEY = 'theme';
 const String LIGHT_THEME = 'light';

@@ -71,13 +71,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.1.1"
-  clipboard_listener:
-    dependency: "direct main"
-    description:
-      path: "plugins/clipboard_listener"
-      relative: true
-    source: path
-    version: "1.0.0"
   clock:
     dependency: transitive
     description:
@@ -392,13 +385,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.16.1"
-  joystick_editor:
-    dependency: "direct main"
-    description:
-      path: "plugins/joystick_editor"
-      relative: true
-    source: path
-    version: "0.0.1"
   js:
     dependency: transitive
     description:
@@ -406,20 +392,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.2"
-  json_annotation:
-    dependency: transitive
-    description:
-      name: json_annotation
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.1.1"
-  lan_file_more_umeng:
-    dependency: "direct main"
-    description:
-      path: "plugins/lan_file_more_umeng"
-      relative: true
-    source: path
-    version: "0.0.1"
   logging:
     dependency: transitive
     description:
@@ -588,13 +560,6 @@ packages:
       relative: true
     source: path
     version: "0.10.0"
-  ping_discover_network:
-    dependency: "direct main"
-    description:
-      name: ping_discover_network
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.2.0+1"
   platform:
     dependency: transitive
     description:
@@ -887,20 +852,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.0"
-  vibration:
-    dependency: transitive
-    description:
-      name: vibration
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.7.1"
-  vibration_web:
-    dependency: transitive
-    description:
-      name: vibration_web
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.6.2"
   video_player:
     dependency: transitive
     description:
@@ -979,5 +930,5 @@ packages:
     source: hosted
     version: "2.0.3"
 sdks:
-  dart: ">=2.10.2 <2.11.0"
+  dart: ">=2.10.0 <2.11.0"
   flutter: ">=1.22.0 <2.0.0"

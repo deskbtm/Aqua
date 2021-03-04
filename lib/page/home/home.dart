@@ -21,7 +21,6 @@ import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/video/meida_info.dart';
 import 'package:lan_file_more/page/video/video.dart';
-import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/req.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -57,7 +56,6 @@ class _HomePageState extends State<HomePage> {
       await _commonModel.setGobalWebData(receive.data);
     }).catchError((err) {
       BotToast.showText(text: '首次请求出现错误');
-      recordError(text: '', methodName: '_preloadWebData');
     });
   }
 
@@ -79,7 +77,7 @@ class _HomePageState extends State<HomePage> {
           await launch(TUTORIAL_URL);
         }
       },
-      defaultCancelText: 'bilibili(关注优惠)',
+      defaultCancelText: '关注 bilibili',
       onCancel: () async {
         if (await canLaunch(tutorialUrl)) {
           await launch(tutorialUrl);
@@ -197,7 +195,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget _switchEntryPage(Map _incomingFile, {LanFileMoreTheme themeData}) {
+  Widget _switchEntryPage(Map _incomingFile, {AquaTheme themeData}) {
     if (_incomingFile != null && _incomingFile['appMode'] == 'incoming') {
       String ext = pathLib.extension(_incomingFile['path']).toLowerCase();
       String filename = pathLib.basename(_incomingFile['path']);
@@ -310,7 +308,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    LanFileMoreTheme themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel?.themeData;
     return themeData == null
         ? Container(color: themeData.scaffoldBackgroundColor)
         : _switchEntryPage(

@@ -11,7 +11,6 @@ import 'package:lan_file_more/external/bot_toast/src/toast.dart';
 import 'package:lan_file_more/external/webdav/webdav.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/mix_utils.dart';
 import 'package:lan_file_more/utils/notification.dart';
 import 'package:lan_file_more/utils/webdav.dart';
@@ -84,7 +83,6 @@ Future<dynamic> showMoreModal(
               await uploadToWebDAV(file).catchError((err) {
                 LocalNotification.plugin?.cancel(1);
                 showText('上传失败');
-                recordError(text: 'webdav上床失败');
               });
               LocalNotification.plugin?.cancel(1);
               showText('上传成功');

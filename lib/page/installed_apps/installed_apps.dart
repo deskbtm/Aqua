@@ -10,10 +10,8 @@ import 'package:lan_file_more/common/widget/no_resize_text.dart';
 import 'package:lan_file_more/common/widget/show_modal.dart';
 import 'package:lan_file_more/model/common_model.dart';
 import 'package:lan_file_more/page/file_manager/file_item.dart';
-
 import 'package:lan_file_more/model/theme_model.dart';
 import 'package:lan_file_more/page/file_manager/file_utils.dart';
-import 'package:lan_file_more/utils/error.dart';
 import 'package:lan_file_more/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
@@ -58,7 +56,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
 
   @override
   Widget build(BuildContext context) {
-    LanFileMoreTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     return Material(
       child: CupertinoPageScaffold(
@@ -172,9 +170,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                                                   (data) {
                                                     print(data);
                                                   },
-                                                  onError: (e) {
-                                                    recordError(text: '$e');
-                                                  },
+                                                  onError: (e) {},
                                                 );
                                             }, onCancel: () {});
                                           },

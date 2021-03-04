@@ -1,8 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.sewerganger.screen_capturer">
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!--允许程序录制音频-->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- 允许程序修改全局音频设置 -->
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-</manifest>

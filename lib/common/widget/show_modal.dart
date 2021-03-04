@@ -157,7 +157,7 @@ Future<void> showForceScopeModal(
 }) async {
   MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
   bool popAble = false;
 
   return showCupertinoModal(
@@ -292,7 +292,7 @@ Future<T> showCupertinoModal<T>({
   bool transparent = false,
 }) {
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
 
   return Navigator.of(context, rootNavigator: useRootNavigator).push(
     CupertinoModalPopupRoute<T>(
@@ -320,7 +320,7 @@ Future<dynamic> showSingleTextFieldModal(
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
   TextEditingController textEditingController = TextEditingController();
 
   if (initText != null) textEditingController.text = initText;
@@ -378,7 +378,7 @@ Future<dynamic> showTwoTextFieldModal(
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
   TextEditingController fEditingController = TextEditingController();
   TextEditingController sEditingController = TextEditingController();
 
@@ -449,7 +449,7 @@ Future<dynamic> showTipTextModal(
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
   bool confirm = false;
 
   return showCupertinoModal(
@@ -520,7 +520,7 @@ Future<dynamic> showSelectModal(
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
   if (doAction != null) doAction(context);
   List<dynamic> tmpOptions = options;
 
@@ -611,7 +611,7 @@ Future<dynamic> showLoadingModal(
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
 
   return showCupertinoModal(
     context: context,
@@ -647,7 +647,7 @@ Future<dynamic> showQrcodeModal(
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  LanFileMoreTheme themeData = themeModel.themeData;
+  AquaTheme themeData = themeModel.themeData;
 
   return showCupertinoModal(
     context: context,

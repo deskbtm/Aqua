@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:lan_file_more/common/widget/function_widget.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-
-import 'package:lan_file_more/utils/req.dart';
+import 'package:aqua/common/widget/function_widget.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/external/bot_toast/bot_toast.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:aqua/utils/req.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:url_launcher/url_launcher.dart';
@@ -43,7 +42,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
           });
         }
       } catch (e) {
-        showText('隐私政策加载失败');
+        showText(AppLocalizations.of(context).privacyError);
       }
     }
   }
@@ -62,7 +61,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          '隐私政策',
+          AppLocalizations.of(context).privacyProtocol,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,
@@ -85,7 +84,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                     if (await canLaunch(url)) {
                       await launch(url);
                     } else {
-                      showText('链接打开失败');
+                      showText(AppLocalizations.of(context).setFail);
                     }
                   },
                 );

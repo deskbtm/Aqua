@@ -1,45 +1,42 @@
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:ui';
 import 'package:android_mix/android_mix.dart';
 import 'package:android_mix/archive/enums.dart';
+import 'package:aqua/page/file_editor/editor_theme.dart';
 import 'package:f_logs/model/flog/flog.dart';
-import 'package:file_editor/editor_theme.dart';
 import 'package:file_utils/file_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/action_button.dart';
-import 'package:lan_file_more/common/widget/dialog.dart';
-import 'package:lan_file_more/common/widget/file_info_card.dart';
-import 'package:lan_file_more/common/widget/function_widget.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/file_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/file_manager/file_manager.dart';
-import 'package:lan_file_more/page/file_manager/show_more.dart';
-import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
-import 'package:lan_file_more/page/video/meida_info.dart';
-import 'package:lan_file_more/page/video/video.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/notification.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/action_button.dart';
+import 'package:aqua/common/widget/dialog.dart';
+import 'package:aqua/common/widget/file_info_card.dart';
+import 'package:aqua/common/widget/function_widget.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/page/file_manager/file_manager.dart';
+import 'package:aqua/page/file_manager/show_more.dart';
+import 'package:aqua/page/photo_viewer/photo_viewer.dart';
+import 'package:aqua/page/video/meida_info.dart';
+import 'package:aqua/page/video/video.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/notification.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:share_extend/share_extend.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:provider/provider.dart';
 import 'create_archive.dart';
 import 'create_fiile.dart';
 import 'create_rename.dart';
 import 'file_utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FileActionUI {
-  // final CommonModel commonModel;
-  // final ThemeModel themeModel;
   final FileModel fileModel;
   final Function update2Side;
   final FileManagerMode mode;
@@ -49,8 +46,6 @@ class FileActionUI {
   FileActionUI({
     @required this.fileModel,
     @required this.left,
-    // @required this.commonModel,
-    // @required this.themeModel,
     @required this.update2Side,
     @required this.mode,
     @required this.selectLimit,
@@ -147,7 +142,7 @@ class FileActionUI {
         commonModel.clearSelectedFiles();
         commonModel.addSelectedFile(file);
         updateView(() {});
-        showText('请选择提取路径');
+        showText(AppLocalizations.of(context).target);
       },
       caseMd: () async {
         String data = await File(path).readAsString();
@@ -199,7 +194,7 @@ class FileActionUI {
         String newPath = pathLib.join(
             fileModel.currentDir.path, pathLib.basename(item.entity.path));
         if (await File(newPath).exists() || await Directory(newPath).exists()) {
-          showText('$newPath 已存在 移动失败');
+          showText('$newPath ${AppLocalizations.of(context).fileExisted}');
           continue;
         }
 
@@ -209,7 +204,7 @@ class FileActionUI {
         });
       }
       if (mounted) {
-        showText('移动完成');
+        showText(AppLocalizations.of(context).setSuccess);
         await update2Side();
         await commonModel.clearSelectedFiles();
         MixUtils.safePop(context);
@@ -225,14 +220,14 @@ class FileActionUI {
       context,
       file,
       onExists: () {
-        showText('文件已存在');
+        showText(AppLocalizations.of(context).fileExisted);
       },
       onSuccess: (val) async {
-        showText('$val 重命名成功');
+        showText('$val ${AppLocalizations.of(context).setSuccess}');
         await update2Side();
       },
       onError: (err) {
-        showText('重命名失败 $err');
+        showText('${AppLocalizations.of(context).setFail} $err');
       },
     );
   }
@@ -258,14 +253,14 @@ class FileActionUI {
           ? fileModel.currentDir.path
           : fileModel.currentDir.parent.path,
       onExists: () {
-        showText('已存在, 请重新命名');
+        showText(AppLocalizations.of(context).fileExisted);
       },
       onSuccess: (file) async {
-        showText('$file 创建成功');
+        showText('$file ${AppLocalizations.of(context).setSuccess}');
         await update2Side();
       },
       onError: (err) {
-        showText('创建文件失败 $err');
+        showText('${AppLocalizations.of(context).setFail} $err');
       },
     );
   }
@@ -293,13 +288,13 @@ class FileActionUI {
             actionPos: MainAxisAlignment.end,
             fontColor: themeData.itemFontColor,
             bgColor: themeData.dialogBgColor,
-            title: NoResizeText('删除'),
+            title: NoResizeText(AppLocalizations.of(context).delete),
             action: true,
             children: <Widget>[
               confirmRm
                   ? loadingIndicator(context, themeModel)
                   : NoResizeText(
-                      '确定删除${selected.length == 0 ? 1 : selected.length}项?',
+                      '${AppLocalizations.of(context).delete} ${selected.length == 0 ? 1 : selected.length} ${AppLocalizations.of(context).files}?',
                     ),
               SizedBox(height: 10),
             ],
@@ -328,7 +323,7 @@ class FileActionUI {
                   await update2Side();
                   MixUtils.safePop(context);
                 }
-                showText('删除完成');
+                showText(AppLocalizations.of(context).setSuccess);
                 commonModel.clearSelectedFiles();
               }
             },
@@ -354,7 +349,7 @@ class FileActionUI {
     if (mode == FileManagerMode.pick) {
       await commonModel.addPickedFile(file);
     } else {
-      showText('请选择目标目录');
+      showText(AppLocalizations.of(context).target);
       await commonModel.addSelectedFile(file);
     }
 
@@ -365,7 +360,7 @@ class FileActionUI {
     CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
     if (mode == FileManagerMode.pick && selectLimit != null) {
       if (commonModel.pickedFiles.length >= selectLimit) {
-        showText('选中数量不可超过 $selectLimit');
+        showText('${AppLocalizations.of(context).selectLimit} $selectLimit');
         return true;
       }
     }
@@ -400,14 +395,14 @@ class FileActionUI {
     CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
     bool result = false;
     if (commonModel.selectedFiles.length > 1) {
-      showText('只允许操作单个文件');
+      showText(AppLocalizations.of(context).onlyOneFile);
     } else {
       SelfFileEntity first = commonModel.selectedFiles.first;
       String archivePath = first.entity.path;
       String name = LanFileUtils.getName(archivePath);
       if (Directory(pathLib.join(fileModel.currentDir.path, name))
           .existsSync()) {
-        showText('目录重名, 请更换');
+        showText(AppLocalizations.of(context).duplicateFile);
         return;
       }
 
@@ -416,9 +411,10 @@ class FileActionUI {
           if (await AndroidMix.archive.isZipEncrypted(archivePath)) {
             await showSingleTextFieldModal(
               context,
-              title: '输入密码',
+              title: AppLocalizations.of(context).password,
               onOk: (val) async {
-                showWaitForArchiveNotification('解压中...');
+                showWaitForArchiveNotification(
+                    AppLocalizations.of(context).decompressing);
                 result = await AndroidMix.archive
                     .unzip(archivePath, fileModel.currentDir.path, pwd: val);
               },
@@ -427,13 +423,15 @@ class FileActionUI {
               },
             );
           } else {
-            showWaitForArchiveNotification('解压中...');
+            showWaitForArchiveNotification(
+                AppLocalizations.of(context).decompressing);
             result = await AndroidMix.archive
                 .unzip(archivePath, fileModel.currentDir.path);
           }
           break;
         case '.tar':
-          showWaitForArchiveNotification('解压中...');
+          showWaitForArchiveNotification(
+              AppLocalizations.of(context).decompressing);
           await AndroidMix.archive.extractArchive(
             archivePath,
             fileModel.currentDir.path,
@@ -442,7 +440,8 @@ class FileActionUI {
           break;
         case '.gz':
         case '.tgz':
-          showWaitForArchiveNotification('解压中...');
+          showWaitForArchiveNotification(
+              AppLocalizations.of(context).decompressing);
           result = await AndroidMix.archive.extractArchive(
             archivePath,
             fileModel.currentDir.path,
@@ -452,7 +451,8 @@ class FileActionUI {
           break;
         case '.bz2':
         case '.tz2':
-          showWaitForArchiveNotification('解压中...');
+          showWaitForArchiveNotification(
+              AppLocalizations.of(context).decompressing);
           result = await AndroidMix.archive.extractArchive(
             archivePath,
             fileModel.currentDir.path,
@@ -462,7 +462,8 @@ class FileActionUI {
           break;
         case '.xz':
         case '.txz':
-          showWaitForArchiveNotification('解压中...');
+          showWaitForArchiveNotification(
+              AppLocalizations.of(context).decompressing);
           result = await AndroidMix.archive.extractArchive(
             archivePath,
             fileModel.currentDir.path,
@@ -471,7 +472,8 @@ class FileActionUI {
           );
           break;
         case '.jar':
-          showWaitForArchiveNotification('解压中...');
+          showWaitForArchiveNotification(
+              AppLocalizations.of(context).decompressing);
           result = await AndroidMix.archive.extractArchive(
             archivePath,
             fileModel.currentDir.path,
@@ -481,9 +483,9 @@ class FileActionUI {
       }
       LocalNotification.plugin?.cancel(0);
       if (result) {
-        showText('提取成功');
+        showText(AppLocalizations.of(context).setSuccess);
       } else {
-        showText('提取失败');
+        showText(AppLocalizations.of(context).setFail);
       }
       if (mounted) {
         await commonModel.clearSelectedFiles();
@@ -502,7 +504,7 @@ class FileActionUI {
     ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
 
     if (commonModel.selectedFiles.isEmpty) {
-      showText('无复制内容');
+      showText(AppLocalizations.of(context).noContent);
       return;
     }
 
@@ -524,16 +526,16 @@ class FileActionUI {
               child: LanDialog(
                 fontColor: themeData.itemFontColor,
                 bgColor: themeData.dialogBgColor,
-                title: NoResizeText('粘贴'),
+                title: NoResizeText(AppLocalizations.of(context).paste),
                 action: true,
                 children: <Widget>[
                   SizedBox(height: 10),
                   popAble
-                      ? LanText('确定粘贴?')
+                      ? LanText(AppLocalizations.of(context).pasteTip)
                       : loadingIndicator(context, themeModel),
                   SizedBox(height: 10),
                 ],
-                defaultOkText: '确定',
+                defaultOkText: AppLocalizations.of(context).sure,
                 onOk: () async {
                   // 粘贴时无法退出Modal
                   if (!popAble) {
@@ -554,7 +556,7 @@ class FileActionUI {
                       popAble = true;
                     });
                     MixUtils.safePop(context);
-                    showText('粘贴完成');
+                    showText(AppLocalizations.of(context).setSuccess);
                     await commonModel.clearSelectedFiles();
                     await update2Side();
                   }
@@ -584,7 +586,7 @@ class FileActionUI {
 
     if (commonModel.isFileOptionPromptNotInit) {
       showText(
-        '可长按详情 复制内容',
+        AppLocalizations.of(context).copyDetails,
         duration: Duration(seconds: 4),
         align: const Alignment(0, 0),
       );
@@ -600,20 +602,20 @@ class FileActionUI {
             topPanel: FileInfoCard(file: file, showSize: showSize),
             leftChildren: [
               ActionButton(
-                content: '新建',
+                content: AppLocalizations.of(context).create,
                 onTap: () async {
                   await showCreateFileModal(context);
                 },
               ),
               ActionButton(
-                content: '重命名',
+                content: AppLocalizations.of(context).rename,
                 onTap: () async {
                   await showRenameModal(context, file);
                 },
               ),
               if (sharedNotEmpty)
                 ActionButton(
-                  content: '归档到此',
+                  content: AppLocalizations.of(context).archiveHere,
                   onTap: () async {
                     await showCreateArchiveModal(
                       context,
@@ -623,13 +625,13 @@ class FileActionUI {
                 ),
               if (sharedNotEmpty)
                 ActionButton(
-                  content: '移动到此',
+                  content: AppLocalizations.of(context).moveHere,
                   onTap: () async {
                     await handleMove(context, mounted: mounted);
                   },
                 ),
               ActionButton(
-                content: '删除',
+                content: AppLocalizations.of(context).delete,
                 fontColor: Colors.redAccent,
                 onTap: () async {
                   await removeModal(
@@ -643,20 +645,20 @@ class FileActionUI {
             ],
             rightChildren: <Widget>[
               ActionButton(
-                content: '选中',
+                content: AppLocalizations.of(context).selected,
                 onTap: () {
                   handleSelectedSingle(context, file);
                 },
               ),
               if (sharedNotEmpty)
                 ActionButton(
-                  content: '复制到此',
+                  content: AppLocalizations.of(context).copyHere,
                   onTap: () {
                     copyModal(context, mounted: mounted);
                   },
                 ),
               ActionButton(
-                content: '详情',
+                content: AppLocalizations.of(context).details,
                 onTap: () {
                   changeState(() {
                     showSize = true;
@@ -669,26 +671,26 @@ class FileActionUI {
                   LanFileUtils.ARCHIVE_EXTS
                       .contains(commonModel.selectedFiles.first.ext))
                 ActionButton(
-                  content: '提取到此',
+                  content: AppLocalizations.of(context).extractHere,
                   onTap: () async {
                     await handleExtractArchive(context, mounted: mounted);
                   },
                 ),
               if (file.isFile)
                 ActionButton(
-                  content: '分享',
+                  content: AppLocalizations.of(context).share,
                   onTap: () async {
                     await shareFile(context, file);
                   },
                 ),
               ActionButton(
-                content: '更多选项',
+                content: AppLocalizations.of(context).moreOptions,
                 onTap: () async {
                   if (file.isFile) {
                     await showMoreModal(context, file: file);
                     await update2Side();
                   } else {
-                    showText('只支持文件');
+                    showText(AppLocalizations.of(context).onlySupportFile);
                   }
                 },
               ),

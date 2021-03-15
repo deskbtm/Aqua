@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/function_widget.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/common/widget/switch.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
-import 'package:lan_file_more/external/menu/menu.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/page/lan/code_server/utils.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-
+import 'package:aqua/common/widget/function_widget.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/switch.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/external/bot_toast/bot_toast.dart';
+import 'package:aqua/external/menu/menu.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/page/lan/code_server/utils.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 String repoChineseName(String mirror) {
@@ -28,7 +28,7 @@ String repoChineseName(String mirror) {
       name = '中科大';
       break;
     case ALPINE_REPO:
-      name = 'alpine 官方';
+      name = 'alpine';
       break;
     default:
       name = mirror;
@@ -80,45 +80,45 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: '登录密码',
+                title: AppLocalizations.of(context).password,
                 onOk: (val) async {
                   await _commonModel.setCodeSrvPwd(val);
-                  showText('设置成功');
+                  showText(AppLocalizations.of(context).setSuccess);
                 },
                 onCancel: () async {
                   await _commonModel.setCodeSrvPwd(null);
-                  showText('设置成功');
+                  showText(AppLocalizations.of(context).setSuccess);
                 },
                 defaultCancelText: '设置为无密码',
               );
             },
             child: ListTile(
-              title: LanText('登录密码'),
+              title: LanText(AppLocalizations.of(context).password),
               subtitle: LanText(
                 _commonModel.codeSrvPwd != null
                     ? List(_commonModel.codeSrvPwd.length)
                         .map((e) => '*')
                         .toList()
                         .join('')
-                    : '默认无',
+                    : 'none',
                 small: true,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
           ListTile(
-            title: LanText('端口'),
+            title: LanText(AppLocalizations.of(context).port),
             // subtitle: LanText(_commonModel.codeSrvPort),
             trailing: CupertinoButton(
                 child: NoResizeText('${_commonModel.codeSrvPort}'),
                 onPressed: () async {
                   showSingleTextFieldModal(
                     context,
-                    title: '更改端口',
+                    title: AppLocalizations.of(context).port,
                     placeholder: _commonModel.codeSrvPort,
                     onOk: (val) {
                       _commonModel.setCodeSrvPort(val);
-                      showText('设置成功');
+                      showText(AppLocalizations.of(context).setSuccess);
                     },
                     onCancel: () {},
                   );
@@ -130,13 +130,14 @@ class CodeSettingPageState extends State<CodeSettingPage> {
               await cutils.killNodeServer();
             },
             child: ListTile(
-              title: LanText('结束code server进程'),
+              title: LanText(AppLocalizations.of(context).terminalCodeServer),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
           ListTile(
             title: LanText('Telemetry'),
-            subtitle: LanText('用于帮助了解如何改进vscode', small: true),
+            subtitle: LanText(AppLocalizations.of(context).helpCodeServer,
+                small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
               value: _commonModel.codeSrvTelemetry,
@@ -151,18 +152,22 @@ class CodeSettingPageState extends State<CodeSettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('沙盒', subtitle: 'alpine linux'),
+          blockTitle(AppLocalizations.of(context).sandbox,
+              subtitle: 'alpine linux'),
           SizedBox(height: 15),
           InkWell(
             child: ListTile(
-              title: LanText('沙盒目录'),
-              subtitle: LanText(rootfs.existsSync() ? rootfs.path : '沙盒不存在',
+              title: LanText(AppLocalizations.of(context).sandbox),
+              subtitle: LanText(
+                  rootfs.existsSync()
+                      ? rootfs.path
+                      : AppLocalizations.of(context).sandboxNotExist,
                   small: true),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
           ListTile(
-            title: LanText('更换仓库'),
+            title: LanText(AppLocalizations.of(context).modifyRepo),
             subtitle: LanText(repoChineseName(repo), small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: FocusedMenuHolder(
@@ -182,7 +187,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                           .then((value) async {
                         await _commonModel.setLinuxRepo(TSINGHUA_REPO);
                       }).catchError((e) {
-                        showText('设置失败');
+                        showText(AppLocalizations.of(context).setFail);
                       });
                     }),
                 FocusedMenuItem(
@@ -195,7 +200,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                         await _commonModel.setLinuxRepo(ALIYUN_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        showText('设置失败');
+                        showText(AppLocalizations.of(context).setFail);
                       });
                     }),
                 FocusedMenuItem(
@@ -206,12 +211,12 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                         await _commonModel.setLinuxRepo(USTC_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        showText('设置失败');
+                        showText(AppLocalizations.of(context).setFail);
                       });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
-                    title: LanText('Alpine(不推荐)'),
+                    title: LanText('Alpine'),
                     onPressed: () async {
                       await cutils
                           .setChineseRepo(ALPINE_REPO)
@@ -219,21 +224,21 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                         await _commonModel.setLinuxRepo(ALPINE_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        showText('设置失败');
+                        showText(AppLocalizations.of(context).setFail);
                       });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
-                    title: LanText('自定义'),
+                    title: LanText(AppLocalizations.of(context).custom),
                     onPressed: () async {
                       await showSingleTextFieldModal(
                         context,
-                        title: 'alpine 源',
+                        title: 'alpine',
                         onOk: (val) async {
                           await cutils.setChineseRepo(val).then((value) async {
                             await _commonModel.setLinuxRepo(val);
                           }).catchError((e) {
-                            showText('设置失败');
+                            showText(AppLocalizations.of(context).setFail);
                           });
                         },
                         onCancel: () {},
@@ -243,7 +248,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
               child: Container(
                 padding: EdgeInsets.only(left: 16, right: 16),
                 child: NoResizeText(
-                  '选择源',
+                  AppLocalizations.of(context).selectSource,
                   style: TextStyle(color: Color(0xFF007AFF)),
                 ),
               ),
@@ -252,11 +257,11 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           InkWell(
             onTap: () async {
               await cutils.clearProotTmp();
-              showText('删除完成');
+              showText(AppLocalizations.of(context).setSuccess);
             },
             child: ListTile(
               title: LanText(
-                '删除沙盒临时文件',
+                AppLocalizations.of(context).deleteSandboxTemp,
                 style: TextStyle(color: Colors.redAccent),
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -266,21 +271,21 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () async {
               showTipTextModal(
                 context,
-                title: '删除沙盒',
-                tip: '确定删除沙盒以及code server?',
+                title: AppLocalizations.of(context).deleteSandbox,
+                tip: AppLocalizations.of(context).deleteSandboxTip,
                 confirmedView: loadingIndicator(context, _themeModel),
                 onOk: () async {
                   await cutils.rmAllResource().catchError((err) {
-                    showText('删除出现异常');
+                    showText(AppLocalizations.of(context).setFail);
                   });
-                  showText('删除完成');
+                  showText(AppLocalizations.of(context).setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
               title: LanText(
-                '删除沙盒',
+                AppLocalizations.of(context).deleteSandbox,
                 style: TextStyle(color: Colors.redAccent),
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -295,7 +300,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          'Code Server&沙盒',
+          AppLocalizations.of(context).codeServer,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,

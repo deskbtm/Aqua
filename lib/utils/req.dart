@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:lan_file_more/constant/constant.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/utils/store.dart';
+import 'package:aqua/constant/constant.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/utils/store.dart';
 
 class _CookieInterceptors extends InterceptorsWrapper {
   @override

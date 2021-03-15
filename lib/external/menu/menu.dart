@@ -3,8 +3,8 @@ library focused_menu;
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/utils/mix_utils.dart';
 
 class FocusedMenuItem {
   Color backgroundColor;

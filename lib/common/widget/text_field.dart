@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:provider/provider.dart';
 
 export 'package:flutter/services.dart'
@@ -77,11 +77,11 @@ enum OverlayVisibilityMode {
 class _CupertinoTextFieldSelectionGestureDetectorBuilder
     extends TextSelectionGestureDetectorBuilder {
   _CupertinoTextFieldSelectionGestureDetectorBuilder({
-    @required _LanTextFieldState state,
+    @required _AquaTextFieldState state,
   })  : _state = state,
         super(delegate: state);
 
-  final _LanTextFieldState _state;
+  final _AquaTextFieldState _state;
 
   @override
   void onSingleTapUp(TapUpDetails details) {
@@ -109,8 +109,8 @@ class _CupertinoTextFieldSelectionGestureDetectorBuilder
   }
 }
 
-class LanTextField extends StatefulWidget {
-  const LanTextField({
+class AquaTextField extends StatefulWidget {
+  const AquaTextField({
     Key key,
     this.controller,
     this.focusNode,
@@ -313,7 +313,7 @@ class LanTextField extends StatefulWidget {
   final GestureTapCallback onTap;
 
   @override
-  _LanTextFieldState createState() => _LanTextFieldState();
+  _AquaTextFieldState createState() => _AquaTextFieldState();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -384,7 +384,7 @@ class LanTextField extends StatefulWidget {
   }
 }
 
-class _LanTextFieldState extends State<LanTextField>
+class _AquaTextFieldState extends State<AquaTextField>
     with AutomaticKeepAliveClientMixin
     implements TextSelectionGestureDetectorBuilderDelegate {
   final GlobalKey _clearGlobalKey = GlobalKey();
@@ -426,7 +426,7 @@ class _LanTextFieldState extends State<LanTextField>
   }
 
   @override
-  void didUpdateWidget(LanTextField oldWidget) {
+  void didUpdateWidget(AquaTextField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller == null && oldWidget.controller != null) {
       _controller = TextEditingController.fromValue(oldWidget.controller.value);
@@ -544,7 +544,7 @@ class _LanTextFieldState extends State<LanTextField>
   }
 
   // Provide default behavior if widget.textAlignVertical is not set.
-  // LanTextField has top alignment by default, unless it has decoration
+  // AquaTextField has top alignment by default, unless it has decoration
   // like a prefix or suffix, in which case it's aligned to the center.
   TextAlignVertical get _textAlignVertical {
     if (widget.textAlignVertical != null) {

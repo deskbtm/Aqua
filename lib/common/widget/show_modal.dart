@@ -4,15 +4,16 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/dialog.dart';
-import 'package:lan_file_more/common/widget/loading_flipping.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/text_field.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/dialog.dart';
+import 'package:aqua/common/widget/loading_flipping.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/text_field.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SplitSelectionModal extends StatefulWidget {
   final List<Widget> leftChildren;
@@ -343,7 +344,7 @@ Future<dynamic> showSingleTextFieldModal(
                 NoResizeText(tip),
                 SizedBox(height: 10),
               ],
-              LanTextField(
+              AquaTextField(
                 controller: textEditingController,
                 placeholder: placeholder,
               ),
@@ -398,7 +399,7 @@ Future<dynamic> showTwoTextFieldModal(
             children: <Widget>[
               SizedBox(
                 height: 30,
-                child: LanTextField(
+                child: AquaTextField(
                   style: TextStyle(fontSize: 16),
                   controller: fEditingController,
                   placeholder: fPlaceholder,
@@ -408,7 +409,7 @@ Future<dynamic> showTwoTextFieldModal(
               SizedBox(height: 15),
               SizedBox(
                 height: 32,
-                child: LanTextField(
+                child: AquaTextField(
                   style: TextStyle(fontSize: 16),
                   controller: sEditingController,
                   placeholder: sPlaceholder,
@@ -507,11 +508,12 @@ Future<dynamic> showSelectModal(
   String title = '',
   String subTitle = '',
   List<dynamic> options,
+  @required Widget Function(int index, Map data) item,
   bool transparent = false,
   String defaultOkText,
   String defaultCancelText,
   bool action = false,
-  Function(int) onSelected,
+  Function(int, Map) onSelected,
   Function onOk,
   Function onCancel,
   Function(BuildContext) doAction,
@@ -556,33 +558,12 @@ Future<dynamic> showSelectModal(
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () {
-                        if (onSelected != null) onSelected(index);
-                      },
-                      onLongPress: () {
-                        tmpOptions.removeAt(index);
-                        if (onLongPressDeleteItem != null) {
-                          onLongPressDeleteItem(index, tmpOptions);
-                        }
-                        changeState(() {});
-                      },
-                      child: tmpOptions[index] is String
-                          ? Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.only(top: 8, bottom: 8),
-                              decoration: BoxDecoration(
-                                color: themeData.itemColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5)),
-                              ),
-                              margin: EdgeInsets.only(top: 4, bottom: 4),
-                              child: NoResizeText(
-                                tmpOptions[index],
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            )
-                          : tmpOptions[index],
-                    ),
+                        onTap: () {
+                          if (onSelected != null)
+                            onSelected(index, options[index]);
+                          MixUtils.safePop(context);
+                        },
+                        child: item(index, options[index])),
                   );
                 },
                 itemCount: tmpOptions?.length,
@@ -643,7 +624,7 @@ Future<dynamic> showQrcodeModal(
   BuildContext context,
   String data, {
   bool popPreviousWindow = false,
-  String title = '扫描二维码',
+  String title,
 }) async {
   if (popPreviousWindow) MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
@@ -679,7 +660,7 @@ Future<dynamic> showQrcodeModal(
                       children: [
                         LanText(data, small: true),
                         SizedBox(height: 10),
-                        LanText('地址已经复制到剪贴板'),
+                        LanText(AppLocalizations.of(context).copied),
                       ],
                     )
                   ],

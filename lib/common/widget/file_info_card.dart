@@ -4,13 +4,14 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/file_manager/file_utils.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // ignore: must_be_immutable
 class FileInfoCard extends StatefulWidget {
@@ -88,10 +89,13 @@ class _FileInfoCardState extends State<FileInfoCard> {
     AquaTheme themeData = _themeModel?.themeData;
 
     List<List> info = [
-      ['文件名', file.filename],
-      ['路径', file.entity.path],
-      ['修改日期', MixUtils.formatFileTime(file.modified)],
-      ['权限', file.modeString]
+      [AppLocalizations.of(context).filename, file.filename],
+      [AppLocalizations.of(context).path, file.entity.path],
+      [
+        AppLocalizations.of(context).modify,
+        MixUtils.formatFileTime(file.modified)
+      ],
+      [AppLocalizations.of(context).authorization, file.modeString]
     ];
 
     if (widget.additionalList != null) {
@@ -104,8 +108,11 @@ class _FileInfoCardState extends State<FileInfoCard> {
         _mutex = false;
       }
       info.addAll([
-        ['文件大小', MixUtils.humanStorageSize(_totalSize.toDouble())],
-        ['文件数', '$_fileCount'],
+        [
+          AppLocalizations.of(context).fileSize,
+          MixUtils.humanStorageSize(_totalSize.toDouble())
+        ],
+        [AppLocalizations.of(context).fileCount, '$_fileCount'],
       ]);
     }
 
@@ -117,7 +124,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
           return GestureDetector(
             onLongPressStart: (details) async {
               await Clipboard.setData(ClipboardData(text: cur[1]));
-              BotToast.showText(text: '已复制到剪贴板');
+              BotToast.showText(text: AppLocalizations.of(context).copied);
             },
             child: Container(
               margin: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 5),

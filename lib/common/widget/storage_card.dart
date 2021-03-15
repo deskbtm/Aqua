@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/progress.dart';
+import 'package:aqua/common/widget/progress.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 // ignore: must_be_immutable
 class StorageCard extends StatelessWidget {
@@ -28,7 +29,7 @@ class StorageCard extends StatelessWidget {
           barWidth: MediaQuery.of(context).size.width,
           numerator: totalSize - validSize,
           denominator: totalSize,
-          title: '内部储存',
+          title: AppLocalizations.of(context).internalStorage,
           dialogTextStyle: TextStyle(
               fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
           titleStyle: TextStyle(

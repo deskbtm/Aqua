@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/model/theme_model.dart';
+import 'package:aqua/model/theme_model.dart';
 import 'package:provider/provider.dart';
 
 class NoResizeText extends Text {

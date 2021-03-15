@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/page/file_manager/file_utils.dart';
-import 'package:lan_file_more/utils/store.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/utils/store.dart';
 
 class FileModel extends ChangeNotifier {
   String _sortType;

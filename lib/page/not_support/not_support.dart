@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 

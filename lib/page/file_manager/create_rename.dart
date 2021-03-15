@@ -2,15 +2,15 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
-import 'package:lan_file_more/common/widget/dialog.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/common/widget/text_field.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/dialog.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/text_field.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'file_utils.dart';
 
 Future<void> createRenameModal(
@@ -32,10 +32,10 @@ Future<void> createRenameModal(
       return LanDialog(
         fontColor: themeData.itemFontColor,
         bgColor: themeData.dialogBgColor,
-        title: NoResizeText('重命名'),
+        title: NoResizeText(AppLocalizations.of(context).rename),
         action: true,
         children: <Widget>[
-          LanTextField(
+          AquaTextField(
             style: TextStyle(textBaseline: TextBaseline.alphabetic),
             controller: textEditingController,
             placeholder: '${file.filename}',

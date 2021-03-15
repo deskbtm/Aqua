@@ -5,19 +5,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:lan_file_more/common/widget/action_button.dart';
-import 'package:lan_file_more/common/widget/draggable_scrollbar.dart';
-import 'package:lan_file_more/common/widget/images.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/file_model.dart';
-import 'package:lan_file_more/page/file_manager/file_action.dart';
-import 'package:lan_file_more/page/file_manager/file_item.dart';
-import 'package:lan_file_more/page/file_manager/file_manager.dart';
+import 'package:aqua/common/widget/action_button.dart';
+import 'package:aqua/common/widget/draggable_scrollbar.dart';
+import 'package:aqua/common/widget/images.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/external/bot_toast/bot_toast.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/file_model.dart';
+import 'package:aqua/page/file_manager/file_action.dart';
+import 'package:aqua/page/file_manager/file_item.dart';
+import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'file_utils.dart';
 
 class ListFileItemInfo {
@@ -115,7 +115,7 @@ class _FileListViewState extends State<FileListView> {
           leftChildren: <Widget>[
             if (sharedNotEmpty)
               ActionButton(
-                content: '归档到此',
+                content: AppLocalizations.of(context).archiveHere,
                 onTap: () async {
                   await _fileActionUI.showCreateArchiveModal(
                     context,
@@ -125,7 +125,7 @@ class _FileListViewState extends State<FileListView> {
               ),
             if (sharedNotEmpty)
               ActionButton(
-                content: '移动到此',
+                content: AppLocalizations.of(context).moveHere,
                 onTap: () async {
                   await _fileActionUI.handleMove(
                     context,
@@ -137,7 +137,7 @@ class _FileListViewState extends State<FileListView> {
           rightChildren: <Widget>[
             if (sharedNotEmpty) ...[
               ActionButton(
-                content: '复制到此',
+                content: AppLocalizations.of(context).copyHere,
                 onTap: () async {
                   await _fileActionUI.copyModal(
                     context,
@@ -146,7 +146,7 @@ class _FileListViewState extends State<FileListView> {
                 },
               ),
               ActionButton(
-                content: '提取到此',
+                content: AppLocalizations.of(context).extractHere,
                 onTap: () async {
                   await _fileActionUI.handleExtractArchive(
                     context,
@@ -156,7 +156,7 @@ class _FileListViewState extends State<FileListView> {
               ),
             ],
             ActionButton(
-              content: '新建',
+              content: AppLocalizations.of(context).create,
               onTap: () async {
                 await _fileActionUI.showCreateFileModal(context);
               },

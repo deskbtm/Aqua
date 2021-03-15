@@ -4,26 +4,27 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/constant/constant.dart';
-import 'package:lan_file_more/page/file_manager/file_utils.dart';
-import 'package:lan_file_more/page/lan/share/create_proot_env.dart';
-import 'package:lan_file_more/web/body_parser/src/shelf_body_parser.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/constant/constant.dart';
+import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/lan/share/create_proot_env.dart';
+import 'package:aqua/web/body_parser/src/shelf_body_parser.dart';
 import 'package:provider/provider.dart';
-import 'package:lan_file_more/common/widget/images.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/switch.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/page/file_manager/file_item.dart';
-import 'package:lan_file_more/page/lan/code_server/utils.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/notification.dart';
-import 'package:lan_file_more/web/web_handler.dart';
+import 'package:aqua/common/widget/images.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/switch.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/page/file_manager/file_item.dart';
+import 'package:aqua/page/lan/code_server/utils.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/notification.dart';
+import 'package:aqua/web/web_handler.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
 import 'package:wakelock/wakelock.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LanSharePage extends StatefulWidget {
   @override
@@ -61,7 +62,7 @@ class _LanSharePageState extends State<LanSharePage>
       themeProvider: _themeModel,
       commonProvider: _commonModel,
       onSuccess: () {
-        showText('安装完成');
+        showText(AppLocalizations.of(context).installSuccess);
         MixUtils.safePop(context);
       },
     );
@@ -72,13 +73,13 @@ class _LanSharePageState extends State<LanSharePage>
         ? LocalNotification.showNotification(
             index: 0,
             name: 'STATIC_UPLOAD',
-            title: '文件接收成功',
+            title: AppLocalizations.of(context).receiveFileSuccess,
             autoCancel: true,
           )
         : LocalNotification.showNotification(
             index: 0,
             name: 'STATIC_UPLOAD',
-            title: '文件接收失败',
+            title: AppLocalizations.of(context).receiveFileFail,
             autoCancel: true,
           );
   }
@@ -130,7 +131,7 @@ class _LanSharePageState extends State<LanSharePage>
         LocalNotification.showNotification(
           index: 0,
           name: 'STATIC_SHARING',
-          title: '静态文件共享中.....',
+          title: AppLocalizations.of(context).shareFile,
           ongoing: true,
           autoCancel: true,
         );
@@ -143,10 +144,11 @@ class _LanSharePageState extends State<LanSharePage>
           Wakelock.enable();
         }
 
-        await showQrcodeModal(context, 'http://$addr');
+        await showQrcodeModal(context, 'http://$addr',
+            title: AppLocalizations.of(context).searchQr);
       } else {
         _server?.close();
-        showText('共享关闭');
+        showText(AppLocalizations.of(context).shareClose);
         LocalNotification.plugin?.cancel(0);
         Wakelock.disable();
       }
@@ -161,10 +163,6 @@ class _LanSharePageState extends State<LanSharePage>
 
   Future<void> _openCodeServer(BuildContext context, bool val,
       {String codeAddr}) async {
-    if (!_commonModel.isPurchased) {
-      showText('请先购买 "IOS管理器" for developer');
-      return;
-    }
     CodeSrvUtils utils = await CodeSrvUtils().init();
     bool outLocker = true;
     bool errLocker = true;
@@ -177,7 +175,7 @@ class _LanSharePageState extends State<LanSharePage>
         LocalNotification.showNotification(
           index: 1,
           name: 'VSCODE_SHARING',
-          title: 'vscode server 开启中.....',
+          title: 'vscode server ${AppLocalizations.of(context).starting}',
           onlyAlertOnce: true,
           showProgress: true,
           indeterminate: true,
@@ -189,7 +187,7 @@ class _LanSharePageState extends State<LanSharePage>
           pwd: _commonModel.codeSrvPwd,
         )
             .catchError((err) {
-          showText('开启出现错误');
+          showText(AppLocalizations.of(context).setFail);
         });
 
         result.stdout.transform(utf8.decoder).listen((data) async {
@@ -198,7 +196,7 @@ class _LanSharePageState extends State<LanSharePage>
             LocalNotification.showNotification(
               index: 2,
               name: 'VSCODE_RUNNING',
-              title: 'vscode server 运行中',
+              title: 'vscode server ${AppLocalizations.of(context).running}',
               ongoing: true,
               autoCancel: true,
             );
@@ -214,7 +212,7 @@ class _LanSharePageState extends State<LanSharePage>
           if (data != '') {
             if (errLocker) {
               errLocker = false;
-              showText('错误 $data');
+              showText('${AppLocalizations.of(context).setFail} $data');
               LocalNotification.plugin?.cancel(1);
               Wakelock.disable();
             }
@@ -222,11 +220,12 @@ class _LanSharePageState extends State<LanSharePage>
           debugPrint(data);
         });
 
-        await showQrcodeModal(context, 'http://$codeAddr');
+        await showQrcodeModal(context, 'http://$codeAddr',
+            title: AppLocalizations.of(context).searchQr);
       } else {
         await utils.killNodeServer();
         LocalNotification.plugin?.cancel(2);
-        showText('vscode 服务已关闭');
+        showText('vscode ${AppLocalizations.of(context).closed}');
         Wakelock.disable();
       }
     } else {
@@ -244,23 +243,14 @@ class _LanSharePageState extends State<LanSharePage>
     String fileAddr = '$internalIp:$filePort';
     String codeAddr = '$internalIp:$codeSrvPort';
 
-    String firstAliveIp =
-        // ignore: null_aware_in_logical_operator
-        _commonModel.currentConnectIp != null &&
-                (_commonModel.socket?.connected != null ||
-                    _commonModel.socket?.connected == true)
-            ? '${_commonModel.currentConnectIp}:${_commonModel.filePort}'
-            : '未连接';
-
     return CupertinoPageScaffold(
       child: SafeArea(
         child: Column(
           children: <Widget>[
             Column(
               children: [
-                SizedBox(height: 20),
                 ListTile(
-                  title: LanText('静态文件服务'),
+                  title: LanText(AppLocalizations.of(context).staticServer),
                   subtitle: LanText(fileAddr, small: true),
                   contentPadding: EdgeInsets.only(left: 15, right: 10),
                   trailing: LanSwitch(
@@ -303,7 +293,8 @@ class _LanSharePageState extends State<LanSharePage>
                             size: 57,
                           ),
                           SizedBox(height: 20),
-                          LanText('默认分享根目录', alignX: 0, fontSize: 14)
+                          LanText(AppLocalizations.of(context).shareTip,
+                              alignX: 0, fontSize: 14)
                         ],
                       ),
                     )

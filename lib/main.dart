@@ -1,26 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:catcher/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:f_logs/model/flog/flog.dart';
-import 'package:lan_file_more/aqua.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:aqua/aqua.dart';
+import 'package:aqua/utils/mix_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'constant/constant.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  CatcherOptions debugOptions = CatcherOptions(DialogReportMode(), [
-    // ConsoleHandler(),
-    EmailManualHandler([EMAIL])
-  ]);
-
-  CatcherOptions releaseOptions = CatcherOptions(DialogReportMode(), [
-    EmailManualHandler([EMAIL])
-  ]);
 
   FlutterError.onError = (FlutterErrorDetails details) async {
     if (MixUtils.isDev) {

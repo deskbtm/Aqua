@@ -27,6 +27,7 @@ const String PC_BAK_DOWNLOAD_URL =
     'https://qcloudc5d77d.coding.net/s/466139a0-d01d-4e45-bc6c-d1f07285068a';
 
 const String BILIBILI_SPACE = 'https://space.bilibili.com/178944900';
+const String ZHIHU_SPACE = 'http://www.zhihu.com/people/mrno-64';
 const String AUTHOR_ALIPAY =
     'alipays://platformapi/startapp?appId=09999988&actionType=toAccount&goBack=NO&userId=2088722095158050';
 
@@ -38,6 +39,7 @@ const String AUTHOR_ALIPAY =
 const String DEFAULT_QQ_GROUP_NUM = '728414724';
 const String DEFAULT_QQ_GROUP_KEY = 'QPZhZGDGVgEW9pyJ_f0KAfHG-405Gu8h';
 const String DEFAULT_AUTHOR_EMAIL = 'wanghan9423@outlook.com';
+const String GITHUB = 'https://github.com/lan-file-more/aqua';
 const String DEFAULT_AUTHOR_AVATAR =
     'https://oss.turingsenseai.com/1603984097670508746.png?x-oss-process=image/resize,h_200,m_lfit';
 

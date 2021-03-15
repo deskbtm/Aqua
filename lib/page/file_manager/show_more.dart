@@ -2,21 +2,22 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:android_mix/android_mix.dart';
-import 'package:file_editor/editor_theme.dart';
-import 'package:file_editor/file_editor.dart';
+import 'package:aqua/page/file_editor/editor_theme.dart';
+import 'package:aqua/page/file_editor/file_editor.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/common/widget/action_button.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/external/webdav/webdav.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/notification.dart';
-import 'package:lan_file_more/utils/webdav.dart';
+import 'package:aqua/common/widget/action_button.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/external/webdav/webdav.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/notification.dart';
+import 'package:aqua/utils/webdav.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'file_utils.dart';
 
@@ -51,47 +52,47 @@ Future<dynamic> showMoreModal(
         // onDispose: () {},
         leftChildren: [
           ActionButton(
-            content: '复制至沙盒',
+            content: AppLocalizations.of(context).copyToSandbox,
             onTap: () async {
               Directory sandbox = Directory('$filesPath/rootfs/root');
               if (sandbox.existsSync()) {
-                showText('复制中, 请等待');
+                showText(AppLocalizations.of(context).wait);
                 await LanFileUtils.copy(file, sandbox.path);
-                showText('复制完成');
+                showText(AppLocalizations.of(context).setSuccess);
               } else {
-                showText('沙盒不存在');
+                showText(AppLocalizations.of(context).sandboxNotExist);
               }
             },
           ),
           ActionButton(
-            content: '上传WebDAV',
+            content: AppLocalizations.of(context).uploadToWebDAV,
             onTap: () async {
               if (commonModel.webDavAddr == null ||
                   commonModel.webDavPwd == null ||
                   commonModel.webDavUsername == null) {
-                showText('请先设置WebDAV');
+                showText(AppLocalizations.of(context).uploadToWebDAV);
                 return;
               }
               LocalNotification.showNotification(
                 index: 1,
                 name: 'WEBDAV_UPLOAD',
-                title: '文件上传中.....',
+                title: AppLocalizations.of(context).uploading,
                 onlyAlertOnce: true,
                 showProgress: true,
                 indeterminate: true,
               );
               await uploadToWebDAV(file).catchError((err) {
                 LocalNotification.plugin?.cancel(1);
-                showText('上传失败');
+                showText(AppLocalizations.of(context).setFail);
               });
               LocalNotification.plugin?.cancel(1);
-              showText('上传成功');
+              showText(AppLocalizations.of(context).setSuccess);
             },
           ),
         ],
         rightChildren: <Widget>[
           ActionButton(
-            content: '编辑器打开',
+            content: AppLocalizations.of(context).openEditor,
             onTap: () async {
               Navigator.of(context, rootNavigator: true).push(
                 CupertinoPageRoute(builder: (BuildContext context) {
@@ -119,7 +120,7 @@ Future<dynamic> showMoreModal(
             },
           ),
           ActionButton(
-            content: '打开方式',
+            content:AppLocalizations.of(context).openWith,
             onTap: () async {
               try {
                 OpenFile.open(file.entity.path);

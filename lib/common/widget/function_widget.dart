@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/model/theme_model.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/model/theme_model.dart';
 
 Widget loadingIndicator(BuildContext context, ThemeModel provider) =>
     CupertinoTheme(

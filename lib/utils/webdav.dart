@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/external/webdav/src/client.dart';
-import 'package:lan_file_more/utils/store.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/external/webdav/src/client.dart';
+import 'package:aqua/utils/store.dart';
 
 class WebDavUtils {
   Client client;

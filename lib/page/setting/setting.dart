@@ -4,33 +4,31 @@ import 'package:android_mix/android_mix.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/show_modal_entity.dart';
-import 'package:lan_file_more/common/widget/function_widget.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/common/widget/switch.dart';
-import 'package:lan_file_more/constant/constant.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
-import 'package:lan_file_more/page/file_manager/file_manager.dart';
-import 'package:lan_file_more/page/file_manager/file_utils.dart';
-import 'package:lan_file_more/page/lan/code_server/utils.dart';
-import 'package:lan_file_more/page/purchase/purchase.dart';
-import 'package:lan_file_more/page/setting/about.dart';
-import 'package:lan_file_more/page/setting/code_setting.dart';
-import 'package:lan_file_more/page/setting/express_setting.dart';
-import 'package:lan_file_more/page/setting/helper_setting.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/notification.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/show_modal_entity.dart';
+import 'package:aqua/common/widget/function_widget.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/switch.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/external/bot_toast/bot_toast.dart';
+import 'package:aqua/page/file_manager/file_manager.dart';
+import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/lan/code_server/utils.dart';
+import 'package:aqua/page/purchase/purchase.dart';
+import 'package:aqua/page/setting/code_setting.dart';
+import 'package:aqua/page/setting/helper_setting.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/notification.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'about.dart';
 
 class SettingPage extends StatefulWidget {
   final CupertinoTabController gTabController;
@@ -122,7 +120,7 @@ class SettingPageState extends State<SettingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 30),
-            blockTitle('购买'),
+            blockTitle(AppLocalizations.of(context).sponsor),
             SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
@@ -137,9 +135,9 @@ class SettingPageState extends State<SettingPage> {
               child: ListTile(
                 trailing: Icon(OMIcons.addShoppingCart,
                     color: themeData?.itemFontColor),
-                title: LanText('购买 developer 版本'),
+                title: LanText(AppLocalizations.of(context).sponsorTitle),
                 subtitle: LanText(
-                  '价格${_commonModel?.gWebData['amount'] ?? DEF_AMOUNT}元 购买后此选项不再显示',
+                  '5￥ ${AppLocalizations.of(context).sponsorText}',
                   small: true,
                 ),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
@@ -152,22 +150,22 @@ class SettingPageState extends State<SettingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 30),
-            blockTitle('用户'),
+            blockTitle(AppLocalizations.of(context).user),
             SizedBox(height: 15),
             ListTile(
-              title: LanText('用户名'),
+              title: LanText(AppLocalizations.of(context).username),
               subtitle: LanText(
                 '${_commonModel.username}',
                 small: true,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
-                child: NoResizeText('退出'),
+                child: NoResizeText(AppLocalizations.of(context).exit),
                 onPressed: () async {
                   await showTipTextModal(
                     context,
-                    title: '用户退出',
-                    tip: '确定退出？退出后购买也会被删除',
+                    title: AppLocalizations.of(context).exit,
+                    tip: AppLocalizations.of(context).exitTip,
                     onOk: () async {
                       await _commonModel.logout();
                     },
@@ -182,10 +180,10 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('外观'),
+          blockTitle(AppLocalizations.of(context).appearance),
           SizedBox(height: 15),
           ListTile(
-            title: LanText('暗黑模式'),
+            title: LanText(AppLocalizations.of(context).dark),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: LanSwitch(
               value: _themeModel.isDark,
@@ -195,12 +193,14 @@ class SettingPageState extends State<SettingPage> {
             ),
           ),
           ListTile(
-            title: LanText('静态服务主题'),
-            subtitle: LanText('跟随软件', small: true),
+            title: LanText(AppLocalizations.of(context).staticServerTheme),
+            subtitle: LanText(AppLocalizations.of(context).subStaticServerTheme,
+                small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: Container(
               width: 42,
-              child: LanText(_themeModel.isDark ? '暗黑' : '浅白', small: true),
+              child:
+                  LanText(_themeModel.isDark ? 'dark' : 'light', small: true),
             ),
           ),
         ],
@@ -209,12 +209,12 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('静态服务'),
+          blockTitle(AppLocalizations.of(context).staticServer),
           SizedBox(height: 15),
           InkWell(
             onTap: () {},
             child: ListTile(
-              title: LanText('上传保存路径'),
+              title: LanText(AppLocalizations.of(context).savePath),
               subtitle: LanText('${_commonModel.staticUploadSavePath}'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
@@ -222,7 +222,7 @@ class SettingPageState extends State<SettingPage> {
                 onPressed: () {
                   showSingleTextFieldModal(
                     context,
-                    title: '静态上传保存路径',
+                    title: AppLocalizations.of(context).savePath,
                     initText: _commonModel.storageRootPath + '/',
                     placeholder: '以 ${_commonModel.storageRootPath}/ 开头',
                     onOk: (String val) async {
@@ -245,7 +245,7 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('Code Server&沙盒'),
+          blockTitle(AppLocalizations.of(context).codeServer),
           SizedBox(height: 15),
           InkWell(
             onTap: () async {
@@ -322,7 +322,8 @@ class SettingPageState extends State<SettingPage> {
                                       showText('node 安装失败');
                                     },
                                   );
-                                  showText('安装成功');
+                                  showText(
+                                      AppLocalizations.of(context).setSuccess);
                                   LocalNotification.plugin?.cancel(10);
                                 }
                               } else {
@@ -330,7 +331,7 @@ class SettingPageState extends State<SettingPage> {
                               }
                             },
                             child: NoResizeText(
-                              '确定',
+                              AppLocalizations.of(context).sure,
                               style: TextStyle(
                                 color: Color(0xFF007AFF),
                               ),
@@ -344,7 +345,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: LanText('手动安装'),
+              title: LanText(AppLocalizations.of(context).installManually),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
@@ -366,12 +367,13 @@ class SettingPageState extends State<SettingPage> {
                 gTabController.index = 1;
                 // 确保删除干净了
                 await cutils.rmAllResource();
-                showText('请先安装完整的环境');
+                showText(AppLocalizations.of(context).installRes);
               }
             },
             child: ListTile(
               leading: Icon(OMIcons.code, color: themeData?.itemFontColor),
-              title: LanText('更多设置', alignX: -1.15),
+              title: LanText(AppLocalizations.of(context).moreSetting,
+                  alignX: -1.15),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
               trailing: Icon(
                 OMIcons.chevronRight,
@@ -392,21 +394,21 @@ class SettingPageState extends State<SettingPage> {
             onTap: () async {
               await showSingleTextFieldModal(
                 context,
-                title: '服务器地址',
+                title: AppLocalizations.of(context).webDavServer,
                 placeholder: _commonModel.webDavAddr,
                 onOk: (val) {
                   _commonModel
                       .setWebDavAddr(val.replaceFirst(RegExp(r'/*$'), ''));
-                  showText('设置成功');
+                  showText(AppLocalizations.of(context).setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
               trailing: Icon(OMIcons.web, color: themeData?.itemFontColor),
-              title: LanText('服务器'),
+              title: LanText(AppLocalizations.of(context).webDavServer),
               subtitle: LanText(_commonModel.webDavAddr == null
-                  ? '未设置'
+                  ? AppLocalizations.of(context).notSetting
                   : _commonModel.webDavAddr),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
@@ -415,11 +417,11 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: '账号',
+                title: AppLocalizations.of(context).webDavAccount,
                 placeholder: _commonModel.webDavUsername,
                 onOk: (val) {
                   _commonModel.setWebDavUsername(val);
-                  showText('设置成功');
+                  showText(AppLocalizations.of(context).setSuccess);
                 },
                 onCancel: () {},
               );
@@ -427,11 +429,11 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
               trailing: Icon(OMIcons.face, color: themeData?.itemFontColor),
               title: LanText(
-                '账号',
+                AppLocalizations.of(context).webDavAccount,
               ),
               subtitle: LanText(
                 _commonModel.webDavUsername == null
-                    ? '未设置'
+                    ? AppLocalizations.of(context).notSetting
                     : _commonModel.webDavUsername,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
@@ -441,19 +443,19 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: '密码',
+                title: AppLocalizations.of(context).password,
                 onOk: (val) {
                   _commonModel.setWebDavPwd(val);
-                  showText('设置成功');
+                  showText(AppLocalizations.of(context).setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
-              title: LanText('密码'),
+              title: LanText(AppLocalizations.of(context).password),
               subtitle: LanText(
                 _commonModel.webDavPwd == null
-                    ? '未设置'
+                    ? AppLocalizations.of(context).notSetting
                     : List(_commonModel.webDavPwd.length)
                         .map((e) => '*')
                         .toList()
@@ -470,8 +472,43 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle('其他'),
+          blockTitle(AppLocalizations.of(context).others),
           SizedBox(height: 15),
+          InkWell(
+            onTap: () async {
+              await showSelectModal(
+                context,
+                popPreviousWindow: true,
+                options: [
+                  {'title': '中文', 'code': 'zh'},
+                  {'title': 'English', 'code': 'en'},
+                ],
+                title: AppLocalizations.of(context).languageTip,
+                item: (index, data) => Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(top: 8, bottom: 8),
+                  decoration: BoxDecoration(
+                    color: themeData.itemColor,
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                  margin: EdgeInsets.only(top: 4, bottom: 4),
+                  child: NoResizeText(
+                    data['title'],
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onSelected: (index, data) async {
+                  _commonModel.setLanguage(data['code']);
+
+                  // Navigator.pop(context);
+                },
+              );
+            },
+            child: ListTile(
+              title: LanText(AppLocalizations.of(context).language),
+              contentPadding: EdgeInsets.only(left: 15, right: 25),
+            ),
+          ),
           InkWell(
             onTap: () {
               Navigator.of(context, rootNavigator: true).push(
@@ -483,7 +520,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: LanText('关于'),
+              title: LanText(AppLocalizations.of(context).about),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
               trailing: Icon(
                 OMIcons.chevronRight,
@@ -503,7 +540,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: LanText('帮助'),
+              title: LanText(AppLocalizations.of(context).help),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
               trailing: Icon(
                 OMIcons.chevronRight,
@@ -522,12 +559,13 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: LanText('检查更新'),
-              subtitle: LanText('当前版本: v$_version', small: true),
+              title: LanText(AppLocalizations.of(context).update),
+              subtitle: LanText('v$_version', small: true),
               trailing: _willUpdate
                   ? Icon(OMIcons.update, color: Colors.redAccent)
                   : CupertinoButton(
-                      child: NoResizeText('最新'), onPressed: () {}),
+                      child: NoResizeText(AppLocalizations.of(context).latest),
+                      onPressed: () {}),
               contentPadding:
                   EdgeInsets.only(left: 15, right: _willUpdate ? 25 : 10),
             ),
@@ -541,7 +579,7 @@ class SettingPageState extends State<SettingPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          '设置',
+          AppLocalizations.of(context).settingLabel,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,

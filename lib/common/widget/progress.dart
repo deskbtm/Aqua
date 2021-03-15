@@ -1,7 +1,7 @@
 library progress_bar;
 
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:aqua/utils/mix_utils.dart';
 
 class ProgressBar extends StatelessWidget {
   final String title;

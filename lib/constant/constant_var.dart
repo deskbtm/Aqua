@@ -20,6 +20,7 @@ const String TSINGHUA_REPO = 'tsinghua';
 const String ALIYUN_REPO = 'aliyun';
 const String USTC_REPO = 'ustc';
 const String ALPINE_REPO = 'alpine';
+const String LANGUAGE = 'language';
 
 const String PURCHASED = 'purchased';
 const String APP_INIT = 'app-init';

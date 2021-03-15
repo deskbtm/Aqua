@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/constant/constant.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/setting/privacy_policy.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/constant/constant.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/page/setting/privacy_policy.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AboutPage extends StatefulWidget {
   @override
@@ -120,8 +121,10 @@ class _AboutPageState extends State<AboutPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              LanText('IOS管理器', fontSize: 18),
-                              LanText('版本: v$_version', small: true),
+                              LanText('Aqua', fontSize: 18),
+                              LanText(
+                                  '${AppLocalizations.of(context).version}: v$_version',
+                                  small: true),
                             ],
                           ),
                         ],
@@ -140,7 +143,8 @@ class _AboutPageState extends State<AboutPage> {
                               );
                             },
                             child: ListTile(
-                              title: LanText('隐私政策'),
+                              title: LanText(
+                                  AppLocalizations.of(context).privacyProtocol),
                               contentPadding:
                                   EdgeInsets.only(left: 15, right: 10),
                               trailing: Icon(
@@ -159,9 +163,10 @@ class _AboutPageState extends State<AboutPage> {
                               }
                             },
                             child: ListTile(
-                              title: LanText('加入组织'),
+                              title:
+                                  LanText(AppLocalizations.of(context).concat),
                               subtitle: LanText(
-                                'QQ群: $_qqGroupNumber',
+                                'QQ: $_qqGroupNumber',
                                 small: true,
                               ),
                               contentPadding:
@@ -170,16 +175,14 @@ class _AboutPageState extends State<AboutPage> {
                           ),
                           InkWell(
                             onTap: () async {
-                              String url =
-                                  'https://github.com/lan-file-more/ios_manager';
-                              if (await canLaunch(url)) {
-                                launch(url);
+                              if (await canLaunch(GITHUB)) {
+                                launch(GITHUB);
                               }
                             },
                             child: ListTile(
                               title: LanText('Github'),
                               subtitle: LanText(
-                                'https://github.com/lan-file-more/ios_manager',
+                                GITHUB,
                                 small: true,
                               ),
                               contentPadding:
@@ -212,8 +215,8 @@ class _AboutPageState extends State<AboutPage> {
                             ),
                           ),
                         ),
-                        title: LanText('御神装.勿干涉'),
-                        subtitle: LanText('开发&设计', small: true),
+                        title: LanText('maxcalibur'),
+                        subtitle: LanText('develop&design', small: true),
                       ),
                       Container(
                         padding: EdgeInsets.only(left: 15),
@@ -224,18 +227,18 @@ class _AboutPageState extends State<AboutPage> {
                               onTap: () async {
                                 await Clipboard.setData(
                                     ClipboardData(text: _authorEmail));
-                                showText('复制到剪贴板');
+                                showText(AppLocalizations.of(context).copied);
                               },
                               child: NoResizeText('Email: $_authorEmail'),
                             ),
                             GestureDetector(
                               onTap: () async {
                                 await Clipboard.setData(
-                                  ClipboardData(text: 'UTTERcreator'),
+                                  ClipboardData(text: 'maxcalibur9423'),
                                 );
-                                showText('复制到剪贴板');
+                                showText('AppLocalizations.of(context).copied');
                               },
-                              child: NoResizeText('微信: UTTERcreator'),
+                              child: NoResizeText('wechat: maxcalibur9423'),
                             ),
                           ],
                         ),

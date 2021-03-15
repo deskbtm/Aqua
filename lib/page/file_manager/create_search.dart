@@ -4,17 +4,18 @@ import 'dart:ui';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/common/widget/text_field.dart';
-import 'package:lan_file_more/model/file_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/file_manager/file_manager.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/text_field.dart';
+import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/page/file_manager/file_manager.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
 import 'file_list_view.dart';
 import 'file_utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> createSearchModal(
   BuildContext context, {
@@ -81,8 +82,10 @@ Future<void> createSearchModal(
                   errorString.contains('denied')) {
                 showTipTextModal(
                   context,
-                  title: '错误',
-                  tip: (overAndroid11) ? '安卓11以上data / obb 没有权限' : '没有该目录权限',
+                  title: AppLocalizations.of(context).error,
+                  tip: (overAndroid11)
+                      ? AppLocalizations.of(context).noPermissionO
+                      : AppLocalizations.of(context).noPermission,
                   onCancel: null,
                 );
               }
@@ -118,10 +121,11 @@ Future<void> createSearchModal(
                           Expanded(
                             child: Container(
                               height: 40,
-                              child: LanTextField(
+                              child: AquaTextField(
                                 style: TextStyle(fontSize: 16),
                                 controller: textEditingController,
-                                placeholder: '搜索...',
+                                placeholder:
+                                    AppLocalizations.of(context).searching,
                                 onSubmitted: submitSearch,
                                 maxLines: 1,
                               ),

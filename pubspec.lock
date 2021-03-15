@@ -51,7 +51,7 @@ packages:
     source: hosted
     version: "1.2.0-nullsafety.1"
   charset_converter:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: charset_converter
       url: "https://pub.flutter-io.cn"
@@ -204,13 +204,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.2.1"
-  file_editor:
-    dependency: "direct main"
-    description:
-      path: "plugins/file_editor"
-      relative: true
-    source: path
-    version: "0.0.1"
   file_utils:
     dependency: "direct main"
     description:
@@ -238,7 +231,7 @@ packages:
     source: path
     version: "0.0.1"
   flutter_highlight:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_highlight
       url: "https://pub.flutter-io.cn"
@@ -266,7 +259,7 @@ packages:
     source: hosted
     version: "2.0.0+1"
   flutter_localizations:
-    dependency: "direct dev"
+    dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -705,20 +698,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  socket_io_client:
-    dependency: "direct main"
-    description:
-      name: socket_io_client
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.9.12"
-  socket_io_common:
-    dependency: transitive
-    description:
-      name: socket_io_common
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.9.2"
   source_span:
     dependency: transitive
     description:

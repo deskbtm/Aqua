@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
-import 'package:lan_file_more/external/webdav/src/retry.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:aqua/external/webdav/src/retry.dart';
+import 'package:aqua/utils/mix_utils.dart';
 
 import 'file.dart';
 

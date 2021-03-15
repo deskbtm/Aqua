@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/widgets.dart';
-import 'package:lan_file_more/common/widget/dialog.dart';
-import 'package:lan_file_more/common/widget/function_widget.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/external/system_info/system_info.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/lan/code_server/utils.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:aqua/common/widget/dialog.dart';
+import 'package:aqua/common/widget/function_widget.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/external/system_info/system_info.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/page/lan/code_server/utils.dart';
+import 'package:aqua/utils/mix_utils.dart';
 
 Future<void> createProotEnv(
   BuildContext context, {

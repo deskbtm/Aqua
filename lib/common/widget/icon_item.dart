@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
 
 class IconItem extends StatelessWidget {
   final Widget icon;

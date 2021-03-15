@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-
+import 'package:aqua/external/bot_toast/bot_toast.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // ignore: must_be_immutable
 class DoublePop extends StatelessWidget {
   final Widget child;
@@ -25,7 +25,7 @@ class DoublePop extends StatelessWidget {
               DateTime.now().difference(_lastPressedTime) >
                   Duration(milliseconds: 800)) {
             _lastPressedTime = DateTime.now();
-            BotToast.showText(text: '再按一次退出');
+            BotToast.showText(text: AppLocalizations.of(context).pressAgain);
             return false;
           }
           return true;

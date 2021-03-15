@@ -1,15 +1,27 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:lan_file_more/constant/constant.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/page/file_manager/file_utils.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/store.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:aqua/constant/constant.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/store.dart';
 
 class CommonModel extends ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
+  final context;
+
+  String _language;
+
+  CommonModel(this.context);
+  String get language => _language;
+
+  Future<void> setLanguage(String val) async {
+    _language = val;
+    await Store.setString(LANGUAGE, val);
+    notifyListeners();
+  }
 
   /// 进入app的方式 正常打开'normal'
   /// 从其他APP打开方式'incoming'
@@ -162,14 +174,6 @@ class CommonModel extends ChangeNotifier {
   Future<void> setCurrentConnectIp(String arg, {notify = true}) async {
     _currentConnectIp = arg;
     if (notify) notifyListeners();
-  }
-
-  IO.Socket _socket;
-  IO.Socket get socket => _socket;
-
-  Future<void> setSocket(IO.Socket arg) async {
-    _socket = arg;
-    notifyListeners();
   }
 
   //  内网快递自动连接
@@ -352,6 +356,8 @@ class CommonModel extends ChangeNotifier {
     _enableAutoConnectCommonIp =
         (await Store.getBool(AUTO_CONNECT_COMMON_IP)) ?? true;
     _storageRootPath = await MixUtils.getExternalRootPath();
+    _language = (await Store.getString(LANGUAGE)) ??
+        Platform.localeName.split('_').elementAt(0);
     _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
         await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
   }

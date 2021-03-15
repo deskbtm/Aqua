@@ -4,20 +4,20 @@ import 'package:android_mix/android_mix.dart';
 import 'package:android_mix/archive/enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/dialog.dart';
-import 'package:lan_file_more/common/widget/function_widget.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/external/menu/menu.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/notification.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/dialog.dart';
+import 'package:aqua/common/widget/function_widget.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/external/menu/menu.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/notification.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'file_utils.dart';
 
 Future<void> createArchiveModal(
@@ -43,9 +43,9 @@ Future<void> createArchiveModal(
 
     Future<void> runAfterArchive(BuildContext context, bool result) async {
       if (result) {
-        showText('归档成功');
+        showText(AppLocalizations.of(context).setSuccess);
       } else {
-        showText('归档失败');
+        showText(AppLocalizations.of(context).setFail);
       }
       await onSuccessUpdate(context);
     }
@@ -65,7 +65,7 @@ Future<void> createArchiveModal(
                 display: preDisplay,
                 fontColor: themeData?.itemFontColor,
                 bgColor: themeData?.dialogBgColor,
-                title: NoResizeText('归档'),
+                title: NoResizeText(AppLocalizations.of(context).archive),
                 action: true,
                 children: <Widget>[
                   SizedBox(height: 10),
@@ -92,7 +92,8 @@ Future<void> createArchiveModal(
                             ),
                             FocusedMenuItem(
                               backgroundColor: themeData?.menuItemColor,
-                              title: LanText('zip 加密'),
+                              title: LanText(
+                                  AppLocalizations.of(context).zipCrypto),
                               onPressed: () async {
                                 changeState(() {
                                   preDisplay = true;
@@ -100,11 +101,12 @@ Future<void> createArchiveModal(
 
                                 await showSingleTextFieldModal(
                                   context,
-                                  title: '输入密码',
+                                  title: AppLocalizations.of(context).password,
                                   transparent: true,
                                   onOk: (val) async {
                                     changeState(() {
-                                      archiveText = 'zip 加密';
+                                      archiveText = AppLocalizations.of(context)
+                                          .zipCrypto;
                                       archiveType = 'zip';
                                       pwd = val;
                                       preDisplay = false;
@@ -179,7 +181,7 @@ Future<void> createArchiveModal(
                             FocusedMenuItem(
                               backgroundColor: themeData?.menuItemColor,
                               title: LanText(
-                                '取消',
+                                AppLocalizations.of(context).cancel,
                                 style: TextStyle(color: Colors.redAccent),
                               ),
                               trailingIcon: Icon(
@@ -209,8 +211,10 @@ Future<void> createArchiveModal(
                       : loadingIndicator(context, themeModel),
                   SizedBox(height: 10),
                 ],
-                defaultOkText: '确定',
-                defaultCancelText: popAble ? '取消' : '后台',
+                defaultOkText: AppLocalizations.of(context).sure,
+                defaultCancelText: popAble
+                    ? AppLocalizations.of(context).cancel
+                    : AppLocalizations.of(context).background,
                 onOk: () async {
                   if (!popAble) {
                     return;

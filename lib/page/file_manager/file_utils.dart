@@ -3,9 +3,9 @@ import 'dart:typed_data';
 
 import 'package:android_mix/android_mix.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lan_file_more/common/widget/images.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
+import 'package:aqua/common/widget/images.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/utils/mix_utils.dart';
 import 'package:path/path.dart' as pathLib;
 
 enum ShowOnlyType { all, folder, file, link }

@@ -122,7 +122,6 @@ class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
           ),
         );
       },
-      // onLongPress:
       child: widget.child,
     );
   }
@@ -263,15 +262,6 @@ class FocusedMenuDetails extends StatelessWidget {
                 ),
               ),
             ),
-            // Positioned(
-            //   top: childOffset.dy,
-            //   left: childOffset.dx,
-            //   child: Container(
-            //     width: childSize.width,
-            //     height: childSize.height,
-            //     child: child,
-            //   ),
-            // ),
           ],
         ),
       ),

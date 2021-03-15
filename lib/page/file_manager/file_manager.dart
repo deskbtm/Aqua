@@ -6,28 +6,29 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:android_mix/android_mix.dart';
-import 'package:lan_file_more/common/widget/action_button.dart';
-import 'package:lan_file_more/common/widget/dialog.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/common/widget/storage_card.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/external/back_button_interceptor/back_button_interceptor.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/external/breadcrumb/src/breadcrumb.dart';
-import 'package:lan_file_more/external/breadcrumb/src/breadcrumb_item.dart';
-import 'package:lan_file_more/model/file_model.dart';
-import 'package:lan_file_more/page/file_manager/file_list_view.dart';
-import 'package:lan_file_more/page/installed_apps/installed_apps.dart';
-import 'package:lan_file_more/page/lan/code_server/utils.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/action_button.dart';
+import 'package:aqua/common/widget/dialog.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/storage_card.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/external/back_button_interceptor/back_button_interceptor.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/external/breadcrumb/src/breadcrumb.dart';
+import 'package:aqua/external/breadcrumb/src/breadcrumb_item.dart';
+import 'package:aqua/model/file_model.dart';
+import 'package:aqua/page/file_manager/file_list_view.dart';
+import 'package:aqua/page/installed_apps/installed_apps.dart';
+import 'package:aqua/page/lan/code_server/utils.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'create_search.dart';
 import 'file_utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 enum FileManagerMode { surf, pick, search }
 
@@ -77,7 +78,6 @@ class _FileManagerPageState extends State<FileManagerPage>
     super.initState();
     _leftFileList = [];
     _rightFileList = [];
-    // _fileModel.currentDir = null;
     _initMutex = true;
     _useSandboxDir = false;
     _popLocker = false;
@@ -150,8 +150,10 @@ class _FileManagerPageState extends State<FileManagerPage>
             errorString.contains('denied')) {
           showTipTextModal(
             context,
-            title: '错误',
-            tip: (overAndroid11) ? '安卓11以上data / obb 没有权限' : '没有该目录权限',
+            title: AppLocalizations.of(context).error,
+            tip: (overAndroid11)
+                ? AppLocalizations.of(context).noPermissionO
+                : AppLocalizations.of(context).noPermission,
             onCancel: null,
           );
         }
@@ -188,7 +190,7 @@ class _FileManagerPageState extends State<FileManagerPage>
 
     if (mounted) {
       setState(() {});
-      showText('已取消全部选中');
+      showText(AppLocalizations.of(context).cancelSelect);
       MixUtils.safePop(context);
     }
   }
@@ -207,13 +209,15 @@ class _FileManagerPageState extends State<FileManagerPage>
             ),
             leftChildren: [
               ActionButton(
-                content: '取消全部选中',
+                content: AppLocalizations.of(context).cancelSelect,
                 onTap: () async {
                   await _clearAllSelected(context);
                 },
               ),
               ActionButton(
-                content: _fileModel.isDisplayHidden ? '不显示隐藏' : '显示隐藏文件',
+                content: _fileModel.isDisplayHidden
+                    ? AppLocalizations.of(context).hiddenFile
+                    : AppLocalizations.of(context).showHiddenFile,
                 onTap: () async {
                   if (mounted) {
                     await _fileModel
@@ -224,17 +228,19 @@ class _FileManagerPageState extends State<FileManagerPage>
                 },
               ),
               ActionButton(
-                content: _useSandboxDir ? '切换系统目录' : '切换沙盒目录',
+                content: _useSandboxDir
+                    ? AppLocalizations.of(context).switchFileSystem
+                    : AppLocalizations.of(context).switchSandboxFileSystem,
                 onTap: changeSandboxDir,
               ),
               ActionButton(
-                content: '排序方式',
+                content: AppLocalizations.of(context).order,
                 onTap: () {
                   insertSortOptions(context);
                 },
               ),
               ActionButton(
-                content: '本机应用',
+                content: AppLocalizations.of(context).apps,
                 onTap: () {
                   MixUtils.safePop(context);
                   Navigator.of(context).push(
@@ -248,7 +254,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                 },
               ),
               ActionButton(
-                content: '过滤类型',
+                content: AppLocalizations.of(context).filter,
                 onTap: () {
                   _filterType(context);
                 },
@@ -263,7 +269,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<void> _filterType(BuildContext context) async {
     _modalKey.currentState?.insertRightCol([
       ActionButton(
-        content: '显示全部',
+        content: AppLocalizations.of(context).showAll,
         onTap: () {
           _fileModel.setShowOnlyType(ShowOnlyType.all);
           update2Side();
@@ -271,7 +277,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       ),
       ActionButton(
-        content: '只显示文件夹',
+        content: AppLocalizations.of(context).showDir,
         onTap: () {
           _fileModel.setShowOnlyType(ShowOnlyType.folder);
           update2Side();
@@ -279,7 +285,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       ),
       ActionButton(
-        content: '只显示文件',
+        content: AppLocalizations.of(context).showFile,
         onTap: () {
           _fileModel.setShowOnlyType(ShowOnlyType.file);
           update2Side();
@@ -287,7 +293,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       ),
       ActionButton(
-        content: '只显示链接',
+        content: AppLocalizations.of(context).showSymbolic,
         onTap: () {
           _fileModel.setShowOnlyType(ShowOnlyType.link);
           update2Side();
@@ -312,7 +318,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   Future<void> insertSortOptions(BuildContext context) async {
     _modalKey.currentState.insertRightCol([
       ActionButton(
-        content: '正序',
+        content: AppLocalizations.of(context).positiveOrder,
         fontColor: Colors.pink,
         onTap: () async {
           await _fileModel.setSortReversed(false);
@@ -321,7 +327,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       ),
       ActionButton(
-        content: '倒序',
+        content: AppLocalizations.of(context).invertedOrder,
         fontColor: Colors.yellow,
         onTap: () async {
           await _fileModel.setSortReversed(true);
@@ -330,7 +336,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       ),
       ActionButton(
-        content: '名称',
+        content: AppLocalizations.of(context).name,
         fontColor: Colors.lightBlue,
         onTap: () async {
           await _fileModel.setSortType(SORT_CASE);
@@ -339,7 +345,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       ),
       ActionButton(
-        content: '大小',
+        content: AppLocalizations.of(context).size,
         fontColor: Colors.blueAccent,
         onTap: () async {
           if (mounted) {
@@ -350,7 +356,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       ),
       ActionButton(
-        content: '修改日期',
+        content: AppLocalizations.of(context).modified,
         fontColor: Colors.cyanAccent,
         onTap: () async {
           await _fileModel.setSortType(SORT_MODIFIED);
@@ -359,7 +365,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         },
       ),
       ActionButton(
-        content: '类型',
+        content: AppLocalizations.of(context).kind,
         fontColor: Colors.teal,
         onTap: () async {
           await _fileModel.setSortType(SORT_TYPE);
@@ -378,20 +384,22 @@ class _FileManagerPageState extends State<FileManagerPage>
       if (await rootfs.exists()) {
         _commonModel.setStorageRootPath(rootfs.path);
       } else {
-        showText('沙盒不存在');
+        showText(AppLocalizations.of(context).sandboxNotExist);
         return;
       }
     } else {
       String path = await MixUtils.getExternalRootPath();
       _commonModel.setStorageRootPath(path);
     }
-    showText('切换完成');
+    showText(AppLocalizations.of(context).setSuccess);
 
     await _changeRootPath(_commonModel.storageRootPath);
 
     _modalKey.currentState?.replaceLeft(2, [
       ActionButton(
-        content: _useSandboxDir ? '切换沙盒目录' : '切换系统目录',
+        content: _useSandboxDir
+            ? AppLocalizations.of(context).switchSandboxFileSystem
+            : AppLocalizations.of(context).switchFileSystem,
         onTap: () async {
           if (mounted) {
             await changeSandboxDir();
@@ -435,7 +443,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<void> update2Side({updateView = true}) async {
-    /// 只有curentPath 存在的时候才读取
+    // 只有curentPath 存在的时候才读取
     if (pathLib.equals(_fileModel.currentDir.path, _rootDir.path)) {
       _leftFileList = await readdir(_fileModel.currentDir);
     } else {
@@ -460,7 +468,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         return LanDialog(
           fontColor: themeData.itemFontColor,
           bgColor: themeData.dialogBgColor,
-          title: LanDialogTitle(title: '选择'),
+          title: LanDialogTitle(title: AppLocalizations.of(context).select),
           action: true,
           withOk: false,
           withCancel: false,

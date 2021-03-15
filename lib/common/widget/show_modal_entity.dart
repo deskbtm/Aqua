@@ -1,16 +1,17 @@
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/common/widget/checkbox.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/store.dart';
+import 'package:aqua/common/widget/checkbox.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/store.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 import 'package:intent/intent.dart' as intent;
 import 'package:intent/action.dart' as action;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUpdateModal(
   BuildContext context,
@@ -45,10 +46,11 @@ Future<void> showUpdateModal(
     bool checked = false;
     await showTipTextModal(
       context,
-      tip: '发现新版本 v$remoteVersion\n$descMsg',
-      title: '更新',
-      defaultOkText: '下载',
-      defaultCancelText: '应用市场',
+      tip:
+          '${AppLocalizations.of(context).foundNewVer} v$remoteVersion\n$descMsg',
+      title: AppLocalizations.of(context).update,
+      defaultOkText: AppLocalizations.of(context).download,
+      defaultCancelText: AppLocalizations.of(context).update,
       additionList: [
         if (tipRemember)
           Row(
@@ -70,7 +72,7 @@ Future<void> showUpdateModal(
                 );
               }),
               NoResizeText(
-                '不再提示, 遇到强制更新则提示',
+                AppLocalizations.of(context).updateTip,
                 style: TextStyle(
                   color: provider.themeData.itemFontColor,
                 ),
@@ -89,7 +91,7 @@ Future<void> showUpdateModal(
           await launch(url);
         } else {
           BotToast.showText(
-            text: '链接打开失败',
+            text: AppLocalizations.of(context).setFail,
           );
         }
       },
@@ -116,9 +118,9 @@ Future<void> showRemoteMessageModal(
     await showTipTextModal(
       context,
       tip: descMsg,
-      title: '消息通知',
-      defaultOkText: '确定',
-      defaultCancelText: '取消',
+      title: AppLocalizations.of(context).notification,
+      defaultOkText: AppLocalizations.of(context).sure,
+      defaultCancelText: AppLocalizations.of(context).cancel,
     );
   }
 }

@@ -1,17 +1,17 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/common/widget/checkbox.dart';
-import 'package:lan_file_more/common/widget/dialog.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/common/widget/text_field.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/checkbox.dart';
+import 'package:aqua/common/widget/dialog.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/text_field.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'file_utils.dart';
 
 Future<void> createFileModal(
@@ -38,10 +38,11 @@ Future<void> createFileModal(
             fontColor: themeData.itemFontColor,
             bgColor: themeData.dialogBgColor,
             title: LanDialogTitle(
-                title: '新建', subTitle: '${pathLib.basename(willCreateDir)}'),
+                title: AppLocalizations.of(context).create,
+                subTitle: '${pathLib.basename(willCreateDir)}'),
             action: true,
             children: <Widget>[
-              LanTextField(
+              AquaTextField(
                 style: TextStyle(textBaseline: TextBaseline.alphabetic),
                 controller: textEditingController,
               ),
@@ -59,7 +60,7 @@ Future<void> createFileModal(
                     },
                   ),
                   NoResizeText(
-                    '递归创建  例:xxx/xx/x',
+                    AppLocalizations.of(context).recursiveCreateFile,
                     style: TextStyle(
                       color: themeData.itemFontColor,
                     ),
@@ -67,8 +68,8 @@ Future<void> createFileModal(
                 ]),
               )
             ],
-            defaultCancelText: '新建文件',
-            defaultOkText: '新建文件夹',
+            defaultCancelText: AppLocalizations.of(context).createFile,
+            defaultOkText: AppLocalizations.of(context).createDir,
             onOk: () async {
               Directory newDir = Directory(pathLib.join(willCreateDir,
                   LanFileUtils.trimSlash(textEditingController.text)));

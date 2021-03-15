@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lan_file_more/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LanDialogTitle extends StatelessWidget {
   final String title;
@@ -130,14 +131,15 @@ class LanDialog extends Dialog {
                                   children: <Widget>[
                                     if (withOk)
                                       CupertinoButton(
-                                        child:
-                                            NoResizeText(defaultOkText ?? '确定'),
+                                        child: NoResizeText(defaultOkText ??
+                                            AppLocalizations.of(context).sure),
                                         onPressed: onOk,
                                       ),
                                     if (withCancel)
                                       CupertinoButton(
-                                        child: NoResizeText(
-                                            defaultCancelText ?? '取消'),
+                                        child: NoResizeText(defaultCancelText ??
+                                            AppLocalizations.of(context)
+                                                .cancel),
                                         onPressed: onCancel,
                                       ),
                                   ],

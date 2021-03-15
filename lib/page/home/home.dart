@@ -1,34 +1,34 @@
 import 'dart:async';
-import 'package:f_logs/model/flog/flog.dart';
-import 'package:file_editor/editor_theme.dart';
-import 'package:file_editor/file_editor.dart';
+import 'package:aqua/page/file_editor/editor_theme.dart';
+import 'package:aqua/page/file_editor/file_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_file_more/common/widget/show_modal_entity.dart';
-import 'package:lan_file_more/common/widget/show_modal.dart';
-import 'package:lan_file_more/constant/constant.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/external/bot_toast/src/toast.dart';
-import 'package:lan_file_more/model/file_model.dart';
-import 'package:lan_file_more/page/file_manager/file_manager.dart';
-import 'package:lan_file_more/page/file_manager/file_utils.dart';
-import 'package:lan_file_more/page/lan/lan.dart';
-import 'package:lan_file_more/page/not_support/not_support.dart';
-import 'package:lan_file_more/page/photo_viewer/photo_viewer.dart';
-import 'package:lan_file_more/page/setting/setting.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/page/video/meida_info.dart';
-import 'package:lan_file_more/page/video/video.dart';
-import 'package:lan_file_more/utils/req.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/show_modal_entity.dart';
+import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/constant/constant.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/model/file_model.dart';
+import 'package:aqua/page/file_manager/file_manager.dart';
+import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/lan/lan.dart';
+import 'package:aqua/page/not_support/not_support.dart';
+import 'package:aqua/page/photo_viewer/photo_viewer.dart';
+import 'package:aqua/page/setting/setting.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/page/video/meida_info.dart';
+import 'package:aqua/page/video/video.dart';
+import 'package:aqua/utils/req.dart';
+import 'package:aqua/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:quick_actions/quick_actions.dart';
 import 'package:storage_mount_listener/storage_mount_listener.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as pathLib;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -54,33 +54,24 @@ class _HomePageState extends State<HomePage> {
   Future<void> _preloadWebData() async {
     await req().get('/assets/ios_manager.json').then((receive) async {
       await _commonModel.setGobalWebData(receive.data);
-    }).catchError((err) {
-      BotToast.showText(text: '首次请求出现错误');
-    });
+    }).catchError((err) {});
   }
 
   Future<void> _forceReadTutorialModal() async {
-    String tutorialUrl;
-    if (_commonModel.gWebData['tutorial'] == null) {
-      tutorialUrl = BILIBILI_SPACE;
-    } else {
-      tutorialUrl = _commonModel.gWebData['tutorial'];
-    }
-
     await showForceScopeModal(
       context,
-      title: '请仔细阅读教程',
-      tip: '该界面无返返回, 需前往教程后, 方可消失',
-      defaultOkText: '前往教程',
+      title: AppLocalizations.of(context).thankFollow,
+      tip: AppLocalizations.of(context).followTip,
+      defaultOkText: 'Github star',
       onOk: () async {
-        if (await canLaunch(TUTORIAL_URL)) {
-          await launch(TUTORIAL_URL);
+        if (await canLaunch(GITHUB)) {
+          await launch(GITHUB);
         }
       },
-      defaultCancelText: '关注 bilibili',
+      defaultCancelText: 'bilibili',
       onCancel: () async {
-        if (await canLaunch(tutorialUrl)) {
-          await launch(tutorialUrl);
+        if (await canLaunch(BILIBILI_SPACE)) {
+          await launch(BILIBILI_SPACE);
         }
       },
     );
@@ -102,7 +93,7 @@ class _HomePageState extends State<HomePage> {
       <ShortcutItem>[
         const ShortcutItem(
           type: 'static-server',
-          localizedTitle: '静态服务',
+          localizedTitle: 'Static Server',
           icon: 'content',
         ),
         const ShortcutItem(
@@ -124,23 +115,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Future<void> _requestMicphonePermissionModal() async {
-  //   await showTipTextModal(
-  //     context,
-  //     _themeModel,
-  //     title: '权限请求',
-  //     tip: '由于软件支持录屏功能, 需要麦克风的权限',
-  //     defaultOkText: '获取权限',
-  //     onOk: () async {
-  //       await PermissionHandler()
-  //           .requestPermissions(<PermissionGroup>[PermissionGroup.microphone]);
-  //     },
-  //     onCancel: () {
-  //       MixUtils.safePop(context);
-  //     },
-  //   );
-  // }
-
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
@@ -150,18 +124,8 @@ class _HomePageState extends State<HomePage> {
     if (_mutex) {
       _mutex = false;
 
-      // StorageMountListener.channel.receiveBroadcastStream().listen((event) {});
-
-      // PermissionStatus status = await PermissionHandler()
-      //     .checkPermissionStatus(PermissionGroup.microphone);
-      //   if (PermissionStatus.granted != status) {
-      //     // 提示用户 需要麦克风 权限 否则 无法进入
-      //     await _requestMicphonePermissionModal(context);
-      //   }
-      //   // 强制阅读使用教程 跳转后取消
-
       await _preloadWebData().catchError((err) {
-        FLog.error(text: '请求配置出错', methodName: '_preloadWebData');
+        // FLog.error(text: '请求配置出错', methodName: '_preloadWebData');
       });
 
       _appIncoming = await _platform.invokeMethod('getIncomingFile');
@@ -178,20 +142,6 @@ class _HomePageState extends State<HomePage> {
             context, _themeModel, _commonModel.gWebData);
         await showUpdateModal(context, _themeModel, _commonModel.gWebData);
       });
-
-      if (_commonModel.enableConnect &&
-          (_appIncoming == null || _appIncoming['appMode'] == 'normal')) {
-        // Timer(Duration(seconds: 1), () async {
-        // await SocketConnecter.searchDevicesAndConnect(
-        //   context,
-        //   themeModel: _themeModel,
-        //   commonModel: _commonModel,
-        //   onNotExpected: (String msg) {
-        //     showText(msg);
-        //   },
-        // ).catchError((err) {});
-        // });
-      }
     }
   }
 
@@ -228,7 +178,6 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
-        // caseAudio: () {},
         caseVideo: () {
           return VideoPage(
             info: MediaInfo(
@@ -237,12 +186,6 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
-        // caseBinary: () {
-        //   return NotSupportPage(
-        //     content: '不支持打开二进制文件',
-        //     path: path,
-        //   );
-        // },
         caseDefault: () {
           return NotSupportPage(
             path: path,
@@ -257,15 +200,15 @@ class _HomePageState extends State<HomePage> {
           border: Border(),
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              label: '文件',
+              label: AppLocalizations.of(context).fileLabel,
               icon: Icon(OMIcons.folder),
             ),
             BottomNavigationBarItem(
-              label: '传输',
+              label: AppLocalizations.of(context).lanLabel,
               icon: Icon(Icons.devices),
             ),
             BottomNavigationBarItem(
-              label: '设置',
+              label: AppLocalizations.of(context).settingLabel,
               icon: Icon(OMIcons.settings),
             )
           ],

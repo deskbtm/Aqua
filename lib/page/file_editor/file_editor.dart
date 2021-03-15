@@ -274,11 +274,9 @@ class _FileEditorPageState extends State<FileEditorPage> {
                 options: _charsets,
                 title: '选择编码',
                 onSelected: (index) async {
-                  print(_encoding);
                   _text = await convertTo(_encoding, _charsets[index], _text);
                   _encoding = _charsets[index];
                   setState(() {});
-
                   Navigator.pop(context);
                 },
               );

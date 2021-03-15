@@ -1,2 +1,0 @@
-flutter pub pub run intl_translation:extract_to_arb --output-dir=lib/i18n lib/local_i18n.dart
-flutter pub pub run intl_translation:generate_from_arb --output-dir=lib/i18n --no-use-deferred-loading lib/local_i18n.dart lib/i18n/intl_*.arb

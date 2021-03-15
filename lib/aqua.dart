@@ -1,26 +1,27 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:aqua/page/home/home.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/services.dart';
-import 'package:lan_file_more/common/widget/double_pop.dart';
-import 'package:lan_file_more/constant/constant_var.dart';
-import 'package:lan_file_more/model/file_model.dart';
-import 'package:lan_file_more/page/home/home.dart';
-import 'package:lan_file_more/utils/mix_utils.dart';
-import 'package:lan_file_more/utils/theme.dart';
+import 'package:aqua/common/widget/double_pop.dart';
+import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/model/file_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
+import 'package:aqua/utils/theme.dart';
 import 'constant/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:lan_file_more/external/bot_toast/bot_toast.dart';
+import 'package:aqua/external/bot_toast/bot_toast.dart';
 import 'external/bot_toast/src/toast_navigator_observer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'external/bot_toast/src/bot_toast_init.dart';
-import 'package:lan_file_more/model/common_model.dart';
-import 'package:lan_file_more/utils/notification.dart';
-import 'package:lan_file_more/model/theme_model.dart';
-import 'package:lan_file_more/utils/store.dart';
+import 'package:aqua/model/common_model.dart';
+import 'package:aqua/utils/notification.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/store.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Aqua extends StatefulWidget {
   @override
@@ -38,7 +39,7 @@ class _AquaState extends State<Aqua> {
           create: (_) => ThemeModel(),
         ),
         ChangeNotifierProvider<CommonModel>(
-          create: (_) => CommonModel(),
+          create: (_) => CommonModel(context),
         ),
         ChangeNotifierProvider<FileModel>(
           create: (_) => FileModel(),
@@ -61,7 +62,6 @@ class _AquaWrapperState extends State<AquaWrapper> {
   CommonModel _commonModel;
   bool _prepared;
   bool _settingMutex;
-
   StreamSubscription<ConnectivityResult> _connectSubscription;
 
   @override
@@ -125,7 +125,6 @@ class _AquaWrapperState extends State<AquaWrapper> {
 
     return _prepared
         ? AnnotatedRegion<SystemUiOverlayStyle>(
-            /// 系统虚拟按键主题
             value: SystemUiOverlayStyle(
               systemNavigationBarIconBrightness:
                   themeData.systemNavigationBarIconBrightness,
@@ -136,13 +135,13 @@ class _AquaWrapperState extends State<AquaWrapper> {
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
+                AppLocalizations.delegate
               ],
               supportedLocales: [
-                const Locale.fromSubtags(languageCode: 'zh'),
-                const Locale.fromSubtags(
-                    languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
-                const Locale('en', ''),
+                const Locale('zh'),
+                const Locale('en'),
               ],
+              locale: Locale(_commonModel.language),
               builder: BotToastInit(),
               navigatorObservers: [
                 BotToastNavigatorObserver(),

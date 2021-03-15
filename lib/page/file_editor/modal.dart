@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:file_editor/text_field.dart';
+
+import 'package:aqua/common/widget/text_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dialog.dart';
@@ -145,7 +146,7 @@ Future<dynamic> showTextFieldModal(
                 Text(tip, textScaleFactor: 1),
                 SizedBox(height: 10),
               ],
-              CustomCupertinoTextField(
+              AquaTextField(
                 controller: textEditingController,
                 placeholder: placeholder,
               ),

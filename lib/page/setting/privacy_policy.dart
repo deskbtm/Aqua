@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+// import 'package:flutter_html/flutter_html.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/external/bot_toast/bot_toast.dart';
@@ -78,16 +78,18 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
               physics: BouncingScrollPhysics(),
               itemCount: 1,
               itemBuilder: (BuildContext context, int index) {
-                return Html(
-                  data: _html,
-                  onLinkTap: (url) async {
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      showText(AppLocalizations.of(context).setFail);
-                    }
-                  },
-                );
+                return Container();
+
+                //  Html(
+                //   data: _html,
+                //   onLinkTap: (url) async {
+                //     if (await canLaunch(url)) {
+                //       await launch(url);
+                //     } else {
+                //       showText(AppLocalizations.of(context).setFail);
+                //     }
+                //   },
+                // );
               },
             ),
     );

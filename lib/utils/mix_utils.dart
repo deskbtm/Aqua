@@ -15,20 +15,6 @@ class MixUtils {
     return flag;
   }
 
-  static Future<void> checkPermissionAndRequest(PermissionGroup p,
-      {bool recursive = true}) async {
-    PermissionStatus status =
-        await PermissionHandler().checkPermissionStatus(p);
-    if (PermissionStatus.granted != status) {
-      await PermissionHandler().requestPermissions(<PermissionGroup>[p]);
-      PermissionStatus status =
-          await PermissionHandler().checkPermissionStatus(p);
-      if (PermissionStatus.granted != status && recursive) {
-        await checkPermissionAndRequest(p);
-      }
-    }
-  }
-
   static String humanStorageSize(double value, {bool useDouble = false}) {
     if (null == value) {
       return "0B";

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:aqua/utils/req.dart';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:android_mix/android_mix.dart';
 import 'package:aqua/constant/constant_var.dart';
@@ -16,24 +18,15 @@ class CodeSrvUtils {
     return this;
   }
 
-  Future<File> fetchAndSave(String from, String to) async {
+  Future<void> fetchAndSave(String from, String to) async {
     try {
-      http.Response res = await http.get(from);
-      return File(to).writeAsBytes(res.bodyBytes);
+      await req().download(from, to, onReceiveProgress: (a, b){
+
+      })
     } catch (err) {
       throw err;
     }
   }
-
-  Future<File> fetchResource(String url) async {
-    return fetchAndSave(url, '$filesPath/$tarName');
-  }
-
-  // Future<bool> extractResource() async {
-  //   return AndroidMix.archive.extractArchive(
-  //       '$filesPath/$tarName', '$filesPath/', ArchiveType.tar,
-  //       compressionType: CompressionType.gzip);
-  // }
 
   Future<ProcessResult> chmod777(String path) async {
     return Process.run(
@@ -159,12 +152,6 @@ ff02::3     ipv6-allhosts
     return true;
   }
 
-  // '-b',
-  // '/dev/urandom:/dev/random',
-  // '-b',
-  // '$filesPath/rootfs/proc/.stat:/proc/stat',
-  // '-b',
-  // '$filesPath/rootfs/proc/.version:/proc/version',
   List<String> getArguments(List<String> cmds) {
     return [
       '--kernel-release=5.4.0-fake-kernel',

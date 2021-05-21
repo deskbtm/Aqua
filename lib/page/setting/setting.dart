@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:android_mix/android_mix.dart';
-import 'package:f_logs/f_logs.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/show_modal_entity.dart';
@@ -280,10 +280,10 @@ class SettingPageState extends State<SettingPage> {
                               CodeSrvUtils cutils = await CodeSrvUtils().init();
                               await cutils.rmAllResource().catchError((err) {
                                 showText('删除出现异常');
-                                FLog.error(
-                                  text: '删除安装资源出现异常',
-                                  className: 'SettingPageState',
-                                );
+                                // FLog.error(
+                                //   text: '删除安装资源出现异常',
+                                //   className: 'SettingPageState',
+                                // );
                               });
 
                               if (file != null && file.ext == '.zip') {

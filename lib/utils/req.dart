@@ -5,7 +5,8 @@ import 'package:aqua/utils/store.dart';
 
 class _CookieInterceptors extends InterceptorsWrapper {
   @override
-  Future onRequest(RequestOptions options) async {
+  Future onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
     String token = await Store.getString(LOGIN_TOKEN);
     print(options.uri);
 
@@ -13,7 +14,7 @@ class _CookieInterceptors extends InterceptorsWrapper {
       options.headers['Authorization'] = 'Bearer $token';
     }
 
-    return super.onRequest(options);
+    return super.onRequest(options, handler);
   }
 }
 

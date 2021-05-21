@@ -7,6 +7,7 @@ import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/store.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class CommonModel extends ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
@@ -330,35 +331,42 @@ class CommonModel extends ChangeNotifier {
   }
 
   Future<void> initCommon() async {
-    _filePort = (await Store.getString(FILE_PORT)) ?? FILE_DEFAULT_PORT;
+    try {
+      _filePort = (await Store.getString(FILE_PORT)) ?? FILE_DEFAULT_PORT;
 
-    _codeSrvPort = await Store.getString(CODE_SERVER_PORT) ?? '20202';
-    _codeSrvPwd = await secureStorage.read(key: CODE_SERVER_PWD);
-    _linuxRepo = (await Store.getString(LINUX_REPO)) ?? TSINGHUA_REPO;
+      _codeSrvPort = await Store.getString(CODE_SERVER_PORT) ?? '20202';
+      _codeSrvPwd = await secureStorage.read(key: CODE_SERVER_PWD);
+      _linuxRepo = (await Store.getString(LINUX_REPO)) ?? TSINGHUA_REPO;
 
-    _codeSrvTelemetry = await Store.getBool(CODE_SERVER_TELEMETRY) ?? false;
+      _codeSrvTelemetry = await Store.getBool(CODE_SERVER_TELEMETRY) ?? false;
 
-    _webDavAddr = await Store.getString(WEBDAV_ADDR);
-    _webDavUsername = await Store.getString(WEBDAV_USERNAME);
-    _webDavPwd = await secureStorage.read(key: WEBDAV_PWD);
-    _enableClipboard = (await Store.getBool(ENABLE_CLIPBOARD)) ?? true;
-    _isPurchased = (await secureStorage.read(key: PURCHASED)) == 'true';
-    _isAppNotInit = (await Store.getBool(APP_INIT)) ?? true;
-    _isFileOptionPromptNotInit =
-        (await Store.getBool(FILE_OPTION_INIT)) ?? true;
-    _username = await Store.getString(LOGIN_USERNMAE);
-    _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;
-    _enableConnect = (await Store.getBool(ENABLE_CONNECT)) ?? true;
+      _webDavAddr = await Store.getString(WEBDAV_ADDR);
+      _webDavUsername = await Store.getString(WEBDAV_USERNAME);
+      _webDavPwd = await secureStorage.read(key: WEBDAV_PWD);
+      _enableClipboard = (await Store.getBool(ENABLE_CLIPBOARD)) ?? true;
+      _isPurchased = (await secureStorage.read(key: PURCHASED)) == 'true';
+      _isAppNotInit = (await Store.getBool(APP_INIT)) ?? true;
+      _isFileOptionPromptNotInit =
+          (await Store.getBool(FILE_OPTION_INIT)) ?? true;
+      _username = await Store.getString(LOGIN_USERNMAE);
+      _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;
+      _enableConnect = (await Store.getBool(ENABLE_CONNECT)) ?? true;
 
-    String tmpCommonIps = await Store.getString(COMMON_IPS);
-    _commonIps = tmpCommonIps == null ? Map() : json.decode(tmpCommonIps);
+      String tmpCommonIps = await Store.getString(COMMON_IPS);
+      _commonIps = tmpCommonIps == null ? Map() : json.decode(tmpCommonIps);
 
-    _enableAutoConnectCommonIp =
-        (await Store.getBool(AUTO_CONNECT_COMMON_IP)) ?? true;
-    _storageRootPath = await MixUtils.getExternalRootPath();
-    _language = (await Store.getString(LANGUAGE)) ??
-        Platform.localeName.split('_').elementAt(0);
-    _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
-        await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
+      _enableAutoConnectCommonIp =
+          (await Store.getBool(AUTO_CONNECT_COMMON_IP)) ?? true;
+      _storageRootPath = await MixUtils.getExternalRootPath();
+      _language = (await Store.getString(LANGUAGE)) ??
+          Platform.localeName.split('_').elementAt(0);
+      _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
+          await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
+    } catch (e, s) {
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+      );
+    }
   }
 }

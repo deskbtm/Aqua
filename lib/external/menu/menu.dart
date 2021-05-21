@@ -1,7 +1,7 @@
 library focused_menu;
 
 import 'dart:ui';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart' hide CoverCupertinoModalPopupRoute;
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/show_modal.dart';
 import 'package:aqua/utils/mix_utils.dart';

@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:aqua/page/home/home.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:f_logs/f_logs.dart';
+import 'package:aqua/third_party/connectivity/connectivity.dart';
+
 import 'package:flutter/services.dart';
 import 'package:aqua/common/widget/double_pop.dart';
 import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/model/file_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/theme.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'constant/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -58,11 +59,11 @@ class AquaWrapper extends StatefulWidget {
 }
 
 class _AquaWrapperState extends State<AquaWrapper> {
-  ThemeModel _themeModel;
-  CommonModel _commonModel;
-  bool _prepared;
-  bool _settingMutex;
-  StreamSubscription<ConnectivityResult> _connectSubscription;
+  ThemeModel? _themeModel;
+  CommonModel? _commonModel;
+  bool? _prepared;
+  bool? _settingMutex;
+  StreamSubscription<ConnectivityResult>? _connectSubscription;
 
   @override
   void initState() {
@@ -98,11 +99,9 @@ class _AquaWrapperState extends State<AquaWrapper> {
     if (_settingMutex) {
       _settingMutex = false;
       String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
-      await _themeModel.setTheme(theme).catchError((err) {
-        FLog.error(text: '', methodName: 'setTheme');
-      });
+      await _themeModel.setTheme(theme);
       await _commonModel.initCommon().catchError((err) {
-        FLog.error(text: '', methodName: 'initCommon');
+        // FLog.error(text: '', methodName: 'initCommon');
       });
       await _setInternalIp(null);
       setState(() {
@@ -145,6 +144,7 @@ class _AquaWrapperState extends State<AquaWrapper> {
               builder: BotToastInit(),
               navigatorObservers: [
                 BotToastNavigatorObserver(),
+                SentryNavigatorObserver(),
               ],
               title: 'aqua',
               theme: CupertinoThemeData(

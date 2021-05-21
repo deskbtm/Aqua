@@ -2,8 +2,6 @@ const String BAK_EXTERNAL_PATH = '/storage/emulated/0';
 
 const String EMAIL = 'wanghan9423@outlook.com';
 
-// const String UMENG_APP_KEY = '5f96e3c41c520d30739904f0';
-
 const String DEV_CODE_SERVER_URL = 'http://192.168.0.104:8080';
 const String CODE_SERVER_PWD = 'code-server-pwd';
 const String DEF_AMOUNT = '7';
@@ -16,9 +14,6 @@ const String LOOPBACK_ADDR = '127.0.0.1';
 
 const String TUTORIAL_URL =
     'http://sewerganger.gitee.io/lan-file-more/archives';
-
-// const String FIX_CLIPBOARD_URL =
-//     'http://sewerganger.gitee.io/lan-file-more/2020/08/31/安卓10以上剪贴板监听/';
 
 const String RES_DOWNLOAD_URL =
     'http://sewerganger.gitee.io/lan-file-more/2020/12/30/资源下载/';
@@ -42,6 +37,10 @@ const String DEFAULT_AUTHOR_EMAIL = 'wanghan9423@outlook.com';
 const String GITHUB = 'https://github.com/lan-file-more/aqua';
 const String DEFAULT_AUTHOR_AVATAR =
     'https://oss.turingsenseai.com/1603984097670508746.png?x-oss-process=image/resize,h_200,m_lfit';
+
+const String SENTRY_DNS =
+    'https://0445c3f3a4954ac5b62618393e076333@o532771.ingest.sentry.io/5775427';
+
 
 // //备用资源包下载地址
 // const String BAK_RES_URL_AARCH64 = '';

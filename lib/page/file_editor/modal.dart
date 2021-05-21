@@ -6,8 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dialog.dart';
 
-class CupertinoModalPopupRoute<T> extends PopupRoute<T> {
-  CupertinoModalPopupRoute({
+class CoverCupertinoModalPopupRoute<T> extends PopupRoute<T> {
+  CoverCupertinoModalPopupRoute({
     this.barrierColor,
     this.barrierLabel,
     this.builder,
@@ -90,7 +90,7 @@ Future<T> showCupertinoModal<T>({
 }) {
   assert(useRootNavigator != null);
   return Navigator.of(context, rootNavigator: useRootNavigator).push(
-    CupertinoModalPopupRoute<T>(
+    CoverCupertinoModalPopupRoute<T>(
       barrierColor: transparent
           ? Color(0x00382F2F)
           : CupertinoDynamicColor.resolve(

@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:android_mix/android_mix.dart';
 import 'package:android_mix/archive/enums.dart';
 import 'package:aqua/page/file_editor/editor_theme.dart';
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:file_utils/file_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,14 +26,15 @@ import 'package:aqua/utils/notification.dart';
 import 'package:aqua/utils/theme.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:open_file/open_file.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
 import 'create_archive.dart';
-import 'create_fiile.dart';
 import 'create_rename.dart';
+import 'create_fiile.dart';
 import 'file_utils.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FileActionUI {
   final FileModel fileModel;
@@ -198,9 +198,13 @@ class FileActionUI {
           continue;
         }
 
-        await item.entity.rename(newPath).catchError((err) {
-          showText('$err');
-          FLog.error(text: '', methodName: 'handleMove');
+        await item.entity.rename(newPath).catchError((e, s) async {
+          showText(
+              '${AppLocalizations.of(context).rename}${AppLocalizations.of(context).error}');
+          await Sentry.captureException(
+            e,
+            stackTrace: s,
+          );
         });
       }
       if (mounted) {

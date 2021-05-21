@@ -16,7 +16,7 @@ import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/theme.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
-import 'package:photo_view/photo_view.dart';
+// import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:share_extend/share_extend.dart';

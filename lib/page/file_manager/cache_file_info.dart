@@ -8,10 +8,10 @@ class CacheFileInfo {
   final String filename;
 
   CacheFileInfo({
-    this.filename,
-    this.path,
-    this.modified,
-    this.size,
-    this.leading,
+    required this.filename,
+    required this.path,
+    required this.modified,
+    required this.size,
+    required this.leading,
   });
 }

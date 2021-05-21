@@ -93,7 +93,7 @@ class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
       onTap: () async {
         getOffset();
         await Navigator.of(context, rootNavigator: true).push(
-          CupertinoModalPopupRoute(
+          CoverCupertinoModalPopupRoute(
             barrierColor: widget.maskColor ??
                 CupertinoDynamicColor.resolve(
                   CupertinoDynamicColor.withBrightness(

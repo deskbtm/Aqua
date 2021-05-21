@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:android_mix/android_mix.dart';
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
@@ -127,7 +126,7 @@ class _HelperPageState extends State<HelperPage> {
               if (await File(logFilePath).exists()) {
                 await sendMail(logFilePath);
               } else {
-                await FLog.exportLogs();
+                // await FLog.exportLogs();
                 await sendMail(logFilePath);
               }
             },
@@ -138,7 +137,7 @@ class _HelperPageState extends State<HelperPage> {
           ),
           InkWell(
             onTap: () async {
-              await FLog.clearLogs();
+              // await FLog.clearLogs();
               showText('删除完成');
             },
             child: ListTile(
@@ -148,7 +147,7 @@ class _HelperPageState extends State<HelperPage> {
           ),
           InkWell(
             onTap: () async {
-              await FLog.exportLogs();
+              // await FLog.exportLogs();
               String externalDir = await AndroidMix.storage.getStorageDirectory;
               showText('日志导出至: $externalDir');
             },

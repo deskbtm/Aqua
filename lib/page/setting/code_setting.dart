@@ -4,15 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/common/widget/switch.dart';
 import 'package:aqua/constant/constant_var.dart';
-import 'package:aqua/external/bot_toast/bot_toast.dart';
 import 'package:aqua/external/menu/menu.dart';
 import 'package:aqua/model/common_model.dart';
 import 'package:aqua/page/lan/code_server/utils.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 String repoChineseName(String mirror) {
@@ -39,7 +39,7 @@ String repoChineseName(String mirror) {
 class CodeSettingPage extends StatefulWidget {
   final CodeSrvUtils cutils;
 
-  const CodeSettingPage({Key key, this.cutils}) : super(key: key);
+  const CodeSettingPage({Key? key, required this.cutils}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return CodeSettingPageState();
@@ -47,8 +47,8 @@ class CodeSettingPage extends StatefulWidget {
 }
 
 class CodeSettingPageState extends State<CodeSettingPage> {
-  ThemeModel _themeModel;
-  CommonModel _commonModel;
+  late ThemeModel _themeModel;
+  late CommonModel _commonModel;
 
   CodeSrvUtils get cutils => widget.cutils;
 
@@ -59,14 +59,10 @@ class CodeSettingPageState extends State<CodeSettingPage> {
     _commonModel = Provider.of<CommonModel>(context);
   }
 
-  void showText(String content) {
-    BotToast.showText(text: content);
-  }
-
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel?.themeData;
-    String repo = _commonModel.linuxRepo;
+    dynamic themeData = _themeModel.themeData;
+    String repo = _commonModel.alpineRepo!;
     Directory rootfs = Directory('${cutils.filesPath}/rootfs');
 
     List<Widget> settingList = [
@@ -80,23 +76,26 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: AppLocalizations.of(context).password,
+                title: AppLocalizations.of(context)!.password,
                 onOk: (val) async {
                   await _commonModel.setCodeSrvPwd(val);
-                  showText(AppLocalizations.of(context).setSuccess);
+                  Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)!.setSuccess);
                 },
                 onCancel: () async {
                   await _commonModel.setCodeSrvPwd(null);
-                  showText(AppLocalizations.of(context).setSuccess);
+                  Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)!.setSuccess);
                 },
                 defaultCancelText: '设置为无密码',
               );
             },
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).password),
-              subtitle: LanText(
+              title: ThemedText(AppLocalizations.of(context)!.password),
+              subtitle: ThemedText(
                 _commonModel.codeSrvPwd != null
-                    ? List(_commonModel.codeSrvPwd.length)
+                    ? List.filled(_commonModel.codeSrvPwd!.length, null,
+                            growable: false)
                         .map((e) => '*')
                         .toList()
                         .join('')
@@ -107,18 +106,19 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             ),
           ),
           ListTile(
-            title: LanText(AppLocalizations.of(context).port),
-            // subtitle: LanText(_commonModel.codeSrvPort),
+            title: ThemedText(AppLocalizations.of(context)!.port),
+            // subtitle: ThemedText(_commonModel.codeSrvPort),
             trailing: CupertinoButton(
                 child: NoResizeText('${_commonModel.codeSrvPort}'),
                 onPressed: () async {
                   showSingleTextFieldModal(
                     context,
-                    title: AppLocalizations.of(context).port,
+                    title: AppLocalizations.of(context)!.port,
                     placeholder: _commonModel.codeSrvPort,
                     onOk: (val) {
                       _commonModel.setCodeSrvPort(val);
-                      showText(AppLocalizations.of(context).setSuccess);
+                      Fluttertoast.showToast(
+                          msg: AppLocalizations.of(context)!.setSuccess);
                     },
                     onCancel: () {},
                   );
@@ -130,17 +130,19 @@ class CodeSettingPageState extends State<CodeSettingPage> {
               await cutils.killNodeServer();
             },
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).terminalCodeServer),
+              title:
+                  ThemedText(AppLocalizations.of(context)!.terminalCodeServer),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
+          // 帮助改善vscode
           ListTile(
-            title: LanText('Telemetry'),
-            subtitle: LanText(AppLocalizations.of(context).helpCodeServer,
+            title: ThemedText('Telemetry'),
+            subtitle: ThemedText(AppLocalizations.of(context)!.helpCodeServer,
                 small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
-            trailing: LanSwitch(
-              value: _commonModel.codeSrvTelemetry,
+            trailing: AquaSwitch(
+              value: _commonModel.codeSrvTelemetry!,
               onChanged: (val) async {
                 _commonModel.setCodeSrvTelemetry(val);
               },
@@ -152,23 +154,23 @@ class CodeSettingPageState extends State<CodeSettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context).sandbox,
+          blockTitle(AppLocalizations.of(context)!.sandbox,
               subtitle: 'alpine linux'),
           SizedBox(height: 15),
           InkWell(
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).sandbox),
-              subtitle: LanText(
+              title: ThemedText(AppLocalizations.of(context)!.sandbox),
+              subtitle: ThemedText(
                   rootfs.existsSync()
                       ? rootfs.path
-                      : AppLocalizations.of(context).sandboxNotExist,
+                      : AppLocalizations.of(context)!.sandboxNotExist,
                   small: true),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
           ListTile(
-            title: LanText(AppLocalizations.of(context).modifyRepo),
-            subtitle: LanText(repoChineseName(repo), small: true),
+            title: ThemedText(AppLocalizations.of(context)!.modifyRepo),
+            subtitle: ThemedText(repoChineseName(repo), small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: FocusedMenuHolder(
               menuWidth: MediaQuery.of(context).size.width * 0.40,
@@ -180,65 +182,70 @@ class CodeSettingPageState extends State<CodeSettingPage> {
               menuItems: <FocusedMenuItem>[
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
-                    title: LanText('清华'),
+                    title: ThemedText('清华'),
                     onPressed: () async {
                       await cutils
                           .setChineseRepo(TSINGHUA_REPO)
                           .then((value) async {
-                        await _commonModel.setLinuxRepo(TSINGHUA_REPO);
+                        await _commonModel.setAplineRepo(TSINGHUA_REPO);
                       }).catchError((e) {
-                        showText(AppLocalizations.of(context).setFail);
+                        Fluttertoast.showToast(
+                            msg: AppLocalizations.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
-                    title: LanText('阿里云'),
+                    title: ThemedText('阿里云'),
                     onPressed: () async {
                       await cutils
                           .setChineseRepo(ALIYUN_REPO)
                           .then((value) async {
-                        await _commonModel.setLinuxRepo(ALIYUN_REPO);
+                        await _commonModel.setAplineRepo(ALIYUN_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        showText(AppLocalizations.of(context).setFail);
+                        Fluttertoast.showToast(
+                            msg: AppLocalizations.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
-                    title: LanText('中科大'),
+                    title: ThemedText('中科大'),
                     onPressed: () async {
                       await cutils.setChineseRepo(USTC_REPO).then((val) async {
-                        await _commonModel.setLinuxRepo(USTC_REPO);
+                        await _commonModel.setAplineRepo(USTC_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        showText(AppLocalizations.of(context).setFail);
+                        Fluttertoast.showToast(
+                            msg: AppLocalizations.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
-                    title: LanText('Alpine'),
+                    title: ThemedText('Alpine'),
                     onPressed: () async {
                       await cutils
                           .setChineseRepo(ALPINE_REPO)
                           .then((value) async {
-                        await _commonModel.setLinuxRepo(ALPINE_REPO);
+                        await _commonModel.setAplineRepo(ALPINE_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        showText(AppLocalizations.of(context).setFail);
+                        Fluttertoast.showToast(
+                            msg: AppLocalizations.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData?.menuItemColor,
-                    title: LanText(AppLocalizations.of(context).custom),
+                    title: ThemedText(AppLocalizations.of(context)!.custom),
                     onPressed: () async {
                       await showSingleTextFieldModal(
                         context,
                         title: 'alpine',
                         onOk: (val) async {
                           await cutils.setChineseRepo(val).then((value) async {
-                            await _commonModel.setLinuxRepo(val);
+                            await _commonModel.setAplineRepo(val);
                           }).catchError((e) {
-                            showText(AppLocalizations.of(context).setFail);
+                            Fluttertoast.showToast(
+                                msg: AppLocalizations.of(context)!.setFail);
                           });
                         },
                         onCancel: () {},
@@ -248,7 +255,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
               child: Container(
                 padding: EdgeInsets.only(left: 16, right: 16),
                 child: NoResizeText(
-                  AppLocalizations.of(context).selectSource,
+                  AppLocalizations.of(context)!.selectSource,
                   style: TextStyle(color: Color(0xFF007AFF)),
                 ),
               ),
@@ -257,11 +264,12 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           InkWell(
             onTap: () async {
               await cutils.clearProotTmp();
-              showText(AppLocalizations.of(context).setSuccess);
+              Fluttertoast.showToast(
+                  msg: AppLocalizations.of(context)!.setSuccess);
             },
             child: ListTile(
-              title: LanText(
-                AppLocalizations.of(context).deleteSandboxTemp,
+              title: ThemedText(
+                AppLocalizations.of(context)!.deleteSandboxTemp,
                 style: TextStyle(color: Colors.redAccent),
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -271,21 +279,23 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () async {
               showTipTextModal(
                 context,
-                title: AppLocalizations.of(context).deleteSandbox,
-                tip: AppLocalizations.of(context).deleteSandboxTip,
+                title: AppLocalizations.of(context)!.deleteSandbox,
+                tip: AppLocalizations.of(context)!.deleteSandboxTip,
                 confirmedView: loadingIndicator(context, _themeModel),
                 onOk: () async {
                   await cutils.rmAllResource().catchError((err) {
-                    showText(AppLocalizations.of(context).setFail);
+                    Fluttertoast.showToast(
+                        msg: AppLocalizations.of(context)!.setFail);
                   });
-                  showText(AppLocalizations.of(context).setSuccess);
+                  Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)!.setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
-              title: LanText(
-                AppLocalizations.of(context).deleteSandbox,
+              title: ThemedText(
+                AppLocalizations.of(context)!.deleteSandbox,
                 style: TextStyle(color: Colors.redAccent),
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -300,7 +310,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          AppLocalizations.of(context).codeServer,
+          AppLocalizations.of(context)!.codeServer,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,

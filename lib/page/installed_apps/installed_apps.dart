@@ -1,22 +1,22 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:aqua/utils/mix_utils.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/action_button.dart';
 import 'package:aqua/common/widget/loading_flipping.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/model/common_model.dart';
 import 'package:aqua/page/file_manager/file_item.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
-import 'package:aqua/utils/theme.dart';
+import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
-import 'package:intent/action.dart' as action;
-import 'package:intent/intent.dart' as intent;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InstalledAppsPage extends StatefulWidget {
   @override
@@ -24,10 +24,10 @@ class InstalledAppsPage extends StatefulWidget {
 }
 
 class _InstalledAppsPageState extends State<InstalledAppsPage> {
-  ThemeModel _themeModel;
-  CommonModel _commonModel;
+  late ThemeModel _themeModel;
+  late CommonModel _commonModel;
   bool _showSystemApps = false;
-  List<Application> apps = [];
+  List<Application>? _apps = [];
   bool _mutex = true;
 
   @override
@@ -37,7 +37,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
     _commonModel = Provider.of<CommonModel>(context);
     if (_mutex) {
       _mutex = false;
-      apps = await DeviceApps.getInstalledApplications(
+      _apps = await DeviceApps.getInstalledApplications(
         includeAppIcons: true,
         includeSystemApps: _showSystemApps,
         onlyAppsWithLaunchIntent: false,
@@ -51,7 +51,49 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
   @override
   void dispose() {
     super.dispose();
-    apps = null;
+    _apps = null;
+  }
+
+  Future<void> showAppActions(Application app) async {
+    showCupertinoModal(
+      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, changeState) {
+            return SplitSelectionModal(
+              rightChildren: <Widget>[
+                ActionButton(
+                  content: AppLocalizations.of(context)!.uninstall,
+                  onTap: () async {
+                    await showTipTextModal(
+                      context,
+                      title: AppLocalizations.of(context)!.uninstall,
+                      tip:
+                          '${AppLocalizations.of(context)!.uninstall} ${app.packageName}?',
+                      onOk: () {
+                        // intent.Intent()
+                        //   ..setAction(
+                        //       action.Action.ACTION_DELETE)
+                        //   ..setData(Uri.parse(
+                        //       "package:${app.packageName}"))
+                        //   ..startActivityForResult().then(
+                        //     (data) {
+                        //       print(data);
+                        //     },
+                        //     onError: (e) {},
+                        //   );
+                      },
+                      onCancel: () {},
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -60,26 +102,26 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
 
     return Material(
       child: CupertinoPageScaffold(
-        backgroundColor: themeData?.scaffoldBackgroundColor,
+        backgroundColor: themeData.scaffoldBackgroundColor,
         navigationBar: CupertinoNavigationBar(
-          backgroundColor: themeData?.navBackgroundColor,
+          backgroundColor: themeData.navBackgroundColor,
           middle: NoResizeText(
             '本机应用',
             style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 20,
-              color: themeData?.navTitleColor,
+              color: themeData.navTitleColor,
             ),
           ),
           trailing: InkWell(
             onTap: () async {
-              apps = null;
+              _apps = null;
               if (mounted) {
                 setState(() {
-                  apps = [];
+                  _apps = [];
                   _showSystemApps = !_showSystemApps;
                 });
-                apps = await DeviceApps.getInstalledApplications(
+                _apps = await DeviceApps.getInstalledApplications(
                   includeAppIcons: true,
                   includeSystemApps: _showSystemApps,
                   onlyAppsWithLaunchIntent: false,
@@ -99,7 +141,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
           border: null,
           automaticallyImplyLeading: false,
         ),
-        child: apps.isEmpty
+        child: _apps!.isEmpty
             ? Center(
                 child: LoadingDoubleFlipping.square(
                   size: 30,
@@ -109,8 +151,9 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
             : Scrollbar(
                 child: ListView.builder(
                   itemBuilder: (BuildContext context, int index) {
-                    Application app = apps[index];
+                    Application app = _apps![index];
                     File file = File(app.apkFilePath);
+                    FileStat stat = file.statSync();
                     String ext = pathLib.extension(app.apkFilePath);
                     SelfFileEntity fileEntity = SelfFileEntity(
                       modified: file.statSync().modified,
@@ -118,12 +161,20 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                       path: app.apkFilePath,
                       filename: '${app.appName} (${app.packageName})',
                       ext: ext,
-                      humanSize: '',
                       apkIcon: app is ApplicationWithIcon ? app.icon : null,
                       isDir: file.statSync().type ==
                           FileSystemEntityType.directory,
-                      modeString: null,
-                      type: null,
+                      modeString: stat.modeString(),
+                      type: stat.type,
+                      accessed: stat.accessed,
+                      changed: stat.changed,
+                      humanSize:
+                          MixUtils.humanStorageSize(stat.size.toDouble()),
+                      isFile: stat.type == FileSystemEntityType.file,
+                      isLink: stat.type == FileSystemEntityType.link,
+                      pureName: '',
+                      size: stat.size,
+                      mode: stat.mode,
                     );
 
                     return Column(
@@ -138,49 +189,15 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                               : null,
                           withAnimation: index < 15,
                           index: index,
-                          subTitle: '\n版本: ${app.versionName}\n'
-                              '系统应用: ${app.systemApp}\n'
-                              'APK 位置: ${app.apkFilePath}\n'
-                              '数据目录: ${app.dataDir}\n'
-                              '安装时间: ${DateTime.fromMillisecondsSinceEpoch(app.installTimeMillis).toString()}\n'
-                              '更新时间: ${DateTime.fromMillisecondsSinceEpoch(app.updateTimeMillis).toString()}\n',
+                          subTitle:
+                              '\n${AppLocalizations.of(context)!.version}: ${app.versionName}\n'
+                              '${AppLocalizations.of(context)!.sysApps}: ${app.systemApp}\n'
+                              'APK ${AppLocalizations.of(context)!.position}: ${app.apkFilePath}\n'
+                              '${AppLocalizations.of(context)!.dataDir}: ${app.dataDir}\n'
+                              '${AppLocalizations.of(context)!.installTimestamp}: ${DateTime.fromMillisecondsSinceEpoch(app.installTimeMillis).toString()}\n'
+                              '${AppLocalizations.of(context)!.updateTimestamp}: ${DateTime.fromMillisecondsSinceEpoch(app.updateTimeMillis).toString()}\n',
                           onLongPress: (details) async {
-                            showCupertinoModal(
-                              filter:
-                                  ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                              context: context,
-                              builder: (BuildContext context) {
-                                return StatefulBuilder(
-                                  builder: (context, changeState) {
-                                    return SplitSelectionModal(
-                                      rightChildren: <Widget>[
-                                        ActionButton(
-                                          content: '卸载',
-                                          onTap: () async {
-                                            await showTipTextModal(context,
-                                                title: '卸载',
-                                                tip: '确定卸载${app.packageName}',
-                                                onOk: () {
-                                              intent.Intent()
-                                                ..setAction(
-                                                    action.Action.ACTION_DELETE)
-                                                ..setData(Uri.parse(
-                                                    "package:${app.packageName}"))
-                                                ..startActivityForResult().then(
-                                                  (data) {
-                                                    print(data);
-                                                  },
-                                                  onError: (e) {},
-                                                );
-                                            }, onCancel: () {});
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                            );
+                            showAppActions(app);
                           },
                           onTap: () {
                             DeviceApps.openApp(app.packageName);
@@ -204,7 +221,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                       ],
                     );
                   },
-                  itemCount: apps.length,
+                  itemCount: _apps!.length,
                 ),
               ),
       ),

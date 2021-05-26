@@ -1,22 +1,10 @@
 import 'package:flutter/material.dart';
 
 class BreadCrumbItem {
-  final Widget content;
-  final EdgeInsetsGeometry padding;
-  final EdgeInsetsGeometry margin;
-  final VoidCallback onTap;
-  final Color color;
-  final Color disableColor;
-  final Color splashColor;
-  final Color textColor;
-  final Color disabledTextColor;
-  final BorderRadiusGeometry borderRadius;
-  final BorderSide border;
-
   BreadCrumbItem({
-    @required this.content,
-    this.padding,
-    this.margin,
+    required this.content,
+    this.padding = EdgeInsets.zero,
+    this.margin = EdgeInsets.zero,
     this.onTap,
     this.color = Colors.transparent,
     this.disableColor = Colors.transparent,
@@ -25,7 +13,19 @@ class BreadCrumbItem {
     this.disabledTextColor,
     this.borderRadius = BorderRadius.zero,
     this.border = BorderSide.none,
-  }) : assert(content != null);
+  });
+
+  final Widget content;
+  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry margin;
+  final VoidCallback? onTap;
+  final Color color;
+  final Color disableColor;
+  final Color splashColor;
+  final Color? textColor;
+  final Color? disabledTextColor;
+  final BorderRadiusGeometry borderRadius;
+  final BorderSide border;
 
   bool get isEnable => onTap != null;
 

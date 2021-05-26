@@ -4,11 +4,11 @@ import 'package:aqua/page/file_editor/file_editor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:aqua/common/widget/show_modal_entity.dart';
-import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/modal/show_specific_modal.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/constant/constant.dart';
 import 'package:aqua/constant/constant_var.dart';
-import 'package:aqua/external/bot_toast/src/toast.dart';
+
 import 'package:aqua/model/file_model.dart';
 import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
@@ -21,17 +21,14 @@ import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/video/meida_info.dart';
 import 'package:aqua/page/video/video.dart';
 import 'package:aqua/utils/req.dart';
-import 'package:aqua/utils/theme.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:quick_actions/quick_actions.dart';
-import 'package:storage_mount_listener/storage_mount_listener.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -39,17 +36,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   MethodChannel _platform = const MethodChannel(SHARED_CHANNEL);
-  ThemeModel _themeModel;
-  CupertinoTabController _tabController;
-  CommonModel _commonModel;
-  bool _mutex;
+  late ThemeModel _themeModel;
+  late CupertinoTabController _tabController;
+  late CommonModel _commonModel;
+  late bool _mutex;
 
-  StreamSubscription _storageSubscription;
-  Map _appIncoming;
-
-  void showText(String content) {
-    BotToast.showText(text: content);
-  }
+  // late StreamSubscription _storageSubscription;
 
   Future<void> _preloadWebData() async {
     await req().get('/assets/ios_manager.json').then((receive) async {
@@ -60,8 +52,8 @@ class _HomePageState extends State<HomePage> {
   Future<void> _forceReadTutorialModal() async {
     await showForceScopeModal(
       context,
-      title: AppLocalizations.of(context).thankFollow,
-      tip: AppLocalizations.of(context).followTip,
+      title: AppLocalizations.of(context)!.thankFollow,
+      tip: AppLocalizations.of(context)!.followTip,
       defaultOkText: 'Github star',
       onOk: () async {
         if (await canLaunch(GITHUB)) {
@@ -83,36 +75,9 @@ class _HomePageState extends State<HomePage> {
     _tabController = CupertinoTabController(initialIndex: 0);
     _mutex = true;
 
-    _storageSubscription = StorageMountListener.channel
-        .receiveBroadcastStream()
-        .listen((event) {});
-
-    QuickActions quickActions = QuickActions();
-
-    quickActions.setShortcutItems(
-      <ShortcutItem>[
-        const ShortcutItem(
-          type: 'static-server',
-          localizedTitle: 'Static Server',
-          icon: 'content',
-        ),
-        const ShortcutItem(
-          type: 'vscode-server',
-          localizedTitle: 'Vscode Server',
-          icon: 'vscode',
-        ),
-      ],
-    );
-
-    quickActions.initialize((String shortcutType) {
-      switch (shortcutType) {
-        case 'static-server':
-        case 'vscode-server':
-          _tabController.index = 1;
-          break;
-        default:
-      }
-    });
+    // _storageSubscription = StorageMountListener.channel
+    //     .receiveBroadcastStream()
+    //     .listen((event) {});
   }
 
   @override
@@ -128,7 +93,7 @@ class _HomePageState extends State<HomePage> {
         // FLog.error(text: '请求配置出错', methodName: '_preloadWebData');
       });
 
-      _appIncoming = await _platform.invokeMethod('getIncomingFile');
+      // _appIncoming = await _platform.invokeMethod('getIncomingFile');
 
       setState(() {});
 
@@ -145,118 +110,172 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Widget _switchEntryPage(Map _incomingFile, {AquaTheme themeData}) {
-    if (_incomingFile != null && _incomingFile['appMode'] == 'incoming') {
-      String ext = pathLib.extension(_incomingFile['path']).toLowerCase();
-      String filename = pathLib.basename(_incomingFile['path']);
-      String path = _incomingFile['path'];
+  // Widget _switchEntryPage(Map _incomingFile, {AquaTheme? themeData}) {
+  //   if (_incomingFile != null && _incomingFile['appMode'] == 'incoming') {
+  //     String ext = pathLib.extension(_incomingFile['path']).toLowerCase();
+  //     String filename = pathLib.basename(_incomingFile['path']);
+  //     String path = _incomingFile['path'];
 
-      return LanFileUtils.matchEntryByMimeType(
-        _incomingFile['type'],
-        caseImage: () {
-          return PhotoViewerPage(
-            imageRes: [path],
-            index: 0,
-          );
-        },
-        caseText: () {
-          return FileEditorPage(
-            path: path,
-            language: ext.replaceFirst(RegExp(r'.'), ''),
-            bottomNavColor: _themeModel.themeData?.bottomNavColor,
-            dialogBgColor: _themeModel.themeData?.dialogBgColor,
-            backgroundColor: _themeModel.themeData?.scaffoldBackgroundColor,
-            fontColor: _themeModel.themeData?.itemFontColor,
-            selectItemColor: _themeModel.themeData?.itemColor,
-            popMenuColor: _themeModel.themeData?.menuItemColor,
-            highlightTheme: setEditorTheme(
-              _themeModel.isDark,
-              TextStyle(
-                color: _themeModel.themeData?.itemFontColor,
-                backgroundColor: _themeModel.themeData?.scaffoldBackgroundColor,
-              ),
-            ),
-          );
-        },
-        caseVideo: () {
-          return VideoPage(
-            info: MediaInfo(
-              name: filename,
-              path: path,
-            ),
-          );
-        },
-        caseDefault: () {
-          return NotSupportPage(
-            path: path,
-          );
-        },
-      );
-    } else {
-      return CupertinoTabScaffold(
-        controller: _tabController,
-        tabBar: CupertinoTabBar(
-          backgroundColor: themeData.bottomNavColor,
-          border: Border(),
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              label: AppLocalizations.of(context).fileLabel,
-              icon: Icon(OMIcons.folder),
-            ),
-            BottomNavigationBarItem(
-              label: AppLocalizations.of(context).lanLabel,
-              icon: Icon(Icons.devices),
-            ),
-            BottomNavigationBarItem(
-              label: AppLocalizations.of(context).settingLabel,
-              icon: Icon(OMIcons.settings),
-            )
-          ],
-        ),
-        tabBuilder: (BuildContext context, int index) {
-          switch (index) {
-            case 0:
-              return CupertinoTabView(
-                builder: (context) => FileManagerPage(
-                  mode: FileManagerMode.surf,
-                ),
-              );
-            case 1:
-              return CupertinoTabView(
-                builder: (context) => LanPage(),
-              );
-            case 2:
-              return CupertinoTabView(
-                builder: (context) => ChangeNotifierProvider(
-                  create: (_) => FileModel(),
-                  child: SettingPage(
-                    gTabController: _tabController,
-                  ),
-                ),
-              );
-            default:
-              assert(false, 'Unexpected tab');
-              return null;
-          }
-        },
-      );
-    }
-  }
+  //     return FsUtils.matchEntryByMimeType(
+  //       _incomingFile['type'],
+  //       caseImage: () {
+  //         return PhotoViewerPage(
+  //           imageRes: [path],
+  //           index: 0,
+  //         );
+  //       },
+  //       caseText: () {
+  //         return FileEditorPage(
+  //           path: path,
+  //           language: ext.replaceFirst(RegExp(r'.'), ''),
+  //           bottomNavColor: _themeModel.themeData.bottomNavColor,
+  //           dialogBgColor: _themeModel.themeData.dialogBgColor,
+  //           backgroundColor: _themeModel.themeData?.scaffoldBackgroundColor,
+  //           fontColor: _themeModel.themeData?.itemFontColor,
+  //           selectItemColor: _themeModel.themeData?.itemColor,
+  //           popMenuColor: _themeModel.themeData?.menuItemColor,
+  //           highlightTheme: setEditorTheme(
+  //             _themeModel.isDark,
+  //             TextStyle(
+  //               color: _themeModel.themeData?.itemFontColor,
+  //               backgroundColor: _themeModel.themeData?.scaffoldBackgroundColor,
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //       caseVideo: () {
+  //         return VideoPage(
+  //           info: MediaInfo(
+  //             name: filename,
+  //             path: path,
+  //           ),
+  //         );
+  //       },
+  //       caseDefault: () {
+  //         return NotSupportPage(
+  //           path: path,
+  //         );
+  //       },
+  //     );
+  //   } else {
+  //     return CupertinoTabScaffold(
+  //       controller: _tabController,
+  //       tabBar: CupertinoTabBar(
+  //         backgroundColor: themeData.bottomNavColor,
+  //         border: Border(),
+  //         items: <BottomNavigationBarItem>[
+  //           // BottomNavigationBarItem(
+  //           //   label: AppLocalizations.of(context)!.fileLabel,
+  //           //   icon: Icon(OMIcons.folder),
+  //           // ),
+  //           BottomNavigationBarItem(
+  //             label: AppLocalizations.of(context)!.lanLabel,
+  //             icon: Icon(Icons.devices),
+  //           ),
+  //           // BottomNavigationBarItem(
+  //           //   label: AppLocalizations.of(context)!.settingLabel,
+  //           //   icon: Icon(OMIcons.settings),
+  //           // )
+  //         ],
+  //       ),
+  //       tabBuilder: (BuildContext context, int index) {
+  //         return CupertinoTabView(
+  //           builder: (context) => FileManagerPage(
+  //             mode: FileManagerMode.surf,
+  //           ),
+  //         );
+  //         // switch (index) {
+  //         //   case 0:
+  //         //     return CupertinoTabView(
+  //         //       builder: (context) => FileManagerPage(
+  //         //         mode: FileManagerMode.surf,
+  //         //       ),
+  //         //     );
+  //         //   case 1:
+  //         //     return CupertinoTabView(
+  //         //       builder: (context) => LanPage(),
+  //         //     );
+  //         //   case 2:
+  //         //     return CupertinoTabView(
+  //         //       builder: (context) => ChangeNotifierProvider(
+  //         //         create: (_) => FileModel(),
+  //         //         child: SettingPage(
+  //         //           gTabController: _tabController,
+  //         //         ),
+  //         //       ),
+  //         //     );
+  //         //   default:
+  //         //     assert(false, 'Unexpected tab');
+  //         //     return null;
+  //         // }
+  //       },
+  //     );
+  //   }
+  // }
 
   @override
   void dispose() {
     super.dispose();
-    _storageSubscription?.cancel();
+    // _storageSubscription.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel?.themeData;
-    return themeData == null
-        ? Container(color: themeData.scaffoldBackgroundColor)
-        : _switchEntryPage(
-            _appIncoming,
-            themeData: themeData,
-          );
+    AquaTheme themeData = _themeModel.themeData;
+    // themeData == null
+    // ? Container(color: themeData.scaffoldBackgroundColor)
+    // :
+    return CupertinoTabScaffold(
+      controller: _tabController,
+      tabBar: CupertinoTabBar(
+        backgroundColor: themeData.bottomNavColor,
+        border: Border(),
+        items: <BottomNavigationBarItem>[
+          // BottomNavigationBarItem(
+          //   label: AppLocalizations.of(context)!.fileLabel,
+          //   icon: Icon(OMIcons.folder),
+          // ),
+          BottomNavigationBarItem(
+            label: AppLocalizations.of(context)!.lanLabel,
+            icon: Icon(Icons.devices),
+          ),
+          // BottomNavigationBarItem(
+          //   label: AppLocalizations.of(context)!.settingLabel,
+          //   icon: Icon(OMIcons.settings),
+          // )
+        ],
+      ),
+      tabBuilder: (BuildContext context, int index) {
+        return CupertinoTabView(
+          builder: (context) => FileManagerPage(
+            mode: FileManagerMode.surf,
+          ),
+        );
+        // switch (index) {
+        //   case 0:
+        //     return CupertinoTabView(
+        //       builder: (context) => FileManagerPage(
+        //         mode: FileManagerMode.surf,
+        //       ),
+        //     );
+        //   case 1:
+        //     return CupertinoTabView(
+        //       builder: (context) => LanPage(),
+        //     );
+        //   case 2:
+        //     return CupertinoTabView(
+        //       builder: (context) => ChangeNotifierProvider(
+        //         create: (_) => FileModel(),
+        //         child: SettingPage(
+        //           gTabController: _tabController,
+        //         ),
+        //       ),
+        //     );
+        //   default:
+        //     assert(false, 'Unexpected tab');
+        //     return null;
+        // }
+      },
+    );
   }
 }

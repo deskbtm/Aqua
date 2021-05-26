@@ -8,11 +8,11 @@ import 'p.dart';
 class Ul {
   Ul._internal();
 
-  static Ul _instance;
+  static late Ul? _instance;
 
   factory Ul() {
     _instance ??= Ul._internal();
-    return _instance;
+    return _instance!;
   }
 
   ///the unOrderly list widget
@@ -34,12 +34,12 @@ class Ul {
     );
   }
 
-  Widget _getLiWidget(m.Element rootNode, int deep, int index) {
+  Widget _getLiWidget(m.Element? rootNode, int deep, int index) {
     final children = rootNode?.children;
     final List<m.Node> otherTagNodes = [];
     final isSolid = deep % 2 == 0;
     List<Widget> listChildren = [];
-    for (var node in children) {
+    for (var node in children!) {
       if (node is m.Element && node.tag == ul) {
         final child = getUlWidget(node, deep + 1);
         listChildren.add(child);
@@ -51,7 +51,7 @@ class Ul {
         otherTagNodes.add(node);
     }
     final config = StyleConfig().ulConfig;
-    final Widget dotWidget =
+    final Widget? dotWidget =
         StyleConfig()?.ulConfig?.dotWidget?.call(deep, index);
     final ulChild = Container(
       margin: EdgeInsets.only(
@@ -69,7 +69,7 @@ class Ul {
         children: <Widget>[
           dotWidget ?? _getUlDot(isSolid),
           Expanded(
-            child: P().getPWidget(otherTagNodes, rootNode,
+            child: P().getPWidget(otherTagNodes, rootNode as m.Node,
                 textStyle: config?.textStyle ?? defaultPStyle,
                 crossAxisAlignment: WrapCrossAlignment.start,
                 textConfig: config?.textConfig,
@@ -108,15 +108,15 @@ class Ul {
 }
 
 class UlConfig {
-  final TextStyle textStyle;
-  final TextConfig textConfig;
-  final DotWidget dotWidget;
-  final UlWrapper ulWrapper;
-  final double leftSpacing;
-  final double dotSize;
-  final bool selectable;
-  final EdgeInsetsGeometry dotMargin;
-  final CrossAxisAlignment crossAxisAlignment;
+  final TextStyle? textStyle;
+  final TextConfig? textConfig;
+  final DotWidget? dotWidget;
+  final UlWrapper? ulWrapper;
+  final double? leftSpacing;
+  final double? dotSize;
+  final bool? selectable;
+  final EdgeInsetsGeometry? dotMargin;
+  final CrossAxisAlignment? crossAxisAlignment;
 
   UlConfig({
     this.textStyle,

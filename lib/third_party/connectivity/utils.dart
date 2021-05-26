@@ -1,8 +1,7 @@
-
 import 'enums.dart';
 
 /// Convert a String to a ConnectivityResult value.
-ConnectivityResult parseConnectivityResult(String state) {
+ConnectivityResult parseConnectivityResult(String? state) {
   switch (state) {
     case 'wifi':
       return ConnectivityResult.wifi;
@@ -15,7 +14,7 @@ ConnectivityResult parseConnectivityResult(String state) {
 }
 
 /// Convert a String to a LocationAuthorizationStatus value.
-LocationAuthorizationStatus parseLocationAuthorizationStatus(String result) {
+LocationAuthorizationStatus parseLocationAuthorizationStatus(String? result) {
   switch (result) {
     case 'notDetermined':
       return LocationAuthorizationStatus.notDetermined;

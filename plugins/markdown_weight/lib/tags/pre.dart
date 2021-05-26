@@ -7,11 +7,11 @@ import 'package:highlight/highlight.dart' as hi;
 class Pre {
   Pre._internal();
 
-  static Pre _instance;
+  static late Pre? _instance;
 
   factory Pre() {
     _instance ??= Pre._internal();
-    return _instance;
+    return _instance!;
   }
 
   ///the pre widget
@@ -47,24 +47,24 @@ class Pre {
 }
 
 class PreConfig {
-  final EdgeInsetsGeometry padding;
-  final Decoration decoration;
-  final EdgeInsetsGeometry margin;
-  final TextStyle textStyle;
-  final TextAlign textAlign;
-  final TextDirection textDirection;
-  final PreWrapper preWrapper;
+  final EdgeInsetsGeometry? padding;
+  final Decoration? decoration;
+  final EdgeInsetsGeometry? margin;
+  final TextStyle? textStyle;
+  final TextAlign? textAlign;
+  final TextDirection? textDirection;
+  final PreWrapper? preWrapper;
 
   ///see package:flutter_highlight/themes/
-  final Map<String, TextStyle> theme;
+  final Map<String, TextStyle>? theme;
 
-  final String language;
+  final String? language;
 
   ///set [autoDetectionLanguage] `true` to enable language auto detection, but it will cause performance issue
   ///so it is not recommended
   ///see https://github.com/git-touch/highlight/blob/251505aae568e95ad941e023c110495fa5ad0a16/highlight/lib/src/highlight.dart#L247
-  final bool autoDetectionLanguage;
-  final int tabSize;
+  final bool? autoDetectionLanguage;
+  final int? tabSize;
 
   PreConfig({
     this.padding,
@@ -87,29 +87,29 @@ class HighlightView extends StatelessWidget {
   /// The original code to be highlighted
   final String source;
 
-  final String language;
+  final String? language;
   final bool autoDetectionLanguage;
 
   /// Highlight theme
   ///
   /// [All available themes](https://github.com/pd4d10/highlight/blob/master/flutter_highlight/lib/themes)
-  final Map<String, TextStyle> theme;
+  final Map<String, TextStyle>? theme;
 
   /// Text styles
   ///
   /// Specify text styles such as font family and font size
-  final TextStyle textStyle;
+  final TextStyle? textStyle;
 
   HighlightView(
     String input, {
     this.language,
-    this.autoDetectionLanguage,
+    required this.autoDetectionLanguage,
     this.theme = const {},
     this.textStyle,
     int tabSize = 8, // TODO: https://github.com/flutter/flutter/issues/50087
   }) : source = input.replaceAll('\t', ' ' * tabSize);
 
-  List<TextSpan> _convert(List<hi.Node> nodes) {
+  List<TextSpan> _convert(List<hi.Node>? nodes) {
     List<TextSpan> spans = [];
     var currentSpans = spans;
     List<List<TextSpan>> stack = [];
@@ -118,23 +118,24 @@ class HighlightView extends StatelessWidget {
       if (node.value != null) {
         currentSpans.add(node.className == null
             ? TextSpan(text: node.value)
-            : TextSpan(text: node.value, style: theme[node.className]));
+            : TextSpan(text: node.value, style: theme![node.className]));
       } else if (node.children != null) {
         List<TextSpan> tmp = [];
-        currentSpans.add(TextSpan(children: tmp, style: theme[node.className]));
+        currentSpans
+            .add(TextSpan(children: tmp, style: theme![node.className]));
         stack.add(currentSpans);
         currentSpans = tmp;
 
-        node.children.forEach((n) {
+        node.children!.forEach((n) {
           _traverse(n);
-          if (n == node.children.last) {
+          if (n == node.children!.last) {
             currentSpans = stack.isEmpty ? spans : stack.removeLast();
           }
         });
       }
     }
 
-    for (var node in nodes) {
+    for (var node in nodes!) {
       _traverse(node);
     }
     return spans;
@@ -146,7 +147,7 @@ class HighlightView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var _textStyle = TextStyle(
-      color: theme[_rootKey]?.color ?? _defaultFontColor,
+      color: theme![_rootKey]?.color ?? _defaultFontColor,
     );
     if (textStyle != null) {
       _textStyle = _textStyle.merge(textStyle);
@@ -155,11 +156,15 @@ class HighlightView extends StatelessWidget {
     return SelectableText.rich(
       TextSpan(
         style: _textStyle,
-        children: _convert(hi.highlight
-            .parse(source,
+        children: _convert(
+          hi.highlight
+              .parse(
+                source,
                 language: autoDetectionLanguage ? null : language,
-                autoDetection: autoDetectionLanguage)
-            .nodes),
+                autoDetection: autoDetectionLanguage,
+              )
+              .nodes,
+        ),
       ),
       textAlign: StyleConfig().preConfig?.textAlign,
       textDirection: StyleConfig().preConfig?.textDirection,

@@ -1,20 +1,21 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:android_mix/android_mix.dart';
-import 'package:android_mix/archive/enums.dart';
+import 'package:aqua/plugin/archive/archive.dart';
+import 'package:aqua/plugin/archive/enums.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/dialog.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/common/widget/show_modal.dart';
-import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
+
 import 'package:aqua/external/menu/menu.dart';
 import 'package:aqua/model/common_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/notification.dart';
-import 'package:aqua/utils/theme.dart';
+import 'package:aqua/common/theme.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -22,8 +23,8 @@ import 'file_utils.dart';
 
 Future<void> createArchiveModal(
   BuildContext context, {
-  @required Directory currentDir,
-  @required Function(BuildContext) onSuccessUpdate,
+  Directory? currentDir,
+  required Function(BuildContext) onSuccessUpdate,
 }) async {
   MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
@@ -35,17 +36,17 @@ Future<void> createArchiveModal(
     String archiveType = 'zip';
     String archiveText = 'zip';
     bool preDisplay = false;
-    String pwd;
-
-    void showText(String content) {
-      BotToast.showText(text: content);
-    }
+    late String pwd;
 
     Future<void> runAfterArchive(BuildContext context, bool result) async {
       if (result) {
-        showText(AppLocalizations.of(context).setSuccess);
+        Fluttertoast.showToast(
+          msg: AppLocalizations.of(context)!.setSuccess,
+        );
       } else {
-        showText(AppLocalizations.of(context).setFail);
+        Fluttertoast.showToast(
+          msg: AppLocalizations.of(context)!.setFail,
+        );
       }
       await onSuccessUpdate(context);
     }
@@ -61,11 +62,11 @@ Future<void> createArchiveModal(
               onWillPop: () async {
                 return popAble;
               },
-              child: LanDialog(
+              child: AquaDialog(
                 display: preDisplay,
-                fontColor: themeData?.itemFontColor,
-                bgColor: themeData?.dialogBgColor,
-                title: NoResizeText(AppLocalizations.of(context).archive),
+                fontColor: themeData.itemFontColor,
+                bgColor: themeData.dialogBgColor,
+                title: NoResizeText(AppLocalizations.of(context)!.archive),
                 action: true,
                 children: <Widget>[
                   SizedBox(height: 10),
@@ -81,8 +82,8 @@ Future<void> createArchiveModal(
                           bottomOffsetHeight: 80.0,
                           menuItems: <FocusedMenuItem>[
                             FocusedMenuItem(
-                              backgroundColor: themeData?.menuItemColor,
-                              title: LanText('zip'),
+                              backgroundColor: themeData.menuItemColor,
+                              title: ThemedText('zip'),
                               onPressed: () {
                                 changeState(() {
                                   archiveText = 'zip';
@@ -91,9 +92,9 @@ Future<void> createArchiveModal(
                               },
                             ),
                             FocusedMenuItem(
-                              backgroundColor: themeData?.menuItemColor,
-                              title: LanText(
-                                  AppLocalizations.of(context).zipCrypto),
+                              backgroundColor: themeData.menuItemColor,
+                              title: ThemedText(
+                                  AppLocalizations.of(context)!.zipCrypto),
                               onPressed: () async {
                                 changeState(() {
                                   preDisplay = true;
@@ -101,12 +102,13 @@ Future<void> createArchiveModal(
 
                                 await showSingleTextFieldModal(
                                   context,
-                                  title: AppLocalizations.of(context).password,
+                                  title: AppLocalizations.of(context)!.password,
                                   transparent: true,
                                   onOk: (val) async {
                                     changeState(() {
-                                      archiveText = AppLocalizations.of(context)
-                                          .zipCrypto;
+                                      archiveText =
+                                          AppLocalizations.of(context)!
+                                              .zipCrypto;
                                       archiveType = 'zip';
                                       pwd = val;
                                       preDisplay = false;
@@ -120,7 +122,7 @@ Future<void> createArchiveModal(
                             ),
                             FocusedMenuItem(
                               backgroundColor: themeData?.menuItemColor,
-                              title: LanText('tar'),
+                              title: ThemedText('tar'),
                               onPressed: () async {
                                 changeState(() {
                                   archiveText = 'tar';
@@ -130,7 +132,7 @@ Future<void> createArchiveModal(
                             ),
                             FocusedMenuItem(
                               backgroundColor: themeData?.menuItemColor,
-                              title: LanText('tar.gz'),
+                              title: ThemedText('tar.gz'),
                               onPressed: () async {
                                 changeState(() {
                                   archiveText = 'tar.gz';
@@ -140,7 +142,7 @@ Future<void> createArchiveModal(
                             ),
                             FocusedMenuItem(
                               backgroundColor: themeData?.menuItemColor,
-                              title: LanText('tar.bz2'),
+                              title: ThemedText('tar.bz2'),
                               onPressed: () async {
                                 changeState(() {
                                   archiveText = 'tar.bz2';
@@ -150,7 +152,7 @@ Future<void> createArchiveModal(
                             ),
                             FocusedMenuItem(
                               backgroundColor: themeData?.menuItemColor,
-                              title: LanText('tar.xz'),
+                              title: ThemedText('tar.xz'),
                               onPressed: () async {
                                 changeState(() {
                                   archiveText = 'tar.xz';
@@ -160,7 +162,7 @@ Future<void> createArchiveModal(
                             ),
                             // FocusedMenuItem(
                             //   backgroundColor: themeData?.menuItemColor,
-                            //   title: LanText('7z'),
+                            //   title: ThemedText('7z'),
                             //   onPressed: () async {
                             //     changeState(() {
                             //       archiveText = '7z';
@@ -170,7 +172,7 @@ Future<void> createArchiveModal(
                             // ),
                             FocusedMenuItem(
                               backgroundColor: themeData?.menuItemColor,
-                              title: LanText('jar'),
+                              title: ThemedText('jar'),
                               onPressed: () async {
                                 changeState(() {
                                   archiveText = 'jar';
@@ -180,8 +182,8 @@ Future<void> createArchiveModal(
                             ),
                             FocusedMenuItem(
                               backgroundColor: themeData?.menuItemColor,
-                              title: LanText(
-                                AppLocalizations.of(context).cancel,
+                              title: ThemedText(
+                                AppLocalizations.of(context)!.cancel,
                                 style: TextStyle(color: Colors.redAccent),
                               ),
                               trailingIcon: Icon(
@@ -211,12 +213,12 @@ Future<void> createArchiveModal(
                       : loadingIndicator(context, themeModel),
                   SizedBox(height: 10),
                 ],
-                defaultOkText: AppLocalizations.of(context).sure,
+                defaultOkText: AppLocalizations.of(context)!.sure,
                 defaultCancelText: popAble
-                    ? AppLocalizations.of(context).cancel
-                    : AppLocalizations.of(context).background,
+                    ? AppLocalizations.of(context)!.cancel
+                    : AppLocalizations.of(context)!.background,
                 onOk: () async {
-                  if (!popAble) {
+                  if (!popAble && currentDir == null) {
                     return;
                   }
                   changeState(() {
@@ -227,22 +229,21 @@ Future<void> createArchiveModal(
                       .map((e) => e.entity.path)
                       .toList();
 
-                  String generatedArchivePath = LanFileUtils.newPathWhenExists(
+                  String generatedArchivePath = FsUtils.newPathWhenExists(
                       pathLib.join(
-                        currentDir.path,
-                        LanFileUtils.getArchiveName(paths, currentDir.path),
+                        currentDir!.path,
+                        FsUtils.getArchiveName(paths, currentDir.path),
                       ),
                       '.' + archiveType);
 
                   if (archiveType == 'zip') {
-                    bool result = await AndroidMix.archive
-                        .zip(paths, generatedArchivePath,
-                            pwd: pwd?.trim(), encrypt: ZipEncryptionMethod.aes)
+                    bool result = await Archive.zip(paths, generatedArchivePath,
+                            pwd: pwd.trim(), encrypt: ZipEncryptionMethod.aes)
                         .catchError((err) {});
                     await runAfterArchive(context, result);
                   } else {
-                    ArchiveFormat type;
-                    CompressionType cType;
+                    late ArchiveFormat type;
+                    CompressionType? cType;
 
                     switch (archiveType) {
                       case 'tar':
@@ -268,15 +269,13 @@ Future<void> createArchiveModal(
                     }
 
                     try {
-                      bool result = await AndroidMix.archive
-                          .createArchive(
-                            paths,
-                            currentDir.path,
-                            LanFileUtils.getName(generatedArchivePath),
-                            type,
-                            compressionType: cType,
-                          )
-                          .catchError((err) {});
+                      bool result = await Archive.createArchive(
+                        paths,
+                        currentDir.path,
+                        FsUtils.getName(generatedArchivePath),
+                        type,
+                        compressionType: cType,
+                      ).catchError((err) {});
 
                       await runAfterArchive(context, result);
                     } catch (err) {}

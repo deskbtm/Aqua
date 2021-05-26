@@ -19,28 +19,28 @@ class PointTabIndicator extends Decoration {
   final PointTabIndicatorPosition position;
 
   @override
-  Decoration lerpFrom(Decoration a, double t) {
+  Decoration? lerpFrom(Decoration? a, double t) {
     if (a is PointTabIndicator) {
       return PointTabIndicator(
-        insets: EdgeInsetsGeometry.lerp(a.insets, insets, t),
+        insets: EdgeInsetsGeometry.lerp(a.insets, insets, t)!,
       );
     }
     return super.lerpFrom(a, t);
   }
 
   @override
-  Decoration lerpTo(Decoration b, double t) {
+  Decoration? lerpTo(Decoration? b, double t) {
     if (b is PointTabIndicator) {
       return PointTabIndicator(
-        insets: EdgeInsetsGeometry.lerp(insets, b.insets, t),
+        insets: EdgeInsetsGeometry.lerp(insets, b.insets, t)!,
       );
     }
     return super.lerpTo(b, t);
   }
 
   @override
-  _PointPainter createBoxPainter([VoidCallback onChanged]) {
-    return _PointPainter(this, onChanged);
+  _PointPainter createBoxPainter([VoidCallback? onChanged]) {
+    return _PointPainter(this, onChanged!);
   }
 }
 
@@ -62,8 +62,8 @@ class _PointPainter extends BoxPainter {
     assert(configuration != null);
     assert(configuration.size != null);
 
-    final Rect rect = offset & configuration.size;
-    final TextDirection textDirection = configuration.textDirection;
+    final Rect rect = offset & configuration.size!;
+    final TextDirection textDirection = configuration.textDirection!;
     final Rect indicator = insets.resolve(textDirection).deflateRect(rect);
 
     final Paint paint = Paint()

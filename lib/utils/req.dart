@@ -7,8 +7,7 @@ class _CookieInterceptors extends InterceptorsWrapper {
   @override
   Future onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    String token = await Store.getString(LOGIN_TOKEN);
-    print(options.uri);
+    String? token = await Store.getString(LOGIN_TOKEN);
 
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';

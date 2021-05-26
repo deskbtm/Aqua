@@ -16,19 +16,19 @@ class WebDavException implements Exception {
 }
 
 class Client {
-  String host;
-  int port;
-  String username;
-  String password;
+  late int port;
+  late String path;
+  late String host;
+  late String baseUrl;
+  late String password;
+  late String username;
   String protocol = 'http';
   bool verifySsl = true;
-  String path;
-  String baseUrl;
   String cwd = "/";
   HttpClient httpClient = new HttpClient();
 
   Client(String host, String username, String password,
-      {String protocol, int port}) {
+      {String? protocol, int? port}) {
     this.baseUrl = host;
     if (!host.startsWith("https://") &&
         !host.startsWith("http://") &&
@@ -52,9 +52,6 @@ class Client {
 
   String getUrl(String path) {
     path = path.trim();
-
-    print('=====');
-    print(path);
 
     if (path.startsWith('/')) {
       return this.baseUrl + path;
@@ -82,7 +79,7 @@ class Client {
 
   Future<HttpClientResponse> _send(
       String method, String path, List<int> expectedCodes,
-      {Uint8List data, Map headers}) async {
+      {Uint8List? data, Map? headers}) async {
     return await retry(
         () => this
             .__send(method, path, expectedCodes, data: data, headers: headers),
@@ -92,7 +89,7 @@ class Client {
 
   Future<HttpClientResponse> __send(
       String method, String path, List<int> expectedCodes,
-      {Uint8List data, Map headers}) async {
+      {Uint8List? data, Map? headers}) async {
     String url = this.getUrl(path);
     print("[webdav] http send with method:$method path:$path url:$url");
 
@@ -195,7 +192,7 @@ class Client {
     return response.transform(utf8.decoder).join();
   }
 
-  Future<List<FileInfo>> ls({String path, int depth = 1}) async {
+  Future<List<FileInfo>> ls({String? path, int depth = 1}) async {
     // the current path
     if (path == null || path == ".") {
       path = "";

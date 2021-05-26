@@ -9,7 +9,7 @@ class StorageCard extends StatelessWidget {
   final double validSize;
 
   const StorageCard(
-      {Key key, @required this.totalSize, @required this.validSize})
+      {Key? key, required this.totalSize, required this.validSize})
       : super(key: key);
 
   @override
@@ -29,7 +29,7 @@ class StorageCard extends StatelessWidget {
           barWidth: MediaQuery.of(context).size.width,
           numerator: totalSize - validSize,
           denominator: totalSize,
-          title: AppLocalizations.of(context).internalStorage,
+          title: AppLocalizations.of(context)!.internalStorage,
           dialogTextStyle: TextStyle(
               fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
           titleStyle: TextStyle(

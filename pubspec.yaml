@@ -24,54 +24,49 @@ dependencies:
   flutter:
     sdk: flutter
   sentry_flutter: ^5.0.0
-  outline_material_icons: ^0.1.1
-  shelf: ^1.1.0
-  open_file: ^3.1.0
+  font_awesome_flutter: ^9.0.0
+  # outline_material_icons: ^0.1.1
+  shelf: ^1.1.4
+  open_file: ^3.2.1
   flutter_staggered_animations: ^1.0.0
-  permission_handler: "^7.1.0"
-  provider: ^4.3.2+2
-  # f_logs: ^1.2.2
-  device_info: ^2.0.0
+  permission_handler: ^7.2.0
+  provider: ^5.0.0
+  device_info: ^2.0.1
   shared_preferences: ^2.0.5
   http_parser: ^4.0.0
-  path: ">=1.1.0 <2.0.0"
+  path: ^1.8.0
   intl: ^0.17.0
-  android_mix:
-    path: plugins/android_mix
-  file_utils:
-    path: plugins/file_utils
   url_launcher: ^6.0.4
-  flutter_local_notifications: ^5.0.0+4
-  flutter_secure_storage: ^3.3.5
+  flutter_local_notifications: ^6.0.0
+  flutter_secure_storage: ^4.2.0
   device_apps: ^2.1.1
-  intent:
-    path: plugins/intent
-  # photo_view:
-  #   path: plugins/photo_view
-  # flutter_html: ^2.0.0
+  # intent:
+  #   path: plugins/intent
   dio: ^4.0.0
   version: ^2.0.0
-  package_info: ^0.4.3
-  flutter_mailer: ^1.0.0
-  storage_mount_listener:
-    path: plugins/storage_mount_listener
+  package_info: ^2.0.0
   share_extend: ^2.0.0
-  quick_actions: ^0.4.0+10
-  wakelock: ^0.4.0
+  wakelock: ^0.5.2
   markdown_widget:
     path: plugins/markdown_weight
-  flutter_glide:
-    path: plugins/flutter_glide
-  preload_page_view: ^0.1.4
+  preload_page_view: ^0.1.6
   qr_flutter: ^4.0.0
   pure_video_player:
     path: plugins/pure_video_player
   flutter_easyrefresh: ^2.2.1
   flutter_highlight: ^0.7.0
-  charset_converter: ^1.0.3
+  charset_converter: ^2.0.0
   flutter_localizations:
     sdk: flutter
   mime: ^1.0.0
+  uni_links: ^0.5.1
+  system_info: ^1.0.0
+  back_button_interceptor: ^5.0.0
+  xml: ^5.1.1
+  fluttertoast: ^8.0.7
+  tutorial_coach_mark: ^1.0.0
+  intent:
+    path: plugins/intent
 
 dev_dependencies:
   flutter_test:

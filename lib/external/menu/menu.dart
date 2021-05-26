@@ -1,56 +1,53 @@
-library focused_menu;
-
 import 'dart:ui';
-import 'package:flutter/cupertino.dart' hide CoverCupertinoModalPopupRoute;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:aqua/common/widget/show_modal.dart';
 import 'package:aqua/utils/mix_utils.dart';
 
 class FocusedMenuItem {
-  Color backgroundColor;
+  Color? backgroundColor;
   Widget title;
-  Icon trailingIcon;
+  Icon? trailingIcon;
   final Function onPressed;
-  final String value;
+  // final String value;
 
   FocusedMenuItem({
-    this.value,
+    // required this.value,
     this.backgroundColor,
-    @required this.title,
+    required this.title,
     this.trailingIcon,
-    @required this.onPressed,
+    required this.onPressed,
   });
 }
 
 class FocusedMenuHolder extends StatefulWidget {
   final Widget child;
-  final double menuItemExtent;
-  final double menuWidth;
+  final double? menuItemExtent;
+  final double? menuWidth;
   final List<FocusedMenuItem> menuItems;
-  final bool animateMenuItems;
-  final BoxDecoration menuBoxDecoration;
+  final bool? animateMenuItems;
+  final BoxDecoration? menuBoxDecoration;
   // final Function(int, String) onPressed;
-  final Duration duration;
-  final double blurSize;
-  final Color maskColor;
-  final double bottomOffsetHeight;
-  final double menuOffset;
-  final ImageFilter filter;
+  final Duration? duration;
+  final double? blurSize;
+  final Color? maskColor;
+  final double? bottomOffsetHeight;
+  final double? menuOffset;
+  final ImageFilter? filter;
 
   // 兼容 CupertinoTabBar
-  final Widget icon;
+  final Widget? icon;
 
-  final Widget activeIcon;
+  final Widget? activeIcon;
 
-  final Widget title;
+  final Widget? title;
 
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   const FocusedMenuHolder({
-    Key key,
-    @required this.child,
-    // @required this.onPressed,
-    @required this.menuItems,
+    Key? key,
+    required this.child,
+    // required this.onPressed,
+    required this.menuItems,
     this.duration,
     this.menuBoxDecoration,
     this.menuItemExtent,
@@ -74,15 +71,18 @@ class FocusedMenuHolder extends StatefulWidget {
 class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
   GlobalKey containerKey = GlobalKey();
   Offset childOffset = Offset(0, 0);
-  Size childSize;
+  late Size _childSize;
 
   getOffset() {
-    RenderBox renderBox = containerKey.currentContext.findRenderObject();
-    Size size = renderBox.size;
-    Offset offset = renderBox.localToGlobal(Offset.zero);
+    BuildContext? buildContext = containerKey.currentContext;
+    Size? size = buildContext!.size;
+    RenderBox? renderBox = buildContext.findRenderObject() as RenderBox?;
+    Offset? offset = renderBox?.localToGlobal(Offset.zero);
     setState(() {
-      this.childOffset = Offset(offset.dx, offset.dy);
-      childSize = size;
+      if (offset != null && size != null) {
+        this.childOffset = Offset(offset.dx, offset.dy);
+        _childSize = size;
+      }
     });
   }
 
@@ -98,7 +98,7 @@ class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
                 CupertinoDynamicColor.resolve(
                   CupertinoDynamicColor.withBrightness(
                     color: Color(0x33000000),
-                    darkColor: Color(0x7A000000),
+                    darkColor: Color(0x7A302424),
                   ),
                   context,
                 ),
@@ -109,7 +109,7 @@ class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
                 menuBoxDecoration: widget.menuBoxDecoration,
                 child: widget.child,
                 childOffset: childOffset,
-                childSize: childSize,
+                childSize: _childSize,
                 menuItems: widget.menuItems,
                 blurSize: widget.blurSize,
                 menuWidth: widget.menuWidth,
@@ -131,31 +131,31 @@ class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
 
 class FocusedMenuDetails extends StatelessWidget {
   final List<FocusedMenuItem> menuItems;
-  final BoxDecoration menuBoxDecoration;
+  final BoxDecoration? menuBoxDecoration;
   final Offset childOffset;
-  final double itemExtent;
+  final double? itemExtent;
   final Size childSize;
   final Widget child;
   final bool animateMenu;
-  final double blurSize;
-  final double menuWidth;
+  final double? blurSize;
+  final double? menuWidth;
 
   final double bottomOffsetHeight;
   final double menuOffset;
 
   const FocusedMenuDetails(
-      {Key key,
-      @required this.menuItems,
-      @required this.child,
-      @required this.childOffset,
-      @required this.childSize,
-      @required this.menuBoxDecoration,
-      @required this.itemExtent,
-      @required this.animateMenu,
-      @required this.blurSize,
-      @required this.menuWidth,
-      this.bottomOffsetHeight,
-      this.menuOffset})
+      {Key? key,
+      required this.menuItems,
+      required this.child,
+      required this.childOffset,
+      required this.childSize,
+      this.menuBoxDecoration,
+      this.itemExtent,
+      required this.animateMenu,
+      this.blurSize,
+      this.menuWidth,
+      required this.bottomOffsetHeight,
+      required this.menuOffset})
       : super(key: key);
 
   @override
@@ -191,9 +191,9 @@ class FocusedMenuDetails extends StatelessWidget {
             Positioned(
               top: topOffset,
               left: leftOffset,
-              child: TweenAnimationBuilder(
+              child: TweenAnimationBuilder<double>(
                 duration: Duration(milliseconds: 200),
-                builder: (BuildContext context, value, Widget iChild) {
+                builder: (BuildContext context, value, Widget? iChild) {
                   return Transform.scale(
                     scale: value,
                     alignment: Alignment.center,
@@ -235,7 +235,7 @@ class FocusedMenuDetails extends StatelessWidget {
                                 children: <Widget>[
                                   item.title,
                                   if (item.trailingIcon != null) ...[
-                                    item.trailingIcon
+                                    item.trailingIcon as Widget
                                   ]
                                 ],
                               ),
@@ -243,7 +243,7 @@ class FocusedMenuDetails extends StatelessWidget {
                           ),
                         );
                         if (animateMenu) {
-                          return TweenAnimationBuilder(
+                          return TweenAnimationBuilder<double>(
                               builder: (context, value, iChild) {
                                 return Transform(
                                   transform: Matrix4.rotationX(1.5708 * value),
@@ -267,8 +267,8 @@ class FocusedMenuDetails extends StatelessWidget {
             //   top: childOffset.dy,
             //   left: childOffset.dx,
             //   child: Container(
-            //     width: childSize.width,
-            //     height: childSize.height,
+            //     width: _childSize.width,
+            //     height: _childSize.height,
             //     child: child,
             //   ),
             // ),

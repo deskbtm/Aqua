@@ -27,7 +27,7 @@ class FileInfo {
   }
 }
 
-String prop(dynamic prop, String name, [String defaultVal]) {
+String? prop(dynamic prop, String name, [String? defaultVal]) {
   if (prop is Map) {
     final val = prop['D:' + name];
     if (val == null) {
@@ -39,7 +39,7 @@ String prop(dynamic prop, String name, [String defaultVal]) {
 }
 
 List<FileInfo> treeFromWebDavXml(String xmlStr) {
-  var tree = new List<FileInfo>();
+  var tree = <FileInfo>[];
 
   var xmlDocument = xml.parse(xmlStr);
 

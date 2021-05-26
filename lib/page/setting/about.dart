@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/constant/constant.dart';
-import 'package:aqua/external/bot_toast/src/toast.dart';
+
 import 'package:aqua/model/common_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/setting/privacy_policy.dart';
-import 'package:aqua/utils/theme.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:aqua/common/theme.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,27 +23,20 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
-  ThemeModel _themeModel;
-  CommonModel _commonModel;
-  String _version;
-  bool _locker;
-  String _qqGroupNumber;
-  String _qqGroupKey;
-  String _authorEmail;
-  String _authorAvatar;
+  late ThemeModel _themeModel;
+  late CommonModel _commonModel;
+  late String _version;
+  late bool _locker;
+  late String _qqGroupNumber;
+  late String _qqGroupKey;
+  late String _authorEmail;
+  late String _authorAvatar;
 
   @override
   void initState() {
     super.initState();
     _version = '';
     _locker = true;
-  }
-
-  void showText(String content, {int duration = 4}) {
-    BotToast.showText(
-      text: content,
-      duration: Duration(seconds: duration),
-    );
   }
 
   @override
@@ -76,7 +70,7 @@ class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -121,9 +115,9 @@ class _AboutPageState extends State<AboutPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              LanText('Aqua', fontSize: 18),
-                              LanText(
-                                  '${AppLocalizations.of(context).version}: v$_version',
+                              ThemedText('Aqua', fontSize: 18),
+                              ThemedText(
+                                  '${AppLocalizations.of(context)!.version}: v$_version',
                                   small: true),
                             ],
                           ),
@@ -143,15 +137,11 @@ class _AboutPageState extends State<AboutPage> {
                               );
                             },
                             child: ListTile(
-                              title: LanText(
-                                  AppLocalizations.of(context).privacyProtocol),
+                              title: ThemedText(AppLocalizations.of(context)!
+                                  .privacyProtocol),
                               contentPadding:
                                   EdgeInsets.only(left: 15, right: 10),
-                              trailing: Icon(
-                                OMIcons.chevronRight,
-                                color: themeData?.itemFontColor,
-                                size: 16,
-                              ),
+                              trailing: FaIcon(FontAwesomeIcons.chevronRight),
                             ),
                           ),
                           InkWell(
@@ -163,9 +153,9 @@ class _AboutPageState extends State<AboutPage> {
                               }
                             },
                             child: ListTile(
-                              title:
-                                  LanText(AppLocalizations.of(context).concat),
-                              subtitle: LanText(
+                              title: ThemedText(
+                                  AppLocalizations.of(context)!.concat),
+                              subtitle: ThemedText(
                                 'QQ: $_qqGroupNumber',
                                 small: true,
                               ),
@@ -180,8 +170,8 @@ class _AboutPageState extends State<AboutPage> {
                               }
                             },
                             child: ListTile(
-                              title: LanText('Github'),
-                              subtitle: LanText(
+                              title: ThemedText('Github'),
+                              subtitle: ThemedText(
                                 GITHUB,
                                 small: true,
                               ),
@@ -215,8 +205,8 @@ class _AboutPageState extends State<AboutPage> {
                             ),
                           ),
                         ),
-                        title: LanText('maxcalibur'),
-                        subtitle: LanText('develop&design', small: true),
+                        title: ThemedText('maxcalibur'),
+                        subtitle: ThemedText('develop&design', small: true),
                       ),
                       Container(
                         padding: EdgeInsets.only(left: 15),
@@ -227,7 +217,8 @@ class _AboutPageState extends State<AboutPage> {
                               onTap: () async {
                                 await Clipboard.setData(
                                     ClipboardData(text: _authorEmail));
-                                showText(AppLocalizations.of(context).copied);
+                                Fluttertoast.showToast(
+                                    msg: AppLocalizations.of(context)!.copied);
                               },
                               child: NoResizeText('Email: $_authorEmail'),
                             ),
@@ -236,7 +227,8 @@ class _AboutPageState extends State<AboutPage> {
                                 await Clipboard.setData(
                                   ClipboardData(text: 'maxcalibur9423'),
                                 );
-                                showText('AppLocalizations.of(context).copied');
+                                Fluttertoast.showToast(
+                                    msg: AppLocalizations.of(context)!.copied);
                               },
                               child: NoResizeText('wechat: maxcalibur9423'),
                             ),

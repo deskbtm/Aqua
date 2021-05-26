@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/utils/store.dart';
-import 'package:aqua/utils/theme.dart';
+import 'package:aqua/common/theme.dart';
 
 class ThemeModel extends ChangeNotifier {
-  String _theme;
-  dynamic _themeData;
+  late String _theme = LIGHT_THEME;
+  AquaTheme _themeData = LightTheme();
+  late bool _isDark = false;
 
-  bool _isDark = false;
   bool get isDark => _isDark;
 
   AquaTheme get themeData => _themeData;

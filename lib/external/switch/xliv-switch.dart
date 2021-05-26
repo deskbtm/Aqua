@@ -16,9 +16,9 @@ part 'thumb_painter.dart';
 class XlivSwitch extends StatefulWidget {
   //create a switcher with animation similar https://dribbble.com/shots/5429846-Switcher-XLIV
   const XlivSwitch({
-    Key key,
-    @required this.value,
-    @required this.onChanged,
+    Key? key,
+    required this.value,
+    required this.onChanged,
     this.activeColor,
     this.unActiveColor,
     this.thumbColor,
@@ -28,11 +28,11 @@ class XlivSwitch extends StatefulWidget {
 
   final ValueChanged<bool> onChanged;
 
-  final Color activeColor;
+  final Color? activeColor;
 
-  final Color unActiveColor;
+  final Color? unActiveColor;
 
-  final Color thumbColor;
+  final Color? thumbColor;
 
   @override
   _XlivSwitchState createState() => _XlivSwitchState();

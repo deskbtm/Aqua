@@ -12,10 +12,10 @@ import 'markdown_toc.dart';
 ///use [MarkdownGenerator] to transform markdown data to [Widget] list, so you can render it by any type of [ListView]
 class MarkdownGenerator {
   MarkdownGenerator({
-    @required String data,
-    WidgetConfig widgetConfig,
-    StyleConfig styleConfig,
-    EdgeInsetsGeometry childMargin,
+    required String data,
+    WidgetConfig? widgetConfig,
+    StyleConfig? styleConfig,
+    EdgeInsetsGeometry? childMargin,
   }) {
     final m.Document document = m.Document(
         extensionSet: m.ExtensionSet.gitHubFlavored,
@@ -31,19 +31,19 @@ class MarkdownGenerator {
     });
   }
 
-  List<Widget> _widgets;
-  LinkedHashMap<int, Toc> _tocList;
-  MarkdownHelper _helper;
+  late List<Widget> _widgets;
+  late LinkedHashMap<int, Toc> _tocList;
+  late MarkdownHelper _helper;
 
   List<Widget> get widgets => _widgets;
 
   LinkedHashMap<int, Toc> get tocList => _tocList;
 
   ///generator all widget from markdown data by this method
-  Widget _generatorWidget(m.Node node, EdgeInsetsGeometry childMargin) {
+  Widget _generatorWidget(m.Node node, EdgeInsetsGeometry? childMargin) {
     if (node is m.Text) return _helper.getPWidget(m.Element(p, [node]));
     final tag = (node as m.Element).tag;
-    Widget result;
+    Widget? result;
     switch (tag) {
       case h1:
         _tocList[_widgets.length] = Toc(
@@ -148,7 +148,7 @@ class TaskListSyntax extends m.InlineSyntax {
     m.Element el = m.Element.withTag('input');
     el.attributes['type'] = 'checkbox';
     el.attributes['disabled'] = 'true';
-    el.attributes['checked'] = '${match[1].trim().isNotEmpty}';
+    el.attributes['checked'] = '${match[1]?.trim().isNotEmpty}';
     parser.addNode(el);
     return true;
   }

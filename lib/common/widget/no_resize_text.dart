@@ -5,17 +5,17 @@ import 'package:provider/provider.dart';
 class NoResizeText extends Text {
   NoResizeText(
     String data, {
-    Key key,
-    TextStyle style,
-    StrutStyle strutStyle,
-    TextAlign textAlign,
-    TextDirection textDirection,
-    Locale locale,
-    bool softWrap,
-    TextOverflow overflow,
+    Key? key,
+    TextStyle? style,
+    StrutStyle? strutStyle,
+    TextAlign? textAlign,
+    TextDirection? textDirection,
+    Locale? locale,
+    bool? softWrap,
+    TextOverflow? overflow,
     double textScaleFactor = 1,
-    int maxLines,
-    String semanticsLabel,
+    int? maxLines,
+    String? semanticsLabel,
   }) : super(
           data,
           key: key,
@@ -32,25 +32,25 @@ class NoResizeText extends Text {
         );
 }
 
-class LanText extends StatefulWidget {
+class ThemedText extends StatefulWidget {
   final String content;
-  final TextStyle style;
+  final TextStyle? style;
   final bool small;
   final double alignX;
-  final double fontSize;
-  final bool softWrap;
+  final double? fontSize;
+  final bool? softWrap;
   final double maxWidth;
   // final Color color;
 
-  const LanText(
+  const ThemedText(
     this.content, {
-    Key key,
+    Key? key,
     this.style,
     this.small = false,
     this.alignX = -1,
     this.fontSize,
     this.softWrap,
-    this.maxWidth,
+    this.maxWidth = double.infinity,
     // this.color,
   }) : super(key: key);
   @override
@@ -59,8 +59,9 @@ class LanText extends StatefulWidget {
   }
 }
 
-class LanTextState extends State<LanText> {
-  ThemeModel _themeModel;
+class LanTextState extends State<ThemedText> {
+  late ThemeModel _themeModel;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -69,12 +70,10 @@ class LanTextState extends State<LanText> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel?.themeData;
+    dynamic themeData = _themeModel.themeData;
 
     return Container(
-      constraints: widget.maxWidth != null
-          ? BoxConstraints(maxWidth: widget.maxWidth)
-          : null,
+      constraints: BoxConstraints(maxWidth: widget.maxWidth),
       child: Align(
         alignment: Alignment(widget.alignX, 0),
         child: NoResizeText(

@@ -13,7 +13,7 @@ class CommonModel extends ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
   final context;
 
-  String _language;
+  late String _language;
 
   CommonModel(this.context);
   String get language => _language;
@@ -26,21 +26,22 @@ class CommonModel extends ChangeNotifier {
 
   /// 进入app的方式 正常打开'normal'
   /// 从其他APP打开方式'incoming'
-  Map _appIncoming;
-  Map get appIncoming => _appIncoming;
+  late Map _appIncoming;
+  Map? get appIncoming => _appIncoming;
 
   Future<void> setAppIncoming(Map data) async {
     _appIncoming = data;
   }
 
-  bool _canPopToDesktop = true;
+  late bool _canPopToDesktop = true;
   bool get canPopToDesktop => _canPopToDesktop;
 
   void setCanPopToDesktop(bool val) {
     _canPopToDesktop = val;
   }
 
-  String _storageRootPath = '';
+  ///[f]
+  late String _storageRootPath = '';
   String get storageRootPath => _storageRootPath;
 
   Future<void> setStorageRootPath(String path) async {
@@ -48,7 +49,7 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _staticUploadSavePath;
+  late String _staticUploadSavePath;
   String get staticUploadSavePath => _staticUploadSavePath;
 
   Future<void> setStaticUploadSavePath(String arg) async {
@@ -57,15 +58,15 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _sysDownloadPath;
-  String get sysDownloadPath => _sysDownloadPath;
+  late String _sysDownloadPath;
+  String? get sysDownloadPath => _sysDownloadPath;
 
   Future<void> setSysDownloadPath(String arg) async {
     _sysDownloadPath = arg;
   }
 
-  String _filePort;
-  String get filePort => _filePort;
+  late String _filePort;
+  String? get filePort => _filePort;
 
   Future<void> setFilePort(String arg) async {
     _filePort = arg;
@@ -74,7 +75,7 @@ class CommonModel extends ChangeNotifier {
   }
 
   // 购买
-  bool _isPurchased;
+  late bool _isPurchased = false;
   bool get isPurchased => _isPurchased;
 
   Future<void> setPurchase(bool arg) async {
@@ -84,7 +85,7 @@ class CommonModel extends ChangeNotifier {
   }
 
   // app 初始化
-  bool _isAppNotInit = true;
+  late bool _isAppNotInit = true;
   bool get isAppNotInit => _isAppNotInit;
 
   Future<void> setAppInit(bool arg) async {
@@ -93,7 +94,7 @@ class CommonModel extends ChangeNotifier {
   }
 
   // 菜单初始化
-  bool _isFileOptionPromptNotInit = true;
+  late bool _isFileOptionPromptNotInit = true;
   bool get isFileOptionPromptNotInit => _isFileOptionPromptNotInit;
 
   Future<void> setFileOptionPromptInit(bool arg) async {
@@ -101,7 +102,7 @@ class CommonModel extends ChangeNotifier {
     await Store.setBool(FILE_OPTION_INIT, arg);
   }
 
-  bool _enableClipboard = true;
+  late bool _enableClipboard = true;
   bool get enableClipboard => _enableClipboard;
 
   Future<void> setEnableClipboard(bool arg) async {
@@ -127,7 +128,7 @@ class CommonModel extends ChangeNotifier {
     if (update) notifyListeners();
   }
 
-  bool hasSelectedFile(String path) {
+  bool? hasSelectedFile(String path) {
     return _selectedFiles.any((ele) => ele.entity.path == path);
   }
 
@@ -152,7 +153,7 @@ class CommonModel extends ChangeNotifier {
     if (update) notifyListeners();
   }
 
-  bool hasPickFile(String path) {
+  bool? hasPickFile(String path) {
     return _pickFiles.any((ele) => ele.entity.path == path);
   }
 
@@ -161,16 +162,16 @@ class CommonModel extends ChangeNotifier {
     if (update) notifyListeners();
   }
 
-  String _internalIp;
-  String get internalIp => _internalIp;
+  late String _internalIp;
+  String? get internalIp => _internalIp;
 
   Future<void> setInternalIp(String arg) async {
     _internalIp = arg;
     notifyListeners();
   }
 
-  String _currentConnectIp;
-  String get currentConnectIp => _currentConnectIp;
+  late String _currentConnectIp;
+  String? get currentConnectIp => _currentConnectIp;
 
   Future<void> setCurrentConnectIp(String arg, {notify = true}) async {
     _currentConnectIp = arg;
@@ -178,8 +179,8 @@ class CommonModel extends ChangeNotifier {
   }
 
   //  内网快递自动连接
-  bool _autoConnectExpress;
-  bool get autoConnectExpress => _autoConnectExpress;
+  late bool _autoConnectExpress;
+  bool? get autoConnectExpress => _autoConnectExpress;
 
   Future<void> setAutoConnectExpress(bool arg) async {
     _autoConnectExpress = arg;
@@ -188,8 +189,8 @@ class CommonModel extends ChangeNotifier {
   }
 
   /// 开启 与PC连接
-  bool _enableConnect = true;
-  bool get enableConnect => _enableConnect;
+  late bool _enableConnect = true;
+  bool? get enableConnect => _enableConnect;
 
   Future<void> setEnableConnect(bool arg) async {
     _enableConnect = arg;
@@ -197,8 +198,8 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _enableAutoConnectCommonIp;
-  bool get enableAutoConnectCommonIp => _enableAutoConnectCommonIp;
+  late bool _enableAutoConnectCommonIp;
+  bool? get enableAutoConnectCommonIp => _enableAutoConnectCommonIp;
 
   Future<void> setEnableAutoConnectCommonIp(bool arg) async {
     await Store.setBool(AUTO_CONNECT_COMMON_IP, arg);
@@ -227,10 +228,10 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String getMostCommonIp() {
+  String? getMostCommonIp() {
     List<MapEntry<dynamic, dynamic>> al = _commonIps.entries.toList();
     int max = 0;
-    String ip;
+    String? ip;
     for (var i = 0; i < al.length; i++) {
       if (al[i].value > max) {
         max = al[i].value;
@@ -241,10 +242,10 @@ class CommonModel extends ChangeNotifier {
   }
 
   /// vscode 服务密码
-  String _codeSrvPwd;
-  String get codeSrvPwd => _codeSrvPwd;
+  String? _codeSrvPwd;
+  String? get codeSrvPwd => _codeSrvPwd;
 
-  Future<void> setCodeSrvPwd(String arg) async {
+  Future<void> setCodeSrvPwd(String? arg) async {
     _codeSrvPwd = arg;
     if (arg == null) {
       await secureStorage.delete(key: CODE_SERVER_PWD);
@@ -253,8 +254,8 @@ class CommonModel extends ChangeNotifier {
     }
   }
 
-  String _codeSrvPort;
-  String get codeSrvPort => _codeSrvPort;
+  late String _codeSrvPort;
+  String? get codeSrvPort => _codeSrvPort;
 
   Future<void> setCodeSrvPort(String arg) async {
     _codeSrvPort = arg;
@@ -262,8 +263,8 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _codeSrvTelemetry;
-  bool get codeSrvTelemetry => _codeSrvTelemetry;
+  late bool _codeSrvTelemetry;
+  bool? get codeSrvTelemetry => _codeSrvTelemetry;
 
   Future<void> setCodeSrvTelemetry(bool arg) async {
     _codeSrvTelemetry = arg;
@@ -271,33 +272,33 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _linuxRepo;
-  String get linuxRepo => _linuxRepo;
+  late String _linuxRepo;
+  String? get alpineRepo => _linuxRepo;
 
-  Future<void> setLinuxRepo(String arg) async {
+  Future<void> setAplineRepo(String arg) async {
     _linuxRepo = arg;
     await Store.setString(LINUX_REPO, arg);
   }
 
   ///WEBDAV
-  String _webDavAddr;
-  String get webDavAddr => _webDavAddr;
+  late String? _webDavAddr;
+  String? get webDavAddr => _webDavAddr;
 
   Future<void> setWebDavAddr(String arg) async {
     _webDavAddr = arg;
     await Store.setString(WEBDAV_ADDR, arg);
   }
 
-  String _webDavUsername;
-  String get webDavUsername => _webDavUsername;
+  late String? _webDavUsername;
+  String? get webDavUsername => _webDavUsername;
 
   Future<void> setWebDavUsername(String arg) async {
     _webDavUsername = arg;
     await Store.setString(WEBDAV_USERNAME, arg);
   }
 
-  String _webDavPwd;
-  String get webDavPwd => _webDavPwd;
+  String? _webDavPwd;
+  String? get webDavPwd => _webDavPwd;
 
   Future<void> setWebDavPwd(String arg) async {
     _webDavPwd = arg;
@@ -305,15 +306,15 @@ class CommonModel extends ChangeNotifier {
   }
 
   // 默认为{}
-  Map _gWebData = {};
+  late Map _gWebData = {};
   Map get gWebData => _gWebData;
 
   Future<void> setGobalWebData(Map arg) async {
     _gWebData = arg;
   }
 
-  String _username;
-  String get username => _username;
+  String? _username;
+  String? get username => _username;
 
   Future<void> setUsernameGlobal(String arg) async {
     _username = arg;
@@ -352,7 +353,7 @@ class CommonModel extends ChangeNotifier {
       _autoConnectExpress = (await Store.getBool(AUTO_CONNECT_EXPRESS)) ?? true;
       _enableConnect = (await Store.getBool(ENABLE_CONNECT)) ?? true;
 
-      String tmpCommonIps = await Store.getString(COMMON_IPS);
+      String? tmpCommonIps = await Store.getString(COMMON_IPS);
       _commonIps = tmpCommonIps == null ? Map() : json.decode(tmpCommonIps);
 
       _enableAutoConnectCommonIp =
@@ -361,7 +362,7 @@ class CommonModel extends ChangeNotifier {
       _language = (await Store.getString(LANGUAGE)) ??
           Platform.localeName.split('_').elementAt(0);
       _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
-          await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
+          await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath!);
     } catch (e, s) {
       await Sentry.captureException(
         e,

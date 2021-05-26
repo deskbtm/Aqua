@@ -12,11 +12,11 @@ void htmlToMarkdown(h.Node node, int deep, List<m.Node> mNodes) {
   } else if (node is h.Element) {
     final tag = node.localName;
     if (tag == img || tag == video) {
-      final element = m.Element(tag, null);
+      final element = m.Element(tag!, null);
       element.attributes.addAll(node.attributes.cast());
       mNodes.add(element);
     } else {
-      final element = m.Element(tag, null);
+      final element = m.Element(tag!, null);
       element.attributes.addAll(node.attributes.cast());
       final customElement = m.Element(other, [element]);
       mNodes.add(customElement);

@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/utils/theme.dart';
+import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:pure_video_player/pure_video_player.dart';
 import 'package:wakelock/wakelock.dart';
@@ -16,8 +16,8 @@ class VideoPage extends StatefulWidget {
   final MediaInfo info;
 
   const VideoPage({
-    Key key,
-    this.info,
+    Key? key,
+    required this.info,
   }) : super(key: key);
 
   @override
@@ -27,15 +27,13 @@ class VideoPage extends StatefulWidget {
 }
 
 class _VideoPageState extends State<VideoPage> {
-  ThemeModel _themeModel;
-  // FijkPlayer player = FijkPlayer();
+  late ThemeModel _themeModel;
+  late StreamSubscription _playerEventSub;
   final _purePlayerController = PurePlayerController(
     controlsStyle: ControlsStyle.primary,
     pipEnabled: true,
     showPipButton: true,
   );
-
-  StreamSubscription _playerEventSub;
 
   MediaInfo get info => widget.info;
 
@@ -61,7 +59,7 @@ class _VideoPageState extends State<VideoPage> {
       },
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       _init();
     });
     // player.setDataSource(info.path, showCover: true);

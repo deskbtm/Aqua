@@ -6,11 +6,11 @@ import '../config/style_config.dart';
 class Hr {
   Hr._internal();
 
-  static Hr _instance;
+  static late Hr? _instance;
 
   factory Hr() {
     _instance ??= Hr._internal();
-    return _instance;
+    return _instance!;
   }
 
   ///the hr widget
@@ -25,8 +25,8 @@ class Hr {
 }
 
 class HrConfig {
-  final double height;
-  final Color color;
+  final double? height;
+  final Color? color;
 
   HrConfig({this.height, this.color});
 }

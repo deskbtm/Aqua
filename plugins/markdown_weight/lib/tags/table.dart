@@ -10,11 +10,11 @@ import '../config/style_config.dart';
 class MTable {
   MTable._internal();
 
-  static MTable _instance;
+  static late MTable? _instance;
 
   factory MTable() {
     _instance ??= MTable._internal();
-    return _instance;
+    return _instance!;
   }
 
   ///the table widget
@@ -22,9 +22,9 @@ class MTable {
     if (node.children == null) return SizedBox();
     final config = StyleConfig().tableConfig;
 
-    TableRow header;
+    TableRow? header;
     List<TableRow> body = [];
-    for (var childNode in node.children) {
+    for (var childNode in node.children!) {
       if (childNode is m.Element) {
         if (childNode.tag == thead)
           header = _buildHeader(childNode, config);
@@ -57,7 +57,7 @@ class MTable {
     return TableRow(
         decoration: config?.headerRowDecoration,
         children: List.generate(thList.length, (index) {
-          final child = P().getPWidget(thList[index].children, thList[index],
+          final child = P().getPWidget(thList[index].children!, thList[index],
               textStyle: config?.headerStyle,
               textConfig: config?.headerTextConfig);
           return config?.headChildWrapper?.call(child) ?? child;
@@ -68,7 +68,7 @@ class MTable {
     if (node != null && node is m.Element) {
       if (node.tag == th) thList.add(node);
       List.generate(node?.children?.length ?? 0,
-          (index) => _buildTh(node.children[index], thList));
+          (index) => _buildTh(node.children![index], thList));
     }
   }
 
@@ -80,7 +80,7 @@ class MTable {
     if (node.children == null) return [];
     List<TableRow> results = [];
     int maxRowSize = 0;
-    for (var trNode in node.children) {
+    for (var trNode in node.children!) {
       if (trNode is m.Element && trNode.tag == tr) {
         List<m.Element> tdList = [];
         _buildTd(trNode, tdList);
@@ -109,27 +109,27 @@ class MTable {
     if (node != null && node is m.Element) {
       if (node.tag == td) tdList.add(node);
       List.generate(node.children?.length ?? 0,
-          (index) => _buildTd(node.children[index], tdList));
+          (index) => _buildTd(node.children![index], tdList));
     }
   }
 }
 
 class TableConfig {
-  final Map<int, TableColumnWidth> columnWidths;
-  final TableColumnWidth defaultColumnWidth;
-  final TextDirection textDirection;
-  final TableBorder border;
-  final TableCellVerticalAlignment defaultVerticalAlignment;
-  final TextBaseline textBaseline;
-  final Decoration headerRowDecoration;
-  final Decoration bodyRowDecoration;
-  final TextStyle headerStyle;
-  final TextStyle bodyStyle;
-  final TextConfig headerTextConfig;
-  final TextConfig bodyTextConfig;
-  final HeadChildWrapper headChildWrapper;
-  final BodyChildWrapper bodyChildWrapper;
-  final TableWrapper wrapBuilder;
+  final Map<int, TableColumnWidth>? columnWidths;
+  final TableColumnWidth? defaultColumnWidth;
+  final TextDirection? textDirection;
+  final TableBorder? border;
+  final TableCellVerticalAlignment? defaultVerticalAlignment;
+  final TextBaseline? textBaseline;
+  final Decoration? headerRowDecoration;
+  final Decoration? bodyRowDecoration;
+  final TextStyle? headerStyle;
+  final TextStyle? bodyStyle;
+  final TextConfig? headerTextConfig;
+  final TextConfig? bodyTextConfig;
+  final HeadChildWrapper? headChildWrapper;
+  final BodyChildWrapper? bodyChildWrapper;
+  final TableWrapper? wrapBuilder;
 
   TableConfig({
     this.columnWidths,

@@ -4,16 +4,16 @@ import 'package:provider/provider.dart';
 import 'package:aqua/model/theme_model.dart';
 
 class ActionButton extends StatefulWidget {
-  final Color color;
-  final Color fontColor;
+  final Color? color;
+  final Color? fontColor;
   final dynamic content;
-  final Function onTap;
+  final VoidCallback? onTap;
   final EdgeInsetsGeometry margin;
-  final Widget trailing;
-  final Widget leading;
+  final Widget? trailing;
+  final Widget? leading;
 
   const ActionButton({
-    Key key,
+    Key? key,
     this.color,
     this.fontColor = Colors.cyanAccent,
     this.content,
@@ -29,7 +29,7 @@ class ActionButton extends StatefulWidget {
 }
 
 class _ActionButtonState extends State<ActionButton> {
-  ThemeModel _themeModel;
+  late ThemeModel _themeModel;
 
   @override
   void didChangeDependencies() {
@@ -50,7 +50,7 @@ class _ActionButtonState extends State<ActionButton> {
         child: InkWell(
           onTap: () {
             if (widget.onTap != null) {
-              widget.onTap();
+              widget.onTap!();
             }
           },
           child: Center(
@@ -59,7 +59,7 @@ class _ActionButtonState extends State<ActionButton> {
               child: widget.content is Widget
                   ? widget.content
                   : Stack(
-                      overflow: Overflow.clip,
+                      clipBehavior: Clip.hardEdge,
                       children: <Widget>[
                         if (widget.leading != null)
                           Align(

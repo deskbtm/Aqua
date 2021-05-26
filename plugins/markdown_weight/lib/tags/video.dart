@@ -5,7 +5,7 @@ import '../config/style_config.dart';
 
 ///Tag: video(this is not markdown's tag)
 InlineSpan getVideoSpan(m.Element node) {
-  String url = node.attributes['src'];
+  String url = node.attributes['src']!;
   return WidgetSpan(
     child: StyleConfig()?.videoBuilder?.call(url, node.attributes) ??
         defaultVideoWidget(node.attributes, url: url),
@@ -13,18 +13,19 @@ InlineSpan getVideoSpan(m.Element node) {
 }
 
 ///the video widget
-Widget defaultVideoWidget(Map<String, String> attributes, {String url}) {
-  double width;
-  double height;
-  if (attributes['width'] != null) width = double.parse(attributes['width']);
-  if (attributes['height'] != null) height = double.parse(attributes['height']);
+Widget defaultVideoWidget(Map<String, String> attributes, {String? url}) {
+  double? width;
+  double? height;
+  if (attributes['width'] != null) width = double.parse(attributes['width']!);
+  if (attributes['height'] != null)
+    height = double.parse(attributes['height']!);
   final config = StyleConfig()?.videoConfig;
   final video = Container(
     width: width,
     height: height,
     child: VideoWidget(
-      url: url ?? attributes['src'],
-      config: config,
+      url: url ?? attributes['src']!,
+      config: config!,
     ),
   );
   return config?.wrapperBuilder?.call(video) ?? video;
@@ -34,13 +35,13 @@ typedef Widget VideoBuilder(String url, Map<String, String> attributes);
 typedef Widget VideoWrapper(Widget video);
 
 class VideoConfig {
-  final double aspectRatio;
-  final bool autoPlay;
-  final bool autoInitialize;
-  final bool looping;
+  final double? aspectRatio;
+  final bool? autoPlay;
+  final bool? autoInitialize;
+  final bool? looping;
 
-//  final bool allowMuting;
-  final VideoWrapper wrapperBuilder;
+//  final bool? allowMuting;
+  final VideoWrapper? wrapperBuilder;
 
   VideoConfig({
     this.aspectRatio,
@@ -54,9 +55,9 @@ class VideoConfig {
 
 class VideoWidget extends StatefulWidget {
   final String url;
-  final VideoConfig config;
+  final VideoConfig? config;
 
-  const VideoWidget({Key key, @required this.url, this.config})
+  const VideoWidget({Key? key, required this.url, this.config})
       : super(key: key);
 
   @override
@@ -64,7 +65,7 @@ class VideoWidget extends StatefulWidget {
 }
 
 class _VideoWidgetState extends State<VideoWidget> {
-  VideoPlayerController _videoPlayerController;
+  late VideoPlayerController _videoPlayerController;
 
   bool isButtonHiding = false;
 

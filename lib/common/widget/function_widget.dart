@@ -10,7 +10,7 @@ Widget loadingIndicator(BuildContext context, ThemeModel provider) =>
     );
 
 Widget loadingWithText(BuildContext context, ThemeModel provider,
-        {@required String text}) =>
+        {required String text}) =>
     Column(
       children: <Widget>[
         loadingIndicator(context, provider),
@@ -27,7 +27,7 @@ Widget loadingWithText(BuildContext context, ThemeModel provider,
       ],
     );
 
-Widget blockTitle(String title, {String subtitle}) => Container(
+Widget blockTitle(String title, {String? subtitle}) => Container(
       padding: EdgeInsets.only(left: 15, right: 15),
       child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
         NoResizeText(
@@ -35,8 +35,6 @@ Widget blockTitle(String title, {String subtitle}) => Container(
           style: TextStyle(fontSize: 18, color: Color(0xFF007AFF)),
         ),
         SizedBox(width: 5),
-        if (subtitle != null) LanText(subtitle, small: true)
+        if (subtitle != null) ThemedText(subtitle, small: true)
       ]),
     );
-
-

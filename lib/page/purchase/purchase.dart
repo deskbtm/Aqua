@@ -6,19 +6,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
-import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/constant/constant.dart';
 import 'package:aqua/constant/constant_var.dart';
-import 'package:aqua/external/bot_toast/src/toast.dart';
+
 import 'package:aqua/model/common_model.dart';
 import 'package:aqua/model/theme_model.dart';
 
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/req.dart';
 import 'package:aqua/utils/store.dart';
-import 'package:aqua/utils/theme.dart';
+import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
 
 class PurchasePage extends StatefulWidget {
@@ -29,10 +30,10 @@ class PurchasePage extends StatefulWidget {
 }
 
 class _PurchasePageState extends State<PurchasePage> {
-  ThemeModel _themeModel;
-  CommonModel _commonModel;
-  Map _qrcodeData;
-  bool _mutex;
+  late ThemeModel _themeModel;
+  late CommonModel _commonModel;
+  late Map _qrcodeData;
+  late bool _mutex;
 
   @override
   void initState() {
@@ -61,10 +62,10 @@ class _PurchasePageState extends State<PurchasePage> {
     Response rec = await req().post('/user/follow_bilibili', data: {
       'uid': val,
     }).catchError((err) {
-      showText('请求失败');
+      Fluttertoast.showToast(msg: '请求失败');
     });
     if (rec.data['data'] != null) {
-      showText(rec.data['message']);
+      Fluttertoast.showToast(msg: rec.data['message']);
       if (rec.data['data']['isFollowing']) {
         _qrcodeData = await _fetchQrcode();
         if (mounted) {
@@ -80,19 +81,12 @@ class _PurchasePageState extends State<PurchasePage> {
       'app_name': APP_NAME,
       'android_id': await MixUtils.getAndroidId(),
     }).catchError((err) {
-      showText('登录失败');
+      Fluttertoast.showToast(msg: '登录失败');
     });
     return rec.data['data'] ?? {'data': {}};
   }
 
-  void showText(String content, {int duration = 4}) {
-    BotToast.showText(
-      text: content,
-      duration: Duration(seconds: duration),
-    );
-  }
-
-  Uint8List loadQrcode() {
+  Uint8List? loadQrcode() {
     if (_qrcodeData['qrcode'] != null) {
       List s = (_qrcodeData['qrcode'] as String).split(',');
       if (s != null) {
@@ -121,7 +115,7 @@ class _PurchasePageState extends State<PurchasePage> {
                 if (data['data'] != null) {
                   if (data['data']['purchased']) {
                     _commonModel.setPurchase(true);
-                    showText('购买成功, 即将前往下载pc端');
+                    Fluttertoast.showToast(msg: '购买成功, 即将前往下载pc端');
 
                     MixUtils.safePop(context);
 
@@ -136,15 +130,16 @@ class _PurchasePageState extends State<PurchasePage> {
                       if (await canLaunch(url)) {
                         await launch(url);
                       } else {
-                        showText('链接打开失败');
+                        Fluttertoast.showToast(msg: '链接打开失败');
                       }
                     });
                   } else {
-                    showText(MixUtils.webMessage(data['message']));
+                    Fluttertoast.showToast(
+                        msg: MixUtils.webMessage(data['message']));
                   }
                 }
               }).catchError((err) {
-                showText('激活失败');
+                Fluttertoast.showToast(msg: '激活失败');
               });
             },
           ),
@@ -172,7 +167,7 @@ class _PurchasePageState extends State<PurchasePage> {
                   if (await canLaunch(BILIBILI_SPACE)) {
                     await launch(BILIBILI_SPACE);
                   } else {
-                    showText('链接打开失败');
+                    Fluttertoast.showToast(msg: '链接打开失败');
                   }
                 },
               );
@@ -192,7 +187,7 @@ class _PurchasePageState extends State<PurchasePage> {
           if (await canLaunch(url)) {
             await launch(url);
           } else {
-            showText('链接打开失败');
+            Fluttertoast.showToast(msg: '链接打开失败');
           }
         },
       );
@@ -210,10 +205,10 @@ class _PurchasePageState extends State<PurchasePage> {
           style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 20,
-            color: themeData?.navTitleColor,
+            color: themeData.navTitleColor,
           ),
         ),
-        backgroundColor: themeData?.navBackgroundColor,
+        backgroundColor: themeData.navBackgroundColor,
         border: null,
       ),
       child: Material(
@@ -245,12 +240,12 @@ class _PurchasePageState extends State<PurchasePage> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    LanText('IOS管理器', fontSize: 18),
+                                    ThemedText('IOS管理器', fontSize: 18),
                                     SizedBox(width: 4),
-                                    LanText('for developer', fontSize: 12),
+                                    ThemedText('for developer', fontSize: 12),
                                   ],
                                 ),
-                                LanText(
+                                ThemedText(
                                     _commonModel.isPurchased ? '已购买' : '暂未购买',
                                     small: true),
                               ],
@@ -263,55 +258,49 @@ class _PurchasePageState extends State<PurchasePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              LanText(
+                              ThemedText(
                                 '普通用户',
                                 fontSize: 22,
                               ),
                               ListTile(
-                                leading: Icon(
-                                  OMIcons.people,
-                                  color: themeData?.topNavIconColor,
+                                leading: FaIcon(
+                                  FontAwesomeIcons.user,
+                                  color: themeData.topNavIconColor,
                                 ),
-                                title: LanText('免费使用大部功能'),
+                                title: ThemedText('免费使用大部功能'),
                               ),
                               SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  LanText(
+                                  ThemedText(
                                     '付费用户',
                                     fontSize: 22,
                                   ),
                                   CupertinoButton(
                                     onPressed: () async {
                                       await _commonModel.setPurchase(true);
-                                      showText('无限试用 但每次使用都需要重新操作');
+                                      Fluttertoast.showToast(
+                                          msg: '无限试用 但每次使用都需要重新操作');
                                     },
                                     child: NoResizeText('点击试用'),
                                   ),
                                 ],
                               ),
                               ListTile(
-                                leading: Icon(
-                                  OMIcons.code,
-                                  color: themeData?.topNavIconColor,
+                                leading: FaIcon(
+                                  FontAwesomeIcons.code,
+                                  color: themeData.topNavIconColor,
                                 ),
-                                title: LanText('Code Server(不稳定)'),
+                                title: ThemedText('Code Server(不稳定)'),
                               ),
                               ListTile(
-                                leading: Icon(
-                                  OMIcons.cloudUpload,
-                                  color: themeData?.topNavIconColor,
+                                leading: FaIcon(
+                                  FontAwesomeIcons.heart,
+                                  color: themeData.topNavIconColor,
                                 ),
-                                title: LanText('内网快递(不稳定)'),
-                              ),
-                              ListTile(
-                                leading: Icon(
-                                  OMIcons.favoriteBorder,
-                                  color: themeData?.topNavIconColor,
-                                ),
-                                title: LanText('对作者的支持'),
+                                title: ThemedText('对作者的支持'),
                               ),
                             ],
                           ),
@@ -319,7 +308,7 @@ class _PurchasePageState extends State<PurchasePage> {
                         SizedBox(height: 30),
                         if (_qrcodeData.isNotEmpty &&
                             _qrcodeData['purchased'] == false) ...[
-                          LanText(
+                          ThemedText(
                             '立刻购买(${_qrcodeData['amount'] ?? DEF_AMOUNT}￥)',
                             fontSize: 22,
                           ),
@@ -331,24 +320,24 @@ class _PurchasePageState extends State<PurchasePage> {
                                 width: MediaQuery.of(context).size.width / 2,
                                 child: loadQrcode() != null
                                     ? Image.memory(
-                                        loadQrcode(),
+                                        loadQrcode()!,
                                         fit: BoxFit.cover,
                                       )
                                     : Container(),
                               ),
-                              LanText(
+                              ThemedText(
                                 '仅支持支付宝',
                                 alignX: 0,
                                 small: true,
                               ),
-                              LanText(
+                              ThemedText(
                                 '单号: ${_qrcodeData['details']['alipay_trade_precreate_response']['out_trade_no']}',
                                 alignX: 0,
                                 maxWidth:
                                     MediaQuery.of(context).size.width - 60,
                               ),
                               SizedBox(height: 10),
-                              LanText(
+                              ThemedText(
                                 '或',
                                 fontSize: 22,
                                 alignX: 0,
@@ -363,7 +352,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                 ],
                               ),
                               SizedBox(height: 10),
-                              LanText(
+                              ThemedText(
                                 '请在支付后激活',
                                 alignX: 0,
                                 fontSize: 20,
@@ -371,12 +360,12 @@ class _PurchasePageState extends State<PurchasePage> {
                             ],
                           ),
                           SizedBox(height: 20),
-                          LanText('激活', fontSize: 22),
+                          ThemedText('激活', fontSize: 22),
                           activeButton(context),
                         ],
                         if (_qrcodeData.isNotEmpty &&
                             _qrcodeData['purchased'] == true) ...[
-                          LanText(
+                          ThemedText(
                             '你已经拥有此软件, 请手动激活',
                             fontSize: 20,
                           ),
@@ -387,11 +376,11 @@ class _PurchasePageState extends State<PurchasePage> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              LanText(
+                              ThemedText(
                                 '立刻购买(${_qrcodeData['amount'] ?? DEF_AMOUNT}￥)',
                                 fontSize: 22,
                               ),
-                              LanText('登录后显示优惠'),
+                              ThemedText('登录后显示优惠'),
                             ],
                           ),
                           Row(
@@ -406,15 +395,15 @@ class _PurchasePageState extends State<PurchasePage> {
                                     title: '登录',
                                     onOk: (f, s) async {
                                       if (f == '' && s == '') {
-                                        showText('邮箱密码不为空');
+                                        Fluttertoast.showToast(msg: '邮箱密码不为空');
                                         return;
                                       }
                                       if (!MixUtils.isEmail(f)) {
-                                        showText('邮箱格式不正确');
+                                        Fluttertoast.showToast(msg: '邮箱格式不正确');
                                         return;
                                       }
                                       if (!MixUtils.isPassword(s)) {
-                                        showText('密码格式不正确');
+                                        Fluttertoast.showToast(msg: '密码格式不正确');
                                         return;
                                       }
 
@@ -423,7 +412,8 @@ class _PurchasePageState extends State<PurchasePage> {
                                         'password': s.trim()
                                       }).then((value) async {
                                         dynamic data = value.data;
-                                        showText('${data['message']}');
+                                        Fluttertoast.showToast(
+                                            msg: '${data['message']}');
                                         if (data['data']['access_token'] !=
                                             null) {
                                           // 如果注册 存jwt 否则 二位码无法请求
@@ -433,7 +423,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                               data['data']['username']);
                                         }
                                       }).catchError((err) {
-                                        showText('登录失败');
+                                        Fluttertoast.showToast(msg: '登录失败');
                                       });
                                     },
                                   );
@@ -449,15 +439,15 @@ class _PurchasePageState extends State<PurchasePage> {
                                     title: '注册',
                                     onOk: (String f, String s) async {
                                       if (f == '' && s == '') {
-                                        showText('邮箱密码不为空');
+                                        Fluttertoast.showToast(msg: '邮箱密码不为空');
                                         return;
                                       }
                                       if (!MixUtils.isEmail(f)) {
-                                        showText('邮箱格式不正确');
+                                        Fluttertoast.showToast(msg: '邮箱格式不正确');
                                         return;
                                       }
                                       if (!MixUtils.isPassword(s)) {
-                                        showText('密码格式不正确');
+                                        Fluttertoast.showToast(msg: '密码格式不正确');
                                         return;
                                       }
                                       await req().post('/user/register', data: {
@@ -466,10 +456,11 @@ class _PurchasePageState extends State<PurchasePage> {
                                         ...?(await MixUtils.deviceInfo()),
                                       }).then((value) {
                                         dynamic data = value.data;
-                                        showText(MixUtils.webMessage(
-                                            data['message']));
+                                        Fluttertoast.showToast(
+                                            msg: MixUtils.webMessage(
+                                                data['message']));
                                       }).catchError((err) {
-                                        showText('注册出错');
+                                        Fluttertoast.showToast(msg: '注册出错');
                                       });
                                     },
                                     onCancel: () {},
@@ -491,7 +482,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                 if (await canLaunch(AUTHOR_ALIPAY)) {
                                   await launch(AUTHOR_ALIPAY);
                                 } else {
-                                  showText('链接打开失败');
+                                  Fluttertoast.showToast(msg: '链接打开失败');
                                 }
                               },
                             ),
@@ -500,25 +491,25 @@ class _PurchasePageState extends State<PurchasePage> {
                           ],
                         ),
                         SizedBox(height: 20),
-                        LanText('注意', fontSize: 22),
+                        ThemedText('注意', fontSize: 22),
                         SizedBox(height: 10),
-                        LanText(
+                        ThemedText(
                           '1. 已经购买过的直接登录',
                         ),
-                        LanText(
+                        ThemedText(
                           '2. 购买完成返回pc端下载链接',
                         ),
-                        LanText(
+                        ThemedText(
                           '3. 务必记住用户名,密码',
                         ),
-                        LanText(
+                        ThemedText(
                           '4. 每个账号只支持两台设备',
                         ),
-                        LanText(
+                        ThemedText(
                           '5. 如果更换设备, 联系我',
                         ),
                         SizedBox(height: 20),
-                        LanText('其他', fontSize: 22),
+                        ThemedText('其他', fontSize: 22),
                         SizedBox(height: 10),
                         Row(
                           children: <Widget>[
@@ -528,7 +519,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                 String id = await MixUtils.getAndroidId();
                                 await Clipboard.setData(
                                     ClipboardData(text: id));
-                                showText('复制成功 $id');
+                                Fluttertoast.showToast(msg: '复制成功 $id');
                               },
                             )
                           ],

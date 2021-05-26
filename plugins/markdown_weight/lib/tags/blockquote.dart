@@ -7,11 +7,11 @@ import 'p.dart';
 class Bq {
   Bq._internal();
 
-  static Bq _instance;
+  static late Bq? _instance;
 
   factory Bq() {
     _instance ??= Bq._internal();
-    return _instance;
+    return _instance!;
   }
 
   ///the blockQuote widget
@@ -27,9 +27,12 @@ class Bq {
           ),
           color: config?.backgroundColor),
       padding: EdgeInsets.only(left: config?.leftSpace ?? 10),
-      child: P().getPWidget(node.children, node,
-          textStyle: config?.blockStyle ?? defaultBlockStyle,
-          textConfig: config?.textConfig),
+      child: P().getPWidget(
+        node.children!,
+        node,
+        textStyle: config?.blockStyle ?? defaultBlockStyle,
+        textConfig: config?.textConfig,
+      ),
     );
   }
 }
@@ -43,11 +46,11 @@ class BlockQuoteConfig {
   final double leftSpace;
 
   BlockQuoteConfig({
-    this.blockStyle,
-    this.textConfig,
-    this.blockColor,
-    this.backgroundColor,
-    this.blockWidth,
-    this.leftSpace,
+    required this.blockStyle,
+    required this.textConfig,
+    required this.blockColor,
+    required this.backgroundColor,
+    required this.blockWidth,
+    required this.leftSpace,
   });
 }

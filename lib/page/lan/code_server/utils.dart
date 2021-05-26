@@ -1,28 +1,24 @@
 import 'dart:io';
 
+import 'package:aqua/plugin/storage/storage.dart';
 import 'package:aqua/utils/req.dart';
-import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
-import 'package:android_mix/android_mix.dart';
 import 'package:aqua/constant/constant_var.dart';
 
 enum AlpineMirror { ustc, aliyun, tsinghua, alpine }
 
 class CodeSrvUtils {
-  String filesPath;
+  late String filesPath;
   String tarName = 'lan-file-more.tar.gz';
   String busyboxName = 'busybox';
 
   Future<CodeSrvUtils> init() async {
-    filesPath = await AndroidMix.storage.getFilesDir;
+    filesPath = await ExtraStorage.getFilesDir;
     return this;
   }
 
   Future<void> fetchAndSave(String from, String to) async {
     try {
-      await req().download(from, to, onReceiveProgress: (a, b){
-
-      })
+      await req().download(from, to, onReceiveProgress: (a, b) {});
     } catch (err) {
       throw err;
     }
@@ -120,10 +116,10 @@ ff02::3     ipv6-allhosts
     );
   }
 
-  Future<bool> prepareResource({
+  Future<bool> prepareResource(
     String resourceUrl,
     String busyboxUrl,
-  }) async {
+  ) async {
     try {
       await fetchAndSave(busyboxUrl, '$filesPath/$busyboxName');
       await fetchAndSave(resourceUrl, '$filesPath/$tarName');
@@ -182,7 +178,7 @@ ff02::3     ipv6-allhosts
   }
 
   Future<ProcessResult> runProot(List<String> cmds,
-      {Map<String, String> env}) async {
+      {Map<String, String>? env}) async {
     return Process.run(
       '$filesPath/proot',
       getArguments(cmds),
@@ -193,7 +189,7 @@ ff02::3     ipv6-allhosts
   }
 
   Future<Process> startProot(List<String> cmds,
-      {Map<String, String> env}) async {
+      {Map<String, String>? env}) async {
     return Process.start(
       '$filesPath/proot',
       getArguments(cmds),
@@ -203,7 +199,7 @@ ff02::3     ipv6-allhosts
     );
   }
 
-  Future<void> setChineseRepo([String mirror]) async {
+  Future<void> setChineseRepo([String? mirror]) async {
     String mirrorUrl;
     switch (mirror) {
       case TSINGHUA_REPO:
@@ -274,6 +270,8 @@ ff02::3     ipv6-allhosts
     Set<String> pids = Set();
     for (var i = 0; i < seg.length; i++) {
       String line = seg[i];
+
+      /// [f]
       if (line.contains('node') && line.contains('code-server')) {
         List<String> lines = line.trim().split(RegExp(r'\s+'));
         if (lines != null) {
@@ -296,7 +294,7 @@ ff02::3     ipv6-allhosts
 
   Future<Process> runServer(
     String url, {
-    String pwd,
+    String? pwd,
     bool disableUpdate = true,
     bool debug = false,
   }) async {

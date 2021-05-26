@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:aqua/plugin/glide/glide.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_glide/flutter_glide.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';
 
 class AppImages {
@@ -101,21 +102,21 @@ Widget getPreviewIcon(BuildContext context, SelfFileEntity file) {
     try {
       if (file.apkIcon != null) {
         previewIcon = Image.memory(
-          file.apkIcon,
+          file.apkIcon!,
           width: 35,
           height: 35,
           fit: BoxFit.fitWidth,
           gaplessPlayback: true,
         );
       } else {
-        previewIcon = LanFileUtils.matchFileIcon(file.ext);
+        previewIcon = FsUtils.matchFileIcon(file.ext);
       }
     } catch (err) {
-      previewIcon = LanFileUtils.matchFileIcon(file.ext);
+      previewIcon = FsUtils.matchFileIcon(file.ext);
     }
-  } else if (LanFileUtils.HAVE_THUMBNAIL.contains(file.ext)) {
+  } else if (FsUtils.HAVE_THUMBNAIL.contains(file.ext)) {
     previewIcon = FutureBuilder<Uint8List>(
-      future: FlutterGlide.getLocalThumbnail(
+      future: AquaGlide.getLocalThumbnail(
         path: file.entity.path,
         width: 50,
         height: 50,
@@ -128,7 +129,7 @@ Widget getPreviewIcon(BuildContext context, SelfFileEntity file) {
               width: 40,
               height: 40,
               child: Center(
-                child: Icon(OMIcons.errorOutline),
+                child: FaIcon(FontAwesomeIcons.bomb),
               ),
             );
           } else {
@@ -146,7 +147,7 @@ Widget getPreviewIcon(BuildContext context, SelfFileEntity file) {
             return Container(
               width: 35,
               height: 35,
-              child: LanFileUtils.VIDEO_EXTS.contains(file.ext)
+              child: FsUtils.VIDEO_EXTS.contains(file.ext)
                   ? Stack(
                       children: [
                         img,
@@ -174,9 +175,9 @@ Widget getPreviewIcon(BuildContext context, SelfFileEntity file) {
       },
     );
   } else if (file.isLink) {
-    previewIcon = LanFileUtils.matchFileIcon('link');
+    previewIcon = FsUtils.matchFileIcon('link');
   } else {
-    previewIcon = LanFileUtils.matchFileIcon(file.isDir ? 'folder' : file.ext);
+    previewIcon = FsUtils.matchFileIcon(file.isDir ? 'folder' : file.ext);
   }
   return previewIcon;
 }

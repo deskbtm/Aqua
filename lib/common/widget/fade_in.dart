@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 class FadeIn extends StatefulWidget {
   /// Fade-in controller
-  final FadeInController controller;
+  final FadeInController? controller;
 
   /// Child widget to fade-in
   final Widget child;
@@ -16,9 +16,9 @@ class FadeIn extends StatefulWidget {
   final Curve curve;
 
   const FadeIn({
-    Key key,
+    Key? key,
     this.controller,
-    this.child,
+    required this.child,
     this.duration = const Duration(milliseconds: 250),
     this.curve = Curves.easeIn,
   }) : super(key: key);
@@ -57,8 +57,8 @@ class FadeInController {
 }
 
 class _FadeInState extends State<FadeIn> with TickerProviderStateMixin {
-  AnimationController _controller;
-  StreamSubscription<FadeInAction> _listener;
+  late AnimationController _controller;
+  late StreamSubscription<FadeInAction>? _listener;
 
   @override
   void initState() {
@@ -89,12 +89,12 @@ class _FadeInState extends State<FadeIn> with TickerProviderStateMixin {
 
   void _listen() {
     if (_listener != null) {
-      _listener.cancel();
+      _listener!.cancel();
       _listener = null;
     }
 
     if (widget.controller != null) {
-      _listener = widget.controller.stream.listen(_onAction);
+      _listener = widget.controller!.stream.listen(_onAction);
     }
   }
 

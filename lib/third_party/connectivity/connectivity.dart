@@ -25,12 +25,12 @@ class Connectivity {
     if (_singleton == null) {
       _singleton = Connectivity._();
     }
-    return _singleton;
+    return _singleton!;
   }
 
   Connectivity._();
 
-  static Connectivity? _singleton;
+  static late Connectivity? _singleton;
 
   static ConnectivityPlatform get _platform => ConnectivityPlatform.instance;
 
@@ -45,7 +45,7 @@ class Connectivity {
   /// make a network request. It only gives you the radio status.
   ///
   /// Instead listen for connectivity changes via [onConnectivityChanged] stream.
-  Future<ConnectivityResult> checkConnectivity() {
+  Future<ConnectivityResult?> checkConnectivity() {
     return _platform.checkConnectivity();
   }
 
@@ -55,7 +55,7 @@ class Connectivity {
   ///
   /// From android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the SSID.
-  Future<String> getWifiName() {
+  Future<String?> getWifiName() {
     return _platform.getWifiName();
   }
 
@@ -65,12 +65,12 @@ class Connectivity {
   ///
   /// From Android 8.0 onwards the GPS must be ON (high accuracy)
   /// in order to be able to obtain the BSSID.
-  Future<String> getWifiBSSID() {
+  Future<String?> getWifiBSSID() {
     return _platform.getWifiBSSID();
   }
 
   /// Obtains the IP address of the connected wifi network
-  Future<String> getWifiIP() {
+  Future<String?> getWifiIP() {
     return _platform.getWifiIP();
   }
 
@@ -122,7 +122,7 @@ class Connectivity {
   /// Ideally, a location service authorization should only be requested if the current authorization status is not determined.
   ///
   /// See also [getLocationServiceAuthorization] to obtain current location service status.
-  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
+  Future<LocationAuthorizationStatus?> requestLocationServiceAuthorization({
     bool requestAlwaysLocationUsage = false,
   }) {
     return _platform.requestLocationServiceAuthorization(
@@ -166,7 +166,7 @@ class Connectivity {
   /// ```
   ///
   /// See also [requestLocationServiceAuthorization] for requesting a location service authorization.
-  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
+  Future<LocationAuthorizationStatus?> getLocationServiceAuthorization() {
     return _platform.getLocationServiceAuthorization();
   }
 }

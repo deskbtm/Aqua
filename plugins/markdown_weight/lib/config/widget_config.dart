@@ -12,13 +12,13 @@ class WidgetConfig {
   WidgetBuilder table;
 
   WidgetConfig({
-    this.p,
-    this.pre,
-    this.ul,
-    this.ol,
-    this.block,
-    this.hr,
-    this.table,
+    required this.p,
+    required this.pre,
+    required this.ul,
+    required this.ol,
+    required this.block,
+    required this.hr,
+    required this.table,
   });
 }
 

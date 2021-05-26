@@ -6,10 +6,10 @@ const COMMON_CHANNEL = '0';
 const ARCHIVE_CHANNEL = '1';
 
 class LocalNotification {
-  static FlutterLocalNotificationsPlugin plugin;
+  static late FlutterLocalNotificationsPlugin plugin;
 
   static Future<FlutterLocalNotificationsPlugin> initLocalNotification(
-      {@required Function onSelected}) async {
+      {required SelectNotificationCallback onSelected}) async {
     plugin = FlutterLocalNotificationsPlugin();
     var android = AndroidInitializationSettings('ic_baseline_folder_24');
     var initSetttings = InitializationSettings(android: android);
@@ -20,10 +20,10 @@ class LocalNotification {
   static Future<void> showNotification({
     String id = COMMON_CHANNEL,
     int index = 0,
-    @required String name,
-    @required String title,
-    String subTitle,
-    String payload,
+    required String name,
+    required String title,
+    String? subTitle,
+    String? payload,
     bool ongoing = false,
     bool onlyAlertOnce = false,
     bool showProgress = false,

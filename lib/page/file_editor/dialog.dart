@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class LanDialogTitle extends StatelessWidget {
+class AquaDialogTitle extends StatelessWidget {
   final String title;
   final String subTitle;
 
-  const LanDialogTitle({Key key, this.title, this.subTitle = ''})
+  const AquaDialogTitle({Key? key, required this.title, this.subTitle = ''})
       : super(key: key);
 
   @override
@@ -31,31 +31,31 @@ class LanDialogTitle extends StatelessWidget {
   }
 }
 
-class LanDialog extends Dialog {
+class AquaDialog extends Dialog {
   final Widget title;
   final List<Widget> children;
   final Color bgColor;
   final Color fontColor;
   final dynamic action;
-  final Function onOk;
-  final Function onCancel;
-  final String defaultOkText;
-  final String defaultCancelText;
+  final VoidCallback? onOk;
+  final VoidCallback? onCancel;
+  final String? defaultOkText;
+  final String? defaultCancelText;
   final MainAxisAlignment actionPos;
   final bool display;
   final bool withOk;
   final bool withCancel;
 
-  LanDialog({
+  AquaDialog({
     this.display = false,
     this.actionPos = MainAxisAlignment.start,
     this.defaultOkText,
     this.defaultCancelText,
-    this.title,
+    required this.title,
     this.action,
-    @required this.fontColor,
-    @required this.children,
-    @required this.bgColor,
+    required this.fontColor,
+    required this.children,
+    required this.bgColor,
     this.onOk,
     this.onCancel,
     this.withOk = true,
@@ -131,7 +131,7 @@ class LanDialog extends Dialog {
                                       CupertinoButton(
                                         child: Text(
                                             defaultOkText ??
-                                                AppLocalizations.of(context)
+                                                AppLocalizations.of(context)!
                                                     .sure,
                                             textScaleFactor: 1),
                                         onPressed: onOk,
@@ -140,7 +140,7 @@ class LanDialog extends Dialog {
                                       CupertinoButton(
                                         child: Text(
                                             defaultCancelText ??
-                                                AppLocalizations.of(context)
+                                                AppLocalizations.of(context)!
                                                     .cancel,
                                             textScaleFactor: 1),
                                         onPressed: onCancel,

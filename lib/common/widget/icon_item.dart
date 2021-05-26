@@ -3,10 +3,11 @@ import 'package:aqua/common/widget/no_resize_text.dart';
 
 class IconItem extends StatelessWidget {
   final Widget icon;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String title;
 
-  const IconItem({Key key, @required this.icon, this.onPressed, this.title})
+  const IconItem(
+      {Key? key, required this.icon, required this.title, this.onPressed})
       : super(key: key);
 
   @override

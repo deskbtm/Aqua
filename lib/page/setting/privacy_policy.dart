@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_html/flutter_html.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/external/bot_toast/bot_toast.dart';
+
 import 'package:aqua/model/theme_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:aqua/utils/req.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:url_launcher/url_launcher.dart';
@@ -19,9 +20,9 @@ class PrivacyPolicyPage extends StatefulWidget {
 }
 
 class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
-  ThemeModel _themeModel;
-  bool _mutex;
-  String _html;
+  late ThemeModel _themeModel;
+  late bool _mutex;
+  late String _html;
 
   @override
   void initState() {
@@ -42,15 +43,9 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
           });
         }
       } catch (e) {
-        showText(AppLocalizations.of(context).privacyError);
+        Fluttertoast.showToast(msg: AppLocalizations.of(context)!.privacyError);
       }
     }
-  }
-
-  void showText(String content) {
-    BotToast.showText(
-      text: content,
-    );
   }
 
   @override
@@ -61,7 +56,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          AppLocalizations.of(context).privacyProtocol,
+          AppLocalizations.of(context)!.privacyProtocol,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,
@@ -86,7 +81,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                 //     if (await canLaunch(url)) {
                 //       await launch(url);
                 //     } else {
-                //       showText(AppLocalizations.of(context).setFail);
+                //       showText(AppLocalizations.of(context)!.setFail);
                 //     }
                 //   },
                 // );

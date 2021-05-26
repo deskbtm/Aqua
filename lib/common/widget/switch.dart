@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:aqua/external/switch/xliv-switch.dart';
 
-class LanSwitch extends StatelessWidget {
+class AquaSwitch extends StatelessWidget {
   final bool value;
 
   final ValueChanged<bool> onChanged;
@@ -10,12 +10,12 @@ class LanSwitch extends StatelessWidget {
 
   final Color unActiveColor;
 
-  final Color thumbColor;
+  final Color? thumbColor;
 
-  const LanSwitch({
-    Key key,
-    this.value,
-    this.onChanged,
+  const AquaSwitch({
+    Key? key,
+    required this.value,
+    required this.onChanged,
     this.activeColor = const Color(0xCE007BFF),
     this.unActiveColor = const Color(0xCE007BFF),
     this.thumbColor,
@@ -36,7 +36,7 @@ class LanSwitch extends StatelessWidget {
   }
 }
 
-// class LanSwitch extends StatefulWidget {
+// class AquaSwitch extends StatefulWidget {
 //   final bool value;
 
 //   final ValueChanged<bool> onChanged;
@@ -47,8 +47,8 @@ class LanSwitch extends StatelessWidget {
 
 //   final Color thumbColor;
 
-//   const LanSwitch(
-//       {Key key,
+//   const AquaSwitch(
+//       {Key? key,
 //       this.value,
 //       this.onChanged,
 //       this.activeColor,
@@ -57,11 +57,11 @@ class LanSwitch extends StatelessWidget {
 //       : super(key: key);
 //   @override
 //   State<StatefulWidget> createState() {
-//     return _LanSwitchState();
+//     return _AquaSwitchState();
 //   }
 // }
 
-// class _LanSwitchState extends State<LanSwitch> {
+// class _AquaSwitchState extends State<AquaSwitch> {
 //   ThemeModel _themeModel;
 
 //   @override

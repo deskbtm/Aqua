@@ -1,30 +1,31 @@
 import 'dart:io';
 
-import 'package:android_mix/android_mix.dart';
-
+import 'package:aqua/plugin/archive/archive.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:aqua/common/widget/show_modal_entity.dart';
+import 'package:aqua/common/widget/modal/show_specific_modal.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/common/widget/show_modal.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/common/widget/switch.dart';
 import 'package:aqua/constant/constant_var.dart';
-import 'package:aqua/external/bot_toast/bot_toast.dart';
+
 import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/page/lan/code_server/utils.dart';
 import 'package:aqua/page/purchase/purchase.dart';
 import 'package:aqua/page/setting/code_setting.dart';
-import 'package:aqua/page/setting/helper_setting.dart';
 import 'package:aqua/model/common_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/notification.dart';
-import 'package:aqua/utils/theme.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:aqua/common/theme.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:version/version.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -33,7 +34,7 @@ import 'about.dart';
 class SettingPage extends StatefulWidget {
   final CupertinoTabController gTabController;
 
-  const SettingPage({Key key, this.gTabController}) : super(key: key);
+  const SettingPage({Key? key, required this.gTabController}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -42,12 +43,12 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
-  ThemeModel _themeModel;
-  CommonModel _commonModel;
-  bool _willUpdate;
-  Map _mSetting;
-  String _version;
-  bool _updateLocker;
+  late ThemeModel _themeModel;
+  late CommonModel _commonModel;
+  late bool _willUpdate;
+  late Map _mSetting;
+  late String _version;
+  late bool _updateLocker;
 
   CupertinoTabController get gTabController => widget.gTabController;
 
@@ -74,14 +75,6 @@ class SettingPageState extends State<SettingPage> {
       await checkUpdate();
       setState(() {});
     }
-  }
-
-  void showText(String content,
-      {Duration duration = const Duration(seconds: 3)}) {
-    BotToast.showText(
-      text: content,
-      duration: duration,
-    );
   }
 
   Future setTheme(bool val) async {
@@ -112,7 +105,7 @@ class SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel?.themeData;
+    AquaTheme? themeData = _themeModel?.themeData;
 
     List<Widget> settingList = [
       if (!_commonModel.isPurchased)
@@ -120,7 +113,7 @@ class SettingPageState extends State<SettingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 30),
-            blockTitle(AppLocalizations.of(context).sponsor),
+            blockTitle(AppLocalizations.of(context)!.sponsor),
             SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
@@ -133,11 +126,11 @@ class SettingPageState extends State<SettingPage> {
                 );
               },
               child: ListTile(
-                trailing: Icon(OMIcons.addShoppingCart,
+                trailing: FaIcon(FontAwesomeIcons.shoppingBag,
                     color: themeData?.itemFontColor),
-                title: LanText(AppLocalizations.of(context).sponsorTitle),
-                subtitle: LanText(
-                  '5￥ ${AppLocalizations.of(context).sponsorText}',
+                title: ThemedText(AppLocalizations.of(context)!.sponsorTitle),
+                subtitle: ThemedText(
+                  '5￥ ${AppLocalizations.of(context)!.sponsorText}',
                   small: true,
                 ),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
@@ -150,22 +143,22 @@ class SettingPageState extends State<SettingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 30),
-            blockTitle(AppLocalizations.of(context).user),
+            blockTitle(AppLocalizations.of(context)!.user),
             SizedBox(height: 15),
             ListTile(
-              title: LanText(AppLocalizations.of(context).username),
-              subtitle: LanText(
+              title: ThemedText(AppLocalizations.of(context)!.username),
+              subtitle: ThemedText(
                 '${_commonModel.username}',
                 small: true,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
-                child: NoResizeText(AppLocalizations.of(context).exit),
+                child: NoResizeText(AppLocalizations.of(context)!.exit),
                 onPressed: () async {
                   await showTipTextModal(
                     context,
-                    title: AppLocalizations.of(context).exit,
-                    tip: AppLocalizations.of(context).exitTip,
+                    title: AppLocalizations.of(context)!.exit,
+                    tip: AppLocalizations.of(context)!.exitTip,
                     onOk: () async {
                       await _commonModel.logout();
                     },
@@ -180,12 +173,12 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context).appearance),
+          blockTitle(AppLocalizations.of(context)!.appearance),
           SizedBox(height: 15),
           ListTile(
-            title: LanText(AppLocalizations.of(context).dark),
+            title: ThemedText(AppLocalizations.of(context)!.dark),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
-            trailing: LanSwitch(
+            trailing: AquaSwitch(
               value: _themeModel.isDark,
               onChanged: (val) async {
                 await setTheme(val);
@@ -193,14 +186,15 @@ class SettingPageState extends State<SettingPage> {
             ),
           ),
           ListTile(
-            title: LanText(AppLocalizations.of(context).staticServerTheme),
-            subtitle: LanText(AppLocalizations.of(context).subStaticServerTheme,
+            title: ThemedText(AppLocalizations.of(context)!.staticServerTheme),
+            subtitle: ThemedText(
+                AppLocalizations.of(context)!.subStaticServerTheme,
                 small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: Container(
               width: 42,
-              child:
-                  LanText(_themeModel.isDark ? 'dark' : 'light', small: true),
+              child: ThemedText(_themeModel.isDark ? 'dark' : 'light',
+                  small: true),
             ),
           ),
         ],
@@ -209,29 +203,37 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context).staticServer),
+          blockTitle(AppLocalizations.of(context)!.staticServer),
           SizedBox(height: 15),
           InkWell(
             onTap: () {},
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).savePath),
-              subtitle: LanText('${_commonModel.staticUploadSavePath}'),
+              title: ThemedText(AppLocalizations.of(context)!.savePath),
+              subtitle: ThemedText('${_commonModel.staticUploadSavePath}'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
                 child: NoResizeText('更换'),
                 onPressed: () {
                   showSingleTextFieldModal(
                     context,
-                    title: AppLocalizations.of(context).savePath,
+                    title: AppLocalizations.of(context)!.savePath,
                     initText: _commonModel.storageRootPath + '/',
                     placeholder: '以 ${_commonModel.storageRootPath}/ 开头',
-                    onOk: (String val) async {
+                    onOk: (String? val) async {
                       try {
-                        if (!Directory(val).existsSync()) {
+                        if (val != null) {
+                          return;
+                        }
+                        if (!Directory(val!).existsSync()) {
                           await Directory(val).create(recursive: true);
                         }
-                        await _commonModel.setStaticUploadSavePath(val?.trim());
-                      } catch (e) {}
+                        await _commonModel.setStaticUploadSavePath(val.trim());
+                      } catch (e, s) {
+                        await Sentry.captureException(
+                          e,
+                          stackTrace: s,
+                        );
+                      }
                     },
                     onCancel: () {},
                   );
@@ -245,7 +247,7 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context).codeServer),
+          blockTitle(AppLocalizations.of(context)!.codeServer),
           SizedBox(height: 15),
           InkWell(
             onTap: () async {
@@ -265,12 +267,13 @@ class SettingPageState extends State<SettingPage> {
                             onTap: () async {
                               MixUtils.safePop(fileCtx);
                               if (!_commonModel.isPurchased) {
-                                showText('请先购买 "IOS管理器" for developer');
+                                Fluttertoast.showToast(
+                                    msg: '请先购买 "IOS管理器" for developer');
                                 return;
                               }
 
                               if (_commonModel.pickedFiles.isEmpty) {
-                                showText('请先选中资源');
+                                Fluttertoast.showToast(msg: '请先选中资源');
                                 return;
                               }
                               SelfFileEntity file = _commonModel.pickedFiles[0];
@@ -279,7 +282,7 @@ class SettingPageState extends State<SettingPage> {
 
                               CodeSrvUtils cutils = await CodeSrvUtils().init();
                               await cutils.rmAllResource().catchError((err) {
-                                showText('删除出现异常');
+                                Fluttertoast.showToast(msg: '删除出现异常');
                                 // FLog.error(
                                 //   text: '删除安装资源出现异常',
                                 //   className: 'SettingPageState',
@@ -298,7 +301,7 @@ class SettingPageState extends State<SettingPage> {
 
                                 CodeSrvUtils cutils =
                                     await CodeSrvUtils().init();
-                                await AndroidMix.archive.unzip(
+                                await Archive.unzip(
                                   file.entity.path,
                                   cutils.filesPath,
                                 );
@@ -312,26 +315,27 @@ class SettingPageState extends State<SettingPage> {
                                     await cutils.rmAllResource().catchError(
                                           (err) {},
                                         );
-                                    showText('资源安装失败 已删除');
+                                    Fluttertoast.showToast(msg: '资源安装失败 已删除');
                                     MixUtils.safePop(context);
                                     return;
                                   }
 
                                   await cutils.installNodeJs().catchError(
                                     (err) {
-                                      showText('node 安装失败');
+                                      Fluttertoast.showToast(msg: 'node 安装失败');
                                     },
                                   );
-                                  showText(
-                                      AppLocalizations.of(context).setSuccess);
+                                  Fluttertoast.showToast(
+                                      msg: AppLocalizations.of(context)!
+                                          .setSuccess);
                                   LocalNotification.plugin?.cancel(10);
                                 }
                               } else {
-                                showText('资源包必须名为zip格式');
+                                Fluttertoast.showToast(msg: '资源包必须名为zip格式');
                               }
                             },
                             child: NoResizeText(
-                              AppLocalizations.of(context).sure,
+                              AppLocalizations.of(context)!.sure,
                               style: TextStyle(
                                 color: Color(0xFF007AFF),
                               ),
@@ -345,7 +349,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).installManually),
+              title: ThemedText(AppLocalizations.of(context)!.installManually),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
@@ -367,20 +371,17 @@ class SettingPageState extends State<SettingPage> {
                 gTabController.index = 1;
                 // 确保删除干净了
                 await cutils.rmAllResource();
-                showText(AppLocalizations.of(context).installRes);
+                Fluttertoast.showToast(
+                    msg: AppLocalizations.of(context)!.installRes);
               }
             },
             child: ListTile(
-              leading: Icon(OMIcons.code, color: themeData?.itemFontColor),
-              title: LanText(AppLocalizations.of(context).moreSetting,
-                  alignX: -1.15),
-              contentPadding: EdgeInsets.only(left: 15, right: 25),
-              trailing: Icon(
-                OMIcons.chevronRight,
-                color: themeData?.itemFontColor,
-                size: 16,
-              ),
-            ),
+                leading: FaIcon(FontAwesomeIcons.fileCode,
+                    color: themeData?.itemFontColor),
+                title: ThemedText(AppLocalizations.of(context)!.moreSetting,
+                    alignX: -1.15),
+                contentPadding: EdgeInsets.only(left: 15, right: 25),
+                trailing: FaIcon(FontAwesomeIcons.chevronRight)),
           ),
         ],
       ),
@@ -394,22 +395,24 @@ class SettingPageState extends State<SettingPage> {
             onTap: () async {
               await showSingleTextFieldModal(
                 context,
-                title: AppLocalizations.of(context).webDavServer,
+                title: AppLocalizations.of(context)!.webDavServer,
                 placeholder: _commonModel.webDavAddr,
                 onOk: (val) {
                   _commonModel
                       .setWebDavAddr(val.replaceFirst(RegExp(r'/*$'), ''));
-                  showText(AppLocalizations.of(context).setSuccess);
+                  Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)!.setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
-              trailing: Icon(OMIcons.web, color: themeData?.itemFontColor),
-              title: LanText(AppLocalizations.of(context).webDavServer),
-              subtitle: LanText(_commonModel.webDavAddr == null
-                  ? AppLocalizations.of(context).notSetting
-                  : _commonModel.webDavAddr),
+              trailing: FaIcon(FontAwesomeIcons.link,
+                  color: themeData?.itemFontColor),
+              title: ThemedText(AppLocalizations.of(context)!.webDavServer),
+              subtitle: ThemedText(_commonModel.webDavAddr == null
+                  ? AppLocalizations.of(context)!.notSetting
+                  : _commonModel.webDavAddr!),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -417,24 +420,26 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: AppLocalizations.of(context).webDavAccount,
+                title: AppLocalizations.of(context)!.webDavAccount,
                 placeholder: _commonModel.webDavUsername,
                 onOk: (val) {
                   _commonModel.setWebDavUsername(val);
-                  showText(AppLocalizations.of(context).setSuccess);
+                  Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)!.setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
-              trailing: Icon(OMIcons.face, color: themeData?.itemFontColor),
-              title: LanText(
-                AppLocalizations.of(context).webDavAccount,
+              trailing: FaIcon(FontAwesomeIcons.mehBlank,
+                  color: themeData?.itemFontColor),
+              title: ThemedText(
+                AppLocalizations.of(context)!.webDavAccount,
               ),
-              subtitle: LanText(
+              subtitle: ThemedText(
                 _commonModel.webDavUsername == null
-                    ? AppLocalizations.of(context).notSetting
-                    : _commonModel.webDavUsername,
+                    ? AppLocalizations.of(context)!.notSetting
+                    : _commonModel.webDavUsername!,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
@@ -443,26 +448,29 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: AppLocalizations.of(context).password,
+                title: AppLocalizations.of(context)!.password,
                 onOk: (val) {
                   _commonModel.setWebDavPwd(val);
-                  showText(AppLocalizations.of(context).setSuccess);
+                  Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)!.setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).password),
-              subtitle: LanText(
+              title: ThemedText(AppLocalizations.of(context)!.password),
+              subtitle: ThemedText(
                 _commonModel.webDavPwd == null
-                    ? AppLocalizations.of(context).notSetting
-                    : List(_commonModel.webDavPwd.length)
+                    ? AppLocalizations.of(context)!.notSetting
+                    : List.filled(_commonModel.webDavPwd!.length, null,
+                            growable: false)
                         .map((e) => '*')
                         .toList()
                         .join(''),
                 small: true,
               ),
-              trailing: Icon(OMIcons.lock, color: themeData?.itemFontColor),
+              trailing:
+                  FaIcon(FontAwesomeIcons.ad, color: themeData?.itemFontColor),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -472,7 +480,7 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context).others),
+          blockTitle(AppLocalizations.of(context)!.others),
           SizedBox(height: 15),
           InkWell(
             onTap: () async {
@@ -483,12 +491,12 @@ class SettingPageState extends State<SettingPage> {
                   {'title': '中文', 'code': 'zh'},
                   {'title': 'English', 'code': 'en'},
                 ],
-                title: AppLocalizations.of(context).languageTip,
+                title: AppLocalizations.of(context)!.languageTip,
                 item: (index, data) => Container(
                   alignment: Alignment.center,
                   padding: EdgeInsets.only(top: 8, bottom: 8),
                   decoration: BoxDecoration(
-                    color: themeData.itemColor,
+                    color: themeData!.itemColor,
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                   ),
                   margin: EdgeInsets.only(top: 4, bottom: 4),
@@ -505,7 +513,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).language),
+              title: ThemedText(AppLocalizations.of(context)!.language),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -520,35 +528,25 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).about),
-              contentPadding: EdgeInsets.only(left: 15, right: 25),
-              trailing: Icon(
-                OMIcons.chevronRight,
-                color: themeData?.itemFontColor,
-                size: 16,
-              ),
-            ),
+                title: ThemedText(AppLocalizations.of(context)!.about),
+                contentPadding: EdgeInsets.only(left: 15, right: 25),
+                trailing: FaIcon(FontAwesomeIcons.chevronRight)),
           ),
-          InkWell(
-            onTap: () async {
-              Navigator.of(context, rootNavigator: true).push(
-                CupertinoPageRoute(
-                  builder: (BuildContext context) {
-                    return HelperPage();
-                  },
-                ),
-              );
-            },
-            child: ListTile(
-              title: LanText(AppLocalizations.of(context).help),
-              contentPadding: EdgeInsets.only(left: 15, right: 25),
-              trailing: Icon(
-                OMIcons.chevronRight,
-                color: themeData?.itemFontColor,
-                size: 16,
-              ),
-            ),
-          ),
+          // InkWell(
+          //   onTap: () async {
+          //     Navigator.of(context, rootNavigator: true).push(
+          //       CupertinoPageRoute(
+          //         builder: (BuildContext context) {
+          //           return HelperPage();
+          //         },
+          //       ),
+          //     );
+          //   },
+          //   child: ListTile(
+          //       title: ThemedText(AppLocalizations.of(context)!.help),
+          //       contentPadding: EdgeInsets.only(left: 15, right: 25),
+          //       trailing: FaIcon(FontAwesomeIcons.chevronRight)),
+          // ),
           InkWell(
             onTap: () async {
               await showUpdateModal(
@@ -559,12 +557,12 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: LanText(AppLocalizations.of(context).update),
-              subtitle: LanText('v$_version', small: true),
+              title: ThemedText(AppLocalizations.of(context)!.update),
+              subtitle: ThemedText('v$_version', small: true),
               trailing: _willUpdate
-                  ? Icon(OMIcons.update, color: Colors.redAccent)
+                  ? FaIcon(FontAwesomeIcons.accusoft, color: Colors.redAccent)
                   : CupertinoButton(
-                      child: NoResizeText(AppLocalizations.of(context).latest),
+                      child: NoResizeText(AppLocalizations.of(context)!.latest),
                       onPressed: () {}),
               contentPadding:
                   EdgeInsets.only(left: 15, right: _willUpdate ? 25 : 10),
@@ -579,7 +577,7 @@ class SettingPageState extends State<SettingPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          AppLocalizations.of(context).settingLabel,
+          AppLocalizations.of(context)!.settingLabel,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,

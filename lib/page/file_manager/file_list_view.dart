@@ -9,8 +9,7 @@ import 'package:aqua/common/widget/action_button.dart';
 import 'package:aqua/common/widget/draggable_scrollbar.dart';
 import 'package:aqua/common/widget/images.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/common/widget/show_modal.dart';
-import 'package:aqua/external/bot_toast/bot_toast.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/model/common_model.dart';
 import 'package:aqua/model/file_model.dart';
 import 'package:aqua/page/file_manager/file_action.dart';
@@ -25,40 +24,40 @@ class ListFileItemInfo {
   final SelfFileEntity file;
 
   ListFileItemInfo({
-    this.leading,
-    this.file,
+    required this.leading,
+    required this.file,
   });
 }
 
 class FileListView extends StatefulWidget {
   final List<SelfFileEntity> fileList;
-  final Function(SelfFileEntity) onDirItemTap;
+  final Function(SelfFileEntity)? onDirItemTap;
   final FileManagerMode mode;
-  final Function update2Side;
-  final Color itemBgColor;
-  final Function onScroll;
-  final Function onTapEmpty;
+  final Future<void> Function() update2Side;
+  final Color? itemBgColor;
+  final void Function()? onScroll;
+  final VoidCallback? onTapEmpty;
   // final FileModel fileModel;
 
   final Function(Directory) onChangeCurrentDir;
   final Function(bool) onChangePopLocker;
-  final int selectLimit;
+  final int? selectLimit;
   final bool left;
 
   const FileListView({
-    Key key,
+    Key? key,
     this.onScroll,
     this.onTapEmpty,
     this.itemBgColor,
     this.onDirItemTap,
-    @required this.fileList,
-    @required this.update2Side,
-    @required this.mode,
-    @required this.left,
-    @required this.selectLimit,
-    @required this.onChangeCurrentDir,
-    @required this.onChangePopLocker,
-    // @required this.fileModel,
+    required this.fileList,
+    required this.update2Side,
+    required this.mode,
+    required this.left,
+    this.selectLimit,
+    required this.onChangeCurrentDir,
+    required this.onChangePopLocker,
+    // required this.fileModel,
   }) : super(key: key);
 
   @override
@@ -68,11 +67,11 @@ class FileListView extends StatefulWidget {
 }
 
 class _FileListViewState extends State<FileListView> {
-  ScrollController _scrollController;
-  EasyRefreshController _controller;
-  FileModel fileModel;
+  late ScrollController _scrollController;
+  late EasyRefreshController? _controller;
+  late FileModel fileModel;
 
-  FileActionUI _fileActionUI;
+  late FileActionUI _fileActionUI;
 
   @override
   void initState() {
@@ -88,19 +87,15 @@ class _FileListViewState extends State<FileListView> {
       left: widget.left,
     );
     if (widget.onScroll != null) {
-      _scrollController.addListener(widget.onScroll);
+      _scrollController.addListener(widget.onScroll!);
     }
-  }
-
-  void showText(String content) {
-    BotToast.showText(text: content);
   }
 
   @override
   void dispose() {
     super.dispose();
     _controller?.dispose();
-    _scrollController?.dispose();
+    _scrollController.dispose();
     _controller = null;
   }
 
@@ -115,7 +110,7 @@ class _FileListViewState extends State<FileListView> {
           leftChildren: <Widget>[
             if (sharedNotEmpty)
               ActionButton(
-                content: AppLocalizations.of(context).archiveHere,
+                content: AppLocalizations.of(context)!.archiveHere,
                 onTap: () async {
                   await _fileActionUI.showCreateArchiveModal(
                     context,
@@ -125,7 +120,7 @@ class _FileListViewState extends State<FileListView> {
               ),
             if (sharedNotEmpty)
               ActionButton(
-                content: AppLocalizations.of(context).moveHere,
+                content: AppLocalizations.of(context)!.moveHere,
                 onTap: () async {
                   await _fileActionUI.handleMove(
                     context,
@@ -137,7 +132,7 @@ class _FileListViewState extends State<FileListView> {
           rightChildren: <Widget>[
             if (sharedNotEmpty) ...[
               ActionButton(
-                content: AppLocalizations.of(context).copyHere,
+                content: AppLocalizations.of(context)!.copyHere,
                 onTap: () async {
                   await _fileActionUI.copyModal(
                     context,
@@ -146,7 +141,7 @@ class _FileListViewState extends State<FileListView> {
                 },
               ),
               ActionButton(
-                content: AppLocalizations.of(context).extractHere,
+                content: AppLocalizations.of(context)!.extractHere,
                 onTap: () async {
                   await _fileActionUI.handleExtractArchive(
                     context,
@@ -156,7 +151,7 @@ class _FileListViewState extends State<FileListView> {
               ),
             ],
             ActionButton(
-              content: AppLocalizations.of(context).create,
+              content: AppLocalizations.of(context)!.create,
               onTap: () async {
                 await _fileActionUI.showCreateFileModal(context);
               },
@@ -229,7 +224,7 @@ class _FileListViewState extends State<FileListView> {
                             onTap: () {
                               if (file.isDir) {
                                 if (widget.onDirItemTap != null) {
-                                  widget.onDirItemTap(item.file);
+                                  widget.onDirItemTap!(item.file);
                                 }
                               } else {
                                 _fileActionUI.openFileActionByExt(

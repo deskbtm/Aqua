@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ToolItem {
-  Function press;
+  VoidCallback? press;
 
   String symbol;
 
   ToolItem({
-    @required this.press,
-    this.symbol,
+    required this.press,
+    required this.symbol,
   });
 }

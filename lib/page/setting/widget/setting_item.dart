@@ -3,22 +3,22 @@ import 'package:aqua/common/widget/no_resize_text.dart';
 
 class OptionItem extends StatelessWidget {
   final String title;
-  final String subTitle;
+  final String? subTitle;
   final Color color;
-  final Function onPress;
+  final VoidCallback? onPress;
   final double height;
-  final Widget extend;
+  final Widget? extend;
   final List<BoxShadow> shadow;
   final double marginBottom;
   final double marginTop;
   final Color titleColor;
   final Color subTitleColor;
   final EdgeInsetsGeometry padding;
-  final Border border;
+  final Border? border;
   final double outSidePadding;
 
   OptionItem({
-    this.title,
+    required this.title,
     this.subTitle,
     this.color = const Color(0xFFEEEEEEE),
     this.onPress,
@@ -87,7 +87,7 @@ class OptionItem extends StatelessWidget {
                                   outSidePadding,
                             ),
                             child: NoResizeText(
-                              subTitle,
+                              subTitle!,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: subTitleColor,
@@ -99,7 +99,7 @@ class OptionItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (extend != null) extend
+                if (extend != null) extend!
               ],
             ),
           ),

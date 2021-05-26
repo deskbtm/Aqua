@@ -6,18 +6,18 @@ import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/utils/store.dart';
 
 class FileModel extends ChangeNotifier {
-  String _sortType;
+  late String _sortType = SORT_CASE;
   String get sortType => _sortType;
 
-  Directory _currentDir;
-  Directory get currentDir => _currentDir;
+  Directory? _currentDir;
+  Directory? get currentDir => _currentDir;
 
   void setCurrentDir(Directory dir) {
     _currentDir = dir;
   }
 
-  Directory _rootDir;
-  Directory get rootDir => _rootDir;
+  Directory? _rootDir;
+  Directory? get rootDir => _rootDir;
 
   void setRootDir(Directory dir) {
     _rootDir = dir;
@@ -27,14 +27,14 @@ class FileModel extends ChangeNotifier {
     _sortType = arg;
   }
 
-  bool _isDisplayHidden;
+  late bool _isDisplayHidden;
   bool get isDisplayHidden => _isDisplayHidden;
 
   Future<void> setDisplayHidden(bool arg) async {
     _isDisplayHidden = arg;
   }
 
-  bool _sortReversed;
+  late bool _sortReversed;
   bool get sortReversed => _sortReversed;
 
   Future<void> setSortReversed(bool arg) async {

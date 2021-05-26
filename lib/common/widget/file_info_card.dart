@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/external/bot_toast/src/toast.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/utils/mix_utils.dart';
-import 'package:aqua/utils/theme.dart';
+import 'package:aqua/common/theme.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -17,11 +17,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class FileInfoCard extends StatefulWidget {
   final SelfFileEntity file;
   final bool showSize;
-  final List<List> additionalList;
+  final List<List>? additionalList;
 
   const FileInfoCard({
-    Key key,
-    @required this.file,
+    Key? key,
+    required this.file,
     this.showSize = false,
     this.additionalList,
   }) : super(key: key);
@@ -35,11 +35,11 @@ class FileInfoCard extends StatefulWidget {
 class _FileInfoCardState extends State<FileInfoCard> {
   SelfFileEntity get file => widget.file;
   bool get showSize => widget.showSize;
-  StreamSubscription<FileSystemEntity> _listener;
-  ThemeModel _themeModel;
-  int _totalSize;
-  int _fileCount;
-  bool _mutex;
+  late StreamSubscription<FileSystemEntity> _listener;
+  late ThemeModel _themeModel;
+  late int _totalSize;
+  late int _fileCount;
+  late bool _mutex;
 
   @override
   void initState() {
@@ -86,20 +86,20 @@ class _FileInfoCardState extends State<FileInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     List<List> info = [
-      [AppLocalizations.of(context).filename, file.filename],
-      [AppLocalizations.of(context).path, file.entity.path],
+      [AppLocalizations.of(context)!.filename, file.filename],
+      [AppLocalizations.of(context)!.path, file.entity.path],
       [
-        AppLocalizations.of(context).modify,
+        AppLocalizations.of(context)!.modify,
         MixUtils.formatFileTime(file.modified)
       ],
-      [AppLocalizations.of(context).authorization, file.modeString]
+      [AppLocalizations.of(context)!.authorization, file.modeString]
     ];
 
     if (widget.additionalList != null) {
-      info.addAll(widget.additionalList);
+      info.addAll(widget.additionalList!);
     }
 
     if (showSize) {
@@ -109,10 +109,10 @@ class _FileInfoCardState extends State<FileInfoCard> {
       }
       info.addAll([
         [
-          AppLocalizations.of(context).fileSize,
+          AppLocalizations.of(context)!.fileSize,
           MixUtils.humanStorageSize(_totalSize.toDouble())
         ],
-        [AppLocalizations.of(context).fileCount, '$_fileCount'],
+        [AppLocalizations.of(context)!.fileCount, '$_fileCount'],
       ]);
     }
 
@@ -124,7 +124,9 @@ class _FileInfoCardState extends State<FileInfoCard> {
           return GestureDetector(
             onLongPressStart: (details) async {
               await Clipboard.setData(ClipboardData(text: cur[1]));
-              BotToast.showText(text: AppLocalizations.of(context).copied);
+              Fluttertoast.showToast(
+                msg: AppLocalizations.of(context)!.copied,
+              );
             },
             child: Container(
               margin: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 5),

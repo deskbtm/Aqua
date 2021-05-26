@@ -1,6 +1,5 @@
 package com.sewerganger.pure_manager;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,37 +19,38 @@ public class MainActivity extends FlutterActivity {
   private static final String CHANNEL = "app.channel.shared.data";
   private String APP_NORMAL_MODE = "normal";
   private String APP_INCOMING_MODE = "incoming";
-  private Activity activity;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    Intent intent = getIntent();
-    String action = intent.getAction();
-    String type = intent.getType();
-    incomingIntent = new HashMap();
-    
-    if (Intent.ACTION_VIEW.equals(action) && type != null) {
-      Uri uri = intent.getData();
-      incomingIntent.put("path", Uri.decode(uri.getEncodedPath()));
-      incomingIntent.put("type", type);
-      incomingIntent.put("appMode", APP_INCOMING_MODE);
-    } else {
-      incomingIntent.put("appMode", APP_NORMAL_MODE);
-    }
+//    Intent intent = getIntent();
+//    String action = intent.getAction();
+//    String type = intent.getType();
+//    incomingIntent = new HashMap();
+//
+//    if (Intent.ACTION_VIEW.equals(action) && type != null) {
+//      Uri uri = intent.getData();
+//      incomingIntent.put("path", Uri.decode(uri.getEncodedPath()));
+//      incomingIntent.put("type", type);
+//      incomingIntent.put("appMode", APP_INCOMING_MODE);
+//    } else {
+//      incomingIntent.put("appMode", APP_NORMAL_MODE);
+//    }
   }
 
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
     GeneratedPluginRegistrant.registerWith(flutterEngine);
-    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
-      .setMethodCallHandler(
-        (call, result) -> {
-          if (call.method.contentEquals("getIncomingFile")) {
-            result.success(incomingIntent);
-            incomingIntent = null;
-          }
-        }
-      );
+    InnerPluginMgmt.register(flutterEngine);
+
+//    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
+//      .setMethodCallHandler(
+//        (call, result) -> {
+//          if (call.method.contentEquals("getIncomingFile")) {
+//            result.success(incomingIntent);
+//            incomingIntent = null;
+//          }
+//        }
+//      );
   }
 }

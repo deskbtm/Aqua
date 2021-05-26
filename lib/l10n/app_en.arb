@@ -232,6 +232,8 @@
   "@uploading": {},
   "openEditor": "open editor",
   "@openEditor": {},
+  "edit": "edit",
+  "@edit": {},
   "openWith": "open with",
   "@openWith": {},
   "appShop": "app shop",
@@ -287,5 +289,17 @@
   "thankFollow": "follow",
   "@thankFollow": {},
   "followTip": "disappear after jump",
-  "@followTip": {}
+  "@followTip": {},
+  "sysApps": "system",
+  "@sysApps": {},
+  "position": "position",
+  "@position": {},
+  "dataDir": "data",
+  "@dataDir": {},
+  "installTimestamp": "install",
+  "@installTimestamp": {},
+  "updateTimestamp": "update",
+  "@updateTimestamp": {},
+  "uninstall": "uninstall",
+  "@uninstall": {}
 }

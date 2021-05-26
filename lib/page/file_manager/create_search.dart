@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+import 'package:aqua/common/widget/aqua_text_field.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:aqua/common/widget/show_modal.dart';
-import 'package:aqua/common/widget/text_field.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/model/file_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:aqua/utils/mix_utils.dart';
-import 'package:aqua/utils/theme.dart';
+import 'package:aqua/common/theme.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
 import 'file_list_view.dart';
@@ -19,17 +19,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> createSearchModal(
   BuildContext context, {
-  @required Function(bool) onChangePopLocker,
+  required Function(bool) onChangePopLocker,
 }) async {
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
   FileModel fileModel = Provider.of<FileModel>(context, listen: false);
   AquaTheme themeData = themeModel.themeData;
 
   TextEditingController textEditingController = TextEditingController();
-  StreamSubscription<FileSystemEntity> listener;
+  StreamSubscription<FileSystemEntity>? listener;
   List<SelfFileEntity> fileList = [];
-  Directory currentDir = fileModel.currentDir;
-  Timer timer;
+  Directory currentDir = fileModel.currentDir!;
+  late Timer timer;
   bool visible = false;
   bool mutex = true;
   onChangePopLocker(true);
@@ -50,8 +50,7 @@ Future<void> createSearchModal(
                   name.contains(
                     RegExp(textEditingController.text, caseSensitive: false),
                   )) {
-                SelfFileEntity file =
-                    await LanFileUtils.createSelfFileEntity(event);
+                SelfFileEntity file = await FsUtils.createSelfFileEntity(event);
                 fileList.insert(0, file);
               }
             }, onDone: () {
@@ -71,34 +70,36 @@ Future<void> createSearchModal(
           Future<void> readCurrentDir(Directory dir) async {
             fileList = [];
 
-            SelfFileList result =
-                await LanFileUtils.readdir(dir).catchError((err) async {
-              String errorString = err.toString().toLowerCase();
-              bool overAndroid11 = int.parse(
-                      (await DeviceInfoPlugin().androidInfo).version.release) >=
-                  11;
+            SelfFileList? result =
+                await FsUtils.readdir(dir).catchError((err) async {
+              // String errorString = err.toString().toLowerCase();
+              // bool overAndroid11 = int.parse(
+              //         (await DeviceInfoPlugin().androidInfo).version.release) >=
+              //     11;
 
-              if (errorString.contains('permission') &&
-                  errorString.contains('denied')) {
-                showTipTextModal(
-                  context,
-                  title: AppLocalizations.of(context).error,
-                  tip: (overAndroid11)
-                      ? AppLocalizations.of(context).noPermissionO
-                      : AppLocalizations.of(context).noPermission,
-                  onCancel: null,
-                );
-              }
+              // if (errorString.contains('permission') &&
+              //     errorString.contains('denied')) {
+              //   showTipTextModal(
+              //     context,
+              //     title: AppLocalizations.of(context)!.error,
+              //     tip: (overAndroid11)
+              //         ? AppLocalizations.of(context)!.noPermissionO
+              //         : AppLocalizations.of(context)!.noPermission,
+              //     onCancel: () {},
+              //   );
+              // }
             });
 
-            changeState(() {
-              fileList = result.allList;
-            });
+            if (result != null) {
+              changeState(() {
+                fileList = result.allList;
+              });
+            }
           }
 
           return WillPopScope(
             onWillPop: () async {
-              if (pathLib.equals(currentDir.path, fileModel.currentDir.path)) {
+              if (pathLib.equals(currentDir.path, fileModel.currentDir!.path)) {
                 return true;
               } else {
                 currentDir = currentDir.parent;
@@ -125,7 +126,7 @@ Future<void> createSearchModal(
                                 style: TextStyle(fontSize: 16),
                                 controller: textEditingController,
                                 placeholder:
-                                    AppLocalizations.of(context).searching,
+                                    AppLocalizations.of(context)!.searching,
                                 onSubmitted: submitSearch,
                                 maxLines: 1,
                               ),
@@ -187,6 +188,6 @@ Future<void> createSearchModal(
       );
     },
   );
-  timer?.cancel();
+  timer.cancel();
   onChangePopLocker(false);
 }

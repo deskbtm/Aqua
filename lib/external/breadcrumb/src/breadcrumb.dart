@@ -5,24 +5,22 @@ typedef IndexedBreadCrumbItemBuilder = BreadCrumbItem Function(int index);
 
 class BreadCrumb extends StatelessWidget {
   final List<BreadCrumbItem> items;
-  final Widget divider;
+  final Widget? divider;
   final BreadCrumbOverflow overflow;
 
   const BreadCrumb({
-    Key key,
-    @required this.items,
+    Key? key,
+    required this.items,
     this.divider,
-    this.overflow =const WrapOverflow(),
-  })  : assert(items != null, 'items parameters should not be empty'),
-        assert(items.length > 0, 'items parameters should not be empty'),
-        assert(overflow != null, 'overflowType parameter required'),
+    this.overflow = const WrapOverflow(),
+  })  : assert(items.length > 0, 'items parameters should not be empty'),
         super(key: key);
 
   factory BreadCrumb.builder({
-    @required int itemCount,
-    @required IndexedBreadCrumbItemBuilder builder,
-    Widget divider,
-    BreadCrumbOverflow overflow =const WrapOverflow(),
+    required int itemCount,
+    required IndexedBreadCrumbItemBuilder builder,
+    Widget? divider,
+    BreadCrumbOverflow overflow = const WrapOverflow(),
   }) =>
       BreadCrumb(
         items: List<BreadCrumbItem>.generate(
@@ -33,11 +31,8 @@ class BreadCrumb extends StatelessWidget {
         overflow: overflow,
       );
 
-
   @override
   Widget build(BuildContext context) {
-
-    return overflow.build(context,items,divider);
+    return overflow.build(context, items, divider);
   }
 }
-

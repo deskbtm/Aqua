@@ -14,21 +14,21 @@ import 'tags/ul.dart';
 export 'tags/markdown_tags.dart';
 
 class MarkdownHelper {
-  WidgetConfig wConfig;
+  WidgetConfig? wConfig;
 
   MarkdownHelper({this.wConfig});
 
   ///h1~h6
-  Widget getTitleWidget(m.Node node, String tag) =>
-      MTitle().getTitleWidget(node, tag);
+  Widget? getTitleWidget(m.Node node, String tag) =>
+      MTitle().getTitleWidget(node as m.Element, tag);
 
   ///p
   Widget getPWidget(m.Element node) =>
-      wConfig?.p?.call(node) ?? P().getPWidget(node.children, node);
+      wConfig?.p?.call(node) ?? P().getPWidget(node.children!, node);
 
   ///pre
   Widget getPreWidget(m.Node node) =>
-      wConfig?.pre?.call(node) ?? Pre().getPreWidget(node);
+      wConfig?.pre?.call(node as m.Element) ?? Pre().getPreWidget(node);
 
   ///ul
   Widget getUlWidget(m.Element node, int deep) =>

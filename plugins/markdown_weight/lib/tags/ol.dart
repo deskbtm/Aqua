@@ -9,15 +9,15 @@ import 'markdown_tags.dart';
 class Ol {
   Ol._internal();
 
-  static Ol _instance;
+  static late Ol? _instance;
 
   factory Ol() {
     _instance ??= Ol._internal();
-    return _instance;
+    return _instance!;
   }
 
   ///the orderly list widget
-  Widget getOlWidget(m.Element rootNode, int deep) {
+  Widget getOlWidget(m.Element? rootNode, int deep) {
     final children = rootNode?.children;
     if (children == null) return Container();
     return Column(
@@ -36,10 +36,10 @@ class Ol {
   }
 
   Widget _getLiWidget(m.Element rootNode, int deep, int index) {
-    final children = rootNode?.children;
+    final children = rootNode.children;
     final List<m.Node> otherTagNodes = [];
     List<Widget> listChildren = [];
-    for (var node in children) {
+    for (var node in children!) {
       if (node is m.Element && node.tag == ol) {
         final child = getOlWidget(node, deep + 1);
         listChildren.add(child);
@@ -87,7 +87,7 @@ class Ol {
   ///the index widget of orderly list
   Widget _getOlDot(int deep, int index) {
     final config = StyleConfig().olConfig;
-    final Widget configWidget =
+    final Widget? configWidget =
         StyleConfig()?.olConfig?.indexWidget?.call(deep, index);
 
     return configWidget ??
@@ -101,13 +101,13 @@ class Ol {
 }
 
 class OlConfig {
-  final TextStyle textStyle;
-  final TextConfig textConfig;
-  final IndexWidget indexWidget;
-  final OlWrapper olWrapper;
-  final double leftSpacing;
-  final bool selectable;
-  final CrossAxisAlignment crossAxisAlignment;
+  final TextStyle? textStyle;
+  final TextConfig? textConfig;
+  final IndexWidget? indexWidget;
+  final OlWrapper? olWrapper;
+  final double? leftSpacing;
+  final bool? selectable;
+  final CrossAxisAlignment? crossAxisAlignment;
 
   OlConfig(
       {this.textStyle,

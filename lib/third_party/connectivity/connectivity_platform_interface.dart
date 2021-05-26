@@ -37,7 +37,7 @@ abstract class ConnectivityPlatform extends PlatformInterface {
   }
 
   /// Checks the connection status of the device.
-  Future<ConnectivityResult> checkConnectivity() {
+  Future<ConnectivityResult?> checkConnectivity() {
     throw UnimplementedError('checkConnectivity() has not been implemented.');
   }
 
@@ -48,29 +48,29 @@ abstract class ConnectivityPlatform extends PlatformInterface {
   }
 
   /// Obtains the wifi name (SSID) of the connected network
-  Future<String> getWifiName() {
+  Future<String?> getWifiName() {
     throw UnimplementedError('getWifiName() has not been implemented.');
   }
 
   /// Obtains the wifi BSSID of the connected network.
-  Future<String> getWifiBSSID() {
+  Future<String?> getWifiBSSID() {
     throw UnimplementedError('getWifiBSSID() has not been implemented.');
   }
 
   /// Obtains the IP address of the connected wifi network
-  Future<String> getWifiIP() {
+  Future<String?> getWifiIP() {
     throw UnimplementedError('getWifiIP() has not been implemented.');
   }
 
   /// Request to authorize the location service (Only on iOS).
-  Future<LocationAuthorizationStatus> requestLocationServiceAuthorization(
+  Future<LocationAuthorizationStatus?> requestLocationServiceAuthorization(
       {bool requestAlwaysLocationUsage = false}) {
     throw UnimplementedError(
         'requestLocationServiceAuthorization() has not been implemented.');
   }
 
   /// Get the current location service authorization (Only on iOS).
-  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
+  Future<LocationAuthorizationStatus?> getLocationServiceAuthorization() {
     throw UnimplementedError(
         'getLocationServiceAuthorization() has not been implemented.');
   }

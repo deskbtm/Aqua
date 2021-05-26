@@ -8,15 +8,12 @@ import 'package:aqua/common/widget/double_pop.dart';
 import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/model/file_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
-import 'package:aqua/utils/theme.dart';
+import 'package:aqua/common/theme.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'constant/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:aqua/external/bot_toast/bot_toast.dart';
-import 'external/bot_toast/src/toast_navigator_observer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'external/bot_toast/src/bot_toast_init.dart';
 import 'package:aqua/model/common_model.dart';
 import 'package:aqua/utils/notification.dart';
 import 'package:aqua/model/theme_model.dart';
@@ -59,11 +56,11 @@ class AquaWrapper extends StatefulWidget {
 }
 
 class _AquaWrapperState extends State<AquaWrapper> {
-  ThemeModel? _themeModel;
-  CommonModel? _commonModel;
-  bool? _prepared;
-  bool? _settingMutex;
-  StreamSubscription<ConnectivityResult>? _connectSubscription;
+  late ThemeModel _themeModel;
+  late CommonModel _commonModel;
+  late bool _prepared;
+  late bool _settingMutex;
+  late StreamSubscription<ConnectivityResult> _connectSubscription;
 
   @override
   void initState() {
@@ -71,7 +68,8 @@ class _AquaWrapperState extends State<AquaWrapper> {
     _prepared = false;
     _settingMutex = true;
 
-    LocalNotification.initLocalNotification(onSelected: (String payload) {
+    LocalNotification.initLocalNotification(
+        onSelected: (String? payload) async {
       debugPrint(payload);
     });
 
@@ -79,12 +77,10 @@ class _AquaWrapperState extends State<AquaWrapper> {
         Connectivity().onConnectivityChanged.listen(_setInternalIp);
   }
 
-  Future<void> _setInternalIp(ConnectivityResult result) async {
+  Future<void> _setInternalIp(ConnectivityResult? result) async {
     try {
       if (_commonModel.enableConnect != null) {
-        String internalIp = await Connectivity().getWifiIP() ??
-            await MixUtils.getIntenalIp() ??
-            LOOPBACK_ADDR;
+        String internalIp = await Connectivity().getWifiIP() ?? LOOPBACK_ADDR;
         await _commonModel.setInternalIp(internalIp);
       }
     } catch (e) {}
@@ -113,7 +109,7 @@ class _AquaWrapperState extends State<AquaWrapper> {
   @override
   void dispose() {
     super.dispose();
-    _connectSubscription?.cancel();
+    _connectSubscription.cancel();
     _commonModel.setAppInit(false);
   }
 
@@ -141,9 +137,7 @@ class _AquaWrapperState extends State<AquaWrapper> {
                 const Locale('en'),
               ],
               locale: Locale(_commonModel.language),
-              builder: BotToastInit(),
               navigatorObservers: [
-                BotToastNavigatorObserver(),
                 SentryNavigatorObserver(),
               ],
               title: 'aqua',
@@ -162,6 +156,6 @@ class _AquaWrapperState extends State<AquaWrapper> {
               ),
             ),
           )
-        : Container(color: themeData?.scaffoldBackgroundColor ?? Colors.white);
+        : Container(color: themeData.scaffoldBackgroundColor ?? Colors.white);
   }
 }

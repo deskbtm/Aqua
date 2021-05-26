@@ -16,37 +16,37 @@ class MarkdownWidget extends StatefulWidget {
   final String data;
 
   ///you can custom your widget by [widgetConfig]
-  final WidgetConfig widgetConfig;
+  final WidgetConfig? widgetConfig;
 
   ///you can use [styleConfig] to set default widget style, such as [pConfig.onTapLink]
-  final StyleConfig styleConfig;
+  final StyleConfig? styleConfig;
 
-  final EdgeInsetsGeometry childMargin;
+  final EdgeInsetsGeometry? childMargin;
 
   ///if [controller] is not null, you can use [tocListener] to get current TOC index
-  final TocController controller;
+  final TocController? controller;
 
   ///show loading before data is ready
-  final Widget loadingWidget;
+  final Widget? loadingWidget;
 
   ///jump to position 0 when widget is updating
-  final bool clearPositionWhenUpdate;
+  final bool? clearPositionWhenUpdate;
 
   ///delay refresh when initial markdown widget
-  final Duration delayLoadDuration;
+  final Duration? delayLoadDuration;
 
   ///set the desired scroll physics for the markdown item list
-  final ScrollPhysics physics;
+  final ScrollPhysics? physics;
 
   ///set shrinkWrap to obtained [ListView] (only available when [controller] is null)
   final bool shrinkWrap;
 
   /// [ListView] padding
-  final EdgeInsetsGeometry padding;
+  final EdgeInsets? padding;
 
   const MarkdownWidget({
-    Key key,
-    @required this.data,
+    Key? key,
+    required this.data,
     this.widgetConfig,
     this.styleConfig,
     this.childMargin,
@@ -64,7 +64,7 @@ class MarkdownWidget extends StatefulWidget {
 }
 
 class _MarkdownWidgetState extends State<MarkdownWidget> {
-  MarkdownGenerator markdownGenerator;
+  MarkdownGenerator? markdownGenerator;
   List<Widget> widgets = [];
   LinkedHashMap<int, Toc> tocList = LinkedHashMap();
   final ItemPositionsListener itemPositionsListener =
@@ -75,11 +75,14 @@ class _MarkdownWidgetState extends State<MarkdownWidget> {
   void initState() {
     if (widget.delayLoadDuration == null) {
       updateState();
-    } else
-      Future.delayed(widget.delayLoadDuration).then((value) {
-        updateState();
-        refresh();
-      });
+    } else {
+      if (widget.delayLoadDuration != null) {
+        Future.delayed(widget.delayLoadDuration!).then((value) {
+          updateState();
+          refresh();
+        });
+      }
+    }
     super.initState();
   }
 
@@ -96,8 +99,8 @@ class _MarkdownWidgetState extends State<MarkdownWidget> {
     ///use a new isolate to create [MarkdownGenerator]
     compute(buildMarkdownGenerator, _markdownData).then((value) {
       markdownGenerator = value;
-      tocList.addAll(markdownGenerator.tocList);
-      widgets.addAll(markdownGenerator.widgets);
+      tocList.addAll(markdownGenerator!.tocList);
+      widgets.addAll(markdownGenerator!.widgets);
       if (widget.controller != null)
         itemPositionsListener.itemPositions.addListener(indexListener);
       refresh();
@@ -112,11 +115,12 @@ class _MarkdownWidgetState extends State<MarkdownWidget> {
       styleConfig: widget.styleConfig,
       childMargin: widget.childMargin,
     );
-    tocList.addAll(markdownGenerator.tocList);
-    widgets.addAll(markdownGenerator.widgets);
+    tocList.addAll(markdownGenerator!.tocList);
+    widgets.addAll(markdownGenerator!.widgets);
     if (widget.controller != null) {
-      if (!hasInitialed)
-        widget.controller.setTocList(markdownGenerator.tocList);
+      if (!hasInitialed) {
+        widget.controller!.setTocList(markdownGenerator!.tocList);
+      }
       itemPositionsListener.itemPositions.addListener(indexListener);
     }
   }
@@ -143,7 +147,7 @@ class _MarkdownWidgetState extends State<MarkdownWidget> {
     return widgets.isEmpty ? buildLoadingWidget() : buildMarkdownWidget();
   }
 
-  Center buildLoadingWidget() =>
+  Widget buildLoadingWidget() =>
       widget.loadingWidget ?? Center(child: CircularProgressIndicator());
 
   Widget buildMarkdownWidget() {
@@ -159,7 +163,7 @@ class _MarkdownWidgetState extends State<MarkdownWidget> {
             physics: widget.physics,
             itemCount: widgets.length,
             itemBuilder: (context, index) => widgets[index],
-            itemScrollController: widget.controller.scrollController,
+            itemScrollController: widget.controller!.scrollController,
             itemPositionsListener: itemPositionsListener,
             initialScrollIndex: getInitialScrollIndex(),
             padding: widget.padding,
@@ -194,7 +198,7 @@ class _MarkdownWidgetState extends State<MarkdownWidget> {
     }
     if (!hasInitialed) {
       hasInitialed = true;
-      controller?.setTocList(markdownGenerator.tocList);
+      controller?.setTocList(markdownGenerator!.tocList);
       needRefresh = true;
     }
     if (needRefresh) controller?.refresh();
@@ -203,7 +207,8 @@ class _MarkdownWidgetState extends State<MarkdownWidget> {
   @override
   void didUpdateWidget(MarkdownWidget oldWidget) {
     clearState();
-    if (widget.clearPositionWhenUpdate) widget?.controller?.jumpTo(index: 0);
+    if (widget.clearPositionWhenUpdate != null &&
+        widget.clearPositionWhenUpdate!) widget.controller?.jumpTo(index: 0);
     updateState();
     super.didUpdateWidget(widget);
   }
@@ -212,12 +217,16 @@ class _MarkdownWidgetState extends State<MarkdownWidget> {
 ///use for [compute] to improve performance
 class _MarkdownData {
   final String data;
-  final WidgetConfig widgetConfig;
-  final StyleConfig styleConfig;
-  final EdgeInsetsGeometry childMargin;
+  final WidgetConfig? widgetConfig;
+  final StyleConfig? styleConfig;
+  final EdgeInsetsGeometry? childMargin;
 
-  _MarkdownData(
-      {this.data, this.widgetConfig, this.styleConfig, this.childMargin});
+  _MarkdownData({
+    required this.data,
+    this.widgetConfig,
+    this.styleConfig,
+    this.childMargin,
+  });
 }
 
 MarkdownGenerator buildMarkdownGenerator(_MarkdownData markdownData) {

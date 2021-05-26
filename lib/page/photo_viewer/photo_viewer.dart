@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:aqua/third_party/photo_view/photo_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,15 +9,15 @@ import 'package:aqua/common/widget/action_button.dart';
 import 'package:aqua/common/widget/fade_in.dart';
 import 'package:aqua/common/widget/file_info_card.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/common/widget/show_modal.dart';
-import 'package:aqua/external/bot_toast/src/toast.dart';
+import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/page/file_manager/file_action.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/utils/mix_utils.dart';
-import 'package:aqua/utils/theme.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
-// import 'package:photo_view/photo_view.dart';
+import 'package:aqua/common/theme.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:share_extend/share_extend.dart';
@@ -26,7 +27,7 @@ class PhotoViewerPage extends StatefulWidget {
   final List<String> imageRes;
   final int index;
 
-  const PhotoViewerPage({Key key, this.imageRes, this.index = 0})
+  const PhotoViewerPage({Key? key, required this.imageRes, this.index = 0})
       : super(key: key);
 
   @override
@@ -34,20 +35,16 @@ class PhotoViewerPage extends StatefulWidget {
 }
 
 class _PhotoViewerPageState extends State<PhotoViewerPage> {
-  int _currentIndex;
-  PreloadPageController _controller;
-  ThemeModel _themeModel;
+  late int _currentIndex;
+  late PreloadPageController _controller;
+  late ThemeModel _themeModel;
   final _barFader = FadeInController(autoStart: true);
   final _topFader = FadeInController(autoStart: true);
-  bool _viewFaded;
-  bool _navButtonLocker;
-  int _navCurrentIndex;
+  late bool _viewFaded = false;
+  late bool _navButtonLocker;
+  late int _navCurrentIndex;
 
   List<String> get imagesRes => widget.imageRes;
-
-  void showText(String content) {
-    BotToast.showText(text: content);
-  }
 
   @override
   void initState() {
@@ -127,7 +124,9 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
         setState(() {
           imagesRes.remove(img.entity.path);
         });
-        showText('已删除');
+        Fluttertoast.showToast(
+          msg: '已删除',
+        );
       },
     );
   }
@@ -283,16 +282,29 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                     setState(() {
                       _navCurrentIndex = index;
                     });
-                    File img = File(imagesRes[_currentIndex]);
+                    File file = File(imagesRes[_currentIndex]);
+
+                    FileStat stat = file.statSync();
+
                     SelfFileEntity image = SelfFileEntity(
-                      modified: img.statSync().modified,
-                      entity: img,
-                      filename: pathLib.basename(img.path),
-                      ext: img.path,
-                      isDir:
-                          img.statSync().type == FileSystemEntityType.directory,
-                      modeString: img.statSync().modeString(),
-                      type: null,
+                      changed: stat.changed,
+                      modified: stat.modified,
+                      accessed: stat.accessed,
+                      path: file.path,
+                      type: stat.type,
+                      mode: stat.mode,
+                      modeString: stat.modeString(),
+                      size: stat.size,
+                      entity: file,
+                      filename: pathLib.basename(file.path),
+                      ext: pathLib.extension(file.path),
+                      humanSize:
+                          MixUtils.humanStorageSize(stat.size.toDouble()),
+                      apkIcon: null,
+                      isDir: stat.type == FileSystemEntityType.directory,
+                      isFile: stat.type == FileSystemEntityType.file,
+                      isLink: stat.type == FileSystemEntityType.link,
+                      pureName: pathLib.basenameWithoutExtension(file.path),
                     );
 
                     switch (index) {
@@ -303,10 +315,10 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                           _navButtonLocker = false;
                         }
                         break;
+                      // case 1:
+                      //   showText('下一个大版本中更新');
+                      //   break;
                       case 1:
-                        showText('下一个大版本中更新');
-                        break;
-                      case 2:
                         if (!_navButtonLocker) {
                           _navButtonLocker = true;
                           await _showMoreOptions(context, image);
@@ -319,15 +331,15 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   backgroundColor: themeData.photoNavColor,
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
-                      label: '删除',
-                      icon: Icon(OMIcons.delete),
+                      label: AppLocalizations.of(context)!.delete,
+                      icon: FaIcon(FontAwesomeIcons.solidTrashAlt),
                     ),
+                    // BottomNavigationBarItem(
+                    //   label: AppLocalizations.of(context)!.edit,
+                    //   icon: Icon(OMIcons.create),
+                    // ),
                     BottomNavigationBarItem(
-                      label: '编辑',
-                      icon: Icon(OMIcons.create),
-                    ),
-                    BottomNavigationBarItem(
-                      label: '更多',
+                      label: AppLocalizations.of(context)!.moreOptions,
                       icon: Icon(Icons.hdr_weak),
                     )
                   ],

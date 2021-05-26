@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:android_mix/android_mix.dart';
+import 'package:aqua/plugin/pkg_mgmt/mgmt.dart';
 import 'package:flutter/widgets.dart';
 import 'package:aqua/common/widget/images.dart';
 import 'package:aqua/constant/constant_var.dart';
@@ -24,29 +24,29 @@ class SelfFileEntity {
   final String pureName;
   final String modeString;
   final String humanSize;
-  final Uint8List apkIcon;
+  final Uint8List? apkIcon;
   final bool isDir;
   final bool isLink;
   final bool isFile;
 
   SelfFileEntity({
-    this.path,
-    this.pureName,
-    this.apkIcon,
-    this.isLink,
-    this.isFile,
-    this.ext,
-    this.humanSize,
-    this.changed,
-    this.accessed,
-    this.mode,
-    this.size,
-    this.isDir,
-    this.filename,
-    this.modified,
-    this.type,
-    this.entity,
-    this.modeString,
+    required this.path,
+    required this.pureName,
+    required this.apkIcon,
+    required this.isLink,
+    required this.isFile,
+    required this.ext,
+    required this.humanSize,
+    required this.changed,
+    required this.accessed,
+    required this.mode,
+    required this.size,
+    required this.isDir,
+    required this.filename,
+    required this.modified,
+    required this.type,
+    required this.entity,
+    required this.modeString,
   });
 }
 
@@ -58,25 +58,25 @@ class SelfFileList {
   final Directory cwd;
 
   SelfFileList({
-    this.cwd,
-    this.folderList,
-    this.fileList,
-    this.linkList,
-    this.allList,
+    required this.cwd,
+    required this.folderList,
+    required this.fileList,
+    required this.linkList,
+    required this.allList,
   });
 }
 
-class LanFileUtils {
+class FsUtils {
   static Future<SelfFileEntity> createSelfFileEntity(
       FileSystemEntity content) async {
     FileStat stat = await content.stat();
 
     String filename = pathLib.basename(content.path);
     String ext = pathLib.extension(content.path).trim().toLowerCase();
-    Uint8List icon;
+    Uint8List? apkIcon;
 
     if (ext == '.apk') {
-      icon = (await AndroidMix.packager.getApkInfo(content.path))['icon'];
+      apkIcon = (await PackageMgmt.getApkInfo(content.path))['icon'];
     }
 
     return SelfFileEntity(
@@ -92,7 +92,7 @@ class LanFileUtils {
       filename: filename,
       ext: ext,
       humanSize: MixUtils.humanStorageSize(stat.size.toDouble()),
-      apkIcon: icon,
+      apkIcon: apkIcon,
       isDir: stat.type == FileSystemEntityType.directory,
       isFile: stat.type == FileSystemEntityType.file,
       isLink: stat.type == FileSystemEntityType.link,
@@ -100,7 +100,7 @@ class LanFileUtils {
     );
   }
 
-  static Future<SelfFileList> readdir(
+  static Future<SelfFileList?> readdir(
     Directory currentDir, {
     bool autoSort = true,
     String sortType = SORT_CASE,
@@ -169,7 +169,7 @@ class LanFileUtils {
       folderList: folderList,
       fileList: fileList,
       linkList: linkList,
-      allList: [...?folderList, ...?fileList, ...?linkList],
+      allList: [...folderList, ...fileList, ...linkList],
       cwd: currentDir,
     );
   }
@@ -295,24 +295,24 @@ class LanFileUtils {
 
   static void matchFileExt(
     String ext, {
-    Function casePPT,
-    Function caseWord,
-    Function caseCVS,
-    Function caseFlash,
-    Function caseExcel,
-    Function caseHtml,
-    Function casePdf,
-    Function caseImage,
-    Function caseText,
-    Function caseAudio,
-    Function caseVideo,
-    Function caseArchive,
-    Function casePs,
-    Function caseApk,
-    Function caseFolder,
-    Function caseSymbolLink,
-    Function caseMd,
-    Function defaultExec,
+    required Function casePPT,
+    required Function caseWord,
+    required Function caseCVS,
+    required Function caseFlash,
+    required Function caseExcel,
+    required Function caseHtml,
+    required Function casePdf,
+    required Function caseImage,
+    required Function caseText,
+    required Function caseAudio,
+    required Function caseVideo,
+    required Function caseArchive,
+    required Function casePs,
+    required Function caseApk,
+    required Function caseFolder,
+    required Function caseSymbolLink,
+    required Function caseMd,
+    required Function defaultExec,
   }) {
     ext = ext.toLowerCase();
     switch (ext) {
@@ -405,10 +405,10 @@ class LanFileUtils {
 
   static Widget matchEntryByMimeType(
     String mime, {
-    Widget Function() caseText,
-    Widget Function() caseImage,
-    Widget Function() caseVideo,
-    Widget Function() caseDefault,
+    required Widget Function() caseText,
+    required Widget Function() caseImage,
+    required Widget Function() caseVideo,
+    required Widget Function() caseDefault,
   }) {
     Widget result;
     if (RegExp(r"text/.*").hasMatch(mime) && caseText != null) {
@@ -432,13 +432,13 @@ class LanFileUtils {
 
   static void matchFileActionByExt(
     String ext, {
-    Function caseImage,
-    Function caseText,
-    Function caseAudio,
-    Function caseVideo,
-    Function caseMd,
-    Function caseArchive,
-    Function defaultExec,
+    required Function caseImage,
+    required Function caseText,
+    required Function caseAudio,
+    required Function caseVideo,
+    required Function caseMd,
+    required Function caseArchive,
+    required Function defaultExec,
   }) {
     ext = ext.toLowerCase();
     switch (ext) {
@@ -492,7 +492,7 @@ class LanFileUtils {
   }
 
   static Widget matchFileIcon(String ext, {double size = 30}) {
-    Widget iconImg;
+    late Widget iconImg;
 
     matchFileExt(
       ext,

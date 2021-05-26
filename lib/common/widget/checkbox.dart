@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 
 class LanCheckBox extends StatelessWidget {
   final bool value;
-  final Color borderColor;
-  final Function(bool) onChanged;
+  final Color? borderColor;
+  final void Function(bool?)? onChanged;
 
-  const LanCheckBox({Key key, this.value, this.borderColor, this.onChanged})
+  const LanCheckBox(
+      {Key? key, required this.value, this.borderColor, this.onChanged})
       : super(key: key);
 
   @override

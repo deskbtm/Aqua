@@ -75,6 +75,12 @@ android {
         debug {
         }
     }
+
+    dependencies {
+        implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.6.1'
+        implementation group: 'org.rauschig', name: 'jarchivelib', version: '1.1.0'
+        implementation 'com.github.bumptech.glide:glide:4.11.0'
+    }
 }
 
 flutter {

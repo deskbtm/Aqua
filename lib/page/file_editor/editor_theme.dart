@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Map<String, TextStyle> setEditorTheme(bool isDark, [TextStyle style]) {
+Map<String, TextStyle> setEditorTheme(bool isDark, TextStyle style) {
   return {
     'root': style,
     if (isDark) ...atomOneDarkTheme,

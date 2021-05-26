@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:aqua/page/lan/share/share.dart';
-import 'package:quick_actions/quick_actions.dart';
+import 'package:aqua/page/lan/share.dart';
 
 class LanPage extends StatefulWidget {
   @override
@@ -14,17 +13,6 @@ class LanPageState extends State<LanPage> {
   @override
   void initState() {
     super.initState();
-    final QuickActions quickActions = QuickActions();
-
-    quickActions.initialize((String shortcutType) {
-      switch (shortcutType) {
-        case 'static-server':
-          break;
-        case 'vscode-server':
-          break;
-        default:
-      }
-    });
   }
 
   @override

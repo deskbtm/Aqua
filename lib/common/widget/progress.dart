@@ -16,27 +16,27 @@ class ProgressBar extends StatelessWidget {
   final Color backgroundColor;
   final Color boarderColor;
   final bool showRemainder;
-  final double extraSize;
+  late final double extraSize;
 
-  ProgressBar(
-      {@required this.title,
-      @required this.numerator,
-      @required this.denominator,
-      @required this.barWidth,
-      @required this.barHeight,
-      @required this.barColor,
-      @required this.titleStyle,
-      @required this.dialogTextStyle,
-      this.padding = 0.0,
-      this.backgroundColor = Colors.white,
-      this.boarderColor = Colors.grey,
-      this.showRemainder = true,
-      this.extraSize});
+  ProgressBar({
+    required this.title,
+    required this.numerator,
+    required this.denominator,
+    required this.barWidth,
+    required this.barHeight,
+    required this.barColor,
+    required this.titleStyle,
+    required this.dialogTextStyle,
+    this.padding = 0.0,
+    this.backgroundColor = Colors.white,
+    this.boarderColor = Colors.grey,
+    this.showRemainder = true,
+    this.extraSize = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
-    double barWithoutPadding =
-        this.barWidth - this.padding - (extraSize != null ? extraSize : 0);
+    double barWithoutPadding = this.barWidth - this.padding - extraSize;
 
     double percentageWidth =
         (this.numerator / this.denominator) * barWithoutPadding;
@@ -165,8 +165,8 @@ class ProgressBar extends StatelessWidget {
 }
 
 class DrawTriangle extends CustomPainter {
-  Paint _paint;
-  Color backgroundColor;
+  late Paint _paint;
+  late Color backgroundColor;
 
   DrawTriangle(backgroundColor) {
     _paint = Paint()

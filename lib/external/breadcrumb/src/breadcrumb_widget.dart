@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'breadcrumb_item.dart';
 
+
 class BreadCrumbTile extends StatelessWidget {
   final BreadCrumbItem breadCrumbItem;
 
-  const BreadCrumbTile({Key key, @required this.breadCrumbItem})
-      : assert(breadCrumbItem != null),
-        super(key: key);
+  const BreadCrumbTile({Key? key, required this.breadCrumbItem})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: breadCrumbItem.margin ?? EdgeInsets.all(0),
+      padding: breadCrumbItem.margin,
       child: Material(
         color: breadCrumbItem.isEnable
             ? breadCrumbItem.color
@@ -24,9 +24,9 @@ class BreadCrumbTile extends StatelessWidget {
         child: InkWell(
           onTap: breadCrumbItem.onTap,
           splashColor: breadCrumbItem.splashColor,
-          borderRadius: breadCrumbItem.borderRadius,
+          borderRadius: breadCrumbItem.borderRadius as BorderRadius?,
           child: Padding(
-            padding: breadCrumbItem.padding ?? EdgeInsets.all(0),
+            padding: breadCrumbItem.padding,
             child: DefaultTextStyle.merge(
               style: TextStyle(
                 color: breadCrumbItem.isEnable

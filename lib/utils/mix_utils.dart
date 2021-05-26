@@ -1,10 +1,9 @@
 import 'dart:io';
 
+import 'package:aqua/plugin/storage/storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
-import 'package:android_mix/android_mix.dart';
 import 'package:device_info/device_info.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:path/path.dart' as pathLib;
 
 class MixUtils {
@@ -16,10 +15,10 @@ class MixUtils {
   }
 
   static String humanStorageSize(double value, {bool useDouble = false}) {
-    if (null == value) {
+    if (value == null) {
       return "0B";
     }
-    List<String> unitArr = List()..add('B')..add('K')..add('M')..add('G');
+    List<String> unitArr = []..add('B')..add('K')..add('M')..add('G');
     int index = 0;
     while (value > 1024) {
       index++;
@@ -100,13 +99,13 @@ class MixUtils {
   }
 
   static Future<String> getExternalRootPath() async {
-    String path;
+    late String? path;
 
     /// android 会把 外存路径挂到环境变量中
-    path = await AndroidMix.storage.getExternalStorageDirectory;
+    path = await ExtraStorage.getExternalStorageDirectory;
     if (path == null) {
       try {
-        path = Platform.environment['EXTERNAL_STORAGE'];
+        path = Platform.environment['EXTERNAL_STORAGE']!;
         // 触发检查权限
         Directory(path).list();
       } catch (err) {
@@ -121,8 +120,8 @@ class MixUtils {
   }
 
   // RFC1918私有网络地址分配
-  static Future<String> getIntenalIp() async {
-    String ip;
+  static Future<String?> getIntenalIp() async {
+    String? ip;
 
     for (var interface in await NetworkInterface.list()) {
       for (var addr in interface.addresses) {
@@ -131,7 +130,7 @@ class MixUtils {
 
           List block = pureAddr.split(RegExp(r"\."));
 
-          if (block != null && block.length == 4) {
+          if (block.length == 4) {
             if (block[0] == '192' &&
                 block[1] == '168' &&
                 int.parse(block[2]) >= 0 &&

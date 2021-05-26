@@ -17,7 +17,7 @@ Border defaultRoundedBorder({color}) => Border(
     );
 
 BoxDecoration inputDecoration(
-        {color = CupertinoColors.white, Color borderColor}) =>
+        {color = CupertinoColors.white, required Color borderColor}) =>
     BoxDecoration(
       color: color,
       border: defaultRoundedBorder(color: borderColor),

@@ -10,17 +10,17 @@ InlineSpan getLinkSpan(m.Element element) =>
 
 ///the link widget
 Widget defaultAWidget(m.Element element) {
-  PConfig pConfig = StyleConfig().pConfig;
+  PConfig? pConfig = StyleConfig().pConfig;
   final url = element.attributes['href'];
   final linkWidget = P().getPWidget(
-    element.children,
+    element.children!,
     element,
     textStyle: pConfig?.linkStyle ?? defaultLinkStyle,
     selectable: false,
   );
-  return pConfig?.linkGesture?.call(linkWidget, url) ??
+  return pConfig?.linkGesture?.call(linkWidget, url!) ??
       GestureDetector(
         child: linkWidget,
-        onTap: () => pConfig?.onLinkTap?.call(url),
+        onTap: () => pConfig?.onLinkTap?.call(url!),
       );
 }

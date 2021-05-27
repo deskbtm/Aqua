@@ -1,37 +1,32 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:aqua/common/theme.dart';
+import 'package:aqua/common/widget/custom_refresh_indicator.dart';
+import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/utils/mix_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:aqua/common/widget/action_button.dart';
 import 'package:aqua/common/widget/draggable_scrollbar.dart';
 import 'package:aqua/common/widget/images.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
-import 'package:aqua/model/common_model.dart';
-import 'package:aqua/model/file_model.dart';
-import 'package:aqua/page/file_manager/file_action.dart';
-import 'package:aqua/page/file_manager/file_item.dart';
+import 'package:aqua/model/global_model.dart';
+import 'package:aqua/page/file_manager/file_operation.dart';
+import 'package:aqua/page/file_manager/file_list_tile.dart';
 import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'file_manager_mode.dart';
 import 'file_utils.dart';
-
-class ListFileItemInfo {
-  final Widget leading;
-  final SelfFileEntity file;
-
-  ListFileItemInfo({
-    required this.leading,
-    required this.file,
-  });
-}
 
 class FileListView extends StatefulWidget {
   final List<SelfFileEntity> fileList;
-  final Function(SelfFileEntity)? onDirItemTap;
+  final Function(SelfFileEntity)? onDirTileTap;
   final FileManagerMode mode;
   final Future<void> Function() update2Side;
   final Color? itemBgColor;
@@ -49,7 +44,7 @@ class FileListView extends StatefulWidget {
     this.onScroll,
     this.onTapEmpty,
     this.itemBgColor,
-    this.onDirItemTap,
+    this.onDirTileTap,
     required this.fileList,
     required this.update2Side,
     required this.mode,
@@ -68,40 +63,43 @@ class FileListView extends StatefulWidget {
 
 class _FileListViewState extends State<FileListView> {
   late ScrollController _scrollController;
-  late EasyRefreshController? _controller;
-  late FileModel fileModel;
+  late ThemeModel _themeModel;
 
-  late FileActionUI _fileActionUI;
+  late FileOperation _fileOperation;
+  late FileModel _fileModel;
 
   @override
   void initState() {
     super.initState();
-    fileModel = Provider.of<FileModel>(context, listen: false);
-    _controller = EasyRefreshController();
+
     _scrollController = ScrollController();
-    _fileActionUI = FileActionUI(
+    _fileOperation = FileOperation(
+      context: context,
       update2Side: widget.update2Side,
       selectLimit: widget.selectLimit,
       mode: widget.mode,
-      fileModel: fileModel,
       left: widget.left,
     );
+    _fileModel = Provider.of<FileModel>(context, listen: false);
     if (widget.onScroll != null) {
       _scrollController.addListener(widget.onScroll!);
     }
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _themeModel = Provider.of<ThemeModel>(context);
+  }
+
+  @override
   void dispose() {
     super.dispose();
-    _controller?.dispose();
     _scrollController.dispose();
-    _controller = null;
   }
 
   Future<void> _showOptionsWhenPressedEmpty(BuildContext context) async {
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-    bool sharedNotEmpty = commonModel.selectedFiles.isNotEmpty;
+    bool sharedNotEmpty = _fileModel.selectedFiles.isNotEmpty;
     showCupertinoModal(
       context: context,
       filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -112,7 +110,7 @@ class _FileListViewState extends State<FileListView> {
               ActionButton(
                 content: AppLocalizations.of(context)!.archiveHere,
                 onTap: () async {
-                  await _fileActionUI.showCreateArchiveModal(
+                  await _fileOperation.showCreateArchiveModal(
                     context,
                     mounted: mounted,
                   );
@@ -122,8 +120,7 @@ class _FileListViewState extends State<FileListView> {
               ActionButton(
                 content: AppLocalizations.of(context)!.moveHere,
                 onTap: () async {
-                  await _fileActionUI.handleMove(
-                    context,
+                  await _fileOperation.handleMove(
                     mounted: mounted,
                   );
                 },
@@ -134,7 +131,7 @@ class _FileListViewState extends State<FileListView> {
               ActionButton(
                 content: AppLocalizations.of(context)!.copyHere,
                 onTap: () async {
-                  await _fileActionUI.copyModal(
+                  await _fileOperation.copyModal(
                     context,
                     mounted: mounted,
                   );
@@ -143,7 +140,7 @@ class _FileListViewState extends State<FileListView> {
               ActionButton(
                 content: AppLocalizations.of(context)!.extractHere,
                 onTap: () async {
-                  await _fileActionUI.handleExtractArchive(
+                  await _fileOperation.handleExtractArchive(
                     context,
                     mounted: mounted,
                   );
@@ -153,7 +150,7 @@ class _FileListViewState extends State<FileListView> {
             ActionButton(
               content: AppLocalizations.of(context)!.create,
               onTap: () async {
-                await _fileActionUI.showCreateFileModal(context);
+                await _fileOperation.showCreateFileModal(context);
               },
             ),
           ],
@@ -162,10 +159,52 @@ class _FileListViewState extends State<FileListView> {
     );
   }
 
+  Text _createTextLabel(double offset, double barOffset) {
+    int index = (offset ~/ 78);
+    if (index < 0) {
+      index = 0;
+    } else if (index >= widget.fileList.length) {
+      index = widget.fileList.length - 1;
+    }
+
+    String filename = widget.fileList[index].filename;
+
+    return Text(
+      filename,
+      textScaleFactor: 1,
+      overflow: TextOverflow.ellipsis,
+      style:
+          TextStyle(fontSize: 12, color: _themeModel.themeData.itemFontColor),
+    );
+  }
+
+  void _handleTileTap(SelfFileEntity file, int index) {
+    if (file.isDir) {
+      if (widget.onDirTileTap != null) {
+        widget.onDirTileTap!(file);
+      }
+    } else {
+      _fileOperation.openFileActionByExt(
+        file,
+        index: index,
+        fileList: widget.fileList,
+        onChangePopLocker: widget.onChangePopLocker,
+        updateView: setState,
+      );
+    }
+  }
+
+  Future<void> _handleLongPressStart(SelfFileEntity file) async {
+    return _fileOperation.showFileActionModal(
+      file: file,
+      onChangeCurrentDir: widget.onChangeCurrentDir,
+      mounted: mounted,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    /// 如果文件数量变化，更新否则使用缓存的[_cachedFileList]，防止读取照片文件
-    /// thumb 时瞎几把闪，提前渲染好leaing
+    AquaTheme theme = _themeModel.themeData;
 
     return widget.fileList.isEmpty
         ? GestureDetector(
@@ -176,7 +215,7 @@ class _FileListViewState extends State<FileListView> {
             child: Container(
               color: Colors.transparent,
               child: Center(
-                child: NoResizeText('空'),
+                child: NoResizeText(AppLocalizations.of(context)!.empty),
               ),
             ),
           )
@@ -184,70 +223,50 @@ class _FileListViewState extends State<FileListView> {
             onLongPressStart: (details) async {
               await _showOptionsWhenPressedEmpty(context);
             },
-
-            /// [bug] DraggableScrollbar 会导致ListView setState()
-            /// 会有错误抛出 但是不太影响
             child: AnimationLimiter(
               child: DraggableScrollbar.rrect(
                 controller: _scrollController,
                 scrollbarTimeToFade: const Duration(seconds: 5),
-                child: EasyRefresh.custom(
-                  controller: _controller,
-                  scrollController: _scrollController,
-                  header: TaurusHeader(),
+                labelTextBuilder: _createTextLabel,
+                child: CustomRefreshIndicator(
                   onRefresh: widget.update2Side,
-                  slivers: [
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          SelfFileEntity file = widget.fileList[index];
-                          ListFileItemInfo item = ListFileItemInfo(
-                            leading: getPreviewIcon(context, file),
-                            file: file,
-                          );
-                          return FileItem(
-                            itemBgColor: widget.itemBgColor,
-                            mode: widget.mode,
-                            isDir: item.file.isDir,
-                            leading: item.leading,
-                            withAnimation: index < 15,
-                            index: index,
-                            file: item.file,
-                            onLongPress: (details) async {
-                              await _fileActionUI.showFileActionModal(
-                                context,
-                                file: item.file,
-                                onChangeCurrentDir: widget.onChangeCurrentDir,
-                                mounted: mounted,
-                              );
-                            },
-                            onTap: () {
-                              if (file.isDir) {
-                                if (widget.onDirItemTap != null) {
-                                  widget.onDirItemTap!(item.file);
-                                }
-                              } else {
-                                _fileActionUI.openFileActionByExt(
-                                  context,
-                                  item.file,
-                                  index: index,
-                                  fileList: widget.fileList,
-                                  onChangePopLocker: widget.onChangePopLocker,
-                                  updateView: setState,
-                                );
-                              }
-                            },
-                            onHozDrag: (dir) async {
-                              /// [index] 位数 [dir] 方向 1 向右 -1 左
-                              _fileActionUI.handleHozDragItem(
-                                  context, item.file, dir);
-                            },
-                          );
+                  child: ListView.builder(
+                    itemCount: widget.fileList.length,
+                    controller: _scrollController,
+                    physics: ClampingScrollPhysics(),
+                    padding: EdgeInsets.only(top: 5, bottom: 8),
+                    itemBuilder: (BuildContext context, int index) {
+                      SelfFileEntity file = widget.fileList[index];
+                      Widget leading = getPreviewIcon(context, file);
+
+                      return FileListTile(
+                        path: file.path,
+                        title: file.filename,
+                        subTitle: file.humanModified,
+                        mode: widget.mode,
+                        leading: leading,
+                        height: 72,
+                        titleStyle: TextStyle(color: theme.itemFontColor),
+                        leadingTitle: file.isDir ? file.humanSize : null,
+                        trailing: file.isDir
+                            ? Icon(
+                                Icons.arrow_right,
+                                size: 16,
+                                color: theme.itemFontColor,
+                              )
+                            : null,
+                        withAnimation: index < 15,
+                        index: index,
+                        onLongPressStart: (details) async {
+                          await _handleLongPressStart(file);
                         },
-                        childCount: widget.fileList.length,
-                      ),
-                    )
-                  ],
+                        onTap: () => _handleTileTap(file, index),
+                        onHozDrag: (dir) async {
+                          await _fileOperation.handleHozDragItem(file, dir);
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

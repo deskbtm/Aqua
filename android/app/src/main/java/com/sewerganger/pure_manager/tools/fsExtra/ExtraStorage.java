@@ -12,6 +12,8 @@ import java.util.List;
 
 import io.flutter.util.PathUtils;
 
+import static android.os.Build.VERSION_CODES.M;
+
 public class ExtraStorage {
   private Context context;
 
@@ -23,7 +25,18 @@ public class ExtraStorage {
     return context.getCacheDir().getPath();
   }
 
+  public String getExternalStorageState() {
+    return Environment.getExternalStorageState();
+  }
+
   public String getExternalStorageDirectory() {
+//    String path;
+//    if (Build.VERSION.SDK_INT < M) {
+//      path = Environment.getExternalStorageDirectory().getAbsolutePath();
+//    } else {
+//      path = "content://com.android.externalstorage.documents/tree/primary%3A";
+//    }
+
     return Environment.getExternalStorageDirectory().getAbsolutePath();
   }
 
@@ -78,7 +91,7 @@ public class ExtraStorage {
   }
 
 
-  public String getStorageDirectory() {
+  public String getExternalFilesDir() {
     final File dir = context.getExternalFilesDir(null);
     if (dir == null) {
       return null;

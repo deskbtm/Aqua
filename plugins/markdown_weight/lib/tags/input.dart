@@ -9,7 +9,7 @@ InlineSpan getInputSpan(m.Element node) {
     checked = node.attributes['checked']!.toLowerCase() == 'true';
   }
   return WidgetSpan(
-    child: StyleConfig()?.checkBoxBuilder?.call(checked, node.attributes) ??
+    child: StyleConfig().checkBoxBuilder?.call(checked, node.attributes) ??
         defaultCheckBox(node.attributes, checked: checked),
   );
 }
@@ -23,7 +23,7 @@ Widget defaultCheckBox(
     checked = attributes['checked']!.toLowerCase() == 'true';
   }
   if (checked == null) checked = true;
-  final config = StyleConfig()?.checkBoxConfig;
+  final config = StyleConfig().checkBoxConfig;
   return MCheckBox(
     value: checked,
     config: config,

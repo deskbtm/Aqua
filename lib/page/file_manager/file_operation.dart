@@ -12,11 +12,10 @@ import 'package:aqua/common/widget/file_info_card.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
-
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/file_model.dart';
 import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/page/file_manager/file_manager.dart';
+
 import 'package:aqua/page/file_manager/show_more.dart';
 import 'package:aqua/page/photo_viewer/photo_viewer.dart';
 import 'package:aqua/page/video/meida_info.dart';
@@ -35,36 +34,41 @@ import 'package:provider/provider.dart';
 import 'create_archive.dart';
 import 'create_rename.dart';
 import 'create_file.dart';
+import 'file_manager_mode.dart';
 import 'file_utils.dart';
 
-class FileActionUI {
-  final FileModel fileModel;
+class FileOperation {
   final Future<void> Function() update2Side;
   final FileManagerMode mode;
   final int? selectLimit;
   final bool left;
+  final BuildContext context;
+  late FileModel _fileModel;
+  late GlobalModel _globalModel;
+  late ThemeModel _themeModel;
 
-  FileActionUI({
-    required this.fileModel,
+  FileOperation({
+    required this.context,
     required this.left,
     required this.update2Side,
     required this.mode,
     this.selectLimit,
-  });
+  }) {
+    _fileModel = Provider.of<FileModel>(context, listen: false);
+    _globalModel = Provider.of<GlobalModel>(context, listen: false);
+    _themeModel = Provider.of<ThemeModel>(context, listen: false);
+  }
 
   Future<void> showCreateArchiveModal(
     BuildContext context, {
     required bool mounted,
   }) async {
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
     return createArchiveModal(
       context,
-      // commonModel: commonModel,
-      // themeModel: themeModel,
-      currentDir: fileModel.currentDir!,
+      currentDir: _fileModel.currentDir!,
       onSuccessUpdate: (context) async {
         if (mounted) {
-          commonModel.clearSelectedFiles();
+          _fileModel.clearSelectedFiles();
           await update2Side();
           MixUtils.safePop(context);
         }
@@ -73,15 +77,12 @@ class FileActionUI {
   }
 
   void openFileActionByExt(
-    BuildContext context,
     SelfFileEntity file, {
     int index = 0,
     required List<SelfFileEntity> fileList,
     required Function(bool) onChangePopLocker,
     required Function(Function()) updateView,
   }) {
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-    ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
     String path = file.entity.path;
     FsUtils.matchFileActionByExt(
       file.ext,
@@ -128,8 +129,8 @@ class FileActionUI {
         // _popLocker = false;
       },
       caseArchive: () {
-        commonModel.clearSelectedFiles();
-        commonModel.addSelectedFile(file);
+        _fileModel.clearSelectedFiles();
+        _fileModel.addSelectedFile(file);
         updateView(() {});
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context)!.target,
@@ -150,16 +151,16 @@ class FileActionUI {
                   codeConfig: CodeConfig(
                     decoration: BoxDecoration(color: Colors.transparent),
                   ),
-                  markdownTheme: themeModel.isDark
+                  markdownTheme: _themeModel.isDark
                       ? MarkdownTheme.darkTheme
                       : MarkdownTheme.lightTheme,
                   preConfig: PreConfig(
                     theme: setEditorTheme(
-                      themeModel.isDark,
+                      _themeModel.isDark,
                       TextStyle(
-                        color: themeModel.themeData?.itemFontColor,
+                        color: _themeModel.themeData.itemFontColor,
                         backgroundColor:
-                            themeModel.themeData?.scaffoldBackgroundColor,
+                            _themeModel.themeData.scaffoldBackgroundColor,
                       ),
                     ),
                   ),
@@ -175,15 +176,13 @@ class FileActionUI {
     );
   }
 
-  Future<void> handleMove(
-    BuildContext context, {
+  Future<void> handleMove({
     required bool mounted,
   }) async {
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-    if (commonModel.selectedFiles.isNotEmpty) {
-      await for (var item in Stream.fromIterable(commonModel.selectedFiles)) {
+    if (_fileModel.selectedFiles.isNotEmpty) {
+      await for (var item in Stream.fromIterable(_fileModel.selectedFiles)) {
         String newPath = pathLib.join(
-            fileModel.currentDir!.path, pathLib.basename(item.entity.path));
+            _fileModel.currentDir!.path, pathLib.basename(item.entity.path));
         if (await File(newPath).exists() || await Directory(newPath).exists()) {
           Fluttertoast.showToast(
             msg: '$newPath ${AppLocalizations.of(context)!.fileExisted}',
@@ -208,7 +207,7 @@ class FileActionUI {
           msg: AppLocalizations.of(context)!.setSuccess,
         );
         update2Side();
-        await commonModel.clearSelectedFiles();
+        await _fileModel.clearSelectedFiles();
         MixUtils.safePop(context);
       }
     }
@@ -253,13 +252,13 @@ class FileActionUI {
 
   Future<void> showCreateFileModal(BuildContext context) async {
     bool isRoot =
-        pathLib.equals(fileModel.rootDir!.path, fileModel.currentDir!.path);
+        pathLib.equals(_fileModel.rootDir!.path, _fileModel.currentDir!.path);
 
     return createFileModal(
       context,
       willCreateDir: !left || isRoot
-          ? fileModel.currentDir!.path
-          : fileModel.currentDir!.parent.path,
+          ? _fileModel.currentDir!.path
+          : _fileModel.currentDir!.parent.path,
       onExists: () {
         Fluttertoast.showToast(
           msg: AppLocalizations.of(context)!.fileExisted,
@@ -284,10 +283,9 @@ class FileActionUI {
     required bool mounted,
   }) async {
     MixUtils.safePop(context);
-    ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-    AquaTheme themeData = themeModel.themeData;
-    List<SelfFileEntity> selected = commonModel.selectedFiles;
+
+    AquaTheme themeData = _themeModel.themeData;
+    List<SelfFileEntity> selected = _fileModel.selectedFiles;
     bool confirmRm = false;
 
     showCupertinoModal(
@@ -304,7 +302,7 @@ class FileActionUI {
             action: true,
             children: <Widget>[
               confirmRm
-                  ? loadingIndicator(context, themeModel)
+                  ? loadingIndicator(context, _themeModel)
                   : NoResizeText(
                       '${AppLocalizations.of(context)!.delete} ${selected.length == 0 ? 1 : selected.length} ${AppLocalizations.of(context)!.files}?',
                     ),
@@ -316,14 +314,14 @@ class FileActionUI {
                   confirmRm = true;
                 });
 
-                commonModel.addSelectedFile(file);
+                _fileModel.addSelectedFile(file);
 
                 await for (var item in Stream.fromIterable(selected)) {
                   if (item.isDir) {
                     if (FileUtils.rm([item.entity.path],
                         recursive: true, directory: true, force: true)) {
                       //删除后 已经不存在了 交换一下
-                      if (item.entity.path != fileModel.rootDir!.path) {
+                      if (item.entity.path != _fileModel.rootDir!.path) {
                         onChangeCurrentDir(item.entity.parent);
                       }
                     }
@@ -337,7 +335,7 @@ class FileActionUI {
                 }
                 Fluttertoast.showToast(
                     msg: AppLocalizations.of(context)!.setSuccess);
-                commonModel.clearSelectedFiles();
+                _fileModel.clearSelectedFiles();
               }
             },
             onCancel: () {
@@ -357,22 +355,19 @@ class FileActionUI {
       return;
     }
 
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-
     if (mode == FileManagerMode.pick) {
-      await commonModel.addPickedFile(file);
+      await _fileModel.addPickedFile(file);
     } else {
       Fluttertoast.showToast(msg: AppLocalizations.of(context)!.target);
-      await commonModel.addSelectedFile(file);
+      await _fileModel.addSelectedFile(file);
     }
 
     MixUtils.safePop(context);
   }
 
   bool isBeyondLimit(BuildContext context) {
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
     if (mode == FileManagerMode.pick && selectLimit is int) {
-      if (commonModel.pickedFiles.length >= selectLimit!) {
+      if (_fileModel.pickedFiles.length >= selectLimit!) {
         Fluttertoast.showToast(
             msg: '${AppLocalizations.of(context)!.selectLimit} $selectLimit');
         return true;
@@ -381,23 +376,21 @@ class FileActionUI {
     return false;
   }
 
-  Future<void> handleHozDragItem(
-      BuildContext context, SelfFileEntity file, double dir) async {
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
+  Future<void> handleHozDragItem(SelfFileEntity file, double dir) async {
     if (mode == FileManagerMode.pick) {
       if (dir == 1) {
         if (isBeyondLimit(context)) {
           return;
         }
-        await commonModel.addPickedFile(file);
+        await _fileModel.addPickedFile(file);
       } else if (dir == -1) {
-        await commonModel.removePickedFile(file);
+        await _fileModel.removePickedFile(file);
       }
     } else {
       if (dir == 1) {
-        await commonModel.addSelectedFile(file);
+        await _fileModel.addSelectedFile(file, update: true);
       } else if (dir == -1) {
-        await commonModel.removeSelectedFile(file);
+        await _fileModel.removeSelectedFile(file, update: true);
       }
     }
   }
@@ -406,15 +399,14 @@ class FileActionUI {
     BuildContext context, {
     required bool mounted,
   }) async {
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
     bool result = false;
-    if (commonModel.selectedFiles.length > 1) {
+    if (_fileModel.selectedFiles.length > 1) {
       Fluttertoast.showToast(msg: AppLocalizations.of(context)!.onlyOneFile);
     } else {
-      SelfFileEntity first = commonModel.selectedFiles.first;
+      SelfFileEntity first = _fileModel.selectedFiles.first;
       String archivePath = first.entity.path;
       String name = FsUtils.getName(archivePath);
-      if (Directory(pathLib.join(fileModel.currentDir!.path, name))
+      if (Directory(pathLib.join(_fileModel.currentDir!.path, name))
           .existsSync()) {
         Fluttertoast.showToast(
             msg: AppLocalizations.of(context)!.duplicateFile);
@@ -431,7 +423,7 @@ class FileActionUI {
                 showWaitForArchiveNotification(
                     AppLocalizations.of(context)!.decompressing);
                 result = await Archive.unzip(
-                    archivePath, fileModel.currentDir!.path,
+                    archivePath, _fileModel.currentDir!.path,
                     pwd: val);
               },
               onCancel: () {
@@ -442,7 +434,7 @@ class FileActionUI {
             showWaitForArchiveNotification(
                 AppLocalizations.of(context)!.decompressing);
             result =
-                await Archive.unzip(archivePath, fileModel.currentDir!.path);
+                await Archive.unzip(archivePath, _fileModel.currentDir!.path);
           }
           break;
         case '.tar':
@@ -450,7 +442,7 @@ class FileActionUI {
               AppLocalizations.of(context)!.decompressing);
           await Archive.extractArchive(
             archivePath,
-            fileModel.currentDir!.path,
+            _fileModel.currentDir!.path,
             ArchiveFormat.tar,
           );
           break;
@@ -460,7 +452,7 @@ class FileActionUI {
               AppLocalizations.of(context)!.decompressing);
           result = await Archive.extractArchive(
             archivePath,
-            fileModel.currentDir!.path,
+            _fileModel.currentDir!.path,
             ArchiveFormat.tar,
             compressionType: CompressionType.gzip,
           );
@@ -471,7 +463,7 @@ class FileActionUI {
               AppLocalizations.of(context)!.decompressing);
           result = await Archive.extractArchive(
             archivePath,
-            fileModel.currentDir!.path,
+            _fileModel.currentDir!.path,
             ArchiveFormat.tar,
             compressionType: CompressionType.bzip2,
           );
@@ -482,7 +474,7 @@ class FileActionUI {
               AppLocalizations.of(context)!.decompressing);
           result = await Archive.extractArchive(
             archivePath,
-            fileModel.currentDir!.path,
+            _fileModel.currentDir!.path,
             ArchiveFormat.tar,
             compressionType: CompressionType.xz,
           );
@@ -492,7 +484,7 @@ class FileActionUI {
               AppLocalizations.of(context)!.decompressing);
           result = await Archive.extractArchive(
             archivePath,
-            fileModel.currentDir!.path,
+            _fileModel.currentDir!.path,
             ArchiveFormat.jar,
           );
           break;
@@ -504,7 +496,7 @@ class FileActionUI {
         Fluttertoast.showToast(msg: AppLocalizations.of(context)!.setFail);
       }
       if (mounted) {
-        await commonModel.clearSelectedFiles();
+        await _fileModel.clearSelectedFiles();
         await update2Side();
         MixUtils.safePop(context);
       }
@@ -516,15 +508,13 @@ class FileActionUI {
     required bool mounted,
   }) async {
     MixUtils.safePop(context);
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-    ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
 
-    if (commonModel.selectedFiles.isEmpty) {
+    if (_fileModel.selectedFiles.isEmpty) {
       Fluttertoast.showToast(msg: AppLocalizations.of(context)!.noContent);
       return;
     }
 
-    AquaTheme themeData = themeModel.themeData;
+    AquaTheme themeData = _themeModel.themeData;
     bool popAble = true;
 
     showCupertinoModal(
@@ -548,7 +538,7 @@ class FileActionUI {
                   SizedBox(height: 10),
                   popAble
                       ? ThemedText(AppLocalizations.of(context)!.pasteTip)
-                      : loadingIndicator(context, themeModel),
+                      : loadingIndicator(context, _themeModel),
                   SizedBox(height: 10),
                 ],
                 defaultOkText: AppLocalizations.of(context)!.sure,
@@ -562,8 +552,9 @@ class FileActionUI {
                   });
 
                   await for (var item
-                      in Stream.fromIterable(commonModel.selectedFiles)) {
-                    String targetPath = pathLib.join(fileModel.currentDir!.path,
+                      in Stream.fromIterable(_fileModel.selectedFiles)) {
+                    String targetPath = pathLib.join(
+                        _fileModel.currentDir!.path,
                         pathLib.basename(item.entity.path));
                     await FsUtils.copy(item, targetPath);
                   }
@@ -574,7 +565,7 @@ class FileActionUI {
                     MixUtils.safePop(context);
                     Fluttertoast.showToast(
                         msg: AppLocalizations.of(context)!.setSuccess);
-                    await commonModel.clearSelectedFiles();
+                    await _fileModel.clearSelectedFiles();
                     await update2Side();
                   }
                   return;
@@ -591,21 +582,20 @@ class FileActionUI {
     );
   }
 
-  Future<void> showFileActionModal(
-    BuildContext context, {
+  Future<void> showFileActionModal({
     required SelfFileEntity file,
     required Function(Directory) onChangeCurrentDir,
     required bool mounted,
   }) async {
     bool showSize = false;
-    CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
-    bool sharedNotEmpty = commonModel.selectedFiles.isNotEmpty;
 
-    if (commonModel.isFileOptionPromptNotInit) {
+    bool sharedNotEmpty = _fileModel.selectedFiles.isNotEmpty;
+
+    if (_globalModel.isFileOptionPromptNotInit) {
       Fluttertoast.showToast(
         msg: AppLocalizations.of(context)!.copyDetails,
       );
-      commonModel.setFileOptionPromptInit(false);
+      _globalModel.setFileOptionPromptInit(false);
     }
 
     await showCupertinoModal(
@@ -642,7 +632,7 @@ class FileActionUI {
                 ActionButton(
                   content: AppLocalizations.of(context)!.moveHere,
                   onTap: () async {
-                    await handleMove(context, mounted: mounted);
+                    await handleMove(mounted: mounted);
                   },
                 ),
               ActionButton(
@@ -682,9 +672,9 @@ class FileActionUI {
               ),
               if (sharedNotEmpty &&
                   // 在判断下 不然移动下 sharedNotEmpty有问题
-                  commonModel.selectedFiles.length != 0 &&
+                  _fileModel.selectedFiles.length != 0 &&
                   FsUtils.ARCHIVE_EXTS
-                      .contains(commonModel.selectedFiles.first.ext))
+                      .contains(_fileModel.selectedFiles.first.ext))
                 ActionButton(
                   content: AppLocalizations.of(context)!.extractHere,
                   onTap: () async {

@@ -20,7 +20,7 @@ enum ControlsStyle { primary, secondary }
 
 class PurePlayerController {
   /// the video_player controller
-  VideoPlayerController _videoPlayerController;
+  late VideoPlayerController? _videoPlayerController;
   final _pipManager = PipManager();
 
   /// Screen Manager to define the overlays and device orientation when the player enters in fullscreen mode
@@ -42,12 +42,12 @@ class PurePlayerController {
   final Color colorTheme;
   final bool controlsEnabled;
   final String errorText;
-  Widget placeholder, header, bottomRight;
+  late Widget? placeholder, header, bottomRight;
   final ControlsStyle controlsStyle;
   final bool pipEnabled, showPipButton;
-  BuildContext _pipContextToFullscreen;
+  BuildContext? _pipContextToFullscreen;
 
-  String tag;
+  late String tag;
 
   // OBSERVABLES
   Rx<Duration> _position = Duration.zero.obs;
@@ -67,50 +67,50 @@ class PurePlayerController {
   bool _autoplay = false;
   double _volumeBeforeMute = 0;
   double _playbackSpeed = 1.0;
-  Timer _timer;
+  Timer? _timer;
 
   // GETS
 
   /// use this stream to listen the player data events like none, loading, loaded, error
-  Stream<DataStatus> get onDataStatusChanged => dataStatus.status.stream;
+  Stream<DataStatus?> get onDataStatusChanged => dataStatus.status.stream;
 
   /// use this stream to listen the player data events like stopped, playing, paused
-  Stream<PlayerStatus> get onPlayerStatusChanged => playerStatus.status.stream;
+  Stream<PlayerStatus?> get onPlayerStatusChanged => playerStatus.status.stream;
 
   /// current position of the player
   Duration get position => _position.value;
 
   /// use this stream to listen the changes in the video position
-  Stream<Duration> get onPositionChanged => _position.stream;
+  Stream<Duration?> get onPositionChanged => _position.stream;
 
   /// duration of the video
   Duration get duration => _duration.value;
 
   /// use this stream to listen the changes in the video duration
-  Stream<Duration> get onDurationChanged => _duration.stream;
+  Stream<Duration?> get onDurationChanged => _duration.stream;
 
   /// [mute] is true if the player is muted
   bool get mute => _mute.value;
-  Stream<bool> get onMuteChanged => _mute.stream;
+  Stream<bool?> get onMuteChanged => _mute.stream;
 
   /// [fullscreen] is true if the player is in fullscreen mode
   bool get fullscreen => _fullscreen.value;
-  Stream<bool> get onFullscreenChanged => _fullscreen.stream;
+  Stream<bool?> get onFullscreenChanged => _fullscreen.stream;
 
   /// [showControls] is true if the player controls are visible
   bool get showControls => _showControls.value;
-  Stream<bool> get onShowControlsChanged => _showControls.stream;
+  Stream<bool?> get onShowControlsChanged => _showControls.stream;
 
   /// [sliderPosition] the video slider position
   Duration get sliderPosition => _sliderPosition.value;
-  Stream<Duration> get onSliderPositionChanged => _sliderPosition.stream;
+  Stream<Duration?> get onSliderPositionChanged => _sliderPosition.stream;
 
   /// [bufferedLoaded] buffered Loaded for network resources
   Duration get bufferedLoaded => _bufferedLoaded.value;
-  Stream<Duration> get onBufferedLoadedChanged => _bufferedLoaded.stream;
+  Stream<Duration?> get onBufferedLoadedChanged => _bufferedLoaded.stream;
 
   /// [videoPlayerController] instace of VideoPlayerController
-  VideoPlayerController get videoPlayerController => _videoPlayerController;
+  VideoPlayerController? get videoPlayerController => _videoPlayerController;
 
   /// the playback speed default value is 1.0
   double get playbackSpeed => _playbackSpeed;
@@ -122,12 +122,12 @@ class PurePlayerController {
   bool get autoplay => _autoplay;
 
   bool get closedCaptionEnabled => _closedCaptionEnabled.value;
-  Stream<bool> get onClosedCaptionEnabledChanged =>
+  Stream<bool?> get onClosedCaptionEnabledChanged =>
       _closedCaptionEnabled.stream;
 
   /// [isInPipMode] is true if pip mode is enabled
   bool get isInPipMode => _pipManager.isInPipMode.value;
-  Stream<bool> get onPipModeChanged => _pipManager.isInPipMode.stream;
+  Stream<bool?> get onPipModeChanged => _pipManager.isInPipMode.stream;
 
   /// returns the os version
   Future<double> get osVersion async {
@@ -146,7 +146,7 @@ class PurePlayerController {
   PurePlayerController({
     this.screenManager = const ScreenManager(),
     this.colorTheme = const Color(0xFF007AFF),
-    Widget placeholder,
+    Widget? placeholder,
     this.controlsEnabled = true,
     this.errorText = 'Error',
     this.controlsStyle = ControlsStyle.primary,
@@ -172,19 +172,19 @@ class PurePlayerController {
     VideoPlayerController tmp; // create a new video controller
     if (dataSource.type == DataSourceType.asset) {
       tmp = new VideoPlayerController.asset(
-        dataSource.source,
+        dataSource.source!,
         closedCaptionFile: dataSource.closedCaptionFile,
         package: dataSource.package,
       );
     } else if (dataSource.type == DataSourceType.network) {
       tmp = new VideoPlayerController.network(
-        dataSource.source,
+        dataSource.source!,
         formatHint: dataSource.formatHint,
         closedCaptionFile: dataSource.closedCaptionFile,
       );
     } else {
       tmp = new VideoPlayerController.file(
-        dataSource.file,
+        dataSource.file!,
         closedCaptionFile: dataSource.closedCaptionFile,
       );
     }
@@ -193,9 +193,9 @@ class PurePlayerController {
 
   /// initialize the video_player controller and load the data source
   Future _initializePlayer({
-    Duration seekTo,
+    Duration? seekTo,
   }) async {
-    await _videoPlayerController.initialize();
+    await _videoPlayerController!.initialize();
 
     if (seekTo != null) {
       await this.seekTo(seekTo);
@@ -217,7 +217,7 @@ class PurePlayerController {
   }
 
   void _listener() {
-    final value = _videoPlayerController.value;
+    final value = _videoPlayerController!.value;
     // set the current video position
     final position = value.position;
     _position.value = position;
@@ -249,9 +249,9 @@ class PurePlayerController {
   /// [autoPlay] if this is true the video automatically start
   Future<void> setDataSource(
     DataSource dataSource, {
-    bool autoplay,
-    bool looping,
-    Duration seekTo,
+    bool? autoplay,
+    bool? looping,
+    Duration? seekTo,
   }) async {
     try {
       _autoplay = autoplay ?? this._autoplay;
@@ -260,21 +260,21 @@ class PurePlayerController {
 
       // if we are playing a video
       if (_videoPlayerController != null &&
-          _videoPlayerController.value.isPlaying) {
+          _videoPlayerController!.value.isPlaying) {
         await this.pause(notify: false);
       }
 
       // save the current video controller to be disposed in the next frame
-      VideoPlayerController oldController = _videoPlayerController;
+      VideoPlayerController? oldController = _videoPlayerController;
 
       // create a new video_player controller using the dataSource
       _videoPlayerController = _createVideoController(dataSource);
       await _initializePlayer(seekTo: seekTo);
       if (oldController != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          oldController?.removeListener(this._listener);
+        WidgetsBinding.instance?.addPostFrameCallback((_) async {
+          oldController.removeListener(this._listener);
           await oldController
-              ?.dispose(); // dispose the previous video controller
+              .dispose(); // dispose the previous video controller
         });
       }
 
@@ -282,10 +282,10 @@ class PurePlayerController {
       dataStatus.status.value = DataStatus.loaded;
 
       // set the video duration
-      _duration.value = _videoPlayerController.value.duration;
+      _duration.value = _videoPlayerController!.value.duration;
 
       // listen the video player events
-      _videoPlayerController.addListener(this._listener);
+      _videoPlayerController!.addListener(this._listener);
     } catch (e, s) {
       print(e);
       print(s);
@@ -356,7 +356,7 @@ class PurePlayerController {
   /// linear scale.
   Future<void> setVolume(double volume) async {
     assert(volume >= 0.0 && volume <= 1.0); // validate the param
-    _volumeBeforeMute = _videoPlayerController.value.volume;
+    _volumeBeforeMute = _videoPlayerController!.value.volume;
     await _videoPlayerController?.setVolume(volume);
   }
 
@@ -377,7 +377,7 @@ class PurePlayerController {
   /// [enabled] if is true the video player is muted
   Future<void> setMute(bool enabled) async {
     if (enabled) {
-      _volumeBeforeMute = _videoPlayerController.value.volume;
+      _volumeBeforeMute = _videoPlayerController!.value.volume;
     }
     _mute.value = enabled;
     await this.setVolume(enabled ? 0 : _volumeBeforeMute);
@@ -401,7 +401,7 @@ class PurePlayerController {
   set controls(bool visible) {
     _showControls.value = visible;
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
     }
     if (visible) {
       _hideTaskControls();
@@ -441,12 +441,12 @@ class PurePlayerController {
   /// [looping]
   Future<void> launchAsFullscreen(
     BuildContext context, {
-    @required DataSource dataSource,
+    required DataSource dataSource,
     bool autoplay = false,
     bool looping = false,
-    Widget header,
-    Widget bottomRight,
-    Duration seekTo,
+    Widget? header,
+    Widget? bottomRight,
+    Duration? seekTo,
   }) async {
     this.header = header;
     this.bottomRight = bottomRight;
@@ -457,7 +457,7 @@ class PurePlayerController {
       seekTo: seekTo,
     );
     await goToFullscreen(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
       _position.value = Duration.zero;
       _timer?.cancel();
       await pause();
@@ -500,14 +500,14 @@ class PurePlayerController {
   void _onPipModeChanged(bool isInPipMode) {
     // if the pip mode was closed and before enter to pip mode the player was not in fullscreen
     if (!isInPipMode && _pipContextToFullscreen != null) {
-      Navigator.pop(_pipContextToFullscreen); // close the fullscreen
+      Navigator.pop(_pipContextToFullscreen!); // close the fullscreen
       _pipContextToFullscreen = null;
     }
   }
 
   static PurePlayerController of(BuildContext context) {
     return context
-        .dependOnInheritedWidgetOfExactType<PurePlayerProvider>()
+        .dependOnInheritedWidgetOfExactType<PurePlayerProvider>()!
         .controller;
   }
 }

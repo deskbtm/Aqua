@@ -73,12 +73,12 @@ class AquaSwitch extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
 //     dynamic themeData = _themeModel?.themeData;
-//     print(themeData?.switchColor);
+//     print(themeData.switchColor);
 //     return Transform.scale(
 //       scale: 0.9,
 //       child: XlivSwitch(
-//         unActiveColor: themeData?.switchColor,
-//         activeColor: themeData?.switchColor,
+//         unActiveColor: themeData.switchColor,
+//         activeColor: themeData.switchColor,
 //         value: widget.value,
 //         onChanged: widget.onChanged,
 //       ),

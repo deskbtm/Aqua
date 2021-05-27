@@ -9,28 +9,17 @@ import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/store.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-class CommonModel extends ChangeNotifier {
+class GlobalModel extends ChangeNotifier {
   final secureStorage = FlutterSecureStorage();
-  final context;
 
-  late String _language;
+  String? _language;
 
-  CommonModel(this.context);
-  String get language => _language;
+  String? get language => _language;
 
   Future<void> setLanguage(String val) async {
     _language = val;
     await Store.setString(LANGUAGE, val);
     notifyListeners();
-  }
-
-  /// 进入app的方式 正常打开'normal'
-  /// 从其他APP打开方式'incoming'
-  late Map _appIncoming;
-  Map? get appIncoming => _appIncoming;
-
-  Future<void> setAppIncoming(Map data) async {
-    _appIncoming = data;
   }
 
   late bool _canPopToDesktop = true;
@@ -56,13 +45,6 @@ class CommonModel extends ChangeNotifier {
     _staticUploadSavePath = arg;
     await Store.setString(STATIC_UPLOAD_SAVEPATH, arg);
     notifyListeners();
-  }
-
-  late String _sysDownloadPath;
-  String? get sysDownloadPath => _sysDownloadPath;
-
-  Future<void> setSysDownloadPath(String arg) async {
-    _sysDownloadPath = arg;
   }
 
   late String _filePort;
@@ -105,64 +87,7 @@ class CommonModel extends ChangeNotifier {
   late bool _enableClipboard = true;
   bool get enableClipboard => _enableClipboard;
 
-  Future<void> setEnableClipboard(bool arg) async {
-    _enableClipboard = arg;
-    await Store.setBool(ENABLE_CLIPBOARD, arg);
-    notifyListeners();
-  }
-
-  List<SelfFileEntity> _selectedFiles = [];
-  List<SelfFileEntity> get selectedFiles => _selectedFiles;
-
-  Future<void> addSelectedFile(SelfFileEntity value,
-      {bool update = false}) async {
-    if (!_selectedFiles.any((ele) => ele.entity.path == value.entity.path)) {
-      _selectedFiles.add(value);
-    }
-    if (update) notifyListeners();
-  }
-
-  Future<void> removeSelectedFile(SelfFileEntity value,
-      {bool update = false}) async {
-    _selectedFiles.removeWhere((ele) => ele.entity.path == value.entity.path);
-    if (update) notifyListeners();
-  }
-
-  bool? hasSelectedFile(String path) {
-    return _selectedFiles.any((ele) => ele.entity.path == path);
-  }
-
-  Future<void> clearSelectedFiles({bool update = false}) async {
-    _selectedFiles = [];
-    if (update) notifyListeners();
-  }
-
-  List<SelfFileEntity> _pickFiles = [];
-  List<SelfFileEntity> get pickedFiles => _pickFiles;
-
-  Future<void> addPickedFile(SelfFileEntity value,
-      {bool update = false}) async {
-    if (!_pickFiles.any((ele) => ele.entity.path == value.entity.path))
-      _pickFiles.add(value);
-    if (update) notifyListeners();
-  }
-
-  Future<void> removePickedFile(SelfFileEntity value,
-      {bool update = false}) async {
-    _pickFiles.removeWhere((ele) => ele.entity.path == value.entity.path);
-    if (update) notifyListeners();
-  }
-
-  bool? hasPickFile(String path) {
-    return _pickFiles.any((ele) => ele.entity.path == path);
-  }
-
-  Future<void> clearPickedFiles({bool update = false}) async {
-    _pickFiles = [];
-    if (update) notifyListeners();
-  }
-
-  late String _internalIp;
+  String? _internalIp;
   String? get internalIp => _internalIp;
 
   Future<void> setInternalIp(String arg) async {
@@ -170,7 +95,7 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  late String _currentConnectIp;
+  String? _currentConnectIp;
   String? get currentConnectIp => _currentConnectIp;
 
   Future<void> setCurrentConnectIp(String arg, {notify = true}) async {
@@ -254,7 +179,7 @@ class CommonModel extends ChangeNotifier {
     }
   }
 
-  late String _codeSrvPort;
+  String? _codeSrvPort;
   String? get codeSrvPort => _codeSrvPort;
 
   Future<void> setCodeSrvPort(String arg) async {
@@ -331,7 +256,7 @@ class CommonModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> initCommon() async {
+  Future<void> init() async {
     try {
       _filePort = (await Store.getString(FILE_PORT)) ?? FILE_DEFAULT_PORT;
 
@@ -362,7 +287,7 @@ class CommonModel extends ChangeNotifier {
       _language = (await Store.getString(LANGUAGE)) ??
           Platform.localeName.split('_').elementAt(0);
       _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
-          await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath!);
+          await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
     } catch (e, s) {
       await Sentry.captureException(
         e,

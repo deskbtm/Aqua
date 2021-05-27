@@ -115,12 +115,11 @@ Widget getPreviewIcon(BuildContext context, SelfFileEntity file) {
       previewIcon = FsUtils.matchFileIcon(file.ext);
     }
   } else if (FsUtils.HAVE_THUMBNAIL.contains(file.ext)) {
-    previewIcon = FutureBuilder<Uint8List>(
+    previewIcon = FutureBuilder<Uint8List?>(
       future: AquaGlide.getLocalThumbnail(
         path: file.entity.path,
         width: 50,
         height: 50,
-        // quality: 20,
       ),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {

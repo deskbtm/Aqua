@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'enums.dart';
 
 class ExtraStorage {
-  static const MethodChannel _channel = const MethodChannel('aqua_storage');
+  static const MethodChannel _channel = const MethodChannel('aqua_fs');
 
   static Future<String> get getTemporaryDirectory async {
     final String path = await _channel.invokeMethod('getTemporaryDirectory');
@@ -16,8 +16,8 @@ class ExtraStorage {
     return path;
   }
 
-  static Future<String> get getStorageDirectory async {
-    final String path = await _channel.invokeMethod('getStorageDirectory');
+  static Future<String?> get getExternalFilesDir async {
+    final String path = await _channel.invokeMethod('getExternalFilesDir');
     return path;
   }
 

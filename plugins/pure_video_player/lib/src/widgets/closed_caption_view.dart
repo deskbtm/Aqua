@@ -5,7 +5,7 @@ import 'package:pure_video_player/src/helpers/responsive.dart';
 
 class ClosedCaptionView extends StatelessWidget {
   final Responsive responsive;
-  const ClosedCaptionView({Key key, @required this.responsive})
+  const ClosedCaptionView({Key? key, required this.responsive})
       : super(key: key);
 
   @override
@@ -14,7 +14,7 @@ class ClosedCaptionView extends StatelessWidget {
     return Obx(() {
       if (!_.closedCaptionEnabled) return Container();
 
-      return StreamBuilder<Duration>(
+      return StreamBuilder<Duration?>(
         initialData: Duration.zero,
         stream: _.onPositionChanged,
         builder: (__, snapshot) {
@@ -22,7 +22,7 @@ class ClosedCaptionView extends StatelessWidget {
             return Container();
           }
 
-          final strSubtitle = _.videoPlayerController.value.caption.text;
+          final strSubtitle = _.videoPlayerController?.value.caption.text;
           if (strSubtitle == null) return Container();
 
           return Positioned(

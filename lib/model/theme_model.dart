@@ -13,7 +13,7 @@ class ThemeModel extends ChangeNotifier {
   AquaTheme get themeData => _themeData;
   String get theme => _theme;
 
-  Future<void> setTheme(String theme) async {
+  Future<void> setTheme(String theme, {notify = true}) async {
     _theme = theme;
     switch (theme) {
       case LIGHT_THEME:
@@ -30,6 +30,11 @@ class ThemeModel extends ChangeNotifier {
         break;
     }
     await Store.setString(THEME_KEY, theme);
-    notifyListeners();
+    if (notify) notifyListeners();
+  }
+
+  Future<void> init() async {
+    String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
+    await setTheme(theme, notify: false);
   }
 }

@@ -10,10 +10,10 @@ class Intent {
 
   static const MethodChannel _channel = const MethodChannel('intent');
 
-  late String _action;
-  late String _type;
-  late String _package;
-  late Uri _data;
+  String? _action;
+  String? _type;
+  String? _package;
+  Uri? _data;
   late List<String> _category;
   late List<int> _flag;
   late Map<String, dynamic> _extra;

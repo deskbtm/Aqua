@@ -6,7 +6,7 @@ import 'player_button.dart';
 
 class PlayPauseButton extends StatelessWidget {
   final double size;
-  const PlayPauseButton({Key key, this.size = 40}) : super(key: key);
+  const PlayPauseButton({Key? key, this.size = 40}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,21 +18,21 @@ class PlayPauseButton extends StatelessWidget {
           color: Colors.white,
           size: 45,
         );
-        Widget customIcon = _.customIcons.repeat;
+        Widget customIcon = _.customIcons.repeat!;
         if (_.playerStatus.playing) {
           icon = Icon(
             Icons.pause_outlined,
             color: Colors.white,
             size: 45,
           );
-          customIcon = _.customIcons.pause;
+          customIcon = _.customIcons.pause!;
         } else if (_.playerStatus.paused) {
           icon = Icon(
             Icons.play_arrow,
             color: Colors.white,
             size: 45,
           );
-          customIcon = _.customIcons.play;
+          customIcon = _.customIcons.play!;
         }
         return PlayerButton(
           backgrounColor: Colors.transparent,

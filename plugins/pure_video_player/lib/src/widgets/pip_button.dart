@@ -7,7 +7,7 @@ import 'player_button.dart';
 
 class PipButton extends StatelessWidget {
   final Responsive responsive;
-  const PipButton({Key key, @required this.responsive}) : super(key: key);
+  const PipButton({Key? key, required this.responsive}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

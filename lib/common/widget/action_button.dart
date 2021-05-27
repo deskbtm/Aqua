@@ -1,3 +1,4 @@
+import 'package:aqua/common/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +40,7 @@ class _ActionButtonState extends State<ActionButton> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     return Container(
       width: 170,

@@ -194,7 +194,7 @@ Handler createFilesHandler(
 
     if (file.existsSync()) {
       return _handleFile(request, file, () async {
-        return Future.value(contentTypeResolver?.lookup(file!.path));
+        return Future.value(contentTypeResolver?.lookup(file.path));
       });
     }
     return listFiles(pathList, serverUrl: serverUrl, isDark: isDark);

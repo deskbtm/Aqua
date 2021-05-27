@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 class Responsive {
   final double width, height;
-  double inch;
+  late double inch;
   Responsive(this.width, this.height) {
     inch = math.sqrt((width * width) + (height * height));
   }

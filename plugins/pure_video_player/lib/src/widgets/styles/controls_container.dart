@@ -4,7 +4,7 @@ import 'package:pure_video_player/src/controller.dart';
 
 class ControlsContainer extends StatelessWidget {
   final Widget child;
-  const ControlsContainer({Key key, @required this.child}) : super(key: key);
+  const ControlsContainer({Key? key, required this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

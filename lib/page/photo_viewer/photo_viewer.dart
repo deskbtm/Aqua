@@ -10,7 +10,7 @@ import 'package:aqua/common/widget/fade_in.dart';
 import 'package:aqua/common/widget/file_info_card.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
-import 'package:aqua/page/file_manager/file_action.dart';
+import 'package:aqua/page/file_manager/file_operation.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/utils/mix_utils.dart';
@@ -65,7 +65,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -144,7 +144,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
   Widget build(BuildContext context) {
     AquaTheme themeData = _themeModel.themeData;
     return Scaffold(
-      backgroundColor: themeData?.scaffoldBackgroundColor,
+      backgroundColor: themeData.scaffoldBackgroundColor,
       body: Stack(
         children: <Widget>[
           Positioned(
@@ -163,7 +163,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   File file = File(imagesRes[index]);
                   return PhotoView(
                     backgroundDecoration: BoxDecoration(
-                      color: themeData?.scaffoldBackgroundColor,
+                      color: themeData.scaffoldBackgroundColor,
                     ),
                     imageProvider: FileImage(file),
                     minScale: PhotoViewComputedScale.contained * 0.8,
@@ -203,7 +203,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   //       } else {
                   //         return PhotoView(
                   //           backgroundDecoration: BoxDecoration(
-                  //             color: themeData?.scaffoldBackgroundColor,
+                  //             color: themeData.scaffoldBackgroundColor,
                   //           ),
                   //           imageProvider: MemoryImage(snapshot.data),
                   //           minScale: PhotoViewComputedScale.contained * 0.8,
@@ -249,7 +249,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                       child: NoResizeText(
                         "${_currentIndex + 1}/${imagesRes.length}",
                         style: TextStyle(
-                            fontSize: 16, color: themeData?.itemFontColor),
+                            fontSize: 16, color: themeData.itemFontColor),
                       ),
                     ),
                   ),
@@ -259,7 +259,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                       icon: Icon(
                         Icons.close,
                         size: 20,
-                        color: themeData?.topNavIconColor,
+                        color: themeData.topNavIconColor,
                       ),
                       onPressed: () {
                         MixUtils.safePop(context);
@@ -305,6 +305,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                       isFile: stat.type == FileSystemEntityType.file,
                       isLink: stat.type == FileSystemEntityType.link,
                       pureName: pathLib.basenameWithoutExtension(file.path),
+                      humanModified: '',
                     );
 
                     switch (index) {

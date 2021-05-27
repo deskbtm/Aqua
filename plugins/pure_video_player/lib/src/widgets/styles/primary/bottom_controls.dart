@@ -10,7 +10,7 @@ import 'package:pure_video_player/src/widgets/player_slider.dart';
 
 class PrimaryBottomControls extends StatelessWidget {
   final Responsive responsive;
-  const PrimaryBottomControls({Key key, @required this.responsive})
+  const PrimaryBottomControls({Key? key, required this.responsive})
       : super(key: key);
 
   @override
@@ -54,7 +54,7 @@ class PrimaryBottomControls extends StatelessWidget {
           ),
           // END VIDEO DURATION
           SizedBox(width: 15),
-          if (_.bottomRight != null) ...[_.bottomRight, SizedBox(width: 5)],
+          if (_.bottomRight != null) ...[_.bottomRight!, SizedBox(width: 5)],
 
           if (_.enabledButtons.pip) PipButton(responsive: responsive),
 

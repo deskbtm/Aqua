@@ -10,7 +10,7 @@ import '../config/style_config.dart';
 class MTable {
   MTable._internal();
 
-  static late MTable? _instance;
+  static MTable? _instance;
 
   factory MTable() {
     _instance ??= MTable._internal();
@@ -20,7 +20,7 @@ class MTable {
   ///the table widget
   Widget getTableWidget(m.Element node) {
     if (node.children == null) return SizedBox();
-    final config = StyleConfig().tableConfig;
+    final TableConfig? config = StyleConfig().tableConfig;
 
     TableRow? header;
     List<TableRow> body = [];
@@ -49,7 +49,7 @@ class MTable {
   ///get the head of table
   TableRow _buildHeader(
     m.Element node,
-    TableConfig config,
+    TableConfig? config,
   ) {
     List<m.Element> thList = [];
     _buildTh(node, thList);
@@ -67,7 +67,7 @@ class MTable {
   void _buildTh(m.Node node, List<m.Element> thList) {
     if (node != null && node is m.Element) {
       if (node.tag == th) thList.add(node);
-      List.generate(node?.children?.length ?? 0,
+      List.generate(node.children?.length ?? 0,
           (index) => _buildTh(node.children![index], thList));
     }
   }
@@ -75,7 +75,7 @@ class MTable {
   ///get the body of table
   List<TableRow> _buildBody(
     m.Element node,
-    TableConfig config,
+    TableConfig? config,
   ) {
     if (node.children == null) return [];
     List<TableRow> results = [];

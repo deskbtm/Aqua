@@ -6,7 +6,7 @@ import 'player_button.dart';
 
 class FullscreenButton extends StatelessWidget {
   final double size;
-  const FullscreenButton({Key key, this.size = 30}) : super(key: key);
+  const FullscreenButton({Key? key, this.size = 30}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,14 +17,14 @@ class FullscreenButton extends StatelessWidget {
           Icons.fullscreen_exit_outlined,
           color: Colors.white,
         );
-        Widget customIcon = _.customIcons.fullscreen;
+        Widget customIcon = _.customIcons.fullscreen!;
 
         if (!_.fullscreen) {
           icon = Icon(
             Icons.fullscreen,
             color: Colors.white,
           );
-          customIcon = _.customIcons.fullscreen;
+          customIcon = _.customIcons.fullscreen!;
         }
         return PlayerButton(
           size: size,

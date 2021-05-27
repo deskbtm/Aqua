@@ -3,7 +3,7 @@ import 'package:pure_video_player/pure_video_player.dart';
 
 class PurePlayerFullscreenPage extends StatelessWidget {
   final PurePlayerController controller;
-  const PurePlayerFullscreenPage({Key key, @required this.controller})
+  const PurePlayerFullscreenPage({Key? key, required this.controller})
       : super(key: key);
 
   @override

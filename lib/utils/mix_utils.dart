@@ -91,7 +91,7 @@ class MixUtils {
   }
 
   static Future<String> getPrimaryStaticUploadSavePath(String root) async {
-    String tmp = pathLib.join(root, 'Lan_File_More/upload');
+    String tmp = pathLib.join(root, 'aqua/upload');
     if (!(await Directory(tmp).exists())) {
       await Directory(tmp).create(recursive: true);
     }

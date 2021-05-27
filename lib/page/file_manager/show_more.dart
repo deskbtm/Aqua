@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:aqua/common/widget/action_button.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/notification.dart';
@@ -26,7 +26,7 @@ Future<dynamic> showMoreModal(
   MixUtils.safePop(context);
   WebDavUtils utils = WebDavUtils();
 
-  CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
+  GlobalModel commonModel = Provider.of<GlobalModel>(context, listen: false);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
   AquaTheme theme = themeModel.themeData;
   String? filesPath = await ExtraStorage.getFilesDir;
@@ -99,7 +99,7 @@ Future<dynamic> showMoreModal(
                     // dialogBgColor: theme.dialogBgColor,
                     backgroundColor: theme.scaffoldBackgroundColor,
                     fontColor: theme.itemFontColor,
-                    selectItemColor: theme.itemColor,
+                    selectItemColor: theme.listTileColor,
                     popMenuColor: theme.menuItemColor,
                     highlightTheme: setEditorTheme(
                       themeModel.isDark,

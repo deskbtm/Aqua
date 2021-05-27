@@ -13,7 +13,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class P {
   P._internal();
 
-  static late P? _instance;
+  static P? _instance;
 
   factory P() {
     _instance ??= P._internal();
@@ -58,7 +58,7 @@ class P {
       TextConfig? textConfig) {
     if (nodes == null) return Container();
     List<Widget> children = [];
-    final config = StyleConfig()?.pConfig;
+    final config = StyleConfig().pConfig;
     buildBlockWidgets(
       nodes,
       parentNode,
@@ -185,7 +185,7 @@ class P {
     TextConfig? textConfig,
   ) {
     final List<m.Node> nodes = shouldParseHtml ? parseHtml(node) : [];
-    final config = StyleConfig()?.pConfig;
+    final config = StyleConfig().pConfig;
     if (nodes.isEmpty) {
       widgets.add(selectable
           ? SelectableText(

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:aqua/model/file_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,8 +10,7 @@ import 'package:aqua/common/widget/action_button.dart';
 import 'package:aqua/common/widget/loading_flipping.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
-import 'package:aqua/model/common_model.dart';
-import 'package:aqua/page/file_manager/file_item.dart';
+import 'package:aqua/page/file_manager/file_list_tile.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/common/theme.dart';
@@ -25,7 +25,7 @@ class InstalledAppsPage extends StatefulWidget {
 
 class _InstalledAppsPageState extends State<InstalledAppsPage> {
   late ThemeModel _themeModel;
-  late CommonModel _commonModel;
+  late FileModel _fileModel;
   bool _showSystemApps = false;
   List<Application>? _apps = [];
   bool _mutex = true;
@@ -34,7 +34,8 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
+    _fileModel = Provider.of<FileModel>(context);
+
     if (_mutex) {
       _mutex = false;
       _apps = await DeviceApps.getInstalledApplications(
@@ -113,28 +114,31 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
               color: themeData.navTitleColor,
             ),
           ),
-          trailing: InkWell(
-            onTap: () async {
-              _apps = null;
-              if (mounted) {
-                setState(() {
-                  _apps = [];
-                  _showSystemApps = !_showSystemApps;
-                });
-                _apps = await DeviceApps.getInstalledApplications(
-                  includeAppIcons: true,
-                  includeSystemApps: _showSystemApps,
-                  onlyAppsWithLaunchIntent: false,
-                );
+          trailing: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () async {
+                _apps = null;
                 if (mounted) {
-                  setState(() {});
+                  setState(() {
+                    _apps = [];
+                    _showSystemApps = !_showSystemApps;
+                  });
+                  _apps = await DeviceApps.getInstalledApplications(
+                    includeAppIcons: true,
+                    includeSystemApps: _showSystemApps,
+                    onlyAppsWithLaunchIntent: false,
+                  );
+                  if (mounted) {
+                    setState(() {});
+                  }
                 }
-              }
-            },
-            child: NoResizeText(
-              _showSystemApps ? '普通应用' : '系统应用',
-              style: TextStyle(
-                color: Color(0xFF007AFF),
+              },
+              child: NoResizeText(
+                _showSystemApps ? '普通应用' : '系统应用',
+                style: TextStyle(
+                  color: Color(0xFF007AFF),
+                ),
               ),
             ),
           ),
@@ -175,12 +179,15 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                       pureName: '',
                       size: stat.size,
                       mode: stat.mode,
+                      humanModified: '',
                     );
 
                     return Column(
                       children: <Widget>[
-                        FileItem(
-                          isDir: false,
+                        FileListTile(
+                          path: file.path,
+                          height: 200,
+                          title: '${app.appName}(${app.packageName})',
                           leading: app is ApplicationWithIcon
                               ? CircleAvatar(
                                   backgroundImage: MemoryImage(app.icon),
@@ -190,13 +197,13 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                           withAnimation: index < 15,
                           index: index,
                           subTitle:
-                              '\n${AppLocalizations.of(context)!.version}: ${app.versionName}\n'
+                              '${AppLocalizations.of(context)!.version}: ${app.versionName}\n'
                               '${AppLocalizations.of(context)!.sysApps}: ${app.systemApp}\n'
                               'APK ${AppLocalizations.of(context)!.position}: ${app.apkFilePath}\n'
                               '${AppLocalizations.of(context)!.dataDir}: ${app.dataDir}\n'
                               '${AppLocalizations.of(context)!.installTimestamp}: ${DateTime.fromMillisecondsSinceEpoch(app.installTimeMillis).toString()}\n'
                               '${AppLocalizations.of(context)!.updateTimestamp}: ${DateTime.fromMillisecondsSinceEpoch(app.updateTimeMillis).toString()}\n',
-                          onLongPress: (details) async {
+                          onLongPressStart: (details) async {
                             showAppActions(app);
                           },
                           onTap: () {
@@ -204,16 +211,15 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                           },
                           subTitleSize: 12,
                           titleSize: 16,
-                          autoWrap: false,
-                          file: fileEntity,
+
                           // path: app.apkFilePath,
                           // filename: '${app.appName} (${app.packageName})',
                           onHozDrag: (dir) async {
                             if (await file.exists()) {
                               if (dir == 1) {
-                                _commonModel.addSelectedFile(fileEntity);
+                                _fileModel.addSelectedFile(fileEntity);
                               } else if (dir == -1) {
-                                _commonModel.removeSelectedFile(fileEntity);
+                                _fileModel.removeSelectedFile(fileEntity);
                               }
                             }
                           },
@@ -221,7 +227,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                       ],
                     );
                   },
-                  itemCount: _apps!.length,
+                  itemCount: _apps?.length,
                 ),
               ),
       ),

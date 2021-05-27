@@ -5,19 +5,14 @@ import 'package:aqua/third_party/connectivity/connectivity.dart';
 
 import 'package:flutter/services.dart';
 import 'package:aqua/common/widget/double_pop.dart';
-import 'package:aqua/constant/constant_var.dart';
-import 'package:aqua/model/file_model.dart';
-import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'constant/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/utils/notification.dart';
 import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/utils/store.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -36,11 +31,8 @@ class _AquaState extends State<Aqua> {
         ChangeNotifierProvider<ThemeModel>(
           create: (_) => ThemeModel(),
         ),
-        ChangeNotifierProvider<CommonModel>(
-          create: (_) => CommonModel(context),
-        ),
-        ChangeNotifierProvider<FileModel>(
-          create: (_) => FileModel(),
+        ChangeNotifierProvider<GlobalModel>(
+          create: (_) => GlobalModel(),
         ),
       ],
       child: AquaWrapper(),
@@ -57,51 +49,43 @@ class AquaWrapper extends StatefulWidget {
 
 class _AquaWrapperState extends State<AquaWrapper> {
   late ThemeModel _themeModel;
-  late CommonModel _commonModel;
-  late bool _prepared;
-  late bool _settingMutex;
+  late GlobalModel _globalModel;
+  late bool _envPrepared;
+
   late StreamSubscription<ConnectivityResult> _connectSubscription;
 
   @override
   void initState() {
     super.initState();
-    _prepared = false;
-    _settingMutex = true;
+    _envPrepared = false;
 
     LocalNotification.initLocalNotification(
         onSelected: (String? payload) async {
       debugPrint(payload);
     });
 
-    _connectSubscription =
-        Connectivity().onConnectivityChanged.listen(_setInternalIp);
+    // _connectSubscription =
+    //     Connectivity().onConnectivityChanged.listen(_setInternalIp);
   }
 
-  Future<void> _setInternalIp(ConnectivityResult? result) async {
-    try {
-      if (_commonModel.enableConnect != null) {
-        String internalIp = await Connectivity().getWifiIP() ?? LOOPBACK_ADDR;
-        await _commonModel.setInternalIp(internalIp);
-      }
-    } catch (e) {}
-  }
+  // Future<void> _setInternalIp(ConnectivityResult? result) async {
+  //   try {
+  //     if (_globalModel.enableConnect != null) {
+  //       String internalIp = await Connectivity().getWifiIP() ?? LOOPBACK_ADDR;
+  //       await _globalModel.setInternalIp(internalIp);
+  //     }
+  //   } catch (e) {}
+  // }
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
-
-    if (_settingMutex) {
-      _settingMutex = false;
-      String theme = (await Store.getString(THEME_KEY)) ?? LIGHT_THEME;
-      await _themeModel.setTheme(theme);
-      await _commonModel.initCommon().catchError((err) {
-        // FLog.error(text: '', methodName: 'initCommon');
-      });
-      await _setInternalIp(null);
+    _globalModel = Provider.of<GlobalModel>(context);
+    await _preparedAppEnv();
+    if (!_envPrepared) {
       setState(() {
-        _prepared = true;
+        _envPrepared = true;
       });
     }
   }
@@ -110,15 +94,37 @@ class _AquaWrapperState extends State<AquaWrapper> {
   void dispose() {
     super.dispose();
     _connectSubscription.cancel();
-    _commonModel.setAppInit(false);
+    _globalModel.setAppInit(false);
+  }
+
+  Future<void> _preparedAppEnv() async {
+    bool hasError = false;
+    await _globalModel.init().catchError((e, s) async {
+      hasError = true;
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+      );
+    });
+    await _themeModel.init().catchError((e, s) async {
+      hasError = true;
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+      );
+    });
+
+    if (hasError) {
+      throw Exception('prepared app env fail');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    log("root render ====== (prepared = $_prepared)");
+    log("root render ======");
     AquaTheme themeData = _themeModel.themeData;
 
-    return _prepared
+    return _envPrepared
         ? AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle(
               systemNavigationBarIconBrightness:
@@ -136,7 +142,7 @@ class _AquaWrapperState extends State<AquaWrapper> {
                 const Locale('zh'),
                 const Locale('en'),
               ],
-              locale: Locale(_commonModel.language),
+              locale: Locale(_globalModel.language ?? 'zh'),
               navigatorObservers: [
                 SentryNavigatorObserver(),
               ],
@@ -149,13 +155,13 @@ class _AquaWrapperState extends State<AquaWrapper> {
                   ),
                 ),
               ),
+              // home: HomePage(),
               home: DoublePop(
-                commonModel: _commonModel,
-                themeModel: _themeModel,
+                globalModel: _globalModel,
                 child: HomePage(),
               ),
             ),
           )
-        : Container(color: themeData.scaffoldBackgroundColor ?? Colors.white);
+        : Container(color: themeData.scaffoldBackgroundColor);
   }
 }

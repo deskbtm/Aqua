@@ -7,7 +7,7 @@ import 'player_button.dart';
 
 class MuteSoundButton extends StatelessWidget {
   final Responsive responsive;
-  const MuteSoundButton({Key key, @required this.responsive}) : super(key: key);
+  const MuteSoundButton({Key? key, required this.responsive}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,14 +17,14 @@ class MuteSoundButton extends StatelessWidget {
         Icons.volume_off_outlined,
         color: Colors.white,
       );
-      Widget customIcon = _.customIcons.mute;
+      Widget customIcon = _.customIcons.mute!;
 
       if (!_.mute) {
         icon = Icon(
           Icons.volume_up_outlined,
           color: Colors.white,
         );
-        customIcon = _.customIcons.sound;
+        customIcon = _.customIcons.sound!;
       }
 
       return PlayerButton(

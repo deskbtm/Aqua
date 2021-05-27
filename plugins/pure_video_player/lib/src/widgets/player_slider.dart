@@ -4,7 +4,7 @@ import 'package:pure_video_player/pure_video_player.dart';
 import 'package:pure_video_player/src/helpers/utils.dart';
 
 class PlayerSlider extends StatelessWidget {
-  const PlayerSlider({Key key}) : super(key: key);
+  const PlayerSlider({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,9 +83,9 @@ class PlayerSlider extends StatelessWidget {
 class MSliderTrackShape extends RoundedRectSliderTrackShape {
   @override
   Rect getPreferredRect({
-    RenderBox parentBox,
+    required RenderBox parentBox,
     Offset offset = Offset.zero,
-    SliderThemeData sliderTheme,
+    required SliderThemeData sliderTheme,
     bool isEnabled = false,
     bool isDiscrete = false,
   }) {

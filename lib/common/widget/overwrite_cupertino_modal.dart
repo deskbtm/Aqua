@@ -50,7 +50,7 @@ class OverwriteCupertinoModalPopupRoute<T> extends PopupRoute<T> {
       begin: const Offset(0.0, 1.0),
       end: const Offset(0.0, 0.0),
     );
-    return _animation!;
+    return _animation;
   }
 
   @override
@@ -68,7 +68,7 @@ class OverwriteCupertinoModalPopupRoute<T> extends PopupRoute<T> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: FractionalTranslation(
-        translation: _offsetTween.evaluate(_animation!),
+        translation: _offsetTween.evaluate(_animation),
         child: child,
       ),
     );

@@ -55,11 +55,11 @@ class ThemedText extends StatefulWidget {
   }) : super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return LanTextState();
+    return ThemedTextState();
   }
 }
 
-class LanTextState extends State<ThemedText> {
+class ThemedTextState extends State<ThemedText> {
   late ThemeModel _themeModel;
 
   @override
@@ -81,7 +81,7 @@ class LanTextState extends State<ThemedText> {
           softWrap: widget.softWrap,
           style: widget.style ??
               TextStyle(
-                color: themeData?.itemFontColor,
+                color: themeData.itemFontColor,
                 fontSize: widget.small ? 13 : widget.fontSize,
               ),
         ),

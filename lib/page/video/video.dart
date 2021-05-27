@@ -50,7 +50,7 @@ class _VideoPageState extends State<VideoPage> {
   void initState() {
     super.initState();
     _playerEventSub = _purePlayerController.onPlayerStatusChanged.listen(
-      (PlayerStatus status) {
+      (PlayerStatus? status) {
         if (status == PlayerStatus.playing) {
           Wakelock.enable();
         } else {
@@ -76,7 +76,7 @@ class _VideoPageState extends State<VideoPage> {
   @override
   void dispose() {
     super.dispose();
-    _playerEventSub?.cancel();
+    _playerEventSub.cancel();
     Wakelock.disable();
     _purePlayerController.dispose();
     // player?.release();
@@ -87,7 +87,7 @@ class _VideoPageState extends State<VideoPage> {
   Widget build(BuildContext context) {
     AquaTheme themeData = _themeModel.themeData;
     return CupertinoPageScaffold(
-      backgroundColor: themeData?.scaffoldBackgroundColor,
+      backgroundColor: themeData.scaffoldBackgroundColor,
       child: Center(
         child: AspectRatio(
           aspectRatio: 16 / 9,

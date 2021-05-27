@@ -8,12 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/model/file_model.dart';
 import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/page/file_manager/file_manager.dart';
+
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
 import 'file_list_view.dart';
+import 'file_manager_mode.dart';
 import 'file_utils.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -161,7 +162,7 @@ Future<void> createSearchModal(
                           itemBgColor:
                               themeModel.isDark ? null : Color(0xFFFFFFFF),
                           mode: FileManagerMode.search,
-                          onDirItemTap: (dir) async {
+                          onDirTileTap: (dir) async {
                             currentDir = Directory(dir.path);
                             await readCurrentDir(currentDir);
                           },

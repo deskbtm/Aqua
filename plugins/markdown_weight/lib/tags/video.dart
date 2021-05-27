@@ -7,7 +7,7 @@ import '../config/style_config.dart';
 InlineSpan getVideoSpan(m.Element node) {
   String url = node.attributes['src']!;
   return WidgetSpan(
-    child: StyleConfig()?.videoBuilder?.call(url, node.attributes) ??
+    child: StyleConfig().videoBuilder?.call(url, node.attributes) ??
         defaultVideoWidget(node.attributes, url: url),
   );
 }
@@ -19,7 +19,7 @@ Widget defaultVideoWidget(Map<String, String> attributes, {String? url}) {
   if (attributes['width'] != null) width = double.parse(attributes['width']!);
   if (attributes['height'] != null)
     height = double.parse(attributes['height']!);
-  final config = StyleConfig()?.videoConfig;
+  final config = StyleConfig().videoConfig;
   final video = Container(
     width: width,
     height: height,
@@ -28,7 +28,7 @@ Widget defaultVideoWidget(Map<String, String> attributes, {String? url}) {
       config: config!,
     ),
   );
-  return config?.wrapperBuilder?.call(video) ?? video;
+  return config.wrapperBuilder?.call(video) ?? video;
 }
 
 typedef Widget VideoBuilder(String url, Map<String, String> attributes);

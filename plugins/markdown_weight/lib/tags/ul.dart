@@ -8,7 +8,7 @@ import 'p.dart';
 class Ul {
   Ul._internal();
 
-  static late Ul? _instance;
+  static Ul? _instance;
 
   factory Ul() {
     _instance ??= Ul._internal();
@@ -17,7 +17,7 @@ class Ul {
 
   ///the unOrderly list widget
   Widget getUlWidget(m.Element rootNode, int deep) {
-    final children = rootNode?.children;
+    final children = rootNode.children;
     if (children == null) return Container();
     return Column(
       children: List.generate(
@@ -52,7 +52,7 @@ class Ul {
     }
     final config = StyleConfig().ulConfig;
     final Widget? dotWidget =
-        StyleConfig()?.ulConfig?.dotWidget?.call(deep, index);
+        StyleConfig().ulConfig?.dotWidget?.call(deep, index);
     final ulChild = Container(
       margin: EdgeInsets.only(
           left: config?.textConfig?.textDirection == TextDirection.rtl
@@ -91,7 +91,7 @@ class Ul {
     final config = StyleConfig().ulConfig;
     final dotSize = config?.dotSize ?? 6;
     final marginTop =
-        (config?.textStyle?.fontSize ?? defaultPStyle?.fontSize ?? 14) / 2;
+        (config?.textStyle?.fontSize ?? defaultPStyle.fontSize ?? 14) / 2;
 
     return Container(
       width: dotSize,

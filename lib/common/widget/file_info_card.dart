@@ -35,7 +35,7 @@ class FileInfoCard extends StatefulWidget {
 class _FileInfoCardState extends State<FileInfoCard> {
   SelfFileEntity get file => widget.file;
   bool get showSize => widget.showSize;
-  late StreamSubscription<FileSystemEntity> _listener;
+  late StreamSubscription<FileSystemEntity>? _listener;
   late ThemeModel _themeModel;
   late int _totalSize;
   late int _fileCount;

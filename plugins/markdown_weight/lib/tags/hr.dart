@@ -6,7 +6,7 @@ import '../config/style_config.dart';
 class Hr {
   Hr._internal();
 
-  static late Hr? _instance;
+  static Hr? _instance;
 
   factory Hr() {
     _instance ??= Hr._internal();
@@ -15,7 +15,7 @@ class Hr {
 
   ///the hr widget
   Widget getHrWidget(m.Element node) {
-    final HrConfig hrConfig = StyleConfig().hrConfig;
+    final HrConfig? hrConfig = StyleConfig().hrConfig;
 
     return Container(
       height: hrConfig?.height ?? 2,

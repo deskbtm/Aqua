@@ -2,7 +2,16 @@ import 'package:flutter/material.dart';
 
 /// this class help you to change the default player icons
 class CustomIcons {
-  final Widget play, pause, repeat, rewind, fastForward, sound, mute, pip, minimize, fullscreen;
+  final Widget? play,
+      pause,
+      repeat,
+      rewind,
+      fastForward,
+      sound,
+      mute,
+      pip,
+      minimize,
+      fullscreen;
 
   const CustomIcons({
     this.play,

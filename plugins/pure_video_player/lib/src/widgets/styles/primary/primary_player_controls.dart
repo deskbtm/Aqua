@@ -9,7 +9,7 @@ import '../../player_button.dart';
 
 class PrimaryVideoPlayerControls extends StatelessWidget {
   final Responsive responsive;
-  const PrimaryVideoPlayerControls({Key key, @required this.responsive})
+  const PrimaryVideoPlayerControls({Key? key, required this.responsive})
       : super(key: key);
 
   @override
@@ -23,7 +23,7 @@ class PrimaryVideoPlayerControls extends StatelessWidget {
           // RENDER A CUSTOM HEADER
           if (_.header != null)
             Positioned(
-              child: _.header,
+              child: _.header!,
               left: 0,
               right: 0,
               top: 0,

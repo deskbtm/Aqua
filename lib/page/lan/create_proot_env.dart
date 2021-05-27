@@ -7,7 +7,7 @@ import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 
 // import 'package:aqua/external/system_info/system_info.dart';
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/lan/code_server/utils.dart';
 import 'package:aqua/utils/mix_utils.dart';
@@ -16,7 +16,7 @@ import 'package:system_info/system_info.dart';
 Future<void> createProotEnv(
   BuildContext context, {
   required ThemeModel themeProvider,
-  required CommonModel commonProvider,
+  required GlobalModel commonProvider,
   required Function onSuccess,
 }) async {
   MixUtils.safePop(context);

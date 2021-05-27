@@ -23,9 +23,9 @@ class WebDavUtils {
     Client? client = (await getClient()).client;
     String path = file.entity.path;
     if (client != null) {
-      await client.mkdir('/lan-file-more');
+      await client.mkdir('/aqua');
       await Future.delayed(Duration(milliseconds: 500));
-      await client.uploadFile(path, '/lan-file-more/${pathLib.basename(path)}');
+      await client.uploadFile(path, '/aqua/${pathLib.basename(path)}');
     } else {
       throw new Exception('webdav client got null');
     }

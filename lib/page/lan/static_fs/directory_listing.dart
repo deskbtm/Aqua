@@ -9,8 +9,8 @@ import 'package:shelf/shelf.dart';
 
 Future<String> _getHeader(String sanitizedHeading, String logo,
     {bool isShareFiles = false, required bool isDark}) async {
-  String plyrJs = await rootBundle.loadString('lib/web/assets/plyr.js');
-  String plyrCss = await rootBundle.loadString('lib/web/assets/plyr.css');
+  String plyrJs = await rootBundle.loadString('/assets/web/plyr.js');
+  String plyrCss = await rootBundle.loadString('/assets/web/plyr.css');
 
   return '''<!DOCTYPE html>
 <html>

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:aqua/model/file_model.dart';
+import 'package:aqua/page/file_manager/file_manager_mode.dart';
 import 'package:aqua/plugin/archive/archive.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,7 @@ import 'package:aqua/page/file_manager/file_utils.dart';
 import 'package:aqua/page/lan/code_server/utils.dart';
 import 'package:aqua/page/purchase/purchase.dart';
 import 'package:aqua/page/setting/code_setting.dart';
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/notification.dart';
@@ -32,9 +34,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'about.dart';
 
 class SettingPage extends StatefulWidget {
-  final CupertinoTabController gTabController;
-
-  const SettingPage({Key? key, required this.gTabController}) : super(key: key);
+  // final CupertinoTabController gTabController;
+  
+  const SettingPage({
+    Key? key,
+    /* required this.gTabController */
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -44,13 +49,14 @@ class SettingPage extends StatefulWidget {
 
 class SettingPageState extends State<SettingPage> {
   late ThemeModel _themeModel;
-  late CommonModel _commonModel;
+  late GlobalModel _globalModel;
+  late FileModel _fileModel;
   late bool _willUpdate;
   late Map _mSetting;
   late String _version;
   late bool _updateLocker;
 
-  CupertinoTabController get gTabController => widget.gTabController;
+  // CupertinoTabController get gTabController => widget.gTabController;
 
   @override
   void initState() {
@@ -65,10 +71,11 @@ class SettingPageState extends State<SettingPage> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
+    _globalModel = Provider.of<GlobalModel>(context);
+    _fileModel = Provider.of<FileModel>(context);
 
-    _mSetting = _commonModel.gWebData['mobile'] != null
-        ? _commonModel.gWebData['mobile']
+    _mSetting = _globalModel.gWebData['mobile'] != null
+        ? _globalModel.gWebData['mobile']
         : {};
     if (_updateLocker) {
       _updateLocker = false;
@@ -105,10 +112,10 @@ class SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme? themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     List<Widget> settingList = [
-      if (!_commonModel.isPurchased)
+      if (!_globalModel.isPurchased)
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -127,7 +134,7 @@ class SettingPageState extends State<SettingPage> {
               },
               child: ListTile(
                 trailing: FaIcon(FontAwesomeIcons.shoppingBag,
-                    color: themeData?.itemFontColor),
+                    color: themeData.itemFontColor),
                 title: ThemedText(AppLocalizations.of(context)!.sponsorTitle),
                 subtitle: ThemedText(
                   '5￥ ${AppLocalizations.of(context)!.sponsorText}',
@@ -138,7 +145,7 @@ class SettingPageState extends State<SettingPage> {
             ),
           ],
         ),
-      if (_commonModel.username != null)
+      if (_globalModel.username != null)
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -148,7 +155,7 @@ class SettingPageState extends State<SettingPage> {
             ListTile(
               title: ThemedText(AppLocalizations.of(context)!.username),
               subtitle: ThemedText(
-                '${_commonModel.username}',
+                '${_globalModel.username}',
                 small: true,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -160,7 +167,7 @@ class SettingPageState extends State<SettingPage> {
                     title: AppLocalizations.of(context)!.exit,
                     tip: AppLocalizations.of(context)!.exitTip,
                     onOk: () async {
-                      await _commonModel.logout();
+                      await _globalModel.logout();
                     },
                     onCancel: () {},
                   );
@@ -209,7 +216,7 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {},
             child: ListTile(
               title: ThemedText(AppLocalizations.of(context)!.savePath),
-              subtitle: ThemedText('${_commonModel.staticUploadSavePath}'),
+              subtitle: ThemedText('${_globalModel.staticUploadSavePath}'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
                 child: NoResizeText('更换'),
@@ -217,8 +224,8 @@ class SettingPageState extends State<SettingPage> {
                   showSingleTextFieldModal(
                     context,
                     title: AppLocalizations.of(context)!.savePath,
-                    initText: _commonModel.storageRootPath + '/',
-                    placeholder: '以 ${_commonModel.storageRootPath}/ 开头',
+                    initText: _globalModel.storageRootPath + '/',
+                    placeholder: '以 ${_globalModel.storageRootPath}/ 开头',
                     onOk: (String? val) async {
                       try {
                         if (val != null) {
@@ -227,7 +234,7 @@ class SettingPageState extends State<SettingPage> {
                         if (!Directory(val!).existsSync()) {
                           await Directory(val).create(recursive: true);
                         }
-                        await _commonModel.setStaticUploadSavePath(val.trim());
+                        await _globalModel.setStaticUploadSavePath(val.trim());
                       } catch (e, s) {
                         await Sentry.captureException(
                           e,
@@ -256,7 +263,7 @@ class SettingPageState extends State<SettingPage> {
                   maintainState: false,
                   builder: (BuildContext context) {
                     return FileManagerPage(
-                      appointPath: _commonModel.storageRootPath,
+                      appointPath: _globalModel.storageRootPath,
                       selectLimit: 1,
                       mode: FileManagerMode.pick,
                       // 这里是FileManager的context
@@ -266,19 +273,19 @@ class SettingPageState extends State<SettingPage> {
                           child: InkWell(
                             onTap: () async {
                               MixUtils.safePop(fileCtx);
-                              if (!_commonModel.isPurchased) {
+                              if (!_globalModel.isPurchased) {
                                 Fluttertoast.showToast(
                                     msg: '请先购买 "IOS管理器" for developer');
                                 return;
                               }
 
-                              if (_commonModel.pickedFiles.isEmpty) {
+                              if (_fileModel.pickedFiles.isEmpty) {
                                 Fluttertoast.showToast(msg: '请先选中资源');
                                 return;
                               }
-                              SelfFileEntity file = _commonModel.pickedFiles[0];
+                              SelfFileEntity file = _fileModel.pickedFiles[0];
 
-                              await _commonModel.clearPickedFiles();
+                              _fileModel.clearPickedFiles();
 
                               CodeSrvUtils cutils = await CodeSrvUtils().init();
                               await cutils.rmAllResource().catchError((err) {
@@ -368,7 +375,7 @@ class SettingPageState extends State<SettingPage> {
                 ),
               );
               if (!(await cutils.existsAllResource())) {
-                gTabController.index = 1;
+                // gTabController.index = 1;
                 // 确保删除干净了
                 await cutils.rmAllResource();
                 Fluttertoast.showToast(
@@ -377,7 +384,7 @@ class SettingPageState extends State<SettingPage> {
             },
             child: ListTile(
                 leading: FaIcon(FontAwesomeIcons.fileCode,
-                    color: themeData?.itemFontColor),
+                    color: themeData.itemFontColor),
                 title: ThemedText(AppLocalizations.of(context)!.moreSetting,
                     alignX: -1.15),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
@@ -396,9 +403,9 @@ class SettingPageState extends State<SettingPage> {
               await showSingleTextFieldModal(
                 context,
                 title: AppLocalizations.of(context)!.webDavServer,
-                placeholder: _commonModel.webDavAddr,
+                placeholder: _globalModel.webDavAddr,
                 onOk: (val) {
-                  _commonModel
+                  _globalModel
                       .setWebDavAddr(val.replaceFirst(RegExp(r'/*$'), ''));
                   Fluttertoast.showToast(
                       msg: AppLocalizations.of(context)!.setSuccess);
@@ -407,12 +414,12 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              trailing: FaIcon(FontAwesomeIcons.link,
-                  color: themeData?.itemFontColor),
+              trailing:
+                  FaIcon(FontAwesomeIcons.link, color: themeData.itemFontColor),
               title: ThemedText(AppLocalizations.of(context)!.webDavServer),
-              subtitle: ThemedText(_commonModel.webDavAddr == null
+              subtitle: ThemedText(_globalModel.webDavAddr == null
                   ? AppLocalizations.of(context)!.notSetting
-                  : _commonModel.webDavAddr!),
+                  : _globalModel.webDavAddr!),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -421,9 +428,9 @@ class SettingPageState extends State<SettingPage> {
               showSingleTextFieldModal(
                 context,
                 title: AppLocalizations.of(context)!.webDavAccount,
-                placeholder: _commonModel.webDavUsername,
+                placeholder: _globalModel.webDavUsername,
                 onOk: (val) {
-                  _commonModel.setWebDavUsername(val);
+                  _globalModel.setWebDavUsername(val);
                   Fluttertoast.showToast(
                       msg: AppLocalizations.of(context)!.setSuccess);
                 },
@@ -432,14 +439,14 @@ class SettingPageState extends State<SettingPage> {
             },
             child: ListTile(
               trailing: FaIcon(FontAwesomeIcons.mehBlank,
-                  color: themeData?.itemFontColor),
+                  color: themeData.itemFontColor),
               title: ThemedText(
                 AppLocalizations.of(context)!.webDavAccount,
               ),
               subtitle: ThemedText(
-                _commonModel.webDavUsername == null
+                _globalModel.webDavUsername == null
                     ? AppLocalizations.of(context)!.notSetting
-                    : _commonModel.webDavUsername!,
+                    : _globalModel.webDavUsername!,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
@@ -450,7 +457,7 @@ class SettingPageState extends State<SettingPage> {
                 context,
                 title: AppLocalizations.of(context)!.password,
                 onOk: (val) {
-                  _commonModel.setWebDavPwd(val);
+                  _globalModel.setWebDavPwd(val);
                   Fluttertoast.showToast(
                       msg: AppLocalizations.of(context)!.setSuccess);
                 },
@@ -460,9 +467,9 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
               title: ThemedText(AppLocalizations.of(context)!.password),
               subtitle: ThemedText(
-                _commonModel.webDavPwd == null
+                _globalModel.webDavPwd == null
                     ? AppLocalizations.of(context)!.notSetting
-                    : List.filled(_commonModel.webDavPwd!.length, null,
+                    : List.filled(_globalModel.webDavPwd!.length, null,
                             growable: false)
                         .map((e) => '*')
                         .toList()
@@ -470,7 +477,7 @@ class SettingPageState extends State<SettingPage> {
                 small: true,
               ),
               trailing:
-                  FaIcon(FontAwesomeIcons.ad, color: themeData?.itemFontColor),
+                  FaIcon(FontAwesomeIcons.ad, color: themeData.itemFontColor),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -496,7 +503,7 @@ class SettingPageState extends State<SettingPage> {
                   alignment: Alignment.center,
                   padding: EdgeInsets.only(top: 8, bottom: 8),
                   decoration: BoxDecoration(
-                    color: themeData!.itemColor,
+                    color: themeData.listTileColor,
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                   ),
                   margin: EdgeInsets.only(top: 4, bottom: 4),
@@ -506,9 +513,7 @@ class SettingPageState extends State<SettingPage> {
                   ),
                 ),
                 onSelected: (index, data) async {
-                  _commonModel.setLanguage(data['code']);
-
-                  // Navigator.pop(context);
+                  _globalModel.setLanguage(data['code']);
                 },
               );
             },
@@ -552,7 +557,7 @@ class SettingPageState extends State<SettingPage> {
               await showUpdateModal(
                 context,
                 _themeModel,
-                _commonModel.gWebData,
+                _globalModel.gWebData,
                 tipRemember: false,
               );
             },
@@ -582,10 +587,10 @@ class SettingPageState extends State<SettingPage> {
           style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 20,
-            color: themeData?.navTitleColor,
+            color: themeData.navTitleColor,
           ),
         ),
-        backgroundColor: themeData?.navBackgroundColor,
+        backgroundColor: themeData.navBackgroundColor,
         border: null,
       ),
       child: Material(

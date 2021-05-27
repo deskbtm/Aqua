@@ -9,7 +9,7 @@ import 'markdown_tags.dart';
 class Ol {
   Ol._internal();
 
-  static late Ol? _instance;
+  static Ol? _instance;
 
   factory Ol() {
     _instance ??= Ol._internal();
@@ -88,7 +88,7 @@ class Ol {
   Widget _getOlDot(int deep, int index) {
     final config = StyleConfig().olConfig;
     final Widget? configWidget =
-        StyleConfig()?.olConfig?.indexWidget?.call(deep, index);
+        StyleConfig().olConfig?.indexWidget?.call(deep, index);
 
     return configWidget ??
         Container(

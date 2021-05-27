@@ -8,7 +8,7 @@ abstract class AquaTheme {
   late Color navBackgroundColor;
   late Color topNavIconColor;
   late Color actionButtonColor;
-  late Color itemColor;
+  late Color listTileColor;
   late Color itemFontColor = Colors.black54;
   late Color navTitleColor = Colors.black87;
   late Color dialogBgColor;
@@ -30,7 +30,7 @@ class LightTheme implements AquaTheme {
   Color navBackgroundColor = Color(0xFFFFFFFFF);
   Color topNavIconColor = Color(0x94535353);
   Color actionButtonColor = Color(0x22181717);
-  Color itemColor = Color(0x83EBEBEB);
+  Color listTileColor = Color(0x83EBEBEB);
   Color itemFontColor = Colors.black54;
   Color navTitleColor = Colors.black87;
   Color dialogBgColor = Color(0xC0FFFFFF);
@@ -61,7 +61,7 @@ class DarkTheme implements AquaTheme {
   Color navBackgroundColor = Color(0xFF0000000);
   Color topNavIconColor = Color(0xFF007AFF);
   Color actionButtonColor = Color(0x22ffffff);
-  Color itemColor = Color(0xff222222);
+  Color listTileColor = Color(0xff222222);
   Color itemFontColor = Color(0xFFFFFFFFF);
   Color navTitleColor = Color(0xFFFFFFFFF);
   Color dialogBgColor = Color(0x9F000000);

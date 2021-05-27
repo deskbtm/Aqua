@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:aqua/model/file_model.dart';
 import 'package:aqua/plugin/archive/archive.dart';
 import 'package:aqua/plugin/archive/enums.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,7 +11,7 @@ import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 
 import 'package:aqua/external/menu/menu.dart';
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/notification.dart';
@@ -28,9 +29,9 @@ Future<void> createArchiveModal(
 }) async {
   MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  CommonModel commonModel = Provider.of<CommonModel>(context, listen: false);
+  FileModel fileModel = Provider.of<FileModel>(context, listen: false);
 
-  if (commonModel.selectedFiles.isNotEmpty) {
+  if (fileModel.selectedFiles.isNotEmpty) {
     AquaTheme themeData = themeModel.themeData;
     bool popAble = true;
     String archiveType = 'zip';
@@ -121,7 +122,7 @@ Future<void> createArchiveModal(
                               },
                             ),
                             FocusedMenuItem(
-                              backgroundColor: themeData?.menuItemColor,
+                              backgroundColor: themeData.menuItemColor,
                               title: ThemedText('tar'),
                               onPressed: () async {
                                 changeState(() {
@@ -131,7 +132,7 @@ Future<void> createArchiveModal(
                               },
                             ),
                             FocusedMenuItem(
-                              backgroundColor: themeData?.menuItemColor,
+                              backgroundColor: themeData.menuItemColor,
                               title: ThemedText('tar.gz'),
                               onPressed: () async {
                                 changeState(() {
@@ -141,7 +142,7 @@ Future<void> createArchiveModal(
                               },
                             ),
                             FocusedMenuItem(
-                              backgroundColor: themeData?.menuItemColor,
+                              backgroundColor: themeData.menuItemColor,
                               title: ThemedText('tar.bz2'),
                               onPressed: () async {
                                 changeState(() {
@@ -151,7 +152,7 @@ Future<void> createArchiveModal(
                               },
                             ),
                             FocusedMenuItem(
-                              backgroundColor: themeData?.menuItemColor,
+                              backgroundColor: themeData.menuItemColor,
                               title: ThemedText('tar.xz'),
                               onPressed: () async {
                                 changeState(() {
@@ -161,7 +162,7 @@ Future<void> createArchiveModal(
                               },
                             ),
                             // FocusedMenuItem(
-                            //   backgroundColor: themeData?.menuItemColor,
+                            //   backgroundColor: themeData.menuItemColor,
                             //   title: ThemedText('7z'),
                             //   onPressed: () async {
                             //     changeState(() {
@@ -171,7 +172,7 @@ Future<void> createArchiveModal(
                             //   },
                             // ),
                             FocusedMenuItem(
-                              backgroundColor: themeData?.menuItemColor,
+                              backgroundColor: themeData.menuItemColor,
                               title: ThemedText('jar'),
                               onPressed: () async {
                                 changeState(() {
@@ -181,7 +182,7 @@ Future<void> createArchiveModal(
                               },
                             ),
                             FocusedMenuItem(
-                              backgroundColor: themeData?.menuItemColor,
+                              backgroundColor: themeData.menuItemColor,
                               title: ThemedText(
                                 AppLocalizations.of(context)!.cancel,
                                 style: TextStyle(color: Colors.redAccent),
@@ -225,7 +226,7 @@ Future<void> createArchiveModal(
                     popAble = false;
                   });
                   await Future.delayed(Duration(milliseconds: 50));
-                  List<String> paths = commonModel.selectedFiles
+                  List<String> paths = fileModel.selectedFiles
                       .map((e) => e.entity.path)
                       .toList();
 

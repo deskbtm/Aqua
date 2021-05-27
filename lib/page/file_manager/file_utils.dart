@@ -13,6 +13,7 @@ enum ShowOnlyType { all, folder, file, link }
 class SelfFileEntity {
   final DateTime changed;
   final DateTime modified;
+  final String humanModified;
   final DateTime accessed;
   final FileSystemEntityType type;
   final int mode;
@@ -30,6 +31,7 @@ class SelfFileEntity {
   final bool isFile;
 
   SelfFileEntity({
+    required this.humanModified,
     required this.path,
     required this.pureName,
     required this.apkIcon,
@@ -97,6 +99,7 @@ class FsUtils {
       isFile: stat.type == FileSystemEntityType.file,
       isLink: stat.type == FileSystemEntityType.link,
       pureName: pathLib.basenameWithoutExtension(filename),
+      humanModified: MixUtils.formatFileTime(stat.modified),
     );
   }
 

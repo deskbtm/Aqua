@@ -8,7 +8,7 @@ import 'markdown_tags.dart';
 class MTitle {
   MTitle._internal();
 
-  static late MTitle? _instance;
+  static MTitle? _instance;
 
   factory MTitle() {
     _instance ??= MTitle._internal();

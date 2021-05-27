@@ -495,7 +495,7 @@ Future<dynamic> showSelectModal(
                               alignment: Alignment.center,
                               padding: EdgeInsets.only(top: 8, bottom: 8),
                               decoration: BoxDecoration(
-                                color: themeData.itemColor,
+                                color: themeData.listTileColor,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(5)),
                               ),

@@ -53,7 +53,7 @@
 //   Widget build(BuildContext context) {
 //     AquaTheme themeData = _themeModel.themeData;
 //     return CupertinoPageScaffold(
-//       backgroundColor: themeData?.scaffoldBackgroundColor,
+//       backgroundColor: themeData.scaffoldBackgroundColor,
 //       child: Center(
 //         child: Column(
 //           crossAxisAlignment: CrossAxisAlignment.center,

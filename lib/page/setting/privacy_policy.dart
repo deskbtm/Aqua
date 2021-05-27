@@ -1,3 +1,4 @@
+import 'package:aqua/common/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_html/flutter_html.dart';
@@ -50,7 +51,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel?.themeData;
+    AquaTheme themeData = _themeModel.themeData;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -61,7 +62,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
           style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 20,
-            color: themeData?.navTitleColor,
+            color: themeData.navTitleColor,
           ),
         ),
         backgroundColor: themeData.navBackgroundColor,

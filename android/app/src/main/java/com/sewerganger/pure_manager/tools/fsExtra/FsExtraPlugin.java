@@ -37,8 +37,8 @@ public class FsExtraPlugin implements FlutterPlugin, MethodChannel.MethodCallHan
       case "getApplicationDocumentsDirectory":
         result.success(extraStorage.getApplicationDocumentsDirectory());
         break;
-      case "getStorageDirectory":
-        result.success(extraStorage.getStorageDirectory());
+      case "getExternalFilesDir":
+        result.success(extraStorage.getExternalFilesDir());
         break;
       case "getExternalCacheDirectories":
         result.success(extraStorage.getExternalCacheDirectories());

@@ -15,21 +15,21 @@ class PureVideoPlayer extends StatefulWidget {
     BuildContext context,
     PurePlayerController controller,
     Responsive responsive,
-  ) header;
+  )? header;
 
   final Widget Function(
     BuildContext context,
     PurePlayerController controller,
     Responsive responsive,
-  ) bottomRight;
+  )? bottomRight;
 
   final CustomIcons Function(
     Responsive responsive,
-  ) customIcons;
+  )? customIcons;
 
   PureVideoPlayer({
-    Key key,
-    @required this.controller,
+    Key? key,
+    required this.controller,
     this.header,
     this.bottomRight,
     this.customIcons,
@@ -66,22 +66,22 @@ class _PureVideoPlayerState extends State<PureVideoPlayer> {
         );
 
         if (widget.customIcons != null) {
-          _.customIcons = this.widget.customIcons(responsive);
+          _.customIcons = this.widget.customIcons!(responsive);
         }
 
         if (widget.header != null) {
-          _.header = this.widget.header(context, _, responsive);
+          _.header = this.widget.header!(context, _, responsive);
         }
 
         if (widget.bottomRight != null) {
-          _.bottomRight = this.widget.bottomRight(context, _, responsive);
+          _.bottomRight = this.widget.bottomRight!(context, _, responsive);
         }
         return Stack(
           alignment: Alignment.center,
           children: [
             AspectRatio(
-              aspectRatio: _.videoPlayerController.value.aspectRatio,
-              child: VideoPlayer(_.videoPlayerController),
+              aspectRatio: _.videoPlayerController!.value.aspectRatio,
+              child: VideoPlayer(_.videoPlayerController!),
             ),
             ClosedCaptionView(responsive: responsive),
             if (_.controlsEnabled && _.controlsStyle == ControlsStyle.primary)
@@ -118,9 +118,9 @@ class PurePlayerProvider extends InheritedWidget {
   final PurePlayerController controller;
 
   PurePlayerProvider({
-    Key key,
-    @required Widget child,
-    @required this.controller,
+    Key? key,
+    required Widget child,
+    required this.controller,
   }) : super(key: key, child: child);
 
   @override

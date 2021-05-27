@@ -301,5 +301,7 @@
   "updateTimestamp": "update",
   "@updateTimestamp": {},
   "uninstall": "uninstall",
-  "@uninstall": {}
+  "@uninstall": {},
+  "empty": "empty",
+  "@empty": {}
 }

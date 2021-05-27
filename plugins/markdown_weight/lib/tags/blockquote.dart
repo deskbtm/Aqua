@@ -7,7 +7,7 @@ import 'p.dart';
 class Bq {
   Bq._internal();
 
-  static late Bq? _instance;
+  static Bq? _instance;
 
   factory Bq() {
     _instance ??= Bq._internal();

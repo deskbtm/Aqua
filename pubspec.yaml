@@ -53,7 +53,7 @@ dependencies:
   qr_flutter: ^4.0.0
   pure_video_player:
     path: plugins/pure_video_player
-  flutter_easyrefresh: ^2.2.1
+  # flutter_easyrefresh: ^2.2.1
   flutter_highlight: ^0.7.0
   charset_converter: ^2.0.0
   flutter_localizations:
@@ -65,6 +65,9 @@ dependencies:
   xml: ^5.1.1
   fluttertoast: ^8.0.7
   tutorial_coach_mark: ^1.0.0
+  marquee: ^2.1.0
+  flutter_inner_drawer: ^1.0.0+1
+  # pull_to_refresh: ^2.0.0
   intent:
     path: plugins/intent
 
@@ -85,7 +88,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    - lib/web/assets/
+    - assets/web/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

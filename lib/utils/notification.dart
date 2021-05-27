@@ -6,15 +6,14 @@ const COMMON_CHANNEL = '0';
 const ARCHIVE_CHANNEL = '1';
 
 class LocalNotification {
-  static late FlutterLocalNotificationsPlugin plugin;
+  static late FlutterLocalNotificationsPlugin? plugin;
 
-  static Future<FlutterLocalNotificationsPlugin> initLocalNotification(
+  static Future<void> initLocalNotification(
       {required SelectNotificationCallback onSelected}) async {
     plugin = FlutterLocalNotificationsPlugin();
     var android = AndroidInitializationSettings('ic_baseline_folder_24');
     var initSetttings = InitializationSettings(android: android);
-    await plugin.initialize(initSetttings, onSelectNotification: onSelected);
-    return plugin;
+    await plugin?.initialize(initSetttings, onSelectNotification: onSelected);
   }
 
   static Future<void> showNotification({
@@ -46,6 +45,6 @@ class LocalNotification {
       color: Color(0xFF007AFF),
     );
     var platform = NotificationDetails(android: android);
-    await plugin.show(index, title, subTitle, platform, payload: payload);
+    await plugin?.show(index, title, subTitle, platform, payload: payload);
   }
 }

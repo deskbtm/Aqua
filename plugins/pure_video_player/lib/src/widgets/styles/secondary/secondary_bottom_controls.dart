@@ -11,7 +11,7 @@ import 'package:pure_video_player/src/widgets/player_slider.dart';
 
 class SecondaryBottomControls extends StatelessWidget {
   final Responsive responsive;
-  const SecondaryBottomControls({Key key, @required this.responsive})
+  const SecondaryBottomControls({Key? key, required this.responsive})
       : super(key: key);
 
   @override
@@ -88,7 +88,7 @@ class SecondaryBottomControls extends StatelessWidget {
               Row(
                 children: [
                   if (_.bottomRight != null) ...[
-                    _.bottomRight,
+                    _.bottomRight!,
                     SizedBox(width: 10)
                   ],
                   if (_.enabledButtons.pip) PipButton(responsive: responsive),

@@ -7,7 +7,7 @@ export '../tags/all_tags.dart';
 class StyleConfig {
   StyleConfig._internal();
 
-  static late StyleConfig? _obj;
+  static StyleConfig? _obj;
 
   factory StyleConfig({
     CheckBoxBuilder? checkBoxBuilder,
@@ -48,46 +48,46 @@ class StyleConfig {
   }
 
   ///input
-  late CheckBoxBuilder checkBoxBuilder;
-  late CheckBoxConfig checkBoxConfig;
+  CheckBoxBuilder? checkBoxBuilder;
+  CheckBoxConfig? checkBoxConfig;
 
   ///img
-  late ImgBuilder imgBuilder;
-  late ImgConfig imgConfig;
+  ImgBuilder? imgBuilder;
+  ImgConfig? imgConfig;
 
   ///video
-  late VideoBuilder? videoBuilder;
-  late VideoConfig? videoConfig;
+  VideoBuilder? videoBuilder;
+  VideoConfig? videoConfig;
 
   ///h1~h5
-  late TitleConfig? titleConfig;
+  TitleConfig? titleConfig;
 
   ///p
-  late PConfig? pConfig;
+  PConfig? pConfig;
 
   ///code
-  late CodeConfig codeConfig;
+  CodeConfig? codeConfig;
 
   ///ol
-  late OlConfig olConfig;
+  OlConfig? olConfig;
 
   ///ul
-  late UlConfig ulConfig;
+  UlConfig? ulConfig;
 
   ///pre
-  late PreConfig preConfig;
+  PreConfig? preConfig;
 
   ///blockquote
-  late BlockQuoteConfig blockQuoteConfig;
+  BlockQuoteConfig? blockQuoteConfig;
 
   ///table
-  late TableConfig tableConfig;
+  TableConfig? tableConfig;
 
   ///hr
-  late HrConfig hrConfig;
+  HrConfig? hrConfig;
 
   ///MarkdownTheme, default is light
-  late Map<String, dynamic> markdownTheme;
+  Map<String, dynamic>? markdownTheme;
 }
 
 class MarkdownTheme {

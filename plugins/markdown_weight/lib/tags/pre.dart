@@ -7,7 +7,7 @@ import 'package:highlight/highlight.dart' as hi;
 class Pre {
   Pre._internal();
 
-  static late Pre? _instance;
+  static Pre? _instance;
 
   factory Pre() {
     _instance ??= Pre._internal();

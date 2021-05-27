@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'package:aqua/common/theme.dart';
+import 'package:aqua/model/file_model.dart';
 import 'package:aqua/page/lan/static_fs/web_handler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +17,9 @@ import 'package:aqua/common/widget/images.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/switch.dart';
 
-import 'package:aqua/page/file_manager/file_item.dart';
+import 'package:aqua/page/file_manager/file_list_tile.dart';
 import 'package:aqua/page/lan/code_server/utils.dart';
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/notification.dart';
@@ -39,9 +41,9 @@ class LanSharePage extends StatefulWidget {
 class _LanSharePageState extends State<LanSharePage>
     with AutomaticKeepAliveClientMixin {
   late ThemeModel _themeModel;
-
-  late CommonModel _commonModel;
-  late HttpServer _server;
+  late GlobalModel _globalModel;
+  late FileModel _fileModel;
+  HttpServer? _server;
   late bool _shareSwitch;
   late bool _vscodeSwitch;
 
@@ -56,14 +58,15 @@ class _LanSharePageState extends State<LanSharePage>
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
+    _globalModel = Provider.of<GlobalModel>(context);
+    _fileModel = Provider.of<FileModel>(context);
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
     await createProotEnv(
       context,
       themeProvider: _themeModel,
-      commonProvider: _commonModel,
+      commonProvider: _globalModel,
       onSuccess: () {
         Fluttertoast.showToast(
             msg: AppLocalizations.of(context)!.installSuccess);
@@ -90,15 +93,15 @@ class _LanSharePageState extends State<LanSharePage>
 
   Future<void> createStaticServer() async {
     try {
-      String ip = _commonModel.internalIp ?? LOOPBACK_ADDR;
+      String ip = _globalModel.internalIp ?? LOOPBACK_ADDR;
 
-      int port = int.parse(_commonModel?.filePort ?? FILE_DEFAULT_PORT);
-      String? savePath = _commonModel.staticUploadSavePath;
+      int port = int.parse(_globalModel.filePort ?? FILE_DEFAULT_PORT);
+      String? savePath = _globalModel.staticUploadSavePath;
       FutureOr<Response> Function(Request) handlerFunc;
       String addr = '$ip:$port';
 
-      if (_commonModel.selectedFiles.isNotEmpty) {
-        SelfFileEntity first = _commonModel.selectedFiles.first;
+      if (_fileModel.selectedFiles.isNotEmpty) {
+        SelfFileEntity first = _fileModel.selectedFiles.first;
 
         if (first.isDir) {
           handlerFunc = createDirHandler(
@@ -110,7 +113,7 @@ class _LanSharePageState extends State<LanSharePage>
           );
         } else {
           handlerFunc = createFilesHandler(
-            _commonModel.selectedFiles.map((e) => e.entity.path).toList(),
+            _fileModel.selectedFiles.map((e) => e.entity.path).toList(),
             isDark: _themeModel.isDark,
             serverUrl: addr,
             uploadSavePath: savePath,
@@ -119,7 +122,7 @@ class _LanSharePageState extends State<LanSharePage>
         }
       } else {
         handlerFunc = createDirHandler(
-          _commonModel.storageRootPath,
+          _globalModel.storageRootPath,
           isDark: _themeModel.isDark,
           serverUrl: addr,
           uploadSavePath: savePath,
@@ -139,7 +142,8 @@ class _LanSharePageState extends State<LanSharePage>
           ongoing: true,
           autoCancel: true,
         );
-        debugPrint('Serving at http://${_server.address.host}:${_server.port}');
+        debugPrint(
+            'Serving at http://${_server?.address.host}:${_server?.port}');
 
         // 保持唤醒状态
         bool isWakeEnabled = await Wakelock.enabled;
@@ -184,7 +188,7 @@ class _LanSharePageState extends State<LanSharePage>
         Process result = await utils
             .runServer(
           codeAddr,
-          pwd: _commonModel.codeSrvPwd,
+          pwd: _globalModel.codeSrvPwd,
         )
             .catchError((err) {
           Fluttertoast.showToast(msg: AppLocalizations.of(context)!.setFail);
@@ -239,9 +243,11 @@ class _LanSharePageState extends State<LanSharePage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    String? internalIp = _commonModel.internalIp;
-    String filePort = _commonModel.filePort ?? FILE_DEFAULT_PORT;
-    String codeSrvPort = _commonModel.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
+    AquaTheme themeData = _themeModel.themeData;
+
+    String? internalIp = _globalModel.internalIp;
+    String filePort = _globalModel.filePort ?? FILE_DEFAULT_PORT;
+    String codeSrvPort = _globalModel.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
     String fileAddr = '$internalIp:$filePort';
     String codeAddr = '$internalIp:$codeSrvPort';
 
@@ -249,44 +255,48 @@ class _LanSharePageState extends State<LanSharePage>
       child: SafeArea(
         child: Column(
           children: <Widget>[
-            Column(
-              children: [
-                ListTile(
-                  title: ThemedText(AppLocalizations.of(context)!.staticServer),
-                  subtitle: ThemedText(fileAddr, small: true),
-                  contentPadding: EdgeInsets.only(left: 15, right: 10),
-                  trailing: AquaSwitch(
-                    value: _shareSwitch,
-                    onChanged: (val) async {
-                      if (mounted) {
-                        setState(() {
-                          _shareSwitch = !_shareSwitch;
-                        });
-                      }
-                      await createStaticServer().catchError(
-                        (err) {},
-                      );
-                    },
-                    thumbColor: null,
+            Material(
+              color: Colors.transparent,
+              child: Column(
+                children: [
+                  ListTile(
+                    title:
+                        ThemedText(AppLocalizations.of(context)!.staticServer),
+                    subtitle: ThemedText(fileAddr, small: true),
+                    contentPadding: EdgeInsets.only(left: 15, right: 10),
+                    trailing: AquaSwitch(
+                      value: _shareSwitch,
+                      onChanged: (val) async {
+                        if (mounted) {
+                          setState(() {
+                            _shareSwitch = !_shareSwitch;
+                          });
+                        }
+                        await createStaticServer().catchError(
+                          (err) {},
+                        );
+                      },
+                      thumbColor: null,
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: ThemedText('Vscode Server'),
-                  subtitle: ThemedText(codeAddr, small: true),
-                  contentPadding: EdgeInsets.only(left: 15, right: 10),
-                  trailing: AquaSwitch(
-                    value: _vscodeSwitch,
-                    onChanged: (val) async {
-                      _openCodeServer(context, val, codeAddr);
-                    },
+                  ListTile(
+                    title: ThemedText('Vscode Server'),
+                    subtitle: ThemedText(codeAddr, small: true),
+                    contentPadding: EdgeInsets.only(left: 15, right: 10),
+                    trailing: AquaSwitch(
+                      value: _vscodeSwitch,
+                      onChanged: (val) async {
+                        _openCodeServer(context, val, codeAddr);
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(height: 40),
-              ],
+                  SizedBox(height: 40),
+                ],
+              ),
             ),
             Expanded(
               flex: 1,
-              child: _commonModel.selectedFiles.isEmpty
+              child: _fileModel.selectedFiles.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -303,28 +313,28 @@ class _LanSharePageState extends State<LanSharePage>
                     )
                   : ListView.builder(
                       physics: BouncingScrollPhysics(),
-                      itemCount: _commonModel.selectedFiles.length,
+                      itemCount: _fileModel.selectedFiles.length,
                       itemBuilder: (BuildContext context, int index) {
                         SelfFileEntity file =
-                            _commonModel.selectedFiles.elementAt(index);
+                            _fileModel.selectedFiles.elementAt(index);
 
                         Widget previewIcon = getPreviewIcon(context, file);
                         return Dismissible(
                           key: ObjectKey(file),
-                          onDismissed: (direction) {
-                            _commonModel.removeSelectedFile(file,
-                                update: false);
-                            if (_commonModel.selectedFiles.isEmpty) {
+                          onDismissed: (direction) async {
+                            await _fileModel.removeSelectedFile(file,
+                                update: true);
+                            if (_fileModel.selectedFiles.isEmpty) {
                               setState(() {});
                             }
                           },
-                          child: FileItem(
-                            isDir: file.isDir,
+                          child: SimpleFileListTile(
+                            title: file.filename,
+                            subTitle: file.humanModified,
+                            leadingTitle: file.humanSize,
                             leading: previewIcon,
-                            withAnimation: index < 15,
-                            index: index,
                             justDisplay: true,
-                            file: file,
+                            backgroundColor: themeData.listTileColor,
                           ),
                         );
                       },

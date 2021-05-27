@@ -24,29 +24,29 @@ class MarkdownHelper {
 
   ///p
   Widget getPWidget(m.Element node) =>
-      wConfig?.p?.call(node) ?? P().getPWidget(node.children!, node);
+      wConfig?.p.call(node) ?? P().getPWidget(node.children!, node);
 
   ///pre
   Widget getPreWidget(m.Node node) =>
-      wConfig?.pre?.call(node as m.Element) ?? Pre().getPreWidget(node);
+      wConfig?.pre.call(node as m.Element) ?? Pre().getPreWidget(node);
 
   ///ul
   Widget getUlWidget(m.Element node, int deep) =>
-      wConfig?.ul?.call(node) ?? Ul().getUlWidget(node, deep);
+      wConfig?.ul.call(node) ?? Ul().getUlWidget(node, deep);
 
   ///ol
   Widget getOlWidget(m.Element node, int deep) =>
-      wConfig?.ol?.call(node) ?? Ol().getOlWidget(node, deep);
+      wConfig?.ol.call(node) ?? Ol().getOlWidget(node, deep);
 
   ///blockquote
   Widget getBlockQuote(m.Element node) =>
-      wConfig?.block?.call(node) ?? Bq().getBlockQuote(node);
+      wConfig?.block.call(node) ?? Bq().getBlockQuote(node);
 
   ///hr
   Widget getHrWidget(m.Element node) =>
-      wConfig?.hr?.call(node) ?? Hr().getHrWidget(node);
+      wConfig?.hr.call(node) ?? Hr().getHrWidget(node);
 
   ///table
   Widget getTableWidget(m.Element node) =>
-      wConfig?.table?.call(node) ?? MTable().getTableWidget(node);
+      wConfig?.table.call(node) ?? MTable().getTableWidget(node);
 }

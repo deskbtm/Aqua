@@ -8,7 +8,7 @@ import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/common/widget/switch.dart';
 import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/external/menu/menu.dart';
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/page/lan/code_server/utils.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -48,7 +48,7 @@ class CodeSettingPage extends StatefulWidget {
 
 class CodeSettingPageState extends State<CodeSettingPage> {
   late ThemeModel _themeModel;
-  late CommonModel _commonModel;
+  late GlobalModel _globalModel;
 
   CodeSrvUtils get cutils => widget.cutils;
 
@@ -56,13 +56,13 @@ class CodeSettingPageState extends State<CodeSettingPage> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
+    _globalModel = Provider.of<GlobalModel>(context);
   }
 
   @override
   Widget build(BuildContext context) {
     dynamic themeData = _themeModel.themeData;
-    String repo = _commonModel.alpineRepo!;
+    String repo = _globalModel.alpineRepo!;
     Directory rootfs = Directory('${cutils.filesPath}/rootfs');
 
     List<Widget> settingList = [
@@ -78,12 +78,12 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                 context,
                 title: AppLocalizations.of(context)!.password,
                 onOk: (val) async {
-                  await _commonModel.setCodeSrvPwd(val);
+                  await _globalModel.setCodeSrvPwd(val);
                   Fluttertoast.showToast(
                       msg: AppLocalizations.of(context)!.setSuccess);
                 },
                 onCancel: () async {
-                  await _commonModel.setCodeSrvPwd(null);
+                  await _globalModel.setCodeSrvPwd(null);
                   Fluttertoast.showToast(
                       msg: AppLocalizations.of(context)!.setSuccess);
                 },
@@ -93,8 +93,8 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             child: ListTile(
               title: ThemedText(AppLocalizations.of(context)!.password),
               subtitle: ThemedText(
-                _commonModel.codeSrvPwd != null
-                    ? List.filled(_commonModel.codeSrvPwd!.length, null,
+                _globalModel.codeSrvPwd != null
+                    ? List.filled(_globalModel.codeSrvPwd!.length, null,
                             growable: false)
                         .map((e) => '*')
                         .toList()
@@ -107,16 +107,16 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           ),
           ListTile(
             title: ThemedText(AppLocalizations.of(context)!.port),
-            // subtitle: ThemedText(_commonModel.codeSrvPort),
+            // subtitle: ThemedText(_globalModel.codeSrvPort),
             trailing: CupertinoButton(
-                child: NoResizeText('${_commonModel.codeSrvPort}'),
+                child: NoResizeText('${_globalModel.codeSrvPort}'),
                 onPressed: () async {
                   showSingleTextFieldModal(
                     context,
                     title: AppLocalizations.of(context)!.port,
-                    placeholder: _commonModel.codeSrvPort,
+                    placeholder: _globalModel.codeSrvPort,
                     onOk: (val) {
-                      _commonModel.setCodeSrvPort(val);
+                      _globalModel.setCodeSrvPort(val);
                       Fluttertoast.showToast(
                           msg: AppLocalizations.of(context)!.setSuccess);
                     },
@@ -142,9 +142,9 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                 small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: AquaSwitch(
-              value: _commonModel.codeSrvTelemetry!,
+              value: _globalModel.codeSrvTelemetry!,
               onChanged: (val) async {
-                _commonModel.setCodeSrvTelemetry(val);
+                _globalModel.setCodeSrvTelemetry(val);
               },
             ),
           ),
@@ -181,26 +181,26 @@ class CodeSettingPageState extends State<CodeSettingPage> {
               bottomOffsetHeight: 80.0,
               menuItems: <FocusedMenuItem>[
                 FocusedMenuItem(
-                    backgroundColor: themeData?.menuItemColor,
+                    backgroundColor: themeData.menuItemColor,
                     title: ThemedText('清华'),
                     onPressed: () async {
                       await cutils
                           .setChineseRepo(TSINGHUA_REPO)
                           .then((value) async {
-                        await _commonModel.setAplineRepo(TSINGHUA_REPO);
+                        await _globalModel.setAplineRepo(TSINGHUA_REPO);
                       }).catchError((e) {
                         Fluttertoast.showToast(
                             msg: AppLocalizations.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
-                    backgroundColor: themeData?.menuItemColor,
+                    backgroundColor: themeData.menuItemColor,
                     title: ThemedText('阿里云'),
                     onPressed: () async {
                       await cutils
                           .setChineseRepo(ALIYUN_REPO)
                           .then((value) async {
-                        await _commonModel.setAplineRepo(ALIYUN_REPO);
+                        await _globalModel.setAplineRepo(ALIYUN_REPO);
                         setState(() {});
                       }).catchError((e) {
                         Fluttertoast.showToast(
@@ -208,11 +208,11 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                       });
                     }),
                 FocusedMenuItem(
-                    backgroundColor: themeData?.menuItemColor,
+                    backgroundColor: themeData.menuItemColor,
                     title: ThemedText('中科大'),
                     onPressed: () async {
                       await cutils.setChineseRepo(USTC_REPO).then((val) async {
-                        await _commonModel.setAplineRepo(USTC_REPO);
+                        await _globalModel.setAplineRepo(USTC_REPO);
                         setState(() {});
                       }).catchError((e) {
                         Fluttertoast.showToast(
@@ -220,13 +220,13 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                       });
                     }),
                 FocusedMenuItem(
-                    backgroundColor: themeData?.menuItemColor,
+                    backgroundColor: themeData.menuItemColor,
                     title: ThemedText('Alpine'),
                     onPressed: () async {
                       await cutils
                           .setChineseRepo(ALPINE_REPO)
                           .then((value) async {
-                        await _commonModel.setAplineRepo(ALPINE_REPO);
+                        await _globalModel.setAplineRepo(ALPINE_REPO);
                         setState(() {});
                       }).catchError((e) {
                         Fluttertoast.showToast(
@@ -234,7 +234,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                       });
                     }),
                 FocusedMenuItem(
-                    backgroundColor: themeData?.menuItemColor,
+                    backgroundColor: themeData.menuItemColor,
                     title: ThemedText(AppLocalizations.of(context)!.custom),
                     onPressed: () async {
                       await showSingleTextFieldModal(
@@ -242,7 +242,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                         title: 'alpine',
                         onOk: (val) async {
                           await cutils.setChineseRepo(val).then((value) async {
-                            await _commonModel.setAplineRepo(val);
+                            await _globalModel.setAplineRepo(val);
                           }).catchError((e) {
                             Fluttertoast.showToast(
                                 msg: AppLocalizations.of(context)!.setFail);
@@ -315,7 +315,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 20,
-            color: themeData?.navTitleColor,
+            color: themeData.navTitleColor,
           ),
         ),
         backgroundColor: themeData.navBackgroundColor,

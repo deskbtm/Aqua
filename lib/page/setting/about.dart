@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/constant/constant.dart';
 
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/page/setting/privacy_policy.dart';
 import 'package:aqua/common/theme.dart';
@@ -24,7 +24,7 @@ class AboutPage extends StatefulWidget {
 
 class _AboutPageState extends State<AboutPage> {
   late ThemeModel _themeModel;
-  late CommonModel _commonModel;
+  late GlobalModel _globalModel;
   late String _version;
   late bool _locker;
   late String _qqGroupNumber;
@@ -43,15 +43,15 @@ class _AboutPageState extends State<AboutPage> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
+    _globalModel = Provider.of<GlobalModel>(context);
 
-    if (_commonModel.gWebData.isNotEmpty) {
-      _authorEmail = _commonModel.gWebData['mobile']['config']['author_email'];
+    if (_globalModel.gWebData.isNotEmpty) {
+      _authorEmail = _globalModel.gWebData['mobile']['config']['author_email'];
       _qqGroupNumber =
-          _commonModel.gWebData['mobile']['config']['qq_group_num'];
-      _qqGroupKey = _commonModel.gWebData['mobile']['config']['qq_group_key'];
+          _globalModel.gWebData['mobile']['config']['qq_group_num'];
+      _qqGroupKey = _globalModel.gWebData['mobile']['config']['qq_group_key'];
       _authorAvatar =
-          _commonModel.gWebData['mobile']['config']['author_avatar'];
+          _globalModel.gWebData['mobile']['config']['author_avatar'];
     } else {
       _authorEmail = DEFAULT_AUTHOR_EMAIL;
       _qqGroupNumber = DEFAULT_QQ_GROUP_NUM;
@@ -75,7 +75,7 @@ class _AboutPageState extends State<AboutPage> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
-        backgroundColor: themeData?.navBackgroundColor,
+        backgroundColor: themeData.navBackgroundColor,
         border: null,
         middle: NoResizeText(
           '关于',
@@ -83,7 +83,7 @@ class _AboutPageState extends State<AboutPage> {
           style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 20,
-            color: themeData?.navTitleColor,
+            color: themeData.navTitleColor,
           ),
         ),
       ),

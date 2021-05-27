@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 import 'package:aqua/plugin/storage/storage.dart';
-import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:device_info/device_info.dart';
+import 'package:aqua/third_party/back_button_interceptor/back_button_interceptor.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:aqua/common/widget/action_button.dart';
@@ -20,18 +20,16 @@ import 'package:aqua/model/file_model.dart';
 import 'package:aqua/page/file_manager/file_list_view.dart';
 import 'package:aqua/page/installed_apps/installed_apps.dart';
 import 'package:aqua/page/lan/code_server/utils.dart';
-import 'package:aqua/model/common_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
-import 'create_search.dart';
+import 'file_manager_mode.dart';
 import 'file_utils.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-enum FileManagerMode { surf, pick, search }
 
 class FileManagerPage extends StatefulWidget {
   final String? appointPath;
@@ -45,7 +43,7 @@ class FileManagerPage extends StatefulWidget {
     this.appointPath,
     this.selectLimit = 1,
     this.trailingBuilder,
-    required this.mode,
+    this.mode = FileManagerMode.normal,
   }) : super(key: key);
 
   @override
@@ -57,7 +55,7 @@ class FileManagerPage extends StatefulWidget {
 class _FileManagerPageState extends State<FileManagerPage>
     with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
   late ThemeModel _themeModel;
-  late CommonModel _commonModel;
+  late GlobalModel _globalModel;
   late FileModel _fileModel;
 
   late GlobalKey<SplitSelectionModalState> _modalKey;
@@ -85,23 +83,25 @@ class _FileManagerPageState extends State<FileManagerPage>
     _totalSize = 0;
     _validSize = 0;
 
+    _fileModel = Provider.of<FileModel>(context, listen: false);
     WidgetsBinding.instance?.addObserver(this);
     _modalKey = GlobalKey<SplitSelectionModalState>();
-    BackButtonInterceptor.add(_willPopFileRoute as dynamic);
+    BackButtonInterceptor.add(_willPopFileRoute);
   }
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _commonModel = Provider.of<CommonModel>(context);
-    _fileModel = Provider.of<FileModel>(context);
+    _globalModel = Provider.of<GlobalModel>(context);
+
     if (_initMutex) {
       _initMutex = false;
       late String initialPath;
-      if (widget.mode == FileManagerMode.surf || widget.appointPath == null) {
-        await _fileModel.init();
-        initialPath = _commonModel.storageRootPath;
+      // 初始化可以不用
+      await _fileModel.init();
+      if (widget.mode == FileManagerMode.normal || widget.appointPath == null) {
+        initialPath = _globalModel.storageRootPath;
       } else {
         initialPath = widget.appointPath!;
       }
@@ -116,7 +116,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   dispose() {
     super.dispose();
     WidgetsBinding.instance?.removeObserver(this);
-    BackButtonInterceptor.remove(_willPopFileRoute as dynamic);
+    BackButtonInterceptor.remove(_willPopFileRoute);
   }
 
   @override
@@ -145,24 +145,7 @@ class _FileManagerPageState extends State<FileManagerPage>
         sortType: _fileModel.sortType,
         showHidden: _fileModel.isDisplayHidden,
         reversed: _fileModel.sortReversed,
-      ).catchError((err) async {
-        String errorString = err.toString().toLowerCase();
-        bool overAndroid11 =
-            int.parse((await DeviceInfoPlugin().androidInfo).version.release) >=
-                11;
-
-        if (errorString.contains('permission') &&
-            errorString.contains('denied')) {
-          showTipTextModal(
-            context,
-            title: AppLocalizations.of(context)!.error,
-            tip: (overAndroid11)
-                ? AppLocalizations.of(context)!.noPermissionO
-                : AppLocalizations.of(context)!.noPermission,
-            onCancel: null,
-          );
-        }
-      });
+      ).catchError((err) {});
 
       switch (_fileModel.showOnlyType) {
         case ShowOnlyType.all:
@@ -191,7 +174,7 @@ class _FileManagerPageState extends State<FileManagerPage>
   }
 
   Future<void> _clearAllSelected(BuildContext context) async {
-    await _commonModel.clearSelectedFiles();
+    _fileModel.clearSelectedFiles();
 
     if (mounted) {
       setState(() {});
@@ -383,18 +366,18 @@ class _FileManagerPageState extends State<FileManagerPage>
     _useSandboxDir = !_useSandboxDir;
     if (_useSandboxDir) {
       if (await rootfs.exists()) {
-        _commonModel.setStorageRootPath(rootfs.path);
+        _globalModel.setStorageRootPath(rootfs.path);
       } else {
         showText(AppLocalizations.of(context)!.sandboxNotExist);
         return;
       }
     } else {
       String path = await MixUtils.getExternalRootPath();
-      _commonModel.setStorageRootPath(path);
+      _globalModel.setStorageRootPath(path);
     }
     showText(AppLocalizations.of(context)!.setSuccess);
 
-    await _changeRootPath(_commonModel.storageRootPath);
+    await _changeRootPath(_globalModel.storageRootPath);
 
     _modalKey.currentState?.replaceLeft(2, [
       ActionButton(
@@ -507,7 +490,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                           EdgeInsets.only(top: 4, bottom: 4, right: 6, left: 6),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(5)),
-                        color: themeData.itemColor,
+                        color: themeData.listTileColor,
                       ),
                       constraints: BoxConstraints(maxWidth: 100),
                       child: NoResizeText(
@@ -529,6 +512,14 @@ class _FileManagerPageState extends State<FileManagerPage>
     );
   }
 
+  Future setTheme(bool val) async {
+    if (val) {
+      _themeModel.setTheme(DARK_THEME);
+    } else {
+      _themeModel.setTheme(LIGHT_THEME);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -538,41 +529,41 @@ class _FileManagerPageState extends State<FileManagerPage>
         : pathLib.equals(_rootDir!.path, _fileModel.currentDir?.path ?? '');
     AquaTheme themeData = _themeModel.themeData;
 
-    if (widget.mode == FileManagerMode.surf) {
+    if (widget.mode == FileManagerMode.normal) {
       if (_fileModel.currentDir != null && _rootDir != null) {
         if (pathLib.equals(_fileModel.currentDir!.path, _rootDir?.path ?? '')) {
-          _commonModel.setCanPopToDesktop(true);
+          _globalModel.setCanPopToDesktop(true);
         } else {
-          _commonModel.setCanPopToDesktop(false);
+          _globalModel.setCanPopToDesktop(false);
         }
       }
     }
 
     return _leftFileList.isEmpty
-        ? Container(color: themeData?.scaffoldBackgroundColor)
+        ? Container(color: themeData.scaffoldBackgroundColor)
         : CupertinoPageScaffold(
-            backgroundColor: themeData?.scaffoldBackgroundColor,
+            backgroundColor: themeData.scaffoldBackgroundColor,
             navigationBar: CupertinoNavigationBar(
               trailing: widget.trailingBuilder != null
                   ? widget.trailingBuilder!(context)
                   : Wrap(
                       children: [
-                        GestureDetector(
-                          onTap: () async {
-                            await createSearchModal(
-                              context,
-                              onChangePopLocker: (val) {
-                                _popLocker = val;
-                              },
-                            );
-                            await update2Side();
-                          },
-                          child: Icon(
-                            Icons.search,
-                            color: Color(0xFF007AFF),
-                            size: 22,
-                          ),
-                        ),
+                        // GestureDetector(
+                        //   onTap: () async {
+                        //     await createSearchModal(
+                        //       context,
+                        //       onChangePopLocker: (val) {
+                        //         _popLocker = val;
+                        //       },
+                        //     );
+                        //     await update2Side();
+                        //   },
+                        //   child: Icon(
+                        //     Icons.search,
+                        //     color: Color(0xFF007AFF),
+                        //     size: 22,
+                        //   ),
+                        // ),
                         SizedBox(width: 10),
                         GestureDetector(
                           onTap: () async {
@@ -589,7 +580,7 @@ class _FileManagerPageState extends State<FileManagerPage>
               leading: pathLib.isWithin(
                       _rootDir?.path ?? '', _fileModel.currentDir!.path)
                   ? GestureDetector(
-                      onTap: () => _willPopFileRoute as dynamic,
+                      onTap: () {},
                       child: Icon(
                         Icons.arrow_left,
                         color: Color(0xFF007AFF),
@@ -604,7 +595,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   pathLib.equals(
                           _fileModel.currentDir!.path, _rootDir?.path ?? '')
                       ? '/'
-                      : FsUtils.filename(_fileModel.currentDir!.path ?? ''),
+                      : FsUtils.filename(_fileModel.currentDir?.path ?? ''),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
@@ -612,7 +603,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                   ),
                 ),
               ),
-              backgroundColor: themeData?.navBackgroundColor,
+              backgroundColor: themeData.navBackgroundColor,
               border: null,
             ),
             child: SafeArea(
@@ -630,7 +621,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                       },
                       fileList: _leftFileList,
                       onChangeCurrentDir: _fileModel.setCurrentDir,
-                      onDirItemTap: (dir) async {
+                      onDirTileTap: (dir) async {
                         _fileModel.setCurrentDir(dir.entity as Directory);
                         List<SelfFileEntity> list =
                             await readdir(dir.entity as Directory);
@@ -655,7 +646,7 @@ class _FileManagerPageState extends State<FileManagerPage>
                         },
                         update2Side: update2Side,
                         fileList: _rightFileList,
-                        onDirItemTap: (dir) async {
+                        onDirTileTap: (dir) async {
                           _fileModel.setCurrentDir(dir.entity as Directory);
                           List<SelfFileEntity> list =
                               await readdir(dir.entity as Directory);

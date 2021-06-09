@@ -2,7 +2,7 @@
 import 'dart:ui';
 
 import 'package:aqua/common/widget/marquee.dart';
-import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
@@ -134,7 +134,7 @@ class SimpleFileListTile extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         ancestorWidth: width,
-                                        pauseAfterRound: Duration(seconds: 2),
+                                        pauseAfterRound: Duration(seconds: 10),
                                         textScaleFactor: 1,
                                         blankSpace: 30,
                                         style: TextStyle(fontSize: 13)
@@ -178,40 +178,6 @@ class SimpleFileListTile extends StatelessWidget {
     );
   }
 }
-
-// class FileListTileMemo extends InheritedWidget {
-//   final String? title;
-//   final String? subTitle;
-//   final Widget? leading;
-//   final String? leadingTitle;
-
-//   FileListTileMemo({
-//     this.title,
-//     this.leading,
-//     this.subTitle,
-//     this.leadingTitle,
-//     required Widget child,
-//   }) : super(child: child);
-
-//   static FileListTileMemo? of(BuildContext context) {
-//     return context.dependOnInheritedWidgetOfExactType<FileListTileMemo>();
-//   }
-
-//   @override
-//   bool updateShouldNotify(covariant FileListTileMemo old) {
-//     if (title != null &&
-//         leading != null &&
-//         subTitle != null &&
-//         leadingTitle != null) {
-//       return title == old.title &&
-//           leading != old.leading &&
-//           subTitle != old.subTitle &&
-//           leadingTitle != old.leadingTitle;
-//     } else {
-//       return true;
-//     }
-//   }
-// }
 
 class FileListTile extends StatefulWidget {
   final int index;
@@ -277,7 +243,7 @@ class FileListTileState extends State<FileListTile>
   double _dragX = 0;
   bool _selected = false;
   late ThemeModel _themeModel;
-  late FileModel _fileModel;
+  late GlobalModel _globalModel;
 
   @override
   bool get wantKeepAlive => true;
@@ -300,7 +266,7 @@ class FileListTileState extends State<FileListTile>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _fileModel = Provider.of<FileModel>(context);
+    _globalModel = Provider.of<GlobalModel>(context);
   }
 
   @override
@@ -355,9 +321,9 @@ class FileListTileState extends State<FileListTile>
   Widget springFileListTile() {
     AquaTheme theme = _themeModel.themeData;
     if (widget.mode == FileManagerMode.pick) {
-      _selected = _fileModel.hasPickFile(widget.path)!;
+      _selected = _globalModel.hasPickFile(widget.path)!;
     } else {
-      _selected = _fileModel.hasSelectedFile(widget.path)!;
+      _selected = _globalModel.hasSelectedFile(widget.path)!;
     }
     return Transform.translate(
       offset: Offset(_dragX, 0),

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/page/file_manager/file_manager_mode.dart';
 import 'package:aqua/plugin/archive/archive.dart';
 import 'package:flutter/cupertino.dart';
@@ -35,7 +35,7 @@ import 'about.dart';
 
 class SettingPage extends StatefulWidget {
   // final CupertinoTabController gTabController;
-  
+
   const SettingPage({
     Key? key,
     /* required this.gTabController */
@@ -50,7 +50,6 @@ class SettingPage extends StatefulWidget {
 class SettingPageState extends State<SettingPage> {
   late ThemeModel _themeModel;
   late GlobalModel _globalModel;
-  late FileModel _fileModel;
   late bool _willUpdate;
   late Map _mSetting;
   late String _version;
@@ -72,7 +71,6 @@ class SettingPageState extends State<SettingPage> {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _globalModel = Provider.of<GlobalModel>(context);
-    _fileModel = Provider.of<FileModel>(context);
 
     _mSetting = _globalModel.gWebData['mobile'] != null
         ? _globalModel.gWebData['mobile']
@@ -279,13 +277,13 @@ class SettingPageState extends State<SettingPage> {
                                 return;
                               }
 
-                              if (_fileModel.pickedFiles.isEmpty) {
+                              if (_globalModel.pickedFiles.isEmpty) {
                                 Fluttertoast.showToast(msg: '请先选中资源');
                                 return;
                               }
-                              SelfFileEntity file = _fileModel.pickedFiles[0];
+                              SelfFileEntity file = _globalModel.pickedFiles[0];
 
-                              _fileModel.clearPickedFiles();
+                              _globalModel.clearPickedFiles();
 
                               CodeSrvUtils cutils = await CodeSrvUtils().init();
                               await cutils.rmAllResource().catchError((err) {

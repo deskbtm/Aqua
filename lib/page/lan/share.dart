@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:aqua/common/theme.dart';
-import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/page/lan/static_fs/web_handler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ class _LanSharePageState extends State<LanSharePage>
     with AutomaticKeepAliveClientMixin {
   late ThemeModel _themeModel;
   late GlobalModel _globalModel;
-  late FileModel _fileModel;
+
   HttpServer? _server;
   late bool _shareSwitch;
   late bool _vscodeSwitch;
@@ -59,7 +59,6 @@ class _LanSharePageState extends State<LanSharePage>
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _globalModel = Provider.of<GlobalModel>(context);
-    _fileModel = Provider.of<FileModel>(context);
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
@@ -100,8 +99,8 @@ class _LanSharePageState extends State<LanSharePage>
       FutureOr<Response> Function(Request) handlerFunc;
       String addr = '$ip:$port';
 
-      if (_fileModel.selectedFiles.isNotEmpty) {
-        SelfFileEntity first = _fileModel.selectedFiles.first;
+      if (_globalModel.selectedFiles.isNotEmpty) {
+        SelfFileEntity first = _globalModel.selectedFiles.first;
 
         if (first.isDir) {
           handlerFunc = createDirHandler(
@@ -113,7 +112,7 @@ class _LanSharePageState extends State<LanSharePage>
           );
         } else {
           handlerFunc = createFilesHandler(
-            _fileModel.selectedFiles.map((e) => e.entity.path).toList(),
+            _globalModel.selectedFiles.map((e) => e.entity.path).toList(),
             isDark: _themeModel.isDark,
             serverUrl: addr,
             uploadSavePath: savePath,
@@ -296,7 +295,7 @@ class _LanSharePageState extends State<LanSharePage>
             ),
             Expanded(
               flex: 1,
-              child: _fileModel.selectedFiles.isEmpty
+              child: _globalModel.selectedFiles.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -313,18 +312,17 @@ class _LanSharePageState extends State<LanSharePage>
                     )
                   : ListView.builder(
                       physics: BouncingScrollPhysics(),
-                      itemCount: _fileModel.selectedFiles.length,
+                      itemCount: _globalModel.selectedFiles.length,
                       itemBuilder: (BuildContext context, int index) {
                         SelfFileEntity file =
-                            _fileModel.selectedFiles.elementAt(index);
+                            _globalModel.selectedFiles.elementAt(index);
 
                         Widget previewIcon = getPreviewIcon(context, file);
                         return Dismissible(
                           key: ObjectKey(file),
                           onDismissed: (direction) async {
-                            await _fileModel.removeSelectedFile(file,
-                                update: true);
-                            if (_fileModel.selectedFiles.isEmpty) {
+                            await _globalModel.removeSelectedFile(file);
+                            if (_globalModel.selectedFiles.isEmpty) {
                               setState(() {});
                             }
                           },

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/plugin/pkg_mgmt/mgmt.dart';
 import 'package:flutter/widgets.dart';
 import 'package:aqua/common/widget/images.dart';
@@ -106,7 +107,7 @@ class FsUtils {
   static Future<SelfFileList?> readdir(
     Directory currentDir, {
     bool autoSort = true,
-    String sortType = SORT_CASE,
+    FileSortType sortType = FileSortType.capital,
     bool showHidden = false,
     bool reversed = false,
     bool recursive = false,
@@ -142,22 +143,22 @@ class FsUtils {
     }
 
     switch (sortType) {
-      case SORT_CASE:
+      case FileSortType.capital:
         folderList = sortByCase(folderList, reversed: reversed);
         fileList = sortByCase(fileList, reversed: reversed);
         linkList = sortByCase(linkList, reversed: reversed);
         break;
-      case SORT_SIZE:
+      case FileSortType.size:
         folderList = sortBySize(folderList, reversed: reversed);
         fileList = sortBySize(fileList, reversed: reversed);
         linkList = sortBySize(linkList, reversed: reversed);
         break;
-      case SORT_MODIFIED:
+      case FileSortType.modified:
         folderList = sortByModified(folderList, reversed: reversed);
         fileList = sortByModified(fileList, reversed: reversed);
         linkList = sortByModified(linkList, reversed: reversed);
         break;
-      case SORT_TYPE:
+      case FileSortType.type:
         folderList = sortByType(folderList, reversed: reversed);
         fileList = sortByType(fileList, reversed: reversed);
         linkList = sortByType(linkList, reversed: reversed);

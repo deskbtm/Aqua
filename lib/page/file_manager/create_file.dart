@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:aqua/common/widget/aqua_text_field.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:aqua/common/widget/checkbox.dart';
 import 'package:aqua/common/widget/dialog.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
@@ -25,7 +24,6 @@ Future<void> createFileModal(
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
   AquaTheme themeData = themeModel.themeData;
   TextEditingController textEditingController = TextEditingController();
-  bool recursiveCreate = false;
 
   return showCupertinoModal(
     context: context,
@@ -50,15 +48,6 @@ Future<void> createFileModal(
               SizedBox(
                 height: 30,
                 child: Row(children: <Widget>[
-                  LanCheckBox(
-                    value: recursiveCreate,
-                    borderColor: themeData.itemFontColor,
-                    onChanged: (val) {
-                      changeState(() {
-                        recursiveCreate = !recursiveCreate;
-                      });
-                    },
-                  ),
                   NoResizeText(
                     AppLocalizations.of(context)!.recursiveCreateFile,
                     style: TextStyle(
@@ -78,7 +67,7 @@ Future<void> createFileModal(
                 return;
               }
 
-              await newDir.create(recursive: recursiveCreate).then((value) {
+              await newDir.create(recursive: true).then((value) {
                 onSuccess(textEditingController.text);
                 MixUtils.safePop(context);
               }).catchError((err) {
@@ -93,7 +82,7 @@ Future<void> createFileModal(
                 return;
               }
 
-              await newFile.create(recursive: recursiveCreate).then((value) {
+              await newFile.create(recursive: true).then((value) {
                 onSuccess(textEditingController.text);
                 MixUtils.safePop(context);
               }).catchError((err) {

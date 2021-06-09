@@ -149,5 +149,6 @@
   "installTimestamp": "安装时间",
   "updateTimestamp": "更新时间",
   "uninstall": "卸载",
-  "empty": "空"
+  "empty": "空",
+  "searching": "搜索"
 }

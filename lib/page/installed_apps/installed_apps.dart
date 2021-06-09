@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +26,7 @@ class InstalledAppsPage extends StatefulWidget {
 
 class _InstalledAppsPageState extends State<InstalledAppsPage> {
   late ThemeModel _themeModel;
-  late FileModel _fileModel;
+  late GlobalModel _globalModel;
   bool _showSystemApps = false;
   List<Application>? _apps = [];
   bool _mutex = true;
@@ -34,7 +35,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _fileModel = Provider.of<FileModel>(context);
+    _globalModel = Provider.of<GlobalModel>(context);
 
     if (_mutex) {
       _mutex = false;
@@ -217,9 +218,9 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                           onHozDrag: (dir) async {
                             if (await file.exists()) {
                               if (dir == 1) {
-                                _fileModel.addSelectedFile(fileEntity);
+                                _globalModel.addSelectedFile(fileEntity);
                               } else if (dir == -1) {
-                                _fileModel.removeSelectedFile(fileEntity);
+                                _globalModel.removeSelectedFile(fileEntity);
                               }
                             }
                           },

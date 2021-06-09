@@ -259,7 +259,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                       icon: Icon(
                         Icons.close,
                         size: 20,
-                        color: themeData.topNavIconColor,
+                        color: themeData.iconColor,
                       ),
                       onPressed: () {
                         MixUtils.safePop(context);

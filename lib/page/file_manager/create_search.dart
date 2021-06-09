@@ -6,7 +6,7 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
-import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/model/theme_model.dart';
 
 import 'package:aqua/utils/mix_utils.dart';
@@ -23,7 +23,8 @@ Future<void> createSearchModal(
   required Function(bool) onChangePopLocker,
 }) async {
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  FileModel fileModel = Provider.of<FileModel>(context, listen: false);
+  FileManagerModel fileModel =
+      Provider.of<FileManagerModel>(context, listen: false);
   AquaTheme themeData = themeModel.themeData;
 
   TextEditingController textEditingController = TextEditingController();
@@ -140,7 +141,7 @@ Future<void> createSearchModal(
                               height: 40,
                               width: 40,
                               decoration: BoxDecoration(
-                                color: themeData.inputColor,
+                                color: themeData.inputBgColor,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(5)),
                               ),

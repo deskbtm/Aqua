@@ -107,7 +107,7 @@ packages:
     source: hosted
     version: "4.0.0"
   fading_edge_scrollview:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: fading_edge_scrollview
       url: "https://pub.flutter-io.cn"
@@ -146,6 +146,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_easyrefresh:
+    dependency: "direct main"
+    description:
+      name: flutter_easyrefresh
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.2.1"
   flutter_highlight:
     dependency: "direct main"
     description:
@@ -153,13 +160,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.7.0"
-  flutter_inner_drawer:
-    dependency: "direct main"
-    description:
-      name: flutter_inner_drawer
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.0.0+1"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -200,6 +200,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0"
+  flutter_sticky_header:
+    dependency: "direct main"
+    description:
+      name: flutter_sticky_header
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.6.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -301,13 +308,6 @@ packages:
       relative: true
     source: path
     version: "1.2.6"
-  marquee:
-    dependency: "direct main"
-    description:
-      name: marquee
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.1.0"
   matcher:
     dependency: transitive
     description:
@@ -586,6 +586,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  sliver_tools:
+    dependency: "direct main"
+    description:
+      name: sliver_tools
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.4"
   source_span:
     dependency: transitive
     description:
@@ -677,6 +684,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.1.0"
+  unicons:
+    dependency: "direct main"
+    description:
+      name: unicons
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.1"
   url_launcher:
     dependency: "direct main"
     description:
@@ -726,6 +740,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.4"
+  value_layout_builder:
+    dependency: transitive
+    description:
+      name: value_layout_builder
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.1"
   vector_math:
     dependency: transitive
     description:

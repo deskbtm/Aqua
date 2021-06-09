@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/plugin/archive/archive.dart';
 import 'package:aqua/plugin/archive/enums.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,9 +29,9 @@ Future<void> createArchiveModal(
 }) async {
   MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-  FileModel fileModel = Provider.of<FileModel>(context, listen: false);
+  GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
 
-  if (fileModel.selectedFiles.isNotEmpty) {
+  if (globalModel.selectedFiles.isNotEmpty) {
     AquaTheme themeData = themeModel.themeData;
     bool popAble = true;
     String archiveType = 'zip';
@@ -226,7 +226,7 @@ Future<void> createArchiveModal(
                     popAble = false;
                   });
                   await Future.delayed(Duration(milliseconds: 50));
-                  List<String> paths = fileModel.selectedFiles
+                  List<String> paths = globalModel.selectedFiles
                       .map((e) => e.entity.path)
                       .toList();
 

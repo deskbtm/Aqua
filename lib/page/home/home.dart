@@ -1,4 +1,8 @@
 import 'package:aqua/common/theme.dart';
+import 'package:aqua/common/widget/inner_drawer.dart';
+import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:aqua/common/widget/switch.dart';
+import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/model/theme_model.dart';
 
 import 'package:aqua/page/lan/share.dart';
@@ -6,10 +10,10 @@ import 'package:aqua/page/setting/setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:aqua/model/file_model.dart';
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:aqua/model/global_model.dart';
-import 'package:flutter_inner_drawer/inner_drawer.dart';
+
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -183,7 +187,7 @@ class _HomePageState extends State<HomePage> {
   //         //   case 2:
   //         //     return CupertinoTabView(
   //         //       builder: (context) => ChangeNotifierProvider(
-  //         //         create: (_) => FileModel(),
+  //         //         create: (_) => FileManagerModel(),
   //         //         child: SettingPage(
   //         //           gTabController: _tabController,
   //         //         ),
@@ -228,17 +232,30 @@ class _HomePageState extends State<HomePage> {
       rightAnimationType: InnerDrawerAnimation.quadratic,
       backgroundDecoration:
           BoxDecoration(color: themeData.scaffoldBackgroundColor),
-      // innerDrawerCallback: (a) {
-      //   setState(() {});
-      // },
-      leftChild: Container(),
-      rightChild: ChangeNotifierProvider.value(
-        value: fileModel,
-        child: LanSharePage(),
-      ),
-      scaffold: ChangeNotifierProvider.value(
-        value: fileModel,
-        child: FileManagerPage(),
+      innerDrawerCallback: (a) {},
+      leftChild: Container(
+          child: Material(
+        child: ListTile(
+          title: ThemedText('dsadsadsa'),
+          contentPadding: EdgeInsets.only(left: 15, right: 10),
+          trailing: AquaSwitch(
+            value: _themeModel.isDark,
+            onChanged: (val) async {
+              if (val) {
+                _themeModel.setTheme(DARK_THEME);
+              } else {
+                _themeModel.setTheme(LIGHT_THEME);
+              }
+            },
+          ),
+        ),
+      )),
+      rightChild: LanSharePage(),
+      scaffold: ChangeNotifierProvider<FileManagerModel>(
+        create: (_) => FileManagerModel(),
+        child: FileManagerPage(
+          innerDrawerKey: _innerDrawerKey,
+        ),
       ),
     );
 
@@ -267,7 +284,7 @@ class _HomePageState extends State<HomePage> {
     //       case 0:
     //         return ChangeNotifierProvider(
     //           create: (BuildContext context) {
-    //             return FileModel();
+    //             return FileManagerModel();
     //           },
     //           child: FileManagerPage(
     //             mode: FileManagerMode.surf,
@@ -280,7 +297,7 @@ class _HomePageState extends State<HomePage> {
     //       case 2:
     //         return CupertinoTabView(
     //           builder: (context) => ChangeNotifierProvider(
-    //             create: (_) => FileModel(),
+    //             create: (_) => FileManagerModel(),
     //             child: SettingPage(
     //               gTabController: _tabController,
     //             ),

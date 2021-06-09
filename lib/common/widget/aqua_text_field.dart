@@ -8,10 +8,13 @@ import 'input.dart';
 
 class AquaTextField extends StatefulWidget {
   final TextStyle? style;
+  final BoxDecoration? decoration;
   final TextEditingController? controller;
   final String? placeholder;
   final int maxLines;
   final Function(String)? onSubmitted;
+  final TextStyle? textStyle;
+  final FocusNode? focusNode;
 
   const AquaTextField({
     Key? key,
@@ -20,6 +23,9 @@ class AquaTextField extends StatefulWidget {
     this.placeholder,
     this.maxLines = 1,
     this.onSubmitted,
+    this.decoration,
+    this.textStyle,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -42,19 +48,23 @@ class _AquaTextFieldState extends State<AquaTextField> {
     AquaTheme theme = _themeModel.themeData;
 
     return CupertinoTextField(
+      focusNode: widget.focusNode,
+      cursorHeight: 24,
       style: widget.style,
       controller: widget.controller,
       maxLines: widget.maxLines,
       placeholder: widget.placeholder,
       onSubmitted: widget.onSubmitted,
-      decoration: inputDecoration(
-        color: theme.inputColor,
-        borderColor: theme.inputBorderColor,
-      ),
-      placeholderStyle: TextStyle(
-        fontWeight: FontWeight.w400,
-        color: theme.itemFontColor,
-      ),
+      decoration: widget.decoration ??
+          inputDecoration(
+            color: theme.inputBgColor,
+            borderColor: theme.inputBorderColor,
+          ),
+      placeholderStyle: widget.textStyle ??
+          TextStyle(
+            fontWeight: FontWeight.w400,
+            color: theme.itemFontColor,
+          ),
     );
   }
 }

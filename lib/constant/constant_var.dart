@@ -45,11 +45,8 @@ const String DARK_THEME = 'dark';
 // 文件管理器持久化设置
 const String SHOW_FILE_HIDDEN = 'show_hidden';
 const String FILE_SORT_TYPE = 'file_sort_type';
-const String SORT_MODIFIED = 'sort_modified';
-const String SORT_CASE = 'sort_case';
-const String SORT_SIZE = 'sort_size';
-const String SORT_TYPE = 'sort_type';
-const String SORT_REVERSED = 'sort_reversed';
+const String LAYOUUT_MODE = 'layout_mode';
+const String RUNNING_MODE = 'running_mode';
 
 // ntaive 通信
 const String SHARED_CHANNEL = 'app.channel.shared.data';

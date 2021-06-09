@@ -25,7 +25,6 @@ dependencies:
     sdk: flutter
   sentry_flutter: ^5.0.0
   font_awesome_flutter: ^9.0.0
-  # outline_material_icons: ^0.1.1
   shelf: ^1.1.4
   open_file: ^3.2.1
   flutter_staggered_animations: ^1.0.0
@@ -65,9 +64,13 @@ dependencies:
   xml: ^5.1.1
   fluttertoast: ^8.0.7
   tutorial_coach_mark: ^1.0.0
-  marquee: ^2.1.0
-  flutter_inner_drawer: ^1.0.0+1
+  flutter_sticky_header: ^0.6.0
+  fading_edge_scrollview: ^2.0.0
+  flutter_easyrefresh: ^2.2.1
+  # flutter_inner_drawer: ^1.0.0+1
   # pull_to_refresh: ^2.0.0
+  unicons: ^2.0.1
+  sliver_tools: ^0.2.4
   intent:
     path: plugins/intent
 

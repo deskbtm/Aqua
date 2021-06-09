@@ -20,13 +20,12 @@ void main() async {
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
 
-  runApp(Aqua());
-  // if (await Permission.storage.request().isGranted) {
-  //   await SentryFlutter.init(
-  //     (options) {
-  //       options.dsn = SENTRY_DNS;
-  //     },
-  //     appRunner: () => runApp(Aqua()),
-  //   );
-  // }
+  if (await Permission.storage.request().isGranted) {
+    await SentryFlutter.init(
+      (options) {
+        options.dsn = SENTRY_DNS;
+      },
+      appRunner: () => runApp(Aqua()),
+    );
+  }
 }

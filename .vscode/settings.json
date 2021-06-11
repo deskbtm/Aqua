@@ -10,5 +10,7 @@
     "sdk",
     "umeng",
     "umeng sdk"
-  ]
+  ],
+  "copyrightInserter.holder": "deskbtm",
+  "copyrightInserter.license": "gpl3"
 }

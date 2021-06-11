@@ -27,7 +27,7 @@ class ExtraStorage {
     return path;
   }
 
-  static Future<String> get getExternalStorageDirectory async {
+  static Future<String>? get getExternalStorageDirectory async {
     final String path =
         await _channel.invokeMethod('getExternalStorageDirectory');
     return path;
@@ -78,5 +78,10 @@ class ExtraStorage {
     final double size =
         await _channel.invokeMethod('getValidExternalStorageSize');
     return size;
+  }
+
+  static Future<bool> requestDataObbAccess() async {
+    final bool r = await _channel.invokeMethod('requestDataObbAccess');
+    return r;
   }
 }

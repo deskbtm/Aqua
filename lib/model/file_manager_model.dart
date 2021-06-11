@@ -1,9 +1,7 @@
 import 'dart:io';
-
-import 'package:aqua/page/file_manager/file_manager_mode.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:aqua/constant/constant_var.dart';
-import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:aqua/utils/store.dart';
 
 // 文件管理器布局模式
@@ -25,11 +23,19 @@ enum FileSortType {
   type,
 }
 
+enum FileManagerMode {
+  // 普通模式
+  normal,
+  pick,
+  search
+}
+
 class FileManagerModel extends ChangeNotifier {
-  late String _entryPath;
-  String get entryPath => _entryPath;
-  void setEntryPath(String path) {
-    _entryPath = path;
+  late Directory _entryDir;
+
+  Directory? get entryDir => _entryDir;
+  void setEntryDir(Directory dir) {
+    _entryDir = dir;
   }
 
   FileManagerMode _visitMode = FileManagerMode.normal;
@@ -51,13 +57,6 @@ class FileManagerModel extends ChangeNotifier {
 
   void setCurrentDir(Directory dir) {
     _currentDir = dir;
-  }
-
-  Directory? _rootDir;
-  Directory? get rootDir => _rootDir;
-
-  void setRootDir(Directory dir) {
-    _rootDir = dir;
   }
 
   late bool _isDisplayHidden;
@@ -83,7 +82,7 @@ class FileManagerModel extends ChangeNotifier {
     _showOnlyType = arg;
   }
 
-  LayoutMode _layoutMode = LayoutMode.vertical;
+  LayoutMode _layoutMode = LayoutMode.horizontal;
   LayoutMode get layoutMode => _layoutMode;
 
   Future<void> setLayoutMode(LayoutMode mode, {bool update = false}) async {
@@ -139,7 +138,7 @@ class FileManagerModel extends ChangeNotifier {
     }
   }
 
-  Future<void> init() async {
+  Future<void> storageInit() async {
     _isDisplayHidden = (await Store.getBool(SHOW_FILE_HIDDEN)) ?? false;
     await _initLayoutMode();
     await _initRunningMode();

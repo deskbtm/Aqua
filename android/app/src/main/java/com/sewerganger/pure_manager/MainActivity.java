@@ -1,17 +1,18 @@
+/*
+ *   Copyright (c) 2021 
+ *   All rights reserved.
+ */
 package com.sewerganger.pure_manager;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 
 import androidx.annotation.NonNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
-import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {

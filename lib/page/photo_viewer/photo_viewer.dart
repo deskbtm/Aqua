@@ -12,7 +12,7 @@ import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/page/file_manager/file_operation.dart';
 import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

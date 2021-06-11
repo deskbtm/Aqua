@@ -1,3 +1,11 @@
+library flutter_intent;
+
+export './action.dart';
+export './category.dart';
+export './extra.dart';
+export './flag.dart';
+export './typedExtra.dart';
+
 import 'package:flutter/services.dart';
 
 class Intent {
@@ -36,6 +44,7 @@ class Intent {
   /// TypedExtra class holds predefined constants ( type information ),
   /// consider using those
   putExtra(String extra, dynamic data, {String? type}) {
+    if (data is Uri) data = data.toString();
     this._extra[extra] = data;
     if (type != null) this._typeInfo[extra] = type;
   }

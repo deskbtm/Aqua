@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/constant/constant.dart';
-import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:aqua/page/lan/create_proot_env.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';

@@ -13,7 +13,7 @@ import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/page/file_manager/file_list_tile.dart';
 import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;

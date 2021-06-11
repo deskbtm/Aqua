@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:aqua/common/theme.dart';
 import 'package:aqua/common/widget/cloud_header.dart';
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,23 +16,22 @@ import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/model/global_model.dart';
 import 'package:aqua/page/file_manager/file_operation.dart';
 import 'package:aqua/page/file_manager/file_list_tile.dart';
-import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:unicons/unicons.dart';
 // import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'file_manager_mode.dart';
-import 'file_utils.dart';
 
-class FileListView extends StatefulWidget {
-  final List<SelfFileEntity> fileList;
+import 'fs_ui_utils.dart';
+import 'fs_utils.dart';
+
+class FileList extends StatefulWidget {
+  // final List<SelfFileEntity> fileList;
   final Function(SelfFileEntity)? onDirTileTap;
   final FileManagerMode mode;
   final Future<void> Function() update2Side;
   final Color? itemBgColor;
   final void Function()? onScroll;
   final VoidCallback? onTapEmpty;
-  final ScrollController? scrollController;
+
   // final FileManagerModel fileModel;
 
   final Function(Directory) onChangeCurrentDir;
@@ -39,36 +39,40 @@ class FileListView extends StatefulWidget {
   final int? selectLimit;
   final bool left;
 
-  const FileListView({
+  const FileList({
     Key? key,
     this.onScroll,
     this.onTapEmpty,
     this.itemBgColor,
     this.onDirTileTap,
-    required this.fileList,
+    // required this.fileList,
     required this.update2Side,
     required this.mode,
     required this.left,
     this.selectLimit,
     required this.onChangeCurrentDir,
     required this.onChangePopLocker,
-    this.scrollController,
+
     // required this.fileModel,
   }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _FileListViewState();
+    return _FileListState();
   }
 }
 
-class _FileListViewState extends State<FileListView> {
+class _FileListState extends State<FileList> {
   // late ScrollController _scrollController;
   late ThemeModel _themeModel;
 
   late FileOperation _fileOperation;
   late GlobalModel _globalModel;
   EasyRefreshController _controller = EasyRefreshController();
+  ScrollController _scrollController = ScrollController();
+  late FileManagerModel _fileManagerModel;
+
+  late bool _pending = false;
 
   @override
   void initState() {
@@ -82,6 +86,7 @@ class _FileListViewState extends State<FileListView> {
       mode: widget.mode,
       left: widget.left,
     );
+
     _globalModel = Provider.of<GlobalModel>(context, listen: false);
     if (widget.onScroll != null) {
       // _scrollController.addListener(widget.onScroll!);
@@ -89,15 +94,24 @@ class _FileListViewState extends State<FileListView> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
+    _fileManagerModel = Provider.of<FileManagerModel>(context);
   }
 
   @override
   void dispose() {
     super.dispose();
     // _scrollController.dispose();
+  }
+
+  AquaTheme getTheme() {
+    return _themeModel.themeData;
+  }
+
+  Future<List<SelfFileEntity>> _readDir() async {
+    return FsUIUtils.readdirSafely(context, _fileManagerModel.currentDir!);
   }
 
   Future<void> _showOptionsWhenPressedEmpty(BuildContext context) async {
@@ -161,7 +175,8 @@ class _FileListViewState extends State<FileListView> {
     );
   }
 
-  void _handleTileTap(SelfFileEntity file, int index) {
+  void _handleTileTap(
+      SelfFileEntity file, int index, List<SelfFileEntity> list) {
     if (file.isDir) {
       if (widget.onDirTileTap != null) {
         widget.onDirTileTap!(file);
@@ -170,7 +185,7 @@ class _FileListViewState extends State<FileListView> {
       _fileOperation.openFileActionByExt(
         file,
         index: index,
-        fileList: widget.fileList,
+        fileList: list,
         onChangePopLocker: widget.onChangePopLocker,
         updateView: setState,
       );
@@ -185,11 +200,8 @@ class _FileListViewState extends State<FileListView> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    AquaTheme theme = _themeModel.themeData;
-
-    return widget.fileList.isEmpty
+  Widget validFileList(List<SelfFileEntity> list) {
+    return list.isEmpty
         ? GestureDetector(
             onLongPressStart: (details) async {
               await _showOptionsWhenPressedEmpty(context);
@@ -208,17 +220,17 @@ class _FileListViewState extends State<FileListView> {
             },
             child: AnimationLimiter(
               child: CupertinoScrollbar(
-                controller: widget.scrollController,
+                controller: _scrollController,
                 child: EasyRefresh.custom(
                   controller: _controller,
-                  scrollController: widget.scrollController,
+                  scrollController: _scrollController,
                   header: CloudHeader(),
                   onRefresh: widget.update2Side,
                   slivers: [
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          SelfFileEntity file = widget.fileList[index];
+                          SelfFileEntity file = list[index];
                           Widget leading = getPreviewIcon(context, file);
                           return FileListTile(
                             path: file.path,
@@ -227,13 +239,14 @@ class _FileListViewState extends State<FileListView> {
                             mode: widget.mode,
                             leading: leading,
                             height: 72,
-                            titleStyle: TextStyle(color: theme.itemFontColor),
+                            titleStyle:
+                                TextStyle(color: getTheme().itemFontColor),
                             leadingTitle: file.isDir ? file.humanSize : null,
                             trailing: file.isDir
                                 ? Icon(
                                     Icons.arrow_right,
                                     size: 16,
-                                    color: theme.itemFontColor,
+                                    color: getTheme().itemFontColor,
                                   )
                                 : null,
                             withAnimation: index < 15,
@@ -241,13 +254,13 @@ class _FileListViewState extends State<FileListView> {
                             onLongPressStart: (details) async {
                               await _handleLongPressStart(file);
                             },
-                            onTap: () => _handleTileTap(file, index),
+                            onTap: () => _handleTileTap(file, index, list),
                             onHozDrag: (dir) async {
                               await _fileOperation.handleHozDragItem(file, dir);
                             },
                           );
                         },
-                        childCount: widget.fileList.length,
+                        childCount: list.length,
                       ),
                     ),
                   ],
@@ -255,5 +268,22 @@ class _FileListViewState extends State<FileListView> {
               ),
             ),
           );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _readDir(),
+      builder:
+          (BuildContext context, AsyncSnapshot<List<SelfFileEntity>> snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          return validFileList(snapshot.data!);
+        } else if (snapshot.hasError) {
+          return Container();
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 }

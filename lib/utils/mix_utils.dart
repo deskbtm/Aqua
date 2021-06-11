@@ -15,6 +15,7 @@ class MixUtils {
   }
 
   static String humanStorageSize(double value, {bool useDouble = false}) {
+    // ignore: unnecessary_null_comparison
     if (value == null) {
       return "0B";
     }
@@ -87,7 +88,7 @@ class MixUtils {
 
   static bool isHttpUrl(String input) {
     RegExp url = RegExp(r'^((https|http)?:\/\/)[^\s]+');
-    return input != null ? url.hasMatch(input) : true;
+    return url.hasMatch(input);
   }
 
   static Future<String> getPrimaryStaticUploadSavePath(String root) async {
@@ -117,6 +118,24 @@ class MixUtils {
     }
 
     return path;
+  }
+
+  static Future<List<Directory>> getValidExternalStoragePath() async {
+    List<Directory> storages = [];
+    String? secondaryStorage = Platform.environment['SECONDARY_STORAGE'];
+    String? externalStorage = Platform.environment['EXTERNAL_STORAGE'];
+    String? emulatedStorage = Platform.environment['EMULATED_STORAGE_TARGET'];
+
+    if (emulatedStorage == null) {
+      if (externalStorage != null) {
+        storages.add(Directory(externalStorage));
+      } else {
+        String? path = await ExtraStorage.getExternalStorageDirectory;
+        
+      }
+    } else {}
+
+    return storages;
   }
 
   // RFC1918私有网络地址分配

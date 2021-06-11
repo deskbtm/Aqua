@@ -11,6 +11,8 @@ class Extra {
   static const String EXTRA_HTML_TEXT = "android.intent.extra.HTML_TEXT";
   static const String EXTRA_LOCAL_ONLY = "android.intent.extra.LOCAL_ONLY";
   static const String EXTRA_MIME_TYPES = "android.intent.extra.MIME_TYPES";
+  static const String EXTRA_INITIAL_URI =
+      "android.provider.extra.INITIAL_URI";
   static const String EXTRA_ORIGINATING_URI =
       "android.intent.extra.ORIGINATING_URI";
   static const String EXTRA_PACKAGE_NAME = "android.intent.extra.PACKAGE_NAME";

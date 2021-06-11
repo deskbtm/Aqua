@@ -31,11 +31,11 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
-import 'create_archive.dart';
-import 'create_rename.dart';
-import 'create_file.dart';
-import 'file_manager_mode.dart';
-import 'file_utils.dart';
+import 'archive_modal.dart';
+import 'rename_modal.dart';
+import 'create_file_modal.dart';
+
+import 'fs_utils.dart';
 
 class FileOperation {
   final Future<void> Function() update2Side;
@@ -63,7 +63,7 @@ class FileOperation {
     BuildContext context, {
     required bool mounted,
   }) async {
-    return createArchiveModal(
+    return showArchiveModal(
       context,
       currentDir: _fileManagerModel.currentDir!,
       onSuccessUpdate: (context) async {
@@ -213,11 +213,11 @@ class FileOperation {
     }
   }
 
-  Future<void> showRenameModal(
+  Future<void> renameModal(
     BuildContext context,
     SelfFileEntity file,
   ) async {
-    await createRenameModal(
+    await showRenameModal(
       context,
       file,
       onExists: () {
@@ -252,7 +252,7 @@ class FileOperation {
 
   Future<void> showCreateFileModal(BuildContext context) async {
     bool isRoot = pathLib.equals(
-        _fileManagerModel.rootDir!.path, _fileManagerModel.currentDir!.path);
+        _fileManagerModel.entryDir!.path, _fileManagerModel.currentDir!.path);
 
     return createFileModal(
       context,
@@ -321,7 +321,8 @@ class FileOperation {
                     if (FileUtils.rm([item.entity.path],
                         recursive: true, directory: true, force: true)) {
                       //删除后 已经不存在了 交换一下
-                      if (item.entity.path != _fileManagerModel.rootDir!.path) {
+                      if (item.entity.path !=
+                          _fileManagerModel.entryDir!.path) {
                         onChangeCurrentDir(item.entity.parent);
                       }
                     }
@@ -615,7 +616,7 @@ class FileOperation {
               ActionButton(
                 content: AppLocalizations.of(context)!.rename,
                 onTap: () async {
-                  await showRenameModal(context, file);
+                  await renameModal(context, file);
                 },
               ),
               if (sharedNotEmpty)

@@ -1,3 +1,5 @@
+/// 用于处理文件系统
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -5,9 +7,9 @@ import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/plugin/pkg_mgmt/mgmt.dart';
 import 'package:flutter/widgets.dart';
 import 'package:aqua/common/widget/images.dart';
-import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:path/path.dart' as pathLib;
+import 'package:provider/provider.dart';
 
 enum ShowOnlyType { all, folder, file, link }
 
@@ -211,18 +213,18 @@ class FsUtils {
 
   static String filename(String path) => pathLib.basename(path);
 
-  static bool doNothing(String from, String to) {
+  static bool lawPathStandard(String from, String to) {
     if (pathLib.canonicalize(from) == pathLib.canonicalize(to)) {
       return true;
     }
     if (pathLib.isWithin(from, to)) {
-      throw ArgumentError('Cannot copy from $from to $to');
+      throw ArgumentError('path error Cannot from $from to $to');
     }
     return false;
   }
 
   static Future<Null> copyDir(String from, String to) async {
-    if (doNothing(from, to)) {
+    if (lawPathStandard(from, to)) {
       return;
     }
     await Directory(to).create(recursive: true);
@@ -243,7 +245,7 @@ class FsUtils {
     String to,
   ) async {
     FileSystemEntity entity = from.entity;
-    if (doNothing(entity.path, to)) {
+    if (lawPathStandard(entity.path, to)) {
       return;
     }
 
@@ -299,24 +301,24 @@ class FsUtils {
 
   static void matchFileExt(
     String ext, {
-    required Function casePPT,
-    required Function caseWord,
-    required Function caseCVS,
-    required Function caseFlash,
-    required Function caseExcel,
-    required Function caseHtml,
-    required Function casePdf,
-    required Function caseImage,
-    required Function caseText,
-    required Function caseAudio,
-    required Function caseVideo,
-    required Function caseArchive,
-    required Function casePs,
-    required Function caseApk,
-    required Function caseFolder,
-    required Function caseSymbolLink,
-    required Function caseMd,
-    required Function defaultExec,
+    Function? casePPT,
+    Function? caseWord,
+    Function? caseCVS,
+    Function? caseFlash,
+    Function? caseExcel,
+    Function? caseHtml,
+    Function? casePdf,
+    Function? caseImage,
+    Function? caseText,
+    Function? caseAudio,
+    Function? caseVideo,
+    Function? caseArchive,
+    Function? casePs,
+    Function? caseApk,
+    Function? caseFolder,
+    Function? caseSymbolLink,
+    Function? caseMd,
+    Function? defaultExec,
   }) {
     ext = ext.toLowerCase();
     switch (ext) {
@@ -405,33 +407,6 @@ class FsUtils {
         if (defaultExec != null) defaultExec();
         break;
     }
-  }
-
-  static Widget matchEntryByMimeType(
-    String mime, {
-    required Widget Function() caseText,
-    required Widget Function() caseImage,
-    required Widget Function() caseVideo,
-    required Widget Function() caseDefault,
-  }) {
-    Widget result;
-    if (RegExp(r"text/.*").hasMatch(mime) && caseText != null) {
-      result = caseText();
-    } else if (RegExp(r"image/.*").hasMatch(mime) && caseImage != null) {
-      result = caseImage();
-    } /* else if (RegExp(r"audio/.*").hasMatch(mime) && caseAudio != null) {
-    result = caseAudio();
-  } */
-    else if (RegExp(r"video/.*").hasMatch(mime) && caseVideo != null) {
-      result = caseVideo();
-    } /* else if (RegExp(r"application/.*").hasMatch(mime) && caseBinary != null) {
-      result = caseBinary();
-    }  */
-    else {
-      result = caseDefault();
-    }
-
-    return result;
   }
 
   static void matchFileActionByExt(

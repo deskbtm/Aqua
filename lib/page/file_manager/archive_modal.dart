@@ -20,9 +20,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'file_utils.dart';
+import 'fs_utils.dart';
 
-Future<void> createArchiveModal(
+Future<void> showArchiveModal(
   BuildContext context, {
   Directory? currentDir,
   required Function(BuildContext) onSuccessUpdate,

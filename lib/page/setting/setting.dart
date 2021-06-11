@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:aqua/model/file_manager_model.dart';
-import 'package:aqua/page/file_manager/file_manager_mode.dart';
 import 'package:aqua/plugin/archive/archive.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ import 'package:aqua/common/widget/switch.dart';
 import 'package:aqua/constant/constant_var.dart';
 
 import 'package:aqua/page/file_manager/file_manager.dart';
-import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:aqua/page/lan/code_server/utils.dart';
 import 'package:aqua/page/purchase/purchase.dart';
 import 'package:aqua/page/setting/code_setting.dart';

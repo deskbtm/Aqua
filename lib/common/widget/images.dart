@@ -4,7 +4,7 @@ import 'package:aqua/plugin/glide/glide.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/page/file_manager/file_utils.dart';
+import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';

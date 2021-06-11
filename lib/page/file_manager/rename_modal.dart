@@ -11,9 +11,9 @@ import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'file_utils.dart';
+import 'fs_utils.dart';
 
-Future<void> createRenameModal(
+Future<void> showRenameModal(
   BuildContext context,
   SelfFileEntity file, {
   required VoidCallback onExists,

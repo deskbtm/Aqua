@@ -15,8 +15,6 @@ import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
 
-import 'file_manager_mode.dart';
-
 enum FileListTileType { folder, file }
 
 // ignore: must_be_immutable

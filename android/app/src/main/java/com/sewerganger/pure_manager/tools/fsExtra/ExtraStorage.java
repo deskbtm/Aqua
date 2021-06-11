@@ -1,24 +1,30 @@
 package com.sewerganger.pure_manager.tools.fsExtra;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.DocumentsContract;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.flutter.plugin.common.MethodChannel;
 import io.flutter.util.PathUtils;
 
 import static android.os.Build.VERSION_CODES.M;
 
 public class ExtraStorage {
   private Context context;
+  private Activity mActivity;
 
-  public ExtraStorage(Context ctx) {
-    context = ctx;
+  public ExtraStorage(Context ctx, Activity activity) {
+    context = ctx;mActivity = activity;
   }
 
   public String getTemporaryDirectory() {
@@ -135,6 +141,22 @@ public class ExtraStorage {
     }
 
     return paths;
+  }
+
+  public void requestDataObbAccess(MethodChannel.Result result) {
+    try {
+      Uri uri = Uri.parse("content://com.android.externalstorage.documents/document/primary%3AAndroid%2Fdata");
+      Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+      intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
+      intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+          | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+          | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+      mActivity.startActivityForResult(intent, 998);
+      result.success(true);
+    } catch (Exception e) {
+      e.printStackTrace();
+      result.success(false);
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-package com.sewerganger.pure_manager.tools.fsExtra;
+package com.sewerganger.pure_manager.tools.fs;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,10 +12,10 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 
-public class FsExtraPlugin implements FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
+public class FsPlugin implements FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
   private MethodChannel channel;
   private Context context;
-  private ExtraStorage extraStorage;
+  private ExtendStorage extraStorage;
   private String CHANNEL_NAME = "aqua_fs";
   private Activity mActivity;
 
@@ -33,7 +33,7 @@ public class FsExtraPlugin implements FlutterPlugin, MethodChannel.MethodCallHan
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
-    extraStorage = new ExtraStorage(context, mActivity);
+    extraStorage = new ExtendStorage(context, mActivity);
     switch (call.method) {
       case "getTemporaryDirectory":
         result.success(extraStorage.getTemporaryDirectory());
@@ -78,6 +78,15 @@ public class FsExtraPlugin implements FlutterPlugin, MethodChannel.MethodCallHan
         break;
       case "requestDataObbAccess":
         extraStorage.requestDataObbAccess(result);
+        break;
+      case "getExternalStorageState":
+        extraStorage.getExternalStorageState(result);
+        break;
+      case "getAllValidStorage":
+        extraStorage.getAllValidStorage(result);
+        break;
+      case "canRead":
+        extraStorage.canRead(call, result);
         break;
     }
   }

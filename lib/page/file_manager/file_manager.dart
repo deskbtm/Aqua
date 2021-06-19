@@ -1,32 +1,24 @@
 import 'dart:io';
 import 'dart:ui';
-import 'dart:async';
 
-import 'package:aqua/page/file_manager/fs_ui_utils.dart';
+import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/page/file_manager/search_bar.dart';
 import 'package:aqua/plugin/storage/storage.dart';
 
 import 'fs_utils.dart';
-import 'dart:developer';
 
 import 'package:aqua/common/widget/inner_drawer.dart';
-import 'package:aqua/third_party/back_button_interceptor/back_button_interceptor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
-import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/page/file_manager/file_list.dart';
 import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart' as pathLib;
 import 'package:unicons/unicons.dart';
-import 'package:intent/intent.dart' as intent;
-
-import 'package:intent/action.dart' as android_action;
 
 class FileManagerPage extends StatefulWidget {
   final String? appointPath;
@@ -358,7 +350,18 @@ class _FileManagerPageState extends State<FileManagerPage>
       ),
       middle: CupertinoButton(
         padding: EdgeInsets.all(0),
-        onPressed: () async {},
+        onPressed: () async {
+          _fileManagerModel
+              .setDemo(DateTime.now().microsecondsSinceEpoch.toString());
+          // _globalModel
+          //     .setAplineRepo(DateTime.now().microsecondsSinceEpoch.toString());
+          // print(_globalModel.alpineRepo);
+          // if (_themeModel.isDark) {
+          //   _themeModel.setTheme(LIGHT_THEME);
+          // } else {
+          //   _themeModel.setTheme(DARK_THEME);
+          // }
+        },
         child: NoResizeText(
           'de',
           // pathLib.equals(

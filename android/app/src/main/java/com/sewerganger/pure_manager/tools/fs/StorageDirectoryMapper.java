@@ -1,4 +1,4 @@
-package com.sewerganger.pure_manager.tools.fsExtra;
+package com.sewerganger.pure_manager.tools.fs;
 
     import android.os.Build;
     import android.os.Environment;

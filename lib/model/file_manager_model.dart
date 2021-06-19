@@ -74,6 +74,15 @@ class FileManagerModel extends ChangeNotifier {
     _sortReversed = arg;
   }
 
+  String _demo = '初始';
+
+  String get demo => _demo;
+
+  void setDemo(String val) {
+    this._demo = val;
+    notifyListeners();
+  }
+
   /// 按类型显示
   ShowOnlyType _showOnlyType = ShowOnlyType.all;
   ShowOnlyType get showOnlyType => _showOnlyType;
@@ -144,3 +153,5 @@ class FileManagerModel extends ChangeNotifier {
     await _initRunningMode();
   }
 }
+
+FileManagerModel fileManagerModel = FileManagerModel();

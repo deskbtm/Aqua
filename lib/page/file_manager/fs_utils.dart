@@ -9,7 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:aqua/common/widget/images.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:path/path.dart' as pathLib;
-import 'package:provider/provider.dart';
 
 enum ShowOnlyType { all, folder, file, link }
 

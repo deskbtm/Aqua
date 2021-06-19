@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:aqua/common/theme.dart';
 import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/page/lan/static_fs/body_parser/src/shelf_body_parser.dart';
 import 'package:aqua/page/lan/static_fs/web_handler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
@@ -29,19 +30,20 @@ import 'package:shelf/shelf_io.dart' as shelf;
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'static_fs/body_parser/src/shelf_body_parser.dart';
+class RightQuickBoard extends StatefulWidget {
+  RightQuickBoard({Key? key}) : super(key: key);
 
-class LanSharePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return LanSharePageState();
+    return RightQuickBoardState();
   }
 }
 
-class LanSharePageState extends State<LanSharePage>
+class RightQuickBoardState extends State<RightQuickBoard>
     with AutomaticKeepAliveClientMixin {
   late ThemeModel _themeModel;
   late GlobalModel _globalModel;
+  late FileManagerModel _fileManagerModel;
 
   HttpServer? _server;
   late bool _shareSwitch;
@@ -59,6 +61,7 @@ class LanSharePageState extends State<LanSharePage>
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _globalModel = Provider.of<GlobalModel>(context);
+    _fileManagerModel = Provider.of<FileManagerModel>(context);
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
@@ -293,6 +296,7 @@ class LanSharePageState extends State<LanSharePage>
                 ],
               ),
             ),
+            Text(_fileManagerModel.demo),
             Expanded(
               flex: 1,
               child: _globalModel.selectedFiles.isEmpty

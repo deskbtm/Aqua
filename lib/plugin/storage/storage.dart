@@ -84,4 +84,47 @@ class ExtraStorage {
     final bool r = await _channel.invokeMethod('requestDataObbAccess');
     return r;
   }
+
+  static Future<List<ValidStorage>> getAllValidStorage() async {
+    List<ValidStorage> r = [];
+    List<Object?> s = await _channel.invokeMethod('getAllValidStorage');
+
+    for (var item in s) {
+      if (item != null) {
+        Map mItem = item as Map;
+
+        r.add(
+          ValidStorage(
+            description: mItem['description'],
+            isEmulated: mItem['isEmulated'],
+            isPrimary: mItem['isPrimary'],
+            path: mItem['path'],
+            isRemovable: mItem['isRemovable'],
+          ),
+        );
+      }
+    }
+
+    return r;
+  }
+
+  static Future<bool> canRead(String path) async {
+    final bool readable = await _channel.invokeMethod('canRead', {path});
+    return readable;
+  }
+}
+
+class ValidStorage {
+  final String path;
+  final String description;
+  final bool isRemovable;
+  final bool isEmulated;
+  final bool isPrimary;
+
+  ValidStorage(
+      {required this.path,
+      required this.description,
+      required this.isRemovable,
+      required this.isEmulated,
+      required this.isPrimary});
 }

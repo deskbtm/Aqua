@@ -1,20 +1,15 @@
-import 'package:aqua/common/theme.dart';
+import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:aqua/common/widget/inner_drawer.dart';
-import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/common/widget/switch.dart';
-import 'package:aqua/constant/constant_var.dart';
+import 'package:aqua/page/home/left_quick_board.dart';
+import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/model/theme_model.dart';
-
+import 'package:aqua/model/global_model.dart';
+import 'package:aqua/common/theme.dart';
+import 'package:aqua/page/home/right_quick_board.dart';
 import 'package:aqua/page/lan/share.dart';
-import 'package:aqua/page/setting/setting.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:aqua/model/file_manager_model.dart';
-import 'package:aqua/page/file_manager/file_manager.dart';
-import 'package:aqua/model/global_model.dart';
-
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -208,8 +203,19 @@ class _HomePageState extends State<HomePage> {
     // _storageSubscription.cancel();
   }
 
+  void _handleDrawCallback(bool opened, InnerDrawerDirection direction) {
+    if (direction == InnerDrawerDirection.end) {
+      _rightKey.currentState?.setState(() {});
+    } else {
+      _leftKey.currentState?.setState(() {});
+    }
+  }
+
   final GlobalKey<InnerDrawerState> _innerDrawerKey =
       GlobalKey<InnerDrawerState>();
+
+  GlobalKey _leftKey = GlobalKey<LeftQuickBoardState>();
+  GlobalKey _rightKey = GlobalKey<RightQuickBoardState>();
 
   @override
   Widget build(BuildContext context) {
@@ -232,27 +238,14 @@ class _HomePageState extends State<HomePage> {
       rightAnimationType: InnerDrawerAnimation.quadratic,
       backgroundDecoration:
           BoxDecoration(color: themeData.scaffoldBackgroundColor),
-      innerDrawerCallback: (a) {},
-      leftChild: Container(
-          child: Material(
-        child: ListTile(
-          title: ThemedText('dsadsadsa'),
-          contentPadding: EdgeInsets.only(left: 15, right: 10),
-          trailing: AquaSwitch(
-            value: _themeModel.isDark,
-            onChanged: (val) async {
-              if (val) {
-                _themeModel.setTheme(DARK_THEME);
-              } else {
-                _themeModel.setTheme(LIGHT_THEME);
-              }
-            },
-          ),
-        ),
-      )),
-      rightChild: LanSharePage(),
-      scaffold: ChangeNotifierProvider<FileManagerModel>(
-        create: (_) => FileManagerModel(),
+      // innerDrawerCallback: _handleDrawCallback,
+      leftChild: LeftQuickBoard(key: _leftKey),
+      rightChild: ChangeNotifierProvider.value(
+        value: fileManagerModel,
+        child: RightQuickBoard(key: _rightKey),
+      ),
+      scaffold: ChangeNotifierProvider.value(
+        value: fileManagerModel,
         child: FileManagerPage(
           innerDrawerKey: _innerDrawerKey,
         ),

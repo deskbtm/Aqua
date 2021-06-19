@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:aqua/common/theme.dart';
 import 'package:aqua/common/widget/cloud_header.dart';
+import 'package:aqua/common/widget/static_utils.dart';
 import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,6 +19,7 @@ import 'package:aqua/page/file_manager/file_operation.dart';
 import 'package:aqua/page/file_manager/file_list_tile.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:unicons/unicons.dart';
 // import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'fs_ui_utils.dart';
@@ -207,12 +209,7 @@ class _FileListState extends State<FileList> {
               await _showOptionsWhenPressedEmpty(context);
             },
             onTap: widget.onTapEmpty,
-            child: Container(
-              color: Colors.transparent,
-              child: Center(
-                child: NoResizeText(AppLocalizations.of(context)!.empty),
-              ),
-            ),
+            child: EmptyBoard(),
           )
         : GestureDetector(
             onLongPressStart: (details) async {
@@ -279,7 +276,7 @@ class _FileListState extends State<FileList> {
         if (snapshot.hasData && snapshot.data != null) {
           return validFileList(snapshot.data!);
         } else if (snapshot.hasError) {
-          return Container();
+          return ErrorBoard();
         } else {
           return Container();
         }

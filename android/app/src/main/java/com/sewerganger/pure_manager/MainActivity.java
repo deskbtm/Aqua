@@ -18,7 +18,7 @@ import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FlutterActivity {
 //  private Map incomingIntent;
 //  private static final String CHANNEL = "app.channel.shared.data";
 //  private String APP_NORMAL_MODE = "normal";
@@ -28,15 +28,15 @@ public class MainActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 //    getApplicationContext().
-    Button btn = (Button) findViewById(R.id.button);
-
-    btn.setOnClickListener(v->{
-      try {
-        String[] a = getAssets().list("./");
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    });
+//    Button btn = (Button) findViewById(R.id.button);
+//
+//    btn.setOnClickListener(v->{
+//      try {
+//        String[] a = getAssets().list("./");
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//      }
+//    });
 //    Button
 
 
@@ -55,19 +55,19 @@ public class MainActivity extends Activity {
 //    }
   }
 
-//  @Override
-//  public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
-//    GeneratedPluginRegistrant.registerWith(flutterEngine);
-//    InnerPluginMgmt.register(flutterEngine);
-//
-////    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
-////      .setMethodCallHandler(
-////        (call, result) -> {
-////          if (call.method.contentEquals("getIncomingFile")) {
-////            result.success(incomingIntent);
-////            incomingIntent = null;
-////          }
-////        }
-////      );
-//  }
+  @Override
+  public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
+    GeneratedPluginRegistrant.registerWith(flutterEngine);
+    InnerPluginMgmt.register(flutterEngine);
+
+//    new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
+//      .setMethodCallHandler(
+//        (call, result) -> {
+//          if (call.method.contentEquals("getIncomingFile")) {
+//            result.success(incomingIntent);
+//            incomingIntent = null;
+//          }
+//        }
+//      );
+  }
 }

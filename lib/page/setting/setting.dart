@@ -22,7 +22,6 @@ import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/utils/notification.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -130,8 +129,7 @@ class SettingPageState extends State<SettingPage> {
                 );
               },
               child: ListTile(
-                trailing: FaIcon(FontAwesomeIcons.shoppingBag,
-                    color: themeData.itemFontColor),
+                trailing: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
                 title: ThemedText(AppLocalizations.of(context)!.sponsorTitle),
                 subtitle: ThemedText(
                   '5￥ ${AppLocalizations.of(context)!.sponsorText}',
@@ -380,12 +378,11 @@ class SettingPageState extends State<SettingPage> {
               }
             },
             child: ListTile(
-                leading: FaIcon(FontAwesomeIcons.fileCode,
-                    color: themeData.itemFontColor),
+                leading: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
                 title: ThemedText(AppLocalizations.of(context)!.moreSetting,
                     alignX: -1.15),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
-                trailing: FaIcon(FontAwesomeIcons.chevronRight)),
+                trailing: Icon(Icons.hdr_weak)),
           ),
         ],
       ),
@@ -411,8 +408,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              trailing:
-                  FaIcon(FontAwesomeIcons.link, color: themeData.itemFontColor),
+              trailing: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
               title: ThemedText(AppLocalizations.of(context)!.webDavServer),
               subtitle: ThemedText(_globalModel.webDavAddr == null
                   ? AppLocalizations.of(context)!.notSetting
@@ -435,8 +431,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              trailing: FaIcon(FontAwesomeIcons.mehBlank,
-                  color: themeData.itemFontColor),
+              trailing: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
               title: ThemedText(
                 AppLocalizations.of(context)!.webDavAccount,
               ),
@@ -473,8 +468,7 @@ class SettingPageState extends State<SettingPage> {
                         .join(''),
                 small: true,
               ),
-              trailing:
-                  FaIcon(FontAwesomeIcons.ad, color: themeData.itemFontColor),
+              trailing: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -532,7 +526,7 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
                 title: ThemedText(AppLocalizations.of(context)!.about),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
-                trailing: FaIcon(FontAwesomeIcons.chevronRight)),
+                trailing: Icon(Icons.hdr_weak)),
           ),
           // InkWell(
           //   onTap: () async {
@@ -547,7 +541,7 @@ class SettingPageState extends State<SettingPage> {
           //   child: ListTile(
           //       title: ThemedText(AppLocalizations.of(context)!.help),
           //       contentPadding: EdgeInsets.only(left: 15, right: 25),
-          //       trailing: FaIcon(FontAwesomeIcons.chevronRight)),
+          //       trailing: Icon(FontAwesomeIcons.chevronRight)),
           // ),
           InkWell(
             onTap: () async {
@@ -562,7 +556,7 @@ class SettingPageState extends State<SettingPage> {
               title: ThemedText(AppLocalizations.of(context)!.update),
               subtitle: ThemedText('v$_version', small: true),
               trailing: _willUpdate
-                  ? FaIcon(FontAwesomeIcons.accusoft, color: Colors.redAccent)
+                  ? Icon(Icons.hdr_weak, color: Colors.redAccent)
                   : CupertinoButton(
                       child: NoResizeText(AppLocalizations.of(context)!.latest),
                       onPressed: () {}),

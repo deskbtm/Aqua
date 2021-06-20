@@ -58,6 +58,7 @@ class ExtraStorage {
     return path;
   }
 
+  
   static Future<String> get getDataDirectory async {
     final String path = await _channel.invokeMethod('getDataDirectory');
     return path;

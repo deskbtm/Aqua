@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/constant/constant.dart';
@@ -263,8 +263,8 @@ class _PurchasePageState extends State<PurchasePage> {
                                 fontSize: 22,
                               ),
                               ListTile(
-                                leading: FaIcon(
-                                  FontAwesomeIcons.user,
+                                leading: Icon(
+                                  Icons.hdr_weak,
                                   color: themeData.iconColor,
                                 ),
                                 title: ThemedText('免费使用大部功能'),
@@ -289,15 +289,15 @@ class _PurchasePageState extends State<PurchasePage> {
                                 ],
                               ),
                               ListTile(
-                                leading: FaIcon(
-                                  FontAwesomeIcons.code,
+                                leading: Icon(
+                                  Icons.hdr_weak,
                                   color: themeData.iconColor,
                                 ),
                                 title: ThemedText('Code Server(不稳定)'),
                               ),
                               ListTile(
-                                leading: FaIcon(
-                                  FontAwesomeIcons.heart,
+                                leading: Icon(
+                                  Icons.hdr_weak,
                                   color: themeData.iconColor,
                                 ),
                                 title: ThemedText('对作者的支持'),

@@ -17,7 +17,6 @@ import 'package:aqua/utils/mix_utils.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:share_extend/share_extend.dart';
@@ -333,7 +332,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
                       label: AppLocalizations.of(context)!.delete,
-                      icon: FaIcon(FontAwesomeIcons.solidTrashAlt),
+                      icon: Icon(Icons.hdr_weak),
                     ),
                     // BottomNavigationBarItem(
                     //   label: AppLocalizations.of(context)!.edit,

@@ -268,7 +268,7 @@ class _HomePageState extends State<HomePage> {
     //       ),
     //       BottomNavigationBarItem(
     //         label: AppLocalizations.of(context)!.settingLabel,
-    //         icon: FaIcon(FontAwesomeIcons.adversal),
+    //         icon: Icon(FontAwesomeIcons.adversal),
     //       )
     //     ],
     //   ),

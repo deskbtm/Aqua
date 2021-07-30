@@ -29,7 +29,7 @@ class StorageCard extends StatelessWidget {
           barWidth: MediaQuery.of(context).size.width,
           numerator: totalSize - validSize,
           denominator: totalSize,
-          title: AppLocalizations.of(context)!.internalStorage,
+          title: S.of(context)!.internalStorage,
           dialogTextStyle: TextStyle(
               fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
           titleStyle: TextStyle(

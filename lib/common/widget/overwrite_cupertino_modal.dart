@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 class OverwriteCupertinoModalPopupRoute<T> extends PopupRoute<T> {
   OverwriteCupertinoModalPopupRoute({
     required this.barrierColor,
-    required this.barrierLabel,
+    this.barrierLabel,
     required this.builder,
     bool? semanticsDismissible,
     ImageFilter? filter,
@@ -21,7 +21,7 @@ class OverwriteCupertinoModalPopupRoute<T> extends PopupRoute<T> {
   late bool? _semanticsDismissible;
 
   @override
-  final String barrierLabel;
+  final String? barrierLabel;
 
   @override
   final Color barrierColor;

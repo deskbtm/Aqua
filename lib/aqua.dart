@@ -82,12 +82,13 @@ class _AquaWrapperState extends State<AquaWrapper> {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _globalModel = Provider.of<GlobalModel>(context);
-    await _preparedAppEnv();
-    if (!_envPrepared) {
-      setState(() {
-        _envPrepared = true;
-      });
-    }
+    await _preparedAppEnv().then((value) {
+      if (!_envPrepared) {
+        setState(() {
+          _envPrepared = true;
+        });
+      }
+    });
   }
 
   @override
@@ -136,7 +137,7 @@ class _AquaWrapperState extends State<AquaWrapper> {
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
-                AppLocalizations.delegate
+                S.delegate
               ],
               supportedLocales: [
                 const Locale('zh'),

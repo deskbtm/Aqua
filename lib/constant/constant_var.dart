@@ -46,7 +46,7 @@ const String DARK_THEME = 'dark';
 const String SHOW_FILE_HIDDEN = 'show_hidden';
 const String FILE_SORT_TYPE = 'file_sort_type';
 const String LAYOUUT_MODE = 'layout_mode';
-const String RUNNING_MODE = 'running_mode';
+const String VIEW_MODE = 'view_mode';
 
 // ntaive 通信
 const String SHARED_CHANNEL = 'app.channel.shared.data';

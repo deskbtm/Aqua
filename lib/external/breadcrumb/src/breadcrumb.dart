@@ -17,12 +17,14 @@ class BreadCrumb extends StatelessWidget {
         super(key: key);
 
   factory BreadCrumb.builder({
+    Key? key,
     required int itemCount,
     required IndexedBreadCrumbItemBuilder builder,
     Widget? divider,
     BreadCrumbOverflow overflow = const WrapOverflow(),
   }) =>
       BreadCrumb(
+        key: key,
         items: List<BreadCrumbItem>.generate(
           itemCount,
           (i) => builder(i),

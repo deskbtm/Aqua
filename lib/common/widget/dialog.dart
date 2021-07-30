@@ -132,14 +132,13 @@ class AquaDialog extends Dialog {
                                     if (withOk)
                                       CupertinoButton(
                                         child: NoResizeText(defaultOkText ??
-                                            AppLocalizations.of(context)!.sure),
+                                            S.of(context)!.sure),
                                         onPressed: onOk,
                                       ),
                                     if (withCancel)
                                       CupertinoButton(
                                         child: NoResizeText(defaultCancelText ??
-                                            AppLocalizations.of(context)!
-                                                .cancel),
+                                            S.of(context)!.cancel),
                                         onPressed: onCancel,
                                       ),
                                   ],

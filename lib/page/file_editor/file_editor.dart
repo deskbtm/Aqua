@@ -385,7 +385,6 @@ class _FileEditorPageState extends State<FileEditorPage> {
           FocusedMenuHolder(
             backgroundColor: widget.popMenuColor,
             menuWidth: MediaQuery.of(context).size.width * 0.4,
-            blurSize: 5.0,
             menuItemExtent: 45,
             duration: Duration(milliseconds: 100),
             animateMenuItems: true,

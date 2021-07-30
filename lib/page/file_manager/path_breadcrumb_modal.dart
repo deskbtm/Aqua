@@ -1,3 +1,4 @@
+// import 'dart:io';
 // import 'dart:ui';
 
 // import 'package:aqua/common/theme.dart';
@@ -11,8 +12,8 @@
 // import 'package:flutter/material.dart';
 
 // Future<void> _showBreadcrumb() async {
-//   AquaTheme themeData = _themeModel.themeData;
-//   List<String> paths = pathLib.split(_fileManagerModel.currentDir!.path);
+//   // AquaTheme themeData = _themeModel.themeData;
+//   // List<String> paths = pathLib.split(_fileManagerModel.currentDir!.path);
 //   return showCupertinoModal(
 //     context: context,
 //     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -32,21 +33,21 @@
 //                 margin: EdgeInsets.only(top: 5, bottom: 5),
 //                 content: InkWell(
 //                   onTap: () async {
-//                     List<String> willNav =
-//                         paths.getRange(0, index + 1).toList();
-//                     String path = pathLib.joinAll(willNav);
-//                     Directory dir = Directory(path);
+//                     // List<String> willNav =
+//                     //     paths.getRange(0, index + 1).toList();
+//                     // String path = pathLib.joinAll(willNav);
+//                     // Directory dir = Directory(path);
 
-//                     if (pathLib.equals(path, _rootDir?.path ?? '')) {
-//                       _leftFileList = await readdir(dir);
-//                       _rightFileList = [];
-//                       _fileManagerModel.setCurrentDir(dir);
-//                     } else if (pathLib.isWithin(_rootDir?.path ?? '', path)) {
-//                       _leftFileList = await readdir(dir.parent);
-//                       _rightFileList = await readdir(dir);
-//                       // _fileManagerModel.currentDir = dir;
-//                       _fileManagerModel.setCurrentDir(dir);
-//                     }
+//                     // if (pathLib.equals(path, _rootDir?.path ?? '')) {
+//                     //   _leftFileList = await readdir(dir);
+//                     //   _rightFileList = [];
+//                     //   _fileManagerModel.setCurrentDir(dir);
+//                     // } else if (pathLib.isWithin(_rootDir?.path ?? '', path)) {
+//                     //   _leftFileList = await readdir(dir.parent);
+//                     //   _rightFileList = await readdir(dir);
+//                     //   // _fileManagerModel.currentDir = dir;
+//                     //   _fileManagerModel.setCurrentDir(dir);
+//                     // }
 //                     // setState(() {});
 //                     MixUtils.safePop(context);
 //                   },

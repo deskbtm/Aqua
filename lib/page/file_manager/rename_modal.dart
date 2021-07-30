@@ -32,7 +32,7 @@ Future<void> showRenameModal(
       return AquaDialog(
         fontColor: themeData.itemFontColor,
         bgColor: themeData.dialogBgColor,
-        title: NoResizeText(AppLocalizations.of(context)!.rename),
+        title: NoResizeText(S.of(context)!.rename),
         action: true,
         children: <Widget>[
           AquaTextField(

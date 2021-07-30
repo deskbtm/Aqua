@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:aqua/common/widget/overwrite_cupertino_modal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/utils/mix_utils.dart';
@@ -28,7 +29,7 @@ class FocusedMenuHolder extends StatefulWidget {
   final BoxDecoration? menuBoxDecoration;
   // final Function(int, String) onPressed;
   final Duration? duration;
-  final double? blurSize;
+
   final Color? maskColor;
   final double? bottomOffsetHeight;
   final double? menuOffset;
@@ -46,13 +47,11 @@ class FocusedMenuHolder extends StatefulWidget {
   const FocusedMenuHolder({
     Key? key,
     required this.child,
-    // required this.onPressed,
     required this.menuItems,
     this.duration,
     this.menuBoxDecoration,
     this.menuItemExtent,
     this.animateMenuItems,
-    this.blurSize,
     this.maskColor,
     this.menuWidth,
     this.bottomOffsetHeight,
@@ -93,7 +92,7 @@ class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
       onTap: () async {
         getOffset();
         await Navigator.of(context, rootNavigator: true).push(
-          CupertinoModalPopupRoute(
+          OverwriteCupertinoModalPopupRoute(
             barrierColor: widget.maskColor ??
                 CupertinoDynamicColor.resolve(
                   CupertinoDynamicColor.withBrightness(
@@ -102,7 +101,6 @@ class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
                   ),
                   context,
                 ),
-            barrierLabel: 'Dismiss',
             builder: (context) {
               return FocusedMenuDetails(
                 itemExtent: widget.menuItemExtent,
@@ -111,7 +109,6 @@ class _FocusedMenuHolderState extends State<FocusedMenuHolder> {
                 childOffset: childOffset,
                 childSize: _childSize,
                 menuItems: widget.menuItems,
-                blurSize: widget.blurSize,
                 menuWidth: widget.menuWidth,
                 animateMenu: widget.animateMenuItems ?? true,
                 bottomOffsetHeight: widget.bottomOffsetHeight ?? 0,
@@ -137,26 +134,25 @@ class FocusedMenuDetails extends StatelessWidget {
   final Size childSize;
   final Widget child;
   final bool animateMenu;
-  final double? blurSize;
+
   final double? menuWidth;
 
   final double bottomOffsetHeight;
   final double menuOffset;
 
-  const FocusedMenuDetails(
-      {Key? key,
-      required this.menuItems,
-      required this.child,
-      required this.childOffset,
-      required this.childSize,
-      this.menuBoxDecoration,
-      this.itemExtent,
-      required this.animateMenu,
-      this.blurSize,
-      this.menuWidth,
-      required this.bottomOffsetHeight,
-      required this.menuOffset})
-      : super(key: key);
+  const FocusedMenuDetails({
+    Key? key,
+    required this.menuItems,
+    required this.child,
+    required this.childOffset,
+    required this.childSize,
+    this.menuBoxDecoration,
+    this.itemExtent,
+    required this.animateMenu,
+    this.menuWidth,
+    required this.bottomOffsetHeight,
+    required this.menuOffset,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -218,12 +214,11 @@ class FocusedMenuDetails extends StatelessWidget {
                         Widget listItem = GestureDetector(
                           onTap: () {
                             MixUtils.safePop(context);
-                            // 不能放在前面会阻塞
                             item.onPressed();
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            color: item.backgroundColor ?? Color(0xDEFFFFFF),
+                            color: item.backgroundColor ?? Color(0xE8FFFFFF),
                             height: itemExtent ?? 50.0,
                             margin: EdgeInsets.only(bottom: 1),
                             child: Padding(
@@ -233,10 +228,10 @@ class FocusedMenuDetails extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  item.title,
                                   if (item.trailingIcon != null) ...[
                                     item.trailingIcon as Widget
-                                  ]
+                                  ],
+                                  item.title,
                                 ],
                               ),
                             ),

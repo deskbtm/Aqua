@@ -66,13 +66,12 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
             return SplitSelectionModal(
               rightChildren: <Widget>[
                 ActionButton(
-                  content: AppLocalizations.of(context)!.uninstall,
+                  content: S.of(context)!.uninstall,
                   onTap: () async {
                     await showTipTextModal(
                       context,
-                      title: AppLocalizations.of(context)!.uninstall,
-                      tip:
-                          '${AppLocalizations.of(context)!.uninstall} ${app.packageName}?',
+                      title: S.of(context)!.uninstall,
+                      tip: '${S.of(context)!.uninstall} ${app.packageName}?',
                       onOk: () {
                         // intent.Intent()
                         //   ..setAction(
@@ -198,12 +197,12 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
                           withAnimation: index < 15,
                           index: index,
                           subTitle:
-                              '${AppLocalizations.of(context)!.version}: ${app.versionName}\n'
-                              '${AppLocalizations.of(context)!.sysApps}: ${app.systemApp}\n'
-                              'APK ${AppLocalizations.of(context)!.position}: ${app.apkFilePath}\n'
-                              '${AppLocalizations.of(context)!.dataDir}: ${app.dataDir}\n'
-                              '${AppLocalizations.of(context)!.installTimestamp}: ${DateTime.fromMillisecondsSinceEpoch(app.installTimeMillis).toString()}\n'
-                              '${AppLocalizations.of(context)!.updateTimestamp}: ${DateTime.fromMillisecondsSinceEpoch(app.updateTimeMillis).toString()}\n',
+                              '${S.of(context)!.version}: ${app.versionName}\n'
+                              '${S.of(context)!.sysApps}: ${app.systemApp}\n'
+                              'APK ${S.of(context)!.position}: ${app.apkFilePath}\n'
+                              '${S.of(context)!.dataDir}: ${app.dataDir}\n'
+                              '${S.of(context)!.installTimestamp}: ${DateTime.fromMillisecondsSinceEpoch(app.installTimeMillis).toString()}\n'
+                              '${S.of(context)!.updateTimestamp}: ${DateTime.fromMillisecondsSinceEpoch(app.updateTimeMillis).toString()}\n',
                           onLongPressStart: (details) async {
                             showAppActions(app);
                           },

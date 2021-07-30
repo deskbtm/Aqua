@@ -39,56 +39,53 @@ Future<dynamic> showMoreModal(
         // onDispose: () {},
         leftChildren: [
           ActionButton(
-            content: AppLocalizations.of(context)!.copyToSandbox,
+            content: S.of(context)!.copyToSandbox,
             onTap: () async {
               Directory sandbox = Directory('$filesPath/rootfs/root');
               if (sandbox.existsSync()) {
                 Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context)!.wait,
+                  msg: S.of(context)!.wait,
                 );
                 await FsUtils.copy(file, sandbox.path);
                 Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context)!.setSuccess,
+                  msg: S.of(context)!.setSuccess,
                 );
               } else {
                 Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context)!.sandboxNotExist,
+                  msg: S.of(context)!.sandboxNotExist,
                 );
               }
             },
           ),
           ActionButton(
-            content: AppLocalizations.of(context)!.uploadToWebDAV,
+            content: S.of(context)!.uploadToWebDAV,
             onTap: () async {
               if (commonModel.webDavAddr == null ||
                   commonModel.webDavPwd == null ||
                   commonModel.webDavUsername == null) {
-                Fluttertoast.showToast(
-                    msg: AppLocalizations.of(context)!.uploadToWebDAV);
+                Fluttertoast.showToast(msg: S.of(context)!.uploadToWebDAV);
                 return;
               }
               LocalNotification.showNotification(
                 index: 1,
                 name: 'WEBDAV_UPLOAD',
-                title: AppLocalizations.of(context)!.uploading,
+                title: S.of(context)!.uploading,
                 onlyAlertOnce: true,
                 showProgress: true,
                 indeterminate: true,
               );
               await utils.uploadToWebDAV(file).catchError((err) {
                 LocalNotification.plugin?.cancel(1);
-                Fluttertoast.showToast(
-                    msg: AppLocalizations.of(context)!.setFail);
+                Fluttertoast.showToast(msg: S.of(context)!.setFail);
               });
               LocalNotification.plugin?.cancel(1);
-              Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context)!.setSuccess);
+              Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
             },
           ),
         ],
         rightChildren: <Widget>[
           ActionButton(
-            content: AppLocalizations.of(context)!.openEditor,
+            content: S.of(context)!.openEditor,
             onTap: () async {
               Navigator.of(context, rootNavigator: true).push(
                 CupertinoPageRoute(builder: (BuildContext context) {
@@ -114,7 +111,7 @@ Future<dynamic> showMoreModal(
             },
           ),
           ActionButton(
-            content: AppLocalizations.of(context)!.openWith,
+            content: S.of(context)!.openWith,
             onTap: () async {
               try {
                 OpenFile.open(file.entity.path);

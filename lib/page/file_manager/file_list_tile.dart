@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:aqua/common/widget/marquee.dart';
 import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/model/select_file_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
@@ -89,7 +90,6 @@ class SimpleFileListTile extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(right: 8),
                       child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
                             child: leading,
@@ -241,7 +241,7 @@ class FileListTileState extends State<FileListTile>
   double _dragX = 0;
   bool _selected = false;
   late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
+  late SelectFileModel _selectFileModel;
 
   @override
   bool get wantKeepAlive => true;
@@ -264,7 +264,7 @@ class FileListTileState extends State<FileListTile>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
+    _selectFileModel = Provider.of<SelectFileModel>(context);
   }
 
   @override
@@ -289,12 +289,7 @@ class FileListTileState extends State<FileListTile>
     _controller!.animateWith(simulation);
 
     if (widget.onHozDrag != null) {
-      if (mounted) {
-        // 等待执行完成再更新 否则可能出现installed_apps 中 onHozDrag 异步没执行好
-        // setState 就执行的情况
-        await widget.onHozDrag!(_dragX > 0 ? 1 : -1);
-        setState(() {});
-      }
+      await widget.onHozDrag!(_dragX > 0 ? 1 : -1);
     }
   }
 
@@ -319,9 +314,9 @@ class FileListTileState extends State<FileListTile>
   Widget springFileListTile() {
     AquaTheme theme = _themeModel.themeData;
     if (widget.mode == FileManagerMode.pick) {
-      _selected = _globalModel.hasPickFile(widget.path)!;
+      _selected = _selectFileModel.hasSelectedFile(widget.path)!;
     } else {
-      _selected = _globalModel.hasSelectedFile(widget.path)!;
+      _selected = _selectFileModel.hasSelectedFile(widget.path)!;
     }
     return Transform.translate(
       offset: Offset(_dragX, 0),
@@ -335,11 +330,7 @@ class FileListTileState extends State<FileListTile>
         subTitle: widget.subTitle,
         backgroundColor: theme.listTileColor,
         height: widget.height,
-        onTap: () {
-          if (widget.onTap != null) {
-            widget.onTap!();
-          }
-        },
+        onTap: widget.onTap,
         onLongPressStartDetails: _handleHorizontalDragStart,
         onLongPressStart: widget.onLongPressStart,
         onHorizontalDragDown: _handleHorizontalDragDown,

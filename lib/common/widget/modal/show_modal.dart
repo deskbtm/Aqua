@@ -602,7 +602,7 @@ Future<dynamic> showQrcodeModal(
                       children: [
                         ThemedText(data, small: true),
                         SizedBox(height: 10),
-                        ThemedText(AppLocalizations.of(context)!.copied),
+                        ThemedText(S.of(context)!.copied),
                       ],
                     )
                   ],

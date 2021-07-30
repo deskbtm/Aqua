@@ -44,7 +44,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
           });
         }
       } catch (e) {
-        Fluttertoast.showToast(msg: AppLocalizations.of(context)!.privacyError);
+        Fluttertoast.showToast(msg: S.of(context)!.privacyError);
       }
     }
   }
@@ -57,7 +57,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          AppLocalizations.of(context)!.privacyProtocol,
+          S.of(context)!.privacyProtocol,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,
@@ -82,7 +82,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                 //     if (await canLaunch(url)) {
                 //       await launch(url);
                 //     } else {
-                //       showText(AppLocalizations.of(context)!.setFail);
+                //       showText(S.of(context)!.setFail);
                 //     }
                 //   },
                 // );

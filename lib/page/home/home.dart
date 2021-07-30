@@ -1,3 +1,4 @@
+import 'package:aqua/model/select_file_model.dart';
 import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:aqua/common/widget/inner_drawer.dart';
 import 'package:aqua/page/home/left_quick_board.dart';
@@ -6,7 +7,6 @@ import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/model/global_model.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:aqua/page/home/right_quick_board.dart';
-import 'package:aqua/page/lan/share.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,8 +35,8 @@ class _HomePageState extends State<HomePage> {
   // Future<void> _forceReadTutorialModal() async {
   //   await showForceScopeModal(
   //     context,
-  //     title: AppLocalizations.of(context)!.thankFollow,
-  //     tip: AppLocalizations.of(context)!.followTip,
+  //     title: S.of(context)!.thankFollow,
+  //     tip: S.of(context)!.followTip,
   //     defaultOkText: 'Github star',
   //     onOk: () async {
   //       if (await canLaunch(GITHUB)) {
@@ -149,15 +149,15 @@ class _HomePageState extends State<HomePage> {
   //         border: Border(),
   //         items: <BottomNavigationBarItem>[
   //           // BottomNavigationBarItem(
-  //           //   label: AppLocalizations.of(context)!.fileLabel,
+  //           //   label: S.of(context)!.fileLabel,
   //           //   icon: Icon(OMIcons.folder),
   //           // ),
   //           BottomNavigationBarItem(
-  //             label: AppLocalizations.of(context)!.lanLabel,
+  //             label: S.of(context)!.lanLabel,
   //             icon: Icon(Icons.devices),
   //           ),
   //           // BottomNavigationBarItem(
-  //           //   label: AppLocalizations.of(context)!.settingLabel,
+  //           //   label: S.of(context)!.settingLabel,
   //           //   icon: Icon(OMIcons.settings),
   //           // )
   //         ],
@@ -203,19 +203,8 @@ class _HomePageState extends State<HomePage> {
     // _storageSubscription.cancel();
   }
 
-  void _handleDrawCallback(bool opened, InnerDrawerDirection direction) {
-    if (direction == InnerDrawerDirection.end) {
-      _rightKey.currentState?.setState(() {});
-    } else {
-      _leftKey.currentState?.setState(() {});
-    }
-  }
-
   final GlobalKey<InnerDrawerState> _innerDrawerKey =
       GlobalKey<InnerDrawerState>();
-
-  GlobalKey _leftKey = GlobalKey<LeftQuickBoardState>();
-  GlobalKey _rightKey = GlobalKey<RightQuickBoardState>();
 
   @override
   Widget build(BuildContext context) {
@@ -239,13 +228,20 @@ class _HomePageState extends State<HomePage> {
       backgroundDecoration:
           BoxDecoration(color: themeData.scaffoldBackgroundColor),
       // innerDrawerCallback: _handleDrawCallback,
-      leftChild: LeftQuickBoard(key: _leftKey),
+      leftChild: LeftQuickBoard(),
       rightChild: ChangeNotifierProvider.value(
-        value: fileManagerModel,
-        child: RightQuickBoard(key: _rightKey),
+        value: selectFileModel,
+        child: RightQuickBoard(),
       ),
-      scaffold: ChangeNotifierProvider.value(
-        value: fileManagerModel,
+      scaffold: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<FileManagerModel>(
+            create: (_) => FileManagerModel(),
+          ),
+          ChangeNotifierProvider.value(
+            value: selectFileModel,
+          ),
+        ],
         child: FileManagerPage(
           innerDrawerKey: _innerDrawerKey,
         ),
@@ -259,15 +255,15 @@ class _HomePageState extends State<HomePage> {
     //     border: Border(),
     //     items: <BottomNavigationBarItem>[
     //       BottomNavigationBarItem(
-    //         label: AppLocalizations.of(context)!.fileLabel,
+    //         label: S.of(context)!.fileLabel,
     //         icon: Icon(Icons.devices),
     //       ),
     //       BottomNavigationBarItem(
-    //         label: AppLocalizations.of(context)!.lanLabel,
+    //         label: S.of(context)!.lanLabel,
     //         icon: Icon(Icons.devices),
     //       ),
     //       BottomNavigationBarItem(
-    //         label: AppLocalizations.of(context)!.settingLabel,
+    //         label: S.of(context)!.settingLabel,
     //         icon: Icon(FontAwesomeIcons.adversal),
     //       )
     //     ],

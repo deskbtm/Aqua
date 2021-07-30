@@ -2,35 +2,42 @@ import 'dart:io';
 
 import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/model/select_file_model.dart';
 import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:device_info/device_info.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FsUIUtils {
-  static handlePermissionErrorOnAndroid(context, dynamic err) async {
+  static handlePermissionErrorOnAndroid(
+      BuildContext context, dynamic err) async {
     bool overAndroid11 =
         int.parse((await DeviceInfoPlugin().androidInfo).version.release) >= 11;
     String errorString = err.toString().toLowerCase();
     if (errorString.contains('permission') || errorString.contains('denied')) {
       showTipTextModal(
         context,
-        title: AppLocalizations.of(context)!.error,
+        title: S.of(context)!.error,
         tip: (overAndroid11)
-            ? AppLocalizations.of(context)!.noPermissionO
-            : AppLocalizations.of(context)!.noPermission,
+            ? S.of(context)!.noPermissionO
+            : S.of(context)!.noPermission,
         onCancel: null,
       );
     }
   }
 
-  static Future<List<SelfFileEntity>> readdirSafely(
-      context, Directory dir) async {
+  static Future<List<SelfFileEntity>> readdir(
+    context,
+    Directory dir,
+  ) async {
     FileManagerModel model =
         Provider.of<FileManagerModel>(context, listen: false);
     Directory? entryDir = model.entryDir;
-    if (entryDir == null || !pathLib.isWithin(entryDir.path, dir.path)) {
+    if (entryDir != null &&
+        !pathLib.equals(entryDir.path, dir.path) &&
+        !pathLib.isWithin(entryDir.path, dir.path)) {
       return [];
     }
 
@@ -39,7 +46,10 @@ class FsUIUtils {
       sortType: model.sortType,
       showHidden: model.isDisplayHidden,
       reversed: model.sortReversed,
-    ).catchError(handlePermissionErrorOnAndroid);
+    ).catchError((err) {
+      handlePermissionErrorOnAndroid(context, err);
+      throw Exception(err);
+    });
 
     switch (model.showOnlyType) {
       case ShowOnlyType.all:
@@ -52,6 +62,18 @@ class FsUIUtils {
         return result?.linkList ?? [];
       default:
         return result?.allList ?? [];
+    }
+  }
+
+  static handleHozDragItem(
+      BuildContext context, SelfFileEntity file, double dir) async {
+    SelectFileModel model =
+        Provider.of<SelectFileModel>(context, listen: false);
+
+    if (dir == 1) {
+      await model.addSelectedFile(file, update: true);
+    } else if (dir == -1) {
+      await model.removeSelectedFile(file, update: true);
     }
   }
 }

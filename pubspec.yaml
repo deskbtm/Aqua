@@ -36,10 +36,8 @@ dependencies:
   intl: ^0.17.0
   url_launcher: ^6.0.6
   flutter_local_notifications: ^6.0.0
-  flutter_secure_storage  : ^4.2.0
+  flutter_secure_storage: ^4.2.0
   device_apps: ^2.1.1
-  # intent:
-  #   path: plugins/intent
   dio: ^4.0.0
   version: ^2.0.0
   package_info: ^2.0.2
@@ -51,7 +49,6 @@ dependencies:
   qr_flutter: ^4.0.0
   pure_video_player:
     path: plugins/pure_video_player
-  # flutter_easyrefresh: ^2.2.1
   flutter_highlight: ^0.7.0
   charset_converter: ^2.0.0
   flutter_localizations:
@@ -62,12 +59,10 @@ dependencies:
   back_button_interceptor: ^5.0.0
   xml: ^5.1.1
   fluttertoast: ^8.0.7
-  tutorial_coach_mark: ^1.0.0
+  tutorial_coach_mark: ^1.0.3
   flutter_sticky_header: ^0.6.0
   fading_edge_scrollview: ^2.0.0
   flutter_easyrefresh: ^2.2.1
-  # flutter_inner_drawer: ^1.0.0+1
-  # pull_to_refresh: ^2.0.0
   unicons: ^2.0.1
   sliver_tools: ^0.2.4
   intent:
@@ -79,7 +74,6 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter.
 flutter:
   # The following line ensures that the Material Icons font is
@@ -91,13 +85,10 @@ flutter:
   assets:
     - assets/images/
     - assets/web/
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 import 'package:aqua/common/theme.dart';
-import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/model/select_file_model.dart';
 import 'package:aqua/page/lan/static_fs/body_parser/src/shelf_body_parser.dart';
 import 'package:aqua/page/lan/static_fs/web_handler.dart';
 import 'package:flutter/widgets.dart';
@@ -43,7 +43,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
     with AutomaticKeepAliveClientMixin {
   late ThemeModel _themeModel;
   late GlobalModel _globalModel;
-  late FileManagerModel _fileManagerModel;
+  late SelectFileModel _selectFileModel;
 
   HttpServer? _server;
   late bool _shareSwitch;
@@ -61,7 +61,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
     _globalModel = Provider.of<GlobalModel>(context);
-    _fileManagerModel = Provider.of<FileManagerModel>(context);
+    _selectFileModel = Provider.of<SelectFileModel>(context);
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
@@ -70,8 +70,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
       themeProvider: _themeModel,
       commonProvider: _globalModel,
       onSuccess: () {
-        Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)!.installSuccess);
+        Fluttertoast.showToast(msg: S.of(context)!.installSuccess);
         MixUtils.safePop(context);
       },
     );
@@ -82,13 +81,13 @@ class RightQuickBoardState extends State<RightQuickBoard>
         ? LocalNotification.showNotification(
             index: 0,
             name: 'STATIC_UPLOAD',
-            title: AppLocalizations.of(context)!.receiveFileSuccess,
+            title: S.of(context)!.receiveFileSuccess,
             autoCancel: true,
           )
         : LocalNotification.showNotification(
             index: 0,
             name: 'STATIC_UPLOAD',
-            title: AppLocalizations.of(context)!.receiveFileFail,
+            title: S.of(context)!.receiveFileFail,
             autoCancel: true,
           );
   }
@@ -109,7 +108,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
           handlerFunc = createDirHandler(
             first.entity.path,
             isDark: _themeModel.isDark,
-            uploadSavePath: savePath,
+            uploadSavePath: '/',
             serverUrl: addr,
             onUploadResult: _uploadNotification,
           );
@@ -118,7 +117,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
             _globalModel.selectedFiles.map((e) => e.entity.path).toList(),
             isDark: _themeModel.isDark,
             serverUrl: addr,
-            uploadSavePath: savePath,
+            uploadSavePath: '/',
             onUploadResult: _uploadNotification,
           );
         }
@@ -127,7 +126,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
           _globalModel.storageRootPath,
           isDark: _themeModel.isDark,
           serverUrl: addr,
-          uploadSavePath: savePath,
+          uploadSavePath: '/',
           onUploadResult: _uploadNotification,
         );
       }
@@ -140,7 +139,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
         LocalNotification.showNotification(
           index: 0,
           name: 'STATIC_SHARING',
-          title: AppLocalizations.of(context)!.shareFile,
+          title: S.of(context)!.shareFile,
           ongoing: true,
           autoCancel: true,
         );
@@ -155,10 +154,10 @@ class RightQuickBoardState extends State<RightQuickBoard>
         }
 
         await showQrcodeModal(context, 'http://$addr',
-            title: AppLocalizations.of(context)!.searchQr);
+            title: S.of(context)!.searchQr);
       } else {
         _server?.close();
-        Fluttertoast.showToast(msg: AppLocalizations.of(context)!.shareClose);
+        Fluttertoast.showToast(msg: S.of(context)!.shareClose);
         LocalNotification.plugin?.cancel(0);
         Wakelock.disable();
       }
@@ -181,7 +180,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
         LocalNotification.showNotification(
           index: 1,
           name: 'VSCODE_SHARING',
-          title: 'vscode server ${AppLocalizations.of(context)!.starting}',
+          title: 'vscode server ${S.of(context)!.starting}',
           onlyAlertOnce: true,
           showProgress: true,
           indeterminate: true,
@@ -193,7 +192,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
           pwd: _globalModel.codeSrvPwd,
         )
             .catchError((err) {
-          Fluttertoast.showToast(msg: AppLocalizations.of(context)!.setFail);
+          Fluttertoast.showToast(msg: S.of(context)!.setFail);
         });
 
         result.stdout.transform(utf8.decoder).listen((data) async {
@@ -202,7 +201,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
             LocalNotification.showNotification(
               index: 2,
               name: 'VSCODE_RUNNING',
-              title: 'vscode server ${AppLocalizations.of(context)!.running}',
+              title: 'vscode server ${S.of(context)!.running}',
               ongoing: true,
               autoCancel: true,
             );
@@ -218,8 +217,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
           if (data != '') {
             if (errLocker) {
               errLocker = false;
-              Fluttertoast.showToast(
-                  msg: '${AppLocalizations.of(context)!.setFail} $data');
+              Fluttertoast.showToast(msg: '${S.of(context)!.setFail} $data');
               LocalNotification.plugin?.cancel(1);
               Wakelock.disable();
             }
@@ -228,12 +226,11 @@ class RightQuickBoardState extends State<RightQuickBoard>
         });
 
         await showQrcodeModal(context, 'http://$codeAddr',
-            title: AppLocalizations.of(context)!.searchQr);
+            title: S.of(context)!.searchQr);
       } else {
         await utils.killNodeServer();
         LocalNotification.plugin?.cancel(2);
-        Fluttertoast.showToast(
-            msg: 'vscode ${AppLocalizations.of(context)!.closed}');
+        Fluttertoast.showToast(msg: 'vscode ${S.of(context)!.closed}');
         Wakelock.disable();
       }
     } else {
@@ -262,8 +259,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
               child: Column(
                 children: [
                   ListTile(
-                    title:
-                        ThemedText(AppLocalizations.of(context)!.staticServer),
+                    title: ThemedText(S.of(context)!.staticServer),
                     subtitle: ThemedText(fileAddr, small: true),
                     contentPadding: EdgeInsets.only(left: 15, right: 10),
                     trailing: AquaSwitch(
@@ -296,10 +292,9 @@ class RightQuickBoardState extends State<RightQuickBoard>
                 ],
               ),
             ),
-            Text(_fileManagerModel.demo),
             Expanded(
               flex: 1,
-              child: _globalModel.selectedFiles.isEmpty
+              child: _selectFileModel.selectedFiles.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -309,26 +304,24 @@ class RightQuickBoardState extends State<RightQuickBoard>
                             size: 57,
                           ),
                           SizedBox(height: 20),
-                          ThemedText(AppLocalizations.of(context)!.shareTip,
+                          ThemedText(S.of(context)!.shareTip,
                               alignX: 0, fontSize: 14)
                         ],
                       ),
                     )
                   : ListView.builder(
                       physics: BouncingScrollPhysics(),
-                      itemCount: _globalModel.selectedFiles.length,
+                      itemCount: _selectFileModel.selectedFiles.length,
                       itemBuilder: (BuildContext context, int index) {
                         SelfFileEntity file =
-                            _globalModel.selectedFiles.elementAt(index);
+                            _selectFileModel.selectedFiles.elementAt(index);
 
                         Widget previewIcon = getPreviewIcon(context, file);
                         return Dismissible(
                           key: ObjectKey(file),
                           onDismissed: (direction) async {
-                            await _globalModel.removeSelectedFile(file);
-                            if (_globalModel.selectedFiles.isEmpty) {
-                              setState(() {});
-                            }
+                            await _selectFileModel.removeSelectedFile(file,
+                                update: true);
                           },
                           child: SimpleFileListTile(
                             title: file.filename,

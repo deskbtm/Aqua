@@ -152,7 +152,7 @@
   "@createDir": {},
   "rename": "rename",
   "@rename": {},
-  "error": "error",
+  "error": "Error",
   "@error": {},
   "noPermission": "no permission for this directory",
   "@noPermission": {},
@@ -250,7 +250,7 @@
   "@privacyError": {},
   "privacyProtocol": "privacy protocol",
   "@privacyProtocol": {},
-  "pressAgain": "press again",
+  "pressAgain": "Press once again",
   "@pressAgain": {},
   "hasSponsoredUsers": "Sponsor will use for",
   "@hasSponsoredUsers": {},
@@ -303,5 +303,11 @@
   "uninstall": "uninstall",
   "@uninstall": {},
   "empty": "empty",
-  "@empty": {}
+  "@empty": {},
+  "independent": "Independent",
+  "@independent": {},
+  "associate": "Associate",
+  "@associate": {},
+  "mode": "Mode",
+  "@mode": {}
 }

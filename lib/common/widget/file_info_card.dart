@@ -89,13 +89,10 @@ class _FileInfoCardState extends State<FileInfoCard> {
     AquaTheme themeData = _themeModel.themeData;
 
     List<List> info = [
-      [AppLocalizations.of(context)!.filename, file.filename],
-      [AppLocalizations.of(context)!.path, file.entity.path],
-      [
-        AppLocalizations.of(context)!.modify,
-        MixUtils.formatFileTime(file.modified)
-      ],
-      [AppLocalizations.of(context)!.authorization, file.modeString]
+      [S.of(context)!.filename, file.filename],
+      [S.of(context)!.path, file.entity.path],
+      [S.of(context)!.modify, MixUtils.formatFileTime(file.modified)],
+      [S.of(context)!.authorization, file.modeString]
     ];
 
     if (widget.additionalList != null) {
@@ -109,10 +106,10 @@ class _FileInfoCardState extends State<FileInfoCard> {
       }
       info.addAll([
         [
-          AppLocalizations.of(context)!.fileSize,
+          S.of(context)!.fileSize,
           MixUtils.humanStorageSize(_totalSize.toDouble())
         ],
-        [AppLocalizations.of(context)!.fileCount, '$_fileCount'],
+        [S.of(context)!.fileCount, '$_fileCount'],
       ]);
     }
 
@@ -125,7 +122,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
             onLongPressStart: (details) async {
               await Clipboard.setData(ClipboardData(text: cur[1]));
               Fluttertoast.showToast(
-                msg: AppLocalizations.of(context)!.copied,
+                msg: S.of(context)!.copied,
               );
             },
             child: Container(

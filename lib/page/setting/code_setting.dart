@@ -76,22 +76,20 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: AppLocalizations.of(context)!.password,
+                title: S.of(context)!.password,
                 onOk: (val) async {
                   await _globalModel.setCodeSrvPwd(val);
-                  Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)!.setSuccess);
+                  Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () async {
                   await _globalModel.setCodeSrvPwd(null);
-                  Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)!.setSuccess);
+                  Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 defaultCancelText: '设置为无密码',
               );
             },
             child: ListTile(
-              title: ThemedText(AppLocalizations.of(context)!.password),
+              title: ThemedText(S.of(context)!.password),
               subtitle: ThemedText(
                 _globalModel.codeSrvPwd != null
                     ? List.filled(_globalModel.codeSrvPwd!.length, null,
@@ -106,19 +104,18 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             ),
           ),
           ListTile(
-            title: ThemedText(AppLocalizations.of(context)!.port),
+            title: ThemedText(S.of(context)!.port),
             // subtitle: ThemedText(_globalModel.codeSrvPort),
             trailing: CupertinoButton(
                 child: NoResizeText('${_globalModel.codeSrvPort}'),
                 onPressed: () async {
                   showSingleTextFieldModal(
                     context,
-                    title: AppLocalizations.of(context)!.port,
+                    title: S.of(context)!.port,
                     placeholder: _globalModel.codeSrvPort,
                     onOk: (val) {
                       _globalModel.setCodeSrvPort(val);
-                      Fluttertoast.showToast(
-                          msg: AppLocalizations.of(context)!.setSuccess);
+                      Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                     },
                     onCancel: () {},
                   );
@@ -130,16 +127,14 @@ class CodeSettingPageState extends State<CodeSettingPage> {
               await cutils.killNodeServer();
             },
             child: ListTile(
-              title:
-                  ThemedText(AppLocalizations.of(context)!.terminalCodeServer),
+              title: ThemedText(S.of(context)!.terminalCodeServer),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
           // 帮助改善vscode
           ListTile(
             title: ThemedText('Telemetry'),
-            subtitle: ThemedText(AppLocalizations.of(context)!.helpCodeServer,
-                small: true),
+            subtitle: ThemedText(S.of(context)!.helpCodeServer, small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: AquaSwitch(
               value: _globalModel.codeSrvTelemetry!,
@@ -154,22 +149,21 @@ class CodeSettingPageState extends State<CodeSettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context)!.sandbox,
-              subtitle: 'alpine linux'),
+          blockTitle(S.of(context)!.sandbox, subtitle: 'alpine linux'),
           SizedBox(height: 15),
           InkWell(
             child: ListTile(
-              title: ThemedText(AppLocalizations.of(context)!.sandbox),
+              title: ThemedText(S.of(context)!.sandbox),
               subtitle: ThemedText(
                   rootfs.existsSync()
                       ? rootfs.path
-                      : AppLocalizations.of(context)!.sandboxNotExist,
+                      : S.of(context)!.sandboxNotExist,
                   small: true),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
           ListTile(
-            title: ThemedText(AppLocalizations.of(context)!.modifyRepo),
+            title: ThemedText(S.of(context)!.modifyRepo),
             subtitle: ThemedText(repoChineseName(repo), small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: FocusedMenuHolder(
@@ -189,8 +183,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                           .then((value) async {
                         await _globalModel.setAplineRepo(TSINGHUA_REPO);
                       }).catchError((e) {
-                        Fluttertoast.showToast(
-                            msg: AppLocalizations.of(context)!.setFail);
+                        Fluttertoast.showToast(msg: S.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
@@ -203,8 +196,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                         await _globalModel.setAplineRepo(ALIYUN_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        Fluttertoast.showToast(
-                            msg: AppLocalizations.of(context)!.setFail);
+                        Fluttertoast.showToast(msg: S.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
@@ -215,8 +207,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                         await _globalModel.setAplineRepo(USTC_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        Fluttertoast.showToast(
-                            msg: AppLocalizations.of(context)!.setFail);
+                        Fluttertoast.showToast(msg: S.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
@@ -229,13 +220,12 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                         await _globalModel.setAplineRepo(ALPINE_REPO);
                         setState(() {});
                       }).catchError((e) {
-                        Fluttertoast.showToast(
-                            msg: AppLocalizations.of(context)!.setFail);
+                        Fluttertoast.showToast(msg: S.of(context)!.setFail);
                       });
                     }),
                 FocusedMenuItem(
                     backgroundColor: themeData.menuItemColor,
-                    title: ThemedText(AppLocalizations.of(context)!.custom),
+                    title: ThemedText(S.of(context)!.custom),
                     onPressed: () async {
                       await showSingleTextFieldModal(
                         context,
@@ -244,8 +234,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                           await cutils.setChineseRepo(val).then((value) async {
                             await _globalModel.setAplineRepo(val);
                           }).catchError((e) {
-                            Fluttertoast.showToast(
-                                msg: AppLocalizations.of(context)!.setFail);
+                            Fluttertoast.showToast(msg: S.of(context)!.setFail);
                           });
                         },
                         onCancel: () {},
@@ -255,7 +244,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
               child: Container(
                 padding: EdgeInsets.only(left: 16, right: 16),
                 child: NoResizeText(
-                  AppLocalizations.of(context)!.selectSource,
+                  S.of(context)!.selectSource,
                   style: TextStyle(color: Color(0xFF007AFF)),
                 ),
               ),
@@ -264,12 +253,11 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           InkWell(
             onTap: () async {
               await cutils.clearProotTmp();
-              Fluttertoast.showToast(
-                  msg: AppLocalizations.of(context)!.setSuccess);
+              Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
             },
             child: ListTile(
               title: ThemedText(
-                AppLocalizations.of(context)!.deleteSandboxTemp,
+                S.of(context)!.deleteSandboxTemp,
                 style: TextStyle(color: Colors.redAccent),
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -279,23 +267,21 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             onTap: () async {
               showTipTextModal(
                 context,
-                title: AppLocalizations.of(context)!.deleteSandbox,
-                tip: AppLocalizations.of(context)!.deleteSandboxTip,
+                title: S.of(context)!.deleteSandbox,
+                tip: S.of(context)!.deleteSandboxTip,
                 confirmedView: loadingIndicator(context, _themeModel),
                 onOk: () async {
                   await cutils.rmAllResource().catchError((err) {
-                    Fluttertoast.showToast(
-                        msg: AppLocalizations.of(context)!.setFail);
+                    Fluttertoast.showToast(msg: S.of(context)!.setFail);
                   });
-                  Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)!.setSuccess);
+                  Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
               title: ThemedText(
-                AppLocalizations.of(context)!.deleteSandbox,
+                S.of(context)!.deleteSandbox,
                 style: TextStyle(color: Colors.redAccent),
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -310,7 +296,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          AppLocalizations.of(context)!.codeServer,
+          S.of(context)!.codeServer,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,

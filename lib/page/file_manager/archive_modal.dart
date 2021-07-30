@@ -42,11 +42,11 @@ Future<void> showArchiveModal(
     Future<void> runAfterArchive(BuildContext context, bool result) async {
       if (result) {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.setSuccess,
+          msg: S.of(context)!.setSuccess,
         );
       } else {
         Fluttertoast.showToast(
-          msg: AppLocalizations.of(context)!.setFail,
+          msg: S.of(context)!.setFail,
         );
       }
       await onSuccessUpdate(context);
@@ -67,14 +67,13 @@ Future<void> showArchiveModal(
                 display: preDisplay,
                 fontColor: themeData.itemFontColor,
                 bgColor: themeData.dialogBgColor,
-                title: NoResizeText(AppLocalizations.of(context)!.archive),
+                title: NoResizeText(S.of(context)!.archive),
                 action: true,
                 children: <Widget>[
                   SizedBox(height: 10),
                   popAble
                       ? FocusedMenuHolder(
                           menuWidth: MediaQuery.of(context).size.width * 0.4,
-                          blurSize: 5.0,
                           menuItemExtent: 45,
                           duration: Duration(milliseconds: 100),
                           animateMenuItems: true,
@@ -94,8 +93,7 @@ Future<void> showArchiveModal(
                             ),
                             FocusedMenuItem(
                               backgroundColor: themeData.menuItemColor,
-                              title: ThemedText(
-                                  AppLocalizations.of(context)!.zipCrypto),
+                              title: ThemedText(S.of(context)!.zipCrypto),
                               onPressed: () async {
                                 changeState(() {
                                   preDisplay = true;
@@ -103,13 +101,11 @@ Future<void> showArchiveModal(
 
                                 await showSingleTextFieldModal(
                                   context,
-                                  title: AppLocalizations.of(context)!.password,
+                                  title: S.of(context)!.password,
                                   transparent: true,
                                   onOk: (val) async {
                                     changeState(() {
-                                      archiveText =
-                                          AppLocalizations.of(context)!
-                                              .zipCrypto;
+                                      archiveText = S.of(context)!.zipCrypto;
                                       archiveType = 'zip';
                                       pwd = val;
                                       preDisplay = false;
@@ -184,7 +180,7 @@ Future<void> showArchiveModal(
                             FocusedMenuItem(
                               backgroundColor: themeData.menuItemColor,
                               title: ThemedText(
-                                AppLocalizations.of(context)!.cancel,
+                                S.of(context)!.cancel,
                                 style: TextStyle(color: Colors.redAccent),
                               ),
                               trailingIcon: Icon(
@@ -214,10 +210,9 @@ Future<void> showArchiveModal(
                       : loadingIndicator(context, themeModel),
                   SizedBox(height: 10),
                 ],
-                defaultOkText: AppLocalizations.of(context)!.sure,
-                defaultCancelText: popAble
-                    ? AppLocalizations.of(context)!.cancel
-                    : AppLocalizations.of(context)!.background,
+                defaultOkText: S.of(context)!.sure,
+                defaultCancelText:
+                    popAble ? S.of(context)!.cancel : S.of(context)!.background,
                 onOk: () async {
                   if (!popAble && currentDir == null) {
                     return;

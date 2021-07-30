@@ -47,11 +47,10 @@ Future<void> showUpdateModal(
     bool checked = false;
     await showTipTextModal(
       context,
-      tip:
-          '${AppLocalizations.of(context)!.foundNewVer} v$remoteVersion\n$descMsg',
-      title: AppLocalizations.of(context)!.update,
-      defaultOkText: AppLocalizations.of(context)!.download,
-      defaultCancelText: AppLocalizations.of(context)!.update,
+      tip: '${S.of(context)!.foundNewVer} v$remoteVersion\n$descMsg',
+      title: S.of(context)!.update,
+      defaultOkText: S.of(context)!.download,
+      defaultCancelText: S.of(context)!.update,
       additionList: [
         if (tipRemember)
           Row(
@@ -73,7 +72,7 @@ Future<void> showUpdateModal(
                 );
               }),
               NoResizeText(
-                AppLocalizations.of(context)!.updateTip,
+                S.of(context)!.updateTip,
                 style: TextStyle(
                   color: provider.themeData.itemFontColor,
                 ),
@@ -92,7 +91,7 @@ Future<void> showUpdateModal(
           await launch(url);
         } else {
           Fluttertoast.showToast(
-            msg: AppLocalizations.of(context)!.setFail,
+            msg: S.of(context)!.setFail,
           );
         }
       },
@@ -119,9 +118,9 @@ Future<void> showRemoteMessageModal(
     await showTipTextModal(
       context,
       tip: descMsg,
-      title: AppLocalizations.of(context)!.notification,
-      defaultOkText: AppLocalizations.of(context)!.sure,
-      defaultCancelText: AppLocalizations.of(context)!.cancel,
+      title: S.of(context)!.notification,
+      defaultOkText: S.of(context)!.sure,
+      defaultCancelText: S.of(context)!.cancel,
     );
   }
 }

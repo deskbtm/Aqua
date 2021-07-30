@@ -81,8 +81,7 @@ class _SearchBarState extends State<SearchBar> {
                     decoration: BoxDecoration(),
                     style: TextStyle(fontSize: 16),
                     controller: _textEditingController,
-                    placeholder:
-                        AppLocalizations.of(context)!.searching + '...',
+                    placeholder: S.of(context)!.searching + '...',
                     onSubmitted: (text) {
                       if (widget.onSubmit != null) {
                         widget.onSubmit!(text, _recursiveSearch);
@@ -111,12 +110,12 @@ class _SearchBarState extends State<SearchBar> {
                       ),
                     ),
                   SizedBox(width: 10),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: setRecursiveSearch,
-                      child: Container(
-                        padding: EdgeInsets.only(right: 10),
+                  Container(
+                    margin: EdgeInsets.only(right: 10),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: setRecursiveSearch,
                         child: Icon(
                           UniconsLine.layer_group,
                           color: _recursiveSearch

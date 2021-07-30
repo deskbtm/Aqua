@@ -117,7 +117,7 @@ class _AboutPageState extends State<AboutPage> {
                             children: <Widget>[
                               ThemedText('Aqua', fontSize: 18),
                               ThemedText(
-                                  '${AppLocalizations.of(context)!.version}: v$_version',
+                                  '${S.of(context)!.version}: v$_version',
                                   small: true),
                             ],
                           ),
@@ -137,8 +137,7 @@ class _AboutPageState extends State<AboutPage> {
                               );
                             },
                             child: ListTile(
-                              title: ThemedText(AppLocalizations.of(context)!
-                                  .privacyProtocol),
+                              title: ThemedText(S.of(context)!.privacyProtocol),
                               contentPadding:
                                   EdgeInsets.only(left: 15, right: 10),
                               trailing: Icon(Icons.hdr_weak),
@@ -153,8 +152,7 @@ class _AboutPageState extends State<AboutPage> {
                               }
                             },
                             child: ListTile(
-                              title: ThemedText(
-                                  AppLocalizations.of(context)!.concat),
+                              title: ThemedText(S.of(context)!.concat),
                               subtitle: ThemedText(
                                 'QQ: $_qqGroupNumber',
                                 small: true,
@@ -218,7 +216,7 @@ class _AboutPageState extends State<AboutPage> {
                                 await Clipboard.setData(
                                     ClipboardData(text: _authorEmail));
                                 Fluttertoast.showToast(
-                                    msg: AppLocalizations.of(context)!.copied);
+                                    msg: S.of(context)!.copied);
                               },
                               child: NoResizeText('Email: $_authorEmail'),
                             ),
@@ -228,7 +226,7 @@ class _AboutPageState extends State<AboutPage> {
                                   ClipboardData(text: 'maxcalibur9423'),
                                 );
                                 Fluttertoast.showToast(
-                                    msg: AppLocalizations.of(context)!.copied);
+                                    msg: S.of(context)!.copied);
                               },
                               child: NoResizeText('wechat: maxcalibur9423'),
                             ),

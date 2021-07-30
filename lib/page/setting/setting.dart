@@ -116,7 +116,7 @@ class SettingPageState extends State<SettingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 30),
-            blockTitle(AppLocalizations.of(context)!.sponsor),
+            blockTitle(S.of(context)!.sponsor),
             SizedBox(height: 15),
             GestureDetector(
               onTap: () async {
@@ -130,9 +130,9 @@ class SettingPageState extends State<SettingPage> {
               },
               child: ListTile(
                 trailing: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
-                title: ThemedText(AppLocalizations.of(context)!.sponsorTitle),
+                title: ThemedText(S.of(context)!.sponsorTitle),
                 subtitle: ThemedText(
-                  '5￥ ${AppLocalizations.of(context)!.sponsorText}',
+                  '5￥ ${S.of(context)!.sponsorText}',
                   small: true,
                 ),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
@@ -145,22 +145,22 @@ class SettingPageState extends State<SettingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 30),
-            blockTitle(AppLocalizations.of(context)!.user),
+            blockTitle(S.of(context)!.user),
             SizedBox(height: 15),
             ListTile(
-              title: ThemedText(AppLocalizations.of(context)!.username),
+              title: ThemedText(S.of(context)!.username),
               subtitle: ThemedText(
                 '${_globalModel.username}',
                 small: true,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
-                child: NoResizeText(AppLocalizations.of(context)!.exit),
+                child: NoResizeText(S.of(context)!.exit),
                 onPressed: () async {
                   await showTipTextModal(
                     context,
-                    title: AppLocalizations.of(context)!.exit,
-                    tip: AppLocalizations.of(context)!.exitTip,
+                    title: S.of(context)!.exit,
+                    tip: S.of(context)!.exitTip,
                     onOk: () async {
                       await _globalModel.logout();
                     },
@@ -175,10 +175,10 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context)!.appearance),
+          blockTitle(S.of(context)!.appearance),
           SizedBox(height: 15),
           ListTile(
-            title: ThemedText(AppLocalizations.of(context)!.dark),
+            title: ThemedText(S.of(context)!.dark),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: AquaSwitch(
               value: _themeModel.isDark,
@@ -188,10 +188,9 @@ class SettingPageState extends State<SettingPage> {
             ),
           ),
           ListTile(
-            title: ThemedText(AppLocalizations.of(context)!.staticServerTheme),
-            subtitle: ThemedText(
-                AppLocalizations.of(context)!.subStaticServerTheme,
-                small: true),
+            title: ThemedText(S.of(context)!.staticServerTheme),
+            subtitle:
+                ThemedText(S.of(context)!.subStaticServerTheme, small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: Container(
               width: 42,
@@ -205,12 +204,12 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context)!.staticServer),
+          blockTitle(S.of(context)!.staticServer),
           SizedBox(height: 15),
           InkWell(
             onTap: () {},
             child: ListTile(
-              title: ThemedText(AppLocalizations.of(context)!.savePath),
+              title: ThemedText(S.of(context)!.savePath),
               subtitle: ThemedText('${_globalModel.staticUploadSavePath}'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
@@ -218,7 +217,7 @@ class SettingPageState extends State<SettingPage> {
                 onPressed: () {
                   showSingleTextFieldModal(
                     context,
-                    title: AppLocalizations.of(context)!.savePath,
+                    title: S.of(context)!.savePath,
                     initText: _globalModel.storageRootPath + '/',
                     placeholder: '以 ${_globalModel.storageRootPath}/ 开头',
                     onOk: (String? val) async {
@@ -249,7 +248,7 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context)!.codeServer),
+          blockTitle(S.of(context)!.codeServer),
           SizedBox(height: 15),
           InkWell(
             onTap: () async {
@@ -328,8 +327,7 @@ class SettingPageState extends State<SettingPage> {
                                     },
                                   );
                                   Fluttertoast.showToast(
-                                      msg: AppLocalizations.of(context)!
-                                          .setSuccess);
+                                      msg: S.of(context)!.setSuccess);
                                   LocalNotification.plugin?.cancel(10);
                                 }
                               } else {
@@ -337,7 +335,7 @@ class SettingPageState extends State<SettingPage> {
                               }
                             },
                             child: NoResizeText(
-                              AppLocalizations.of(context)!.sure,
+                              S.of(context)!.sure,
                               style: TextStyle(
                                 color: Color(0xFF007AFF),
                               ),
@@ -351,7 +349,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: ThemedText(AppLocalizations.of(context)!.installManually),
+              title: ThemedText(S.of(context)!.installManually),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
             ),
           ),
@@ -373,14 +371,12 @@ class SettingPageState extends State<SettingPage> {
                 // gTabController.index = 1;
                 // 确保删除干净了
                 await cutils.rmAllResource();
-                Fluttertoast.showToast(
-                    msg: AppLocalizations.of(context)!.installRes);
+                Fluttertoast.showToast(msg: S.of(context)!.installRes);
               }
             },
             child: ListTile(
                 leading: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
-                title: ThemedText(AppLocalizations.of(context)!.moreSetting,
-                    alignX: -1.15),
+                title: ThemedText(S.of(context)!.moreSetting, alignX: -1.15),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
                 trailing: Icon(Icons.hdr_weak)),
           ),
@@ -396,22 +392,21 @@ class SettingPageState extends State<SettingPage> {
             onTap: () async {
               await showSingleTextFieldModal(
                 context,
-                title: AppLocalizations.of(context)!.webDavServer,
+                title: S.of(context)!.webDavServer,
                 placeholder: _globalModel.webDavAddr,
                 onOk: (val) {
                   _globalModel
                       .setWebDavAddr(val.replaceFirst(RegExp(r'/*$'), ''));
-                  Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)!.setSuccess);
+                  Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
               trailing: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
-              title: ThemedText(AppLocalizations.of(context)!.webDavServer),
+              title: ThemedText(S.of(context)!.webDavServer),
               subtitle: ThemedText(_globalModel.webDavAddr == null
-                  ? AppLocalizations.of(context)!.notSetting
+                  ? S.of(context)!.notSetting
                   : _globalModel.webDavAddr!),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
@@ -420,12 +415,11 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: AppLocalizations.of(context)!.webDavAccount,
+                title: S.of(context)!.webDavAccount,
                 placeholder: _globalModel.webDavUsername,
                 onOk: (val) {
                   _globalModel.setWebDavUsername(val);
-                  Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)!.setSuccess);
+                  Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () {},
               );
@@ -433,11 +427,11 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
               trailing: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
               title: ThemedText(
-                AppLocalizations.of(context)!.webDavAccount,
+                S.of(context)!.webDavAccount,
               ),
               subtitle: ThemedText(
                 _globalModel.webDavUsername == null
-                    ? AppLocalizations.of(context)!.notSetting
+                    ? S.of(context)!.notSetting
                     : _globalModel.webDavUsername!,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
@@ -447,20 +441,19 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {
               showSingleTextFieldModal(
                 context,
-                title: AppLocalizations.of(context)!.password,
+                title: S.of(context)!.password,
                 onOk: (val) {
                   _globalModel.setWebDavPwd(val);
-                  Fluttertoast.showToast(
-                      msg: AppLocalizations.of(context)!.setSuccess);
+                  Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () {},
               );
             },
             child: ListTile(
-              title: ThemedText(AppLocalizations.of(context)!.password),
+              title: ThemedText(S.of(context)!.password),
               subtitle: ThemedText(
                 _globalModel.webDavPwd == null
-                    ? AppLocalizations.of(context)!.notSetting
+                    ? S.of(context)!.notSetting
                     : List.filled(_globalModel.webDavPwd!.length, null,
                             growable: false)
                         .map((e) => '*')
@@ -478,7 +471,7 @@ class SettingPageState extends State<SettingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(height: 30),
-          blockTitle(AppLocalizations.of(context)!.others),
+          blockTitle(S.of(context)!.others),
           SizedBox(height: 15),
           InkWell(
             onTap: () async {
@@ -489,7 +482,7 @@ class SettingPageState extends State<SettingPage> {
                   {'title': '中文', 'code': 'zh'},
                   {'title': 'English', 'code': 'en'},
                 ],
-                title: AppLocalizations.of(context)!.languageTip,
+                title: S.of(context)!.languageTip,
                 item: (index, data) => Container(
                   alignment: Alignment.center,
                   padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -509,7 +502,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: ThemedText(AppLocalizations.of(context)!.language),
+              title: ThemedText(S.of(context)!.language),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -524,7 +517,7 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-                title: ThemedText(AppLocalizations.of(context)!.about),
+                title: ThemedText(S.of(context)!.about),
                 contentPadding: EdgeInsets.only(left: 15, right: 25),
                 trailing: Icon(Icons.hdr_weak)),
           ),
@@ -539,7 +532,7 @@ class SettingPageState extends State<SettingPage> {
           //     );
           //   },
           //   child: ListTile(
-          //       title: ThemedText(AppLocalizations.of(context)!.help),
+          //       title: ThemedText(S.of(context)!.help),
           //       contentPadding: EdgeInsets.only(left: 15, right: 25),
           //       trailing: Icon(FontAwesomeIcons.chevronRight)),
           // ),
@@ -553,12 +546,12 @@ class SettingPageState extends State<SettingPage> {
               );
             },
             child: ListTile(
-              title: ThemedText(AppLocalizations.of(context)!.update),
+              title: ThemedText(S.of(context)!.update),
               subtitle: ThemedText('v$_version', small: true),
               trailing: _willUpdate
                   ? Icon(Icons.hdr_weak, color: Colors.redAccent)
                   : CupertinoButton(
-                      child: NoResizeText(AppLocalizations.of(context)!.latest),
+                      child: NoResizeText(S.of(context)!.latest),
                       onPressed: () {}),
               contentPadding:
                   EdgeInsets.only(left: 15, right: _willUpdate ? 25 : 10),
@@ -573,7 +566,7 @@ class SettingPageState extends State<SettingPage> {
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,
         middle: NoResizeText(
-          AppLocalizations.of(context)!.settingLabel,
+          S.of(context)!.settingLabel,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontWeight: FontWeight.w400,

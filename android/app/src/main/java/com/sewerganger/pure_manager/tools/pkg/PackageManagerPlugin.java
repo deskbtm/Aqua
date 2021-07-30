@@ -2,17 +2,15 @@ package com.sewerganger.pure_manager.tools.pkg;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
-
 import androidx.annotation.NonNull;
-
-import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.embedding.engine.plugins.activity.ActivityAware;
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
+import android.content.pm.PackageManager;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 
 /**
  * GlidePlugin

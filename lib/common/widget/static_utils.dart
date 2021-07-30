@@ -37,7 +37,7 @@ class EmptyBoard extends StatelessWidget {
             color: Color(0xFF007AFF),
             size: 33,
           ),
-          NoResizeText(AppLocalizations.of(context)!.empty)
+          NoResizeText(S.of(context)!.empty)
         ],
       ),
     );

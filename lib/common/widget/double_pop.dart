@@ -27,7 +27,7 @@ class DoublePop extends StatelessWidget {
                       Duration(milliseconds: 800))) {
             _lastPressedTime = DateTime.now();
             Fluttertoast.showToast(
-              msg: AppLocalizations.of(context)!.pressAgain,
+              msg: S.of(context)!.pressAgain,
             );
             return false;
           }

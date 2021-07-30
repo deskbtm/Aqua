@@ -89,13 +89,12 @@ class GlobalModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  late String _staticUploadSavePath;
-  String get staticUploadSavePath => _staticUploadSavePath;
+  String? _staticUploadSavePath;
+  String? get staticUploadSavePath => _staticUploadSavePath;
 
   Future<void> setStaticUploadSavePath(String arg) async {
     _staticUploadSavePath = arg;
     await Store.setString(STATIC_UPLOAD_SAVEPATH, arg);
-    notifyListeners();
   }
 
   late String _filePort;
@@ -337,8 +336,8 @@ class GlobalModel extends ChangeNotifier {
       _storageRootPath = await MixUtils.getExternalRootPath();
       _language = (await Store.getString(LANGUAGE)) ??
           Platform.localeName.split('_').elementAt(0);
-      _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
-          await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
+      // _staticUploadSavePath = (await Store.getString(STATIC_UPLOAD_SAVEPATH)) ??
+      //     // await MixUtils.getPrimaryStaticUploadSavePath(_storageRootPath);
     } catch (e, s) {
       await Sentry.captureException(
         e,

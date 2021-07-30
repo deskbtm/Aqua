@@ -331,15 +331,15 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
                   backgroundColor: themeData.photoNavColor,
                   items: <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
-                      label: AppLocalizations.of(context)!.delete,
+                      label: S.of(context)!.delete,
                       icon: Icon(Icons.hdr_weak),
                     ),
                     // BottomNavigationBarItem(
-                    //   label: AppLocalizations.of(context)!.edit,
+                    //   label: S.of(context)!.edit,
                     //   icon: Icon(OMIcons.create),
                     // ),
                     BottomNavigationBarItem(
-                      label: AppLocalizations.of(context)!.moreOptions,
+                      label: S.of(context)!.moreOptions,
                       icon: Icon(Icons.hdr_weak),
                     )
                   ],

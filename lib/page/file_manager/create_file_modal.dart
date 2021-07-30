@@ -36,7 +36,7 @@ Future<void> createFileModal(
             fontColor: themeData.itemFontColor,
             bgColor: themeData.dialogBgColor,
             title: AquaDialogTitle(
-                title: AppLocalizations.of(context)!.create,
+                title: S.of(context)!.create,
                 subTitle: '${pathLib.basename(willCreateDir)}'),
             action: true,
             children: <Widget>[
@@ -49,7 +49,7 @@ Future<void> createFileModal(
                 height: 30,
                 child: Row(children: <Widget>[
                   NoResizeText(
-                    AppLocalizations.of(context)!.recursiveCreateFile,
+                    S.of(context)!.recursiveCreateFile,
                     style: TextStyle(
                       color: themeData.itemFontColor,
                     ),
@@ -57,8 +57,8 @@ Future<void> createFileModal(
                 ]),
               )
             ],
-            defaultCancelText: AppLocalizations.of(context)!.createFile,
-            defaultOkText: AppLocalizations.of(context)!.createDir,
+            defaultCancelText: S.of(context)!.createFile,
+            defaultOkText: S.of(context)!.createDir,
             onOk: () async {
               Directory newDir = Directory(pathLib.join(willCreateDir,
                   FsUtils.trimSlash(textEditingController.text)));

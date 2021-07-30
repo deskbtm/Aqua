@@ -1,37 +1,33 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:aqua/common/theme.dart';
-import 'package:aqua/common/widget/cloud_header.dart';
-import 'package:aqua/common/widget/static_utils.dart';
-import 'package:aqua/model/file_manager_model.dart';
-import 'package:aqua/model/theme_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:aqua/common/theme.dart';
+import 'package:aqua/model/theme_model.dart';
+import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/common/widget/static_utils.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:aqua/common/widget/cloud_header.dart';
 import 'package:aqua/common/widget/action_button.dart';
-import 'package:aqua/common/widget/images.dart';
-import 'package:aqua/common/widget/no_resize_text.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
-import 'package:aqua/model/global_model.dart';
 import 'package:aqua/page/file_manager/file_operation.dart';
-import 'package:aqua/page/file_manager/file_list_tile.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:unicons/unicons.dart';
-// import 'package:pull_to_refresh/pull_to_refresh.dart';
-
+import 'package:aqua/page/file_manager/file_list_tile.dart';
+import 'package:aqua/common/widget/images.dart';
+import 'package:aqua/model/global_model.dart';
+import 'package:provider/provider.dart';
 import 'fs_ui_utils.dart';
 import 'fs_utils.dart';
 
 class FileList extends StatefulWidget {
-  // final List<SelfFileEntity> fileList;
+  final List<SelfFileEntity>? list;
   final Function(SelfFileEntity)? onDirTileTap;
   final FileManagerMode mode;
-  final Future<void> Function() update2Side;
+
   final Color? itemBgColor;
-  final void Function()? onScroll;
+
   final VoidCallback? onTapEmpty;
 
   // final FileManagerModel fileModel;
@@ -39,19 +35,17 @@ class FileList extends StatefulWidget {
   final Function(Directory) onChangeCurrentDir;
   final Function(bool) onChangePopLocker;
   final int? selectLimit;
-  final bool left;
+  final bool first;
 
   const FileList({
     Key? key,
-    this.onScroll,
     this.onTapEmpty,
     this.itemBgColor,
     this.onDirTileTap,
-    // required this.fileList,
-    required this.update2Side,
-    required this.mode,
-    required this.left,
     this.selectLimit,
+    required this.list,
+    required this.mode,
+    required this.first,
     required this.onChangeCurrentDir,
     required this.onChangePopLocker,
 
@@ -65,55 +59,49 @@ class FileList extends StatefulWidget {
 }
 
 class _FileListState extends State<FileList> {
-  // late ScrollController _scrollController;
   late ThemeModel _themeModel;
-
   late FileOperation _fileOperation;
   late GlobalModel _globalModel;
   EasyRefreshController _controller = EasyRefreshController();
   ScrollController _scrollController = ScrollController();
-  late FileManagerModel _fileManagerModel;
-
-  late bool _pending = false;
+  late FileManagerModel _fmModel;
 
   @override
   void initState() {
     super.initState();
 
-    // _scrollController = ScrollController();
     _fileOperation = FileOperation(
       context: context,
-      update2Side: widget.update2Side,
       selectLimit: widget.selectLimit,
       mode: widget.mode,
-      left: widget.left,
+      left: widget.first,
     );
 
     _globalModel = Provider.of<GlobalModel>(context, listen: false);
-    if (widget.onScroll != null) {
-      // _scrollController.addListener(widget.onScroll!);
-    }
   }
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _themeModel = Provider.of<ThemeModel>(context);
-    _fileManagerModel = Provider.of<FileManagerModel>(context);
+    _fmModel = Provider.of<FileManagerModel>(context);
   }
 
   @override
   void dispose() {
     super.dispose();
-    // _scrollController.dispose();
+    _controller.dispose();
+    _scrollController.dispose();
   }
 
   AquaTheme getTheme() {
     return _themeModel.themeData;
   }
 
-  Future<List<SelfFileEntity>> _readDir() async {
-    return FsUIUtils.readdirSafely(context, _fileManagerModel.currentDir!);
+  Directory getDirectory() {
+    return widget.first && !_fmModel.isRelativeRoot
+        ? _fmModel.currentDir!.parent
+        : _fmModel.currentDir!;
   }
 
   Future<void> _showOptionsWhenPressedEmpty(BuildContext context) async {
@@ -126,7 +114,7 @@ class _FileListState extends State<FileList> {
           leftChildren: <Widget>[
             if (sharedNotEmpty)
               ActionButton(
-                content: AppLocalizations.of(context)!.archiveHere,
+                content: S.of(context)!.archiveHere,
                 onTap: () async {
                   await _fileOperation.showCreateArchiveModal(
                     context,
@@ -136,7 +124,7 @@ class _FileListState extends State<FileList> {
               ),
             if (sharedNotEmpty)
               ActionButton(
-                content: AppLocalizations.of(context)!.moveHere,
+                content: S.of(context)!.moveHere,
                 onTap: () async {
                   await _fileOperation.handleMove(
                     mounted: mounted,
@@ -147,7 +135,7 @@ class _FileListState extends State<FileList> {
           rightChildren: <Widget>[
             if (sharedNotEmpty) ...[
               ActionButton(
-                content: AppLocalizations.of(context)!.copyHere,
+                content: S.of(context)!.copyHere,
                 onTap: () async {
                   await _fileOperation.copyModal(
                     context,
@@ -156,7 +144,7 @@ class _FileListState extends State<FileList> {
                 },
               ),
               ActionButton(
-                content: AppLocalizations.of(context)!.extractHere,
+                content: S.of(context)!.extractHere,
                 onTap: () async {
                   await _fileOperation.handleExtractArchive(
                     context,
@@ -166,7 +154,7 @@ class _FileListState extends State<FileList> {
               ),
             ],
             ActionButton(
-              content: AppLocalizations.of(context)!.create,
+              content: S.of(context)!.create,
               onTap: () async {
                 await _fileOperation.showCreateFileModal(context);
               },
@@ -222,7 +210,7 @@ class _FileListState extends State<FileList> {
                   controller: _controller,
                   scrollController: _scrollController,
                   header: CloudHeader(),
-                  onRefresh: widget.update2Side,
+                  onRefresh: () async => setState(() {}),
                   slivers: [
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
@@ -253,7 +241,8 @@ class _FileListState extends State<FileList> {
                             },
                             onTap: () => _handleTileTap(file, index, list),
                             onHozDrag: (dir) async {
-                              await _fileOperation.handleHozDragItem(file, dir);
+                              await FsUIUtils.handleHozDragItem(
+                                  context, file, dir);
                             },
                           );
                         },
@@ -269,18 +258,19 @@ class _FileListState extends State<FileList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _readDir(),
-      builder:
-          (BuildContext context, AsyncSnapshot<List<SelfFileEntity>> snapshot) {
-        if (snapshot.hasData && snapshot.data != null) {
-          return validFileList(snapshot.data!);
-        } else if (snapshot.hasError) {
-          return ErrorBoard();
-        } else {
-          return Container();
-        }
-      },
-    );
+    return widget.list == null ? Container() : validFileList(widget.list!);
+    // return FutureBuilder(
+    //   future: _readdir(),
+    //   builder:
+    //       (BuildContext context, AsyncSnapshot<List<SelfFileEntity>> snapshot) {
+    //     if (snapshot.hasData && snapshot.data != null) {
+    //       return validFileList(snapshot.data!);
+    //     } else if (snapshot.hasError) {
+    //       return ErrorBoard();
+    //     } else {
+    //       return Container();
+    //     }
+    //   },
+    // );
   }
 }

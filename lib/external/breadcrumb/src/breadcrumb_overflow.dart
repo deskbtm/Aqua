@@ -21,7 +21,7 @@ abstract class BreadCrumbOverflow {
   );
 }
 
-///subclass of [BreadCrumbOverflow] that use [Wrap] Widget to show his items
+///subclass of [BreadCrumbOverflow  ] that use [Wrap] Widget to show his items
 class WrapOverflow extends BreadCrumbOverflow {
   const WrapOverflow({
     this.keepLastDivider = false,

@@ -2,7 +2,6 @@ import 'package:aqua/model/select_file_model.dart';
 import 'package:aqua/page/file_manager/file_manager.dart';
 import 'package:aqua/common/widget/inner_drawer.dart';
 import 'package:aqua/page/home/left_quick_board.dart';
-import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/model/global_model.dart';
 import 'package:aqua/common/theme.dart';
@@ -19,16 +18,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
   // late CupertinoTabController _tabController;
-  late GlobalModel _globalModel;
+  late GlobalModel _gm;
   late bool _mutex;
 
   // late StreamSubscription _storageSubscription;
 
   // Future<void> _preloadWebData() async {
   //   await req().get('/assets/ios_manager.json').then((receive) async {
-  //     await _globalModel.setGobalWebData(receive.data);
+  //     await _gm.setGobalWebData(receive.data);
   //   }).catchError((err) {});
   // }
 
@@ -67,8 +66,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
 
     if (_mutex) {
       _mutex = false;
@@ -81,15 +80,15 @@ class _HomePageState extends State<HomePage> {
 
       // setState(() {});
 
-      // if (_globalModel.isAppNotInit) {
+      // if (_gm.isAppNotInit) {
       //   await _forceReadTutorialModal();
-      //   _globalModel.setAppInit(false);
+      //   _gm.setAppInit(false);
       // }
 
       // Timer(Duration(seconds: 6), () async {
       //   await showRemoteMessageModal(
-      //       context, _themeModel, _globalModel.gWebData);
-      //   await showUpdateModal(context, _themeModel, _globalModel.gWebData);
+      //       context, _tm, _gm.gWebData);
+      //   await showUpdateModal(context, _tm, _gm.gWebData);
       // });
     }
   }
@@ -112,17 +111,17 @@ class _HomePageState extends State<HomePage> {
   //         return FileEditorPage(
   //           path: path,
   //           language: ext.replaceFirst(RegExp(r'.'), ''),
-  //           bottomNavColor: _themeModel.themeData.bottomNavColor,
-  //           dialogBgColor: _themeModel.themeData.dialogBgColor,
-  //           backgroundColor: _themeModel.themeData.scaffoldBackgroundColor,
-  //           fontColor: _themeModel.themeData.itemFontColor,
-  //           selectItemColor: _themeModel.themeData.itemColor,
-  //           popMenuColor: _themeModel.themeData.menuItemColor,
+  //           bottomNavColor: _tm.themeData.bottomNavColor,
+  //           dialogBgColor: _tm.themeData.dialogBgColor,
+  //           backgroundColor: _tm.themeData.scaffoldBackgroundColor,
+  //           fontColor: _tm.themeData.itemFontColor,
+  //           selectItemColor: _tm.themeData.itemColor,
+  //           popMenuColor: _tm.themeData.menuItemColor,
   //           highlightTheme: setEditorTheme(
-  //             _themeModel.isDark,
+  //             _tm.isDark,
   //             TextStyle(
-  //               color: _themeModel.themeData.itemFontColor,
-  //               backgroundColor: _themeModel.themeData.scaffoldBackgroundColor,
+  //               color: _tm.themeData.itemFontColor,
+  //               backgroundColor: _tm.themeData.scaffoldBackgroundColor,
   //             ),
   //           ),
   //         );
@@ -208,7 +207,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
     // themeData == null
     // ? Container(color: themeData.scaffoldBackgroundColor)
     // :
@@ -233,18 +232,8 @@ class _HomePageState extends State<HomePage> {
         value: selectFileModel,
         child: RightQuickBoard(),
       ),
-      scaffold: MultiProvider(
-        providers: [
-          ChangeNotifierProvider<FileManagerModel>(
-            create: (_) => FileManagerModel(),
-          ),
-          ChangeNotifierProvider.value(
-            value: selectFileModel,
-          ),
-        ],
-        child: FileManagerPage(
-          innerDrawerKey: _innerDrawerKey,
-        ),
+      scaffold: FileManager(
+        innerDrawerKey: _innerDrawerKey,
       ),
     );
 

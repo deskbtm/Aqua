@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:aqua/common/widget/action_button.dart';
 import 'package:aqua/common/widget/fade_in.dart';
-import 'package:aqua/common/widget/file_info_card.dart';
+import 'package:aqua/page/file_manager/file_info_card.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
 import 'package:aqua/page/file_manager/file_operation.dart';
@@ -36,7 +36,7 @@ class PhotoViewerPage extends StatefulWidget {
 class _PhotoViewerPageState extends State<PhotoViewerPage> {
   late int _currentIndex;
   late PreloadPageController _controller;
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
   final _barFader = FadeInController(autoStart: true);
   final _topFader = FadeInController(autoStart: true);
   late bool _viewFaded = false;
@@ -59,7 +59,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
   }
 
   @override
@@ -141,7 +141,7 @@ class _PhotoViewerPageState extends State<PhotoViewerPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
     return Scaffold(
       backgroundColor: themeData.scaffoldBackgroundColor,
       body: Stack(

@@ -37,22 +37,16 @@ import static androidx.core.content.ContextCompat.getSystemService;
 
 
 public class ExtendStorage {
-  private Context context;
+  private Context mContext;
   private Activity mActivity;
-  private static final String INTERNAL_SHARED_STORAGE = "Internal shared storage";
-  private String TAG = "ExtendStorage";
   private String STORAGE_INTERNAL = "storage_internal";
   private String STORAGE_SDCARD = "storage_sdcard";
-  private String STORAGE_ROOT = "storage_roor";
-//  private String STORAGE_INTERNAL = "storage_internal";
+  private String STORAGE_ROOT = "storage_root";
+  private int REQUEST_CODE_FOR_DIR = 6666;
 
   public ExtendStorage(Context ctx, Activity activity) {
-    context = ctx;
+    mContext = ctx;
     mActivity = activity;
-  }
-
-  public String getTemporaryDirectory() {
-    return context.getCacheDir().getPath();
   }
 
   public void getExternalStorageState(MethodChannel.Result result) {
@@ -62,30 +56,6 @@ public class ExtendStorage {
 
   public String getExternalStorageDirectory() {
     return Environment.getExternalStorageDirectory().getAbsolutePath();
-  }
-
-  public String getFilesDir() {
-    return context.getFilesDir().getAbsolutePath();
-  }
-
-  public String getCacheDir() {
-    return context.getCacheDir().getAbsolutePath();
-  }
-
-  public String getDataDirectory() {
-    return Environment.getDataDirectory().getAbsolutePath();
-  }
-
-  public String getExternalCacheDir() {
-    return context.getExternalCacheDir().getAbsolutePath();
-  }
-
-  public String getApplicationSupportDirectory() {
-    return PathUtils.getFilesDir(context);
-  }
-
-  public String getApplicationDocumentsDirectory() {
-    return PathUtils.getDataDirectory(context);
   }
 
   public double getTotalExternalStorageSize() {
@@ -114,58 +84,40 @@ public class ExtendStorage {
     return (double) size;
   }
 
-
-  public String getExternalFilesDir() {
-    final File dir = context.getExternalFilesDir(null);
-    if (dir == null) {
-      return null;
-    }
-    return dir.getAbsolutePath();
-  }
-
-  public List<String> getExternalCacheDirectories() {
-    final List<String> paths = new ArrayList<>();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      for (File dir : context.getExternalCacheDirs()) {
-        if (dir != null) {
-          paths.add(dir.getAbsolutePath());
-        }
-      }
-    } else {
-      File dir = context.getExternalCacheDir();
-      if (dir != null) {
-        paths.add(dir.getAbsolutePath());
-      }
-    }
-
-    return paths;
-  }
-
-  public List<String> getExternalStorageDirectories(String type) {
-    final List<String> paths = new ArrayList<>();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      for (File dir : context.getExternalFilesDirs(type)) {
-        if (dir != null) {
-          paths.add(dir.getAbsolutePath());
-        }
-      }
-    } else {
-      File dir = context.getExternalFilesDir(type);
-      if (dir != null) {
-        paths.add(dir.getAbsolutePath());
-      }
-    }
-
-    return paths;
-  }
-
   public void canRead(MethodCall call, MethodChannel.Result result) {
     String path = call.argument("canOperable");
     boolean readable = new File(path).canRead();
     result.success(readable);
   }
+
+
+  //转换至uriTree的路径
+  private String changeToUriString(String path) {
+    if (path.endsWith("/")) {
+      path = path.substring(0, path.length() - 1);
+    }
+    String path2 = path.replace("/storage/emulated/0/", "").replace("/", "%2F");
+    return "content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata/document/primary%3A" + path2;
+  }
+
+  //获取指定目录的访问权限
+  public void requestSAFPermission(MethodCall call, MethodChannel.Result result) {
+    String path = call.argument("path");
+    String uriString = changeToUriString(path);
+
+    Uri uri = Uri.parse(uriString);
+    Intent intent = new Intent("android.intent.action.OPEN_DOCUMENT_TREE");
+    intent.addFlags(
+        Intent.FLAG_GRANT_READ_URI_PERMISSION
+            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+            | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, uri);
+    }
+    mActivity.startActivityForResult(intent, REQUEST_CODE_FOR_DIR);
+  }
+
 
   public void requestDataObbAccess(MethodChannel.Result result) {
     try {
@@ -208,9 +160,9 @@ public class ExtendStorage {
   }
 
 //  @TargetApi(Build.VERSION_CODES.KITKAT)
-//  ArrayList<String> getExtSdCardPathsForActivity(Context context) {
+//  ArrayList<String> getExtSdCardPathsForActivity(Context mContext) {
 //    ArrayList<String> paths = new ArrayList();
-//    File[] externals = context.getExternalFilesDirs("external");
+//    File[] externals = mContext.getExternalFilesDirs("external");
 //    for (File file : externals) {
 //      if (file != null) {
 //        int index = file.getAbsolutePath().lastIndexOf("/Android/data");
@@ -234,14 +186,14 @@ public class ExtendStorage {
   public synchronized ArrayList<HashMap> getStorageDirectories() {
     // Final set of paths
     ArrayList<HashMap> volumes = new ArrayList<>();
-    StorageManager sm = getSystemService(context, StorageManager.class);
+    StorageManager sm = getSystemService(mContext, StorageManager.class);
     for (StorageVolume volume : sm.getStorageVolumes()) {
       if (!volume.getState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)
           && !volume.getState().equalsIgnoreCase(Environment.MEDIA_MOUNTED_READ_ONLY)) {
         continue;
       }
       File file = getVolumeDirectory(volume);
-      String description = volume.getDescription(context);
+      String description = volume.getDescription(mContext);
 
       HashMap vol = new HashMap();
 
@@ -298,7 +250,7 @@ public class ExtendStorage {
 //    }
 //    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) avail.clear();
 //    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//      ArrayList<String> strings = getExtSdCardPathsForActivity(context);
+//      ArrayList<String> strings = getExtSdCardPathsForActivity(mContext);
 //      for (String s : strings) {
 //        File file = new File(s);
 //        if (!avail.contains(s) && file.canRead() && file.isDirectory()) avail.add(s);

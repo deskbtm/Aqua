@@ -32,6 +32,32 @@ class SelectFileModel extends ChangeNotifier {
     _selectedFiles = [];
     if (update) notifyListeners();
   }
+
+  Future<void> addPickedFile(SelfFileEntity value,
+      {bool update = false}) async {
+    bool included =
+        _pickedFiles.any((ele) => ele.entity.path == value.entity.path);
+    if (!included) {
+      _pickedFiles.add(value);
+      if (update) notifyListeners();
+    }
+  }
+
+  Future<void> removePickedFile(SelfFileEntity value,
+      {bool update = false}) async {
+    _pickedFiles.removeWhere((ele) => ele.entity.path == value.entity.path);
+    if (update) notifyListeners();
+  }
+
+  bool? hasPickedFile(String path) {
+    return _pickedFiles.any((ele) => ele.entity.path == path);
+  }
+
+  Future<void> clearPickedFiles({bool update = false}) async {
+    _pickedFiles = [];
+    if (update) notifyListeners();
+  }
 }
 
+/// [RightQuickBoard] , [FileManagerPage]等组件共享状态
 SelectFileModel selectFileModel = SelectFileModel();

@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'package:aqua/page/file_manager/fs_ui_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:aqua/constant/constant_var.dart';
 import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:aqua/utils/store.dart';
-import 'package:path/path.dart' as pathLib;
 
 // 文件管理器布局模式
 enum LayoutMode { horizontal, vertical }
@@ -28,10 +26,15 @@ enum FileSortType {
   type,
 }
 
+/// [FileManagerModel]
 enum FileManagerMode {
-  // 普通模式
+  /// 普通文件访问
   normal,
+
+  /// 文件选取
   pick,
+
+  /// 文件搜索
   search
 }
 
@@ -47,11 +50,13 @@ class FileManagerModel extends ChangeNotifier {
   bool _popLocker = false;
   bool get popLocker => _popLocker;
 
-  void settPopLocker(bool val) {
+  void setPopLocker(bool val) {
     _popLocker = val;
   }
 
   FileManagerMode _visitMode = FileManagerMode.normal;
+
+  /// 管理器的访问模式 [FileManagerMode]
   FileManagerMode get visitMode => _visitMode;
 
   void setVisitMode(FileManagerMode? mode) {
@@ -64,52 +69,6 @@ class FileManagerModel extends ChangeNotifier {
   Future<void> setSortType(FileSortType arg) async {
     _sortType = arg;
   }
-
-  // 当前目录
-  Directory? _currentDir;
-  Directory? get currentDir => _currentDir;
-
-  void setCurrentDir(Directory? dir, {update: false}) {
-    _currentDir = dir;
-    if (update) notifyListeners();
-  }
-
-  List<SelfFileEntity>? _firstList;
-  List<SelfFileEntity>? get firstList => _firstList;
-
-  Future<void> setFirstList(context, Directory dir, {update = false}) async {
-    await FsUIUtils.readdir(context, dir).then((list) {
-      _firstList = list;
-      if (update) notifyListeners();
-    });
-  }
-
-  List<SelfFileEntity>? _secondList;
-  List<SelfFileEntity>? get secondList => _secondList;
-
-  Future<void> setSecondList(context, Directory? dir, {update = false}) async {
-    await FsUIUtils.readdir(context, dir!).then((list) {
-      _secondList = list;
-      if (update) notifyListeners();
-    }).catchError((err) {
-      throw Exception(err);
-    });
-  }
-
-  Future<void> setSecondListDirectly(context, List<SelfFileEntity>? list,
-      {update = false}) async {
-    _secondList = list;
-
-    if (update) notifyListeners();
-  }
-
-  bool get isRelativeRoot => pathLib.equals(_entryDir!.path, _currentDir!.path);
-
-  bool get isRelativeParentRoot =>
-      pathLib.equals(_entryDir!.path, _currentDir!.parent.path);
-
-  bool get isWithinLawPath =>
-      pathLib.equals(_entryDir!.path, _currentDir!.path);
 
   late bool _isDisplayHidden;
   bool get isDisplayHidden => _isDisplayHidden;
@@ -190,28 +149,9 @@ class FileManagerModel extends ChangeNotifier {
     }
   }
 
-  Future<void> storageInit() async {
+  Future<void> init() async {
     _isDisplayHidden = (await Store.getBool(SHOW_FILE_HIDDEN)) ?? false;
     await _initLayoutMode();
     await _initViewMode();
-  }
-
-  /// 处理独立模式
-  ///
-  /// 第一个文件文件的当前目录
-  Directory? _firstCurrentDir;
-  Directory? get firstCurrentDir => _firstCurrentDir;
-
-  void setFirstCurrentDir(Directory? dir, {update: false}) {
-    _firstCurrentDir = dir;
-    if (update) notifyListeners();
-  }
-
-  Directory? _secondCurrentDir;
-  Directory? get secondCurrentDir => _secondCurrentDir;
-
-  void setSecondCurrentDir(Directory? dir, {update: false}) {
-    _secondCurrentDir = dir;
-    if (update) notifyListeners();
   }
 }

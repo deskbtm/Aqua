@@ -309,5 +309,9 @@
   "associate": "Associate",
   "@associate": {},
   "mode": "Mode",
-  "@mode": {}
+  "@mode": {},
+  "hoz": "horizontal",
+  "@hoz": {},
+  "vertical": "vertical",
+  "@vertical": {}
 }

@@ -35,17 +35,17 @@ class AquaTextField extends StatefulWidget {
 }
 
 class _AquaTextFieldState extends State<AquaTextField> {
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme theme = _themeModel.themeData;
+    AquaTheme theme = _tm.themeData;
 
     return CupertinoTextField(
       focusNode: widget.focusNode,

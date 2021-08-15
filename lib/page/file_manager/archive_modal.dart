@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/model/select_file_model.dart';
 import 'package:aqua/plugin/archive/archive.dart';
 import 'package:aqua/plugin/archive/enums.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,8 +30,9 @@ Future<void> showArchiveModal(
   MixUtils.safePop(context);
   ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
   GlobalModel globalModel = Provider.of<GlobalModel>(context, listen: false);
+  SelectFileModel sfm = Provider.of<SelectFileModel>(context, listen: false);
 
-  if (globalModel.selectedFiles.isNotEmpty) {
+  if (sfm.selectedFiles.isNotEmpty) {
     AquaTheme themeData = themeModel.themeData;
     bool popAble = true;
     String archiveType = 'zip';
@@ -221,9 +222,8 @@ Future<void> showArchiveModal(
                     popAble = false;
                   });
                   await Future.delayed(Duration(milliseconds: 50));
-                  List<String> paths = globalModel.selectedFiles
-                      .map((e) => e.entity.path)
-                      .toList();
+                  List<String> paths =
+                      sfm.selectedFiles.map((e) => e.entity.path).toList();
 
                   String generatedArchivePath = FsUtils.newPathWhenExists(
                       pathLib.join(

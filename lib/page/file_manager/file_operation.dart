@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:aqua/model/select_file_model.dart';
 import 'package:aqua/page/file_editor/editor_theme.dart';
 import 'package:aqua/plugin/archive/archive.dart';
 import 'package:aqua/plugin/archive/enums.dart';
@@ -8,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:aqua/common/widget/action_button.dart';
 import 'package:aqua/common/widget/dialog.dart';
-import 'package:aqua/common/widget/file_info_card.dart';
+import 'package:aqua/page/file_manager/file_info_card.dart';
 import 'package:aqua/common/widget/function_widget.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/modal/show_modal.dart';
@@ -37,41 +38,40 @@ import 'create_file_modal.dart';
 import 'fs_utils.dart';
 
 class FileOperation {
-  final FileManagerMode mode;
   final int? selectLimit;
   final bool left;
   final BuildContext context;
   late FileManagerModel _fileManagerModel;
-  late GlobalModel _globalModel;
-  late ThemeModel _themeModel;
+  late GlobalModel _gm;
+  late SelectFileModel _sfm;
+  late ThemeModel _tm;
 
   FileOperation({
     required this.context,
     required this.left,
-    required this.mode,
     this.selectLimit,
   }) {
     _fileManagerModel = Provider.of<FileManagerModel>(context, listen: false);
-    _globalModel = Provider.of<GlobalModel>(context, listen: false);
-    _themeModel = Provider.of<ThemeModel>(context, listen: false);
+    _gm = Provider.of<GlobalModel>(context, listen: false);
+    _tm = Provider.of<ThemeModel>(context, listen: false);
   }
 
-  Future<void> showCreateArchiveModal(
-    BuildContext context, {
-    required bool mounted,
-  }) async {
-    return showArchiveModal(
-      context,
-      currentDir: _fileManagerModel.currentDir!,
-      onSuccessUpdate: (context) async {
-        if (mounted) {
-          _globalModel.clearSelectedFiles();
+  // Future<void> showCreateArchiveModal(
+  //   BuildContext context, {
+  //   required bool mounted,
+  // }) async {
+  //   return showArchiveModal(
+  //     context,
+  //     currentDir: _fileManagerModel.currentDir!,
+  //     onSuccessUpdate: (context) async {
+  //       if (mounted) {
+  //         _gm.clearSelectedFiles();
 
-          MixUtils.safePop(context);
-        }
-      },
-    );
-  }
+  //         MixUtils.safePop(context);
+  //       }
+  //     },
+  //   );
+  // }
 
   void openFileActionByExt(
     SelfFileEntity file, {
@@ -126,8 +126,8 @@ class FileOperation {
         // _popLocker = false;
       },
       caseArchive: () {
-        _globalModel.clearSelectedFiles();
-        _globalModel.addSelectedFile(file);
+        _sfm.clearSelectedFiles();
+        _sfm.addSelectedFile(file);
         updateView(() {});
         Fluttertoast.showToast(
           msg: S.of(context)!.target,
@@ -148,16 +148,15 @@ class FileOperation {
                   codeConfig: CodeConfig(
                     decoration: BoxDecoration(color: Colors.transparent),
                   ),
-                  markdownTheme: _themeModel.isDark
+                  markdownTheme: _tm.isDark
                       ? MarkdownTheme.darkTheme
                       : MarkdownTheme.lightTheme,
                   preConfig: PreConfig(
                     theme: setEditorTheme(
-                      _themeModel.isDark,
+                      _tm.isDark,
                       TextStyle(
-                        color: _themeModel.themeData.itemFontColor,
-                        backgroundColor:
-                            _themeModel.themeData.scaffoldBackgroundColor,
+                        color: _tm.themeData.itemFontColor,
+                        backgroundColor: _tm.themeData.scaffoldBackgroundColor,
                       ),
                     ),
                   ),
@@ -173,41 +172,41 @@ class FileOperation {
     );
   }
 
-  Future<void> handleMove({
-    required bool mounted,
-  }) async {
-    if (_globalModel.selectedFiles.isNotEmpty) {
-      await for (var item in Stream.fromIterable(_globalModel.selectedFiles)) {
-        String newPath = pathLib.join(_fileManagerModel.currentDir!.path,
-            pathLib.basename(item.entity.path));
-        if (await File(newPath).exists() || await Directory(newPath).exists()) {
-          Fluttertoast.showToast(
-            msg: '$newPath ${S.of(context)!.fileExisted}',
-          );
+  // Future<void> handleMove({
+  //   required bool mounted,
+  // }) async {
+  //   if (_gm.selectedFiles.isNotEmpty) {
+  //     await for (var item in Stream.fromIterable(_gm.selectedFiles)) {
+  //       String newPath = pathLib.join(_fileManagerModel.currentDir!.path,
+  //           pathLib.basename(item.entity.path));
+  //       if (await File(newPath).exists() || await Directory(newPath).exists()) {
+  //         Fluttertoast.showToast(
+  //           msg: '$newPath ${S.of(context)!.fileExisted}',
+  //         );
 
-          continue;
-        }
+  //         continue;
+  //       }
 
-        await item.entity.rename(newPath).catchError((e, s) async {
-          Fluttertoast.showToast(
-            msg: '${S.of(context)!.rename}${S.of(context)!.error}',
-          );
-          await Sentry.captureException(
-            e,
-            stackTrace: s,
-          );
-        });
-      }
-      if (mounted) {
-        Fluttertoast.showToast(
-          msg: S.of(context)!.setSuccess,
-        );
+  //       await item.entity.rename(newPath).catchError((e, s) async {
+  //         Fluttertoast.showToast(
+  //           msg: '${S.of(context)!.rename}${S.of(context)!.error}',
+  //         );
+  //         await Sentry.captureException(
+  //           e,
+  //           stackTrace: s,
+  //         );
+  //       });
+  //     }
+  //     if (mounted) {
+  //       Fluttertoast.showToast(
+  //         msg: S.of(context)!.setSuccess,
+  //       );
 
-        await _globalModel.clearSelectedFiles();
-        MixUtils.safePop(context);
-      }
-    }
-  }
+  //       await _gm.clearSelectedFiles();
+  //       MixUtils.safePop(context);
+  //     }
+  //   }
+  // }
 
   Future<void> renameModal(
     BuildContext context,
@@ -245,28 +244,28 @@ class FileOperation {
     }
   }
 
-  Future<void> showCreateFileModal(BuildContext context) async {
-    bool isRoot = pathLib.equals(
-        _fileManagerModel.entryDir!.path, _fileManagerModel.currentDir!.path);
+  // Future<void> showCreateFileModal(BuildContext context) async {
+  //   bool isRoot = pathLib.equals(
+  //       _fileManagerModel.entryDir!.path, _fileManagerModel.currentDir!.path);
 
-    return createFileModal(
-      context,
-      willCreateDir: !left || isRoot
-          ? _fileManagerModel.currentDir!.path
-          : _fileManagerModel.currentDir!.parent.path,
-      onExists: () {
-        Fluttertoast.showToast(
-          msg: S.of(context)!.fileExisted,
-        );
-      },
-      onSuccess: (file) async {
-        Fluttertoast.showToast(msg: '$file ${S.of(context)!.setSuccess}');
-      },
-      onError: (err) {
-        Fluttertoast.showToast(msg: '${S.of(context)!.setFail} $err');
-      },
-    );
-  }
+  //   return createFileModal(
+  //     context,
+  //     willCreateDir: !left || isRoot
+  //         ? _fileManagerModel.currentDir!.path
+  //         : _fileManagerModel.currentDir!.parent.path,
+  //     onExists: () {
+  //       Fluttertoast.showToast(
+  //         msg: S.of(context)!.fileExisted,
+  //       );
+  //     },
+  //     onSuccess: (file) async {
+  //       Fluttertoast.showToast(msg: '$file ${S.of(context)!.setSuccess}');
+  //     },
+  //     onError: (err) {
+  //       Fluttertoast.showToast(msg: '${S.of(context)!.setFail} $err');
+  //     },
+  //   );
+  // }
 
   Future<void> removeModal(
     BuildContext context,
@@ -276,8 +275,8 @@ class FileOperation {
   }) async {
     MixUtils.safePop(context);
 
-    AquaTheme themeData = _themeModel.themeData;
-    List<SelfFileEntity> selected = _globalModel.selectedFiles;
+    AquaTheme themeData = _tm.themeData;
+    List<SelfFileEntity> selected = _sfm.selectedFiles;
     bool confirmRm = false;
 
     showCupertinoModal(
@@ -294,7 +293,7 @@ class FileOperation {
             action: true,
             children: <Widget>[
               confirmRm
-                  ? loadingIndicator(context, _themeModel)
+                  ? loadingIndicator(context, _tm)
                   : NoResizeText(
                       '${S.of(context)!.delete} ${selected.length == 0 ? 1 : selected.length} ${S.of(context)!.files}?',
                     ),
@@ -306,7 +305,7 @@ class FileOperation {
                   confirmRm = true;
                 });
 
-                _globalModel.addSelectedFile(file);
+                _sfm.addSelectedFile(file);
 
                 await for (var item in Stream.fromIterable(selected)) {
                   if (item.isDir) {
@@ -326,7 +325,7 @@ class FileOperation {
                   MixUtils.safePop(context);
                 }
                 Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
-                _globalModel.clearSelectedFiles();
+                _sfm.clearSelectedFiles();
               }
             },
             onCancel: () {
@@ -346,223 +345,223 @@ class FileOperation {
       return;
     }
 
-    if (mode == FileManagerMode.pick) {
-      await _globalModel.addPickedFile(file);
-    } else {
-      Fluttertoast.showToast(msg: S.of(context)!.target);
-      await _globalModel.addSelectedFile(file);
-    }
+    // if (mode == FileManagerMode.pick) {
+    //   await _gm.addPickedFile(file);
+    // } else {
+    Fluttertoast.showToast(msg: S.of(context)!.target);
+    await _sfm.addSelectedFile(file);
+    // }
 
     MixUtils.safePop(context);
   }
 
   bool isBeyondLimit(BuildContext context) {
-    if (mode == FileManagerMode.pick && selectLimit is int) {
-      if (_globalModel.pickedFiles.length >= selectLimit!) {
-        Fluttertoast.showToast(
-            msg: '${S.of(context)!.selectLimit} $selectLimit');
-        return true;
-      }
-    }
+    // if (mode == FileManagerMode.pick && selectLimit is int) {
+    // if (_gm.pickedFiles.length >= selectLimit!) {
+    //   Fluttertoast.showToast(
+    //       msg: '${S.of(context)!.selectLimit} $selectLimit');
+    //   return true;
+    // }
+    // }
     return false;
   }
 
   /// [rm]
   Future<void> handleHozDragItem(SelfFileEntity file, double dir) async {
-    if (mode == FileManagerMode.pick) {
-      if (dir == 1) {
-        if (isBeyondLimit(context)) {
-          return;
-        }
-        await _globalModel.addPickedFile(file);
-      } else if (dir == -1) {
-        await _globalModel.removePickedFile(file);
-      }
-    } else {
-      if (dir == 1) {
-        await _globalModel.addSelectedFile(file);
-      } else if (dir == -1) {
-        await _globalModel.removeSelectedFile(file);
-      }
+    // if (mode == FileManagerMode.pick) {
+    //   if (dir == 1) {
+    //     if (isBeyondLimit(context)) {
+    //       return;
+    //     }
+    //     await _gm.addPickedFile(file);
+    //   } else if (dir == -1) {
+    //     await _gm.removePickedFile(file);
+    //   }
+    // } else {
+    if (dir == 1) {
+      await _sfm.addSelectedFile(file);
+    } else if (dir == -1) {
+      await _sfm.removeSelectedFile(file);
     }
   }
+  // }
 
-  Future<void> handleExtractArchive(
-    BuildContext context, {
-    required bool mounted,
-  }) async {
-    bool result = false;
-    if (_globalModel.selectedFiles.length > 1) {
-      Fluttertoast.showToast(msg: S.of(context)!.onlyOneFile);
-    } else {
-      SelfFileEntity first = _globalModel.selectedFiles.first;
-      String archivePath = first.entity.path;
-      String name = FsUtils.getName(archivePath);
-      if (Directory(pathLib.join(_fileManagerModel.currentDir!.path, name))
-          .existsSync()) {
-        Fluttertoast.showToast(msg: S.of(context)!.duplicateFile);
-        return;
-      }
+  // Future<void> handleExtractArchive(
+  //   BuildContext context, {
+  //   required bool mounted,
+  // }) async {
+  //   bool result = false;
+  //   if (_gm.selectedFiles.length > 1) {
+  //     Fluttertoast.showToast(msg: S.of(context)!.onlyOneFile);
+  //   } else {
+  //     SelfFileEntity first = _gm.selectedFiles.first;
+  //     String archivePath = first.entity.path;
+  //     String name = FsUtils.getName(archivePath);
+  //     if (Directory(pathLib.join(_fileManagerModel.currentDir!.path, name))
+  //         .existsSync()) {
+  //       Fluttertoast.showToast(msg: S.of(context)!.duplicateFile);
+  //       return;
+  //     }
 
-      switch (first.ext) {
-        case '.zip':
-          if (await Archive.isZipEncrypted(archivePath)) {
-            await showSingleTextFieldModal(
-              context,
-              title: S.of(context)!.password,
-              onOk: (val) async {
-                showWaitForArchiveNotification(S.of(context)!.decompressing);
-                result = await Archive.unzip(
-                    archivePath, _fileManagerModel.currentDir!.path,
-                    pwd: val);
-              },
-              onCancel: () {
-                MixUtils.safePop(context);
-              },
-            );
-          } else {
-            showWaitForArchiveNotification(S.of(context)!.decompressing);
-            result = await Archive.unzip(
-                archivePath, _fileManagerModel.currentDir!.path);
-          }
-          break;
-        case '.tar':
-          showWaitForArchiveNotification(S.of(context)!.decompressing);
-          await Archive.extractArchive(
-            archivePath,
-            _fileManagerModel.currentDir!.path,
-            ArchiveFormat.tar,
-          );
-          break;
-        case '.gz':
-        case '.tgz':
-          showWaitForArchiveNotification(S.of(context)!.decompressing);
-          result = await Archive.extractArchive(
-            archivePath,
-            _fileManagerModel.currentDir!.path,
-            ArchiveFormat.tar,
-            compressionType: CompressionType.gzip,
-          );
-          break;
-        case '.bz2':
-        case '.tz2':
-          showWaitForArchiveNotification(S.of(context)!.decompressing);
-          result = await Archive.extractArchive(
-            archivePath,
-            _fileManagerModel.currentDir!.path,
-            ArchiveFormat.tar,
-            compressionType: CompressionType.bzip2,
-          );
-          break;
-        case '.xz':
-        case '.txz':
-          showWaitForArchiveNotification(S.of(context)!.decompressing);
-          result = await Archive.extractArchive(
-            archivePath,
-            _fileManagerModel.currentDir!.path,
-            ArchiveFormat.tar,
-            compressionType: CompressionType.xz,
-          );
-          break;
-        case '.jar':
-          showWaitForArchiveNotification(S.of(context)!.decompressing);
-          result = await Archive.extractArchive(
-            archivePath,
-            _fileManagerModel.currentDir!.path,
-            ArchiveFormat.jar,
-          );
-          break;
-      }
-      LocalNotification.plugin?.cancel(0);
-      if (result) {
-        Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
-      } else {
-        Fluttertoast.showToast(msg: S.of(context)!.setFail);
-      }
-      if (mounted) {
-        await _globalModel.clearSelectedFiles();
+  //     switch (first.ext) {
+  //       case '.zip':
+  //         if (await Archive.isZipEncrypted(archivePath)) {
+  //           await showSingleTextFieldModal(
+  //             context,
+  //             title: S.of(context)!.password,
+  //             onOk: (val) async {
+  //               showWaitForArchiveNotification(S.of(context)!.decompressing);
+  //               result = await Archive.unzip(
+  //                   archivePath, _fileManagerModel.currentDir!.path,
+  //                   pwd: val);
+  //             },
+  //             onCancel: () {
+  //               MixUtils.safePop(context);
+  //             },
+  //           );
+  //         } else {
+  //           showWaitForArchiveNotification(S.of(context)!.decompressing);
+  //           result = await Archive.unzip(
+  //               archivePath, _fileManagerModel.currentDir!.path);
+  //         }
+  //         break;
+  //       case '.tar':
+  //         showWaitForArchiveNotification(S.of(context)!.decompressing);
+  //         await Archive.extractArchive(
+  //           archivePath,
+  //           _fileManagerModel.currentDir!.path,
+  //           ArchiveFormat.tar,
+  //         );
+  //         break;
+  //       case '.gz':
+  //       case '.tgz':
+  //         showWaitForArchiveNotification(S.of(context)!.decompressing);
+  //         result = await Archive.extractArchive(
+  //           archivePath,
+  //           _fileManagerModel.currentDir!.path,
+  //           ArchiveFormat.tar,
+  //           compressionType: CompressionType.gzip,
+  //         );
+  //         break;
+  //       case '.bz2':
+  //       case '.tz2':
+  //         showWaitForArchiveNotification(S.of(context)!.decompressing);
+  //         result = await Archive.extractArchive(
+  //           archivePath,
+  //           _fileManagerModel.currentDir!.path,
+  //           ArchiveFormat.tar,
+  //           compressionType: CompressionType.bzip2,
+  //         );
+  //         break;
+  //       case '.xz':
+  //       case '.txz':
+  //         showWaitForArchiveNotification(S.of(context)!.decompressing);
+  //         result = await Archive.extractArchive(
+  //           archivePath,
+  //           _fileManagerModel.currentDir!.path,
+  //           ArchiveFormat.tar,
+  //           compressionType: CompressionType.xz,
+  //         );
+  //         break;
+  //       case '.jar':
+  //         showWaitForArchiveNotification(S.of(context)!.decompressing);
+  //         result = await Archive.extractArchive(
+  //           archivePath,
+  //           _fileManagerModel.currentDir!.path,
+  //           ArchiveFormat.jar,
+  //         );
+  //         break;
+  //     }
+  //     LocalNotification.plugin?.cancel(0);
+  //     if (result) {
+  //       Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
+  //     } else {
+  //       Fluttertoast.showToast(msg: S.of(context)!.setFail);
+  //     }
+  //     if (mounted) {
+  //       await _gm.clearSelectedFiles();
 
-        MixUtils.safePop(context);
-      }
-    }
-  }
+  //       MixUtils.safePop(context);
+  //     }
+  //   }
+  // }
 
-  Future<void> copyModal(
-    BuildContext context, {
-    required bool mounted,
-  }) async {
-    MixUtils.safePop(context);
+  // Future<void> copyModal(
+  //   BuildContext context, {
+  //   required bool mounted,
+  // }) async {
+  //   MixUtils.safePop(context);
 
-    if (_globalModel.selectedFiles.isEmpty) {
-      Fluttertoast.showToast(msg: S.of(context)!.noContent);
-      return;
-    }
+  //   if (_gm.selectedFiles.isEmpty) {
+  //     Fluttertoast.showToast(msg: S.of(context)!.noContent);
+  //     return;
+  //   }
 
-    AquaTheme themeData = _themeModel.themeData;
-    bool popAble = true;
+  //   AquaTheme themeData = _tm.themeData;
+  //   bool popAble = true;
 
-    showCupertinoModal(
-      context: context,
-      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-      semanticsDismissible: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context,
-              void Function(void Function()) changeState) {
-            return WillPopScope(
-              onWillPop: () async {
-                return popAble;
-              },
-              child: AquaDialog(
-                fontColor: themeData.itemFontColor,
-                bgColor: themeData.dialogBgColor,
-                title: NoResizeText(S.of(context)!.paste),
-                action: true,
-                children: <Widget>[
-                  SizedBox(height: 10),
-                  popAble
-                      ? ThemedText(S.of(context)!.pasteTip)
-                      : loadingIndicator(context, _themeModel),
-                  SizedBox(height: 10),
-                ],
-                defaultOkText: S.of(context)!.sure,
-                onOk: () async {
-                  // 粘贴时无法退出Modal
-                  if (!popAble) {
-                    return;
-                  }
-                  changeState(() {
-                    popAble = false;
-                  });
+  //   showCupertinoModal(
+  //     context: context,
+  //     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+  //     semanticsDismissible: true,
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //         builder: (BuildContext context,
+  //             void Function(void Function()) changeState) {
+  //           return WillPopScope(
+  //             onWillPop: () async {
+  //               return popAble;
+  //             },
+  //             child: AquaDialog(
+  //               fontColor: themeData.itemFontColor,
+  //               bgColor: themeData.dialogBgColor,
+  //               title: NoResizeText(S.of(context)!.paste),
+  //               action: true,
+  //               children: <Widget>[
+  //                 SizedBox(height: 10),
+  //                 popAble
+  //                     ? ThemedText(S.of(context)!.pasteTip)
+  //                     : loadingIndicator(context, _tm),
+  //                 SizedBox(height: 10),
+  //               ],
+  //               defaultOkText: S.of(context)!.sure,
+  //               onOk: () async {
+  //                 // 粘贴时无法退出Modal
+  //                 if (!popAble) {
+  //                   return;
+  //                 }
+  //                 changeState(() {
+  //                   popAble = false;
+  //                 });
 
-                  await for (var item
-                      in Stream.fromIterable(_globalModel.selectedFiles)) {
-                    String targetPath = pathLib.join(
-                        _fileManagerModel.currentDir!.path,
-                        pathLib.basename(item.entity.path));
-                    await FsUtils.copy(item, targetPath);
-                  }
-                  if (mounted) {
-                    changeState(() {
-                      popAble = true;
-                    });
-                    MixUtils.safePop(context);
-                    Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
-                    await _globalModel.clearSelectedFiles();
-                  }
-                  return;
-                },
-                onCancel: () {
-                  MixUtils.safePop(context);
-                },
-                actionPos: MainAxisAlignment.end,
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+  //                 await for (var item
+  //                     in Stream.fromIterable(_gm.selectedFiles)) {
+  //                   String targetPath = pathLib.join(
+  //                       _fileManagerModel.currentDir!.path,
+  //                       pathLib.basename(item.entity.path));
+  //                   await FsUtils.copy(item, targetPath);
+  //                 }
+  //                 if (mounted) {
+  //                   changeState(() {
+  //                     popAble = true;
+  //                   });
+  //                   MixUtils.safePop(context);
+  //                   Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
+  //                   await _gm.clearSelectedFiles();
+  //                 }
+  //                 return;
+  //               },
+  //               onCancel: () {
+  //                 MixUtils.safePop(context);
+  //               },
+  //               actionPos: MainAxisAlignment.end,
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   Future<void> showFileActionModal({
     required SelfFileEntity file,
@@ -571,119 +570,120 @@ class FileOperation {
   }) async {
     bool showSize = false;
 
-    bool sharedNotEmpty = _globalModel.selectedFiles.isNotEmpty;
+    bool sharedNotEmpty = _sfm.selectedFiles.isNotEmpty;
 
-    if (_globalModel.isFileOptionPromptNotInit) {
+    if (_gm.isFileOptionPromptNotInit) {
       Fluttertoast.showToast(
         msg: S.of(context)!.copyDetails,
       );
-      _globalModel.setFileOptionPromptInit(false);
+      _gm.setFileOptionPromptInit(false);
     }
 
-    await showCupertinoModal(
-      context: context,
-      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-      builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, changeState) {
-          return SplitSelectionModal(
-            topPanel: FileInfoCard(file: file, showSize: showSize),
-            leftChildren: [
-              ActionButton(
-                content: S.of(context)!.create,
-                onTap: () async {
-                  await showCreateFileModal(context);
-                },
-              ),
-              ActionButton(
-                content: S.of(context)!.rename,
-                onTap: () async {
-                  await renameModal(context, file);
-                },
-              ),
-              if (sharedNotEmpty)
-                ActionButton(
-                  content: S.of(context)!.archiveHere,
-                  onTap: () async {
-                    await showCreateArchiveModal(
-                      context,
-                      mounted: mounted,
-                    );
-                  },
-                ),
-              if (sharedNotEmpty)
-                ActionButton(
-                  content: S.of(context)!.moveHere,
-                  onTap: () async {
-                    await handleMove(mounted: mounted);
-                  },
-                ),
-              ActionButton(
-                content: S.of(context)!.delete,
-                fontColor: Colors.redAccent,
-                onTap: () async {
-                  await removeModal(
-                    context,
-                    file,
-                    mounted: mounted,
-                    onChangeCurrentDir: onChangeCurrentDir,
-                  );
-                },
-              ),
-            ],
-            rightChildren: <Widget>[
-              ActionButton(
-                content: S.of(context)!.selected,
-                onTap: () {
-                  handleSelectedSingle(context, file);
-                },
-              ),
-              if (sharedNotEmpty)
-                ActionButton(
-                  content: S.of(context)!.copyHere,
-                  onTap: () {
-                    copyModal(context, mounted: mounted);
-                  },
-                ),
-              ActionButton(
-                content: S.of(context)!.details,
-                onTap: () {
-                  changeState(() {
-                    showSize = true;
-                  });
-                },
-              ),
-              if (sharedNotEmpty &&
-                  // 在判断下 不然移动下 sharedNotEmpty有问题
-                  _globalModel.selectedFiles.length != 0 &&
-                  FsUtils.ARCHIVE_EXTS
-                      .contains(_globalModel.selectedFiles.first.ext))
-                ActionButton(
-                  content: S.of(context)!.extractHere,
-                  onTap: () async {
-                    await handleExtractArchive(context, mounted: mounted);
-                  },
-                ),
-              if (file.isFile)
-                ActionButton(
-                  content: S.of(context)!.share,
-                  onTap: () async {
-                    await shareFile(context, file);
-                  },
-                ),
-              ActionButton(
-                content: S.of(context)!.moreOptions,
-                onTap: () async {
-                  if (file.isFile) {
-                    await showMoreModal(context, file: file);
-                  } else {
-                    Fluttertoast.showToast(msg: S.of(context)!.onlySupportFile);
-                  }
-                },
-              ),
-            ],
-          );
-        });
-      },
-    );
+    //   await showCupertinoModal(
+    //     context: context,
+    //     filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+    //     builder: (BuildContext context) {
+    //       return StatefulBuilder(builder: (context, changeState) {
+    //         return SplitSelectionModal(
+    //           topPanel: FileInfoCard(file: file, showSize: showSize),
+    //           leftChildren: [
+    //             ActionButton(
+    //               content: S.of(context)!.create,
+    //               onTap: () async {
+    //                 await showCreateFileModal(context);
+    //               },
+    //             ),
+    //             ActionButton(
+    //               content: S.of(context)!.rename,
+    //               onTap: () async {
+    //                 await renameModal(context, file);
+    //               },
+    //             ),
+    //             if (sharedNotEmpty)
+    //               ActionButton(
+    //                 content: S.of(context)!.archiveHere,
+    //                 onTap: () async {
+    //                   await showCreateArchiveModal(
+    //                     context,
+    //                     mounted: mounted,
+    //                   );
+    //                 },
+    //               ),
+    //             if (sharedNotEmpty)
+    //               ActionButton(
+    //                 content: S.of(context)!.moveHere,
+    //                 onTap: () async {
+    //                   await handleMove(mounted: mounted);
+    //                 },
+    //               ),
+    //             ActionButton(
+    //               content: S.of(context)!.delete,
+    //               fontColor: Colors.redAccent,
+    //               onTap: () async {
+    //                 await removeModal(
+    //                   context,
+    //                   file,
+    //                   mounted: mounted,
+    //                   onChangeCurrentDir: onChangeCurrentDir,
+    //                 );
+    //               },
+    //             ),
+    //           ],
+    //           rightChildren: <Widget>[
+    //             ActionButton(
+    //               content: S.of(context)!.selected,
+    //               onTap: () {
+    //                 handleSelectedSingle(context, file);
+    //               },
+    //             ),
+    //             if (sharedNotEmpty)
+    //               ActionButton(
+    //                 content: S.of(context)!.copyHere,
+    //                 onTap: () {
+    //                   copyModal(context, mounted: mounted);
+    //                 },
+    //               ),
+    //             ActionButton(
+    //               content: S.of(context)!.details,
+    //               onTap: () {
+    //                 changeState(() {
+    //                   showSize = true;
+    //                 });
+    //               },
+    //             ),
+    //             if (sharedNotEmpty &&
+    //                 // 在判断下 不然移动下 sharedNotEmpty有问题
+    //                 _gm.selectedFiles.length != 0 &&
+    //                 FsUtils.ARCHIVE_EXTS
+    //                     .contains(_gm.selectedFiles.first.ext))
+    //               ActionButton(
+    //                 content: S.of(context)!.extractHere,
+    //                 onTap: () async {
+    //                   await handleExtractArchive(context, mounted: mounted);
+    //                 },
+    //               ),
+    //             if (file.isFile)
+    //               ActionButton(
+    //                 content: S.of(context)!.share,
+    //                 onTap: () async {
+    //                   await shareFile(context, file);
+    //                 },
+    //               ),
+    //             ActionButton(
+    //               content: S.of(context)!.moreOptions,
+    //               onTap: () async {
+    //                 if (file.isFile) {
+    //                   await showMoreModal(context, file: file);
+    //                 } else {
+    //                   Fluttertoast.showToast(msg: S.of(context)!.onlySupportFile);
+    //                 }
+    //               },
+    //             ),
+    //           ],
+    //         );
+    //       });
+    //     },
+    //   );
+    // }
   }
 }

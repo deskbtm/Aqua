@@ -47,22 +47,22 @@ class CodeSettingPage extends StatefulWidget {
 }
 
 class CodeSettingPageState extends State<CodeSettingPage> {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
 
   CodeSrvUtils get cutils => widget.cutils;
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel.themeData;
-    String repo = _globalModel.alpineRepo!;
+    dynamic themeData = _tm.themeData;
+    String repo = _gm.alpineRepo!;
     Directory rootfs = Directory('${cutils.filesPath}/rootfs');
 
     List<Widget> settingList = [
@@ -78,11 +78,11 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                 context,
                 title: S.of(context)!.password,
                 onOk: (val) async {
-                  await _globalModel.setCodeSrvPwd(val);
+                  await _gm.setCodeSrvPwd(val);
                   Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () async {
-                  await _globalModel.setCodeSrvPwd(null);
+                  await _gm.setCodeSrvPwd(null);
                   Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 defaultCancelText: '设置为无密码',
@@ -91,9 +91,8 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             child: ListTile(
               title: ThemedText(S.of(context)!.password),
               subtitle: ThemedText(
-                _globalModel.codeSrvPwd != null
-                    ? List.filled(_globalModel.codeSrvPwd!.length, null,
-                            growable: false)
+                _gm.codeSrvPwd != null
+                    ? List.filled(_gm.codeSrvPwd!.length, null, growable: false)
                         .map((e) => '*')
                         .toList()
                         .join('')
@@ -105,16 +104,16 @@ class CodeSettingPageState extends State<CodeSettingPage> {
           ),
           ListTile(
             title: ThemedText(S.of(context)!.port),
-            // subtitle: ThemedText(_globalModel.codeSrvPort),
+            // subtitle: ThemedText(_gm.codeSrvPort),
             trailing: CupertinoButton(
-                child: NoResizeText('${_globalModel.codeSrvPort}'),
+                child: NoResizeText('${_gm.codeSrvPort}'),
                 onPressed: () async {
                   showSingleTextFieldModal(
                     context,
                     title: S.of(context)!.port,
-                    placeholder: _globalModel.codeSrvPort,
+                    placeholder: _gm.codeSrvPort,
                     onOk: (val) {
-                      _globalModel.setCodeSrvPort(val);
+                      _gm.setCodeSrvPort(val);
                       Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                     },
                     onCancel: () {},
@@ -137,9 +136,9 @@ class CodeSettingPageState extends State<CodeSettingPage> {
             subtitle: ThemedText(S.of(context)!.helpCodeServer, small: true),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: AquaSwitch(
-              value: _globalModel.codeSrvTelemetry!,
+              value: _gm.codeSrvTelemetry!,
               onChanged: (val) async {
-                _globalModel.setCodeSrvTelemetry(val);
+                _gm.setCodeSrvTelemetry(val);
               },
             ),
           ),
@@ -181,7 +180,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                       await cutils
                           .setChineseRepo(TSINGHUA_REPO)
                           .then((value) async {
-                        await _globalModel.setAplineRepo(TSINGHUA_REPO);
+                        await _gm.setAplineRepo(TSINGHUA_REPO);
                       }).catchError((e) {
                         Fluttertoast.showToast(msg: S.of(context)!.setFail);
                       });
@@ -193,7 +192,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                       await cutils
                           .setChineseRepo(ALIYUN_REPO)
                           .then((value) async {
-                        await _globalModel.setAplineRepo(ALIYUN_REPO);
+                        await _gm.setAplineRepo(ALIYUN_REPO);
                         setState(() {});
                       }).catchError((e) {
                         Fluttertoast.showToast(msg: S.of(context)!.setFail);
@@ -204,7 +203,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                     title: ThemedText('中科大'),
                     onPressed: () async {
                       await cutils.setChineseRepo(USTC_REPO).then((val) async {
-                        await _globalModel.setAplineRepo(USTC_REPO);
+                        await _gm.setAplineRepo(USTC_REPO);
                         setState(() {});
                       }).catchError((e) {
                         Fluttertoast.showToast(msg: S.of(context)!.setFail);
@@ -217,7 +216,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                       await cutils
                           .setChineseRepo(ALPINE_REPO)
                           .then((value) async {
-                        await _globalModel.setAplineRepo(ALPINE_REPO);
+                        await _gm.setAplineRepo(ALPINE_REPO);
                         setState(() {});
                       }).catchError((e) {
                         Fluttertoast.showToast(msg: S.of(context)!.setFail);
@@ -232,7 +231,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                         title: 'alpine',
                         onOk: (val) async {
                           await cutils.setChineseRepo(val).then((value) async {
-                            await _globalModel.setAplineRepo(val);
+                            await _gm.setAplineRepo(val);
                           }).catchError((e) {
                             Fluttertoast.showToast(msg: S.of(context)!.setFail);
                           });
@@ -269,7 +268,7 @@ class CodeSettingPageState extends State<CodeSettingPage> {
                 context,
                 title: S.of(context)!.deleteSandbox,
                 tip: S.of(context)!.deleteSandboxTip,
-                confirmedView: loadingIndicator(context, _themeModel),
+                confirmedView: loadingIndicator(context, _tm),
                 onOk: () async {
                   await cutils.rmAllResource().catchError((err) {
                     Fluttertoast.showToast(msg: S.of(context)!.setFail);

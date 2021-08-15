@@ -153,5 +153,7 @@
   "searching": "搜索",
   "independent": "独立",
   "associate": "关联",
-  "mode": "模式"
+  "mode": "模式",
+  "hoz": "水平",
+  "vertical": "垂直"
 }

@@ -1,27 +1,17 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
-
-import 'package:fluttertoast/fluttertoast.dart';
-
+import 'dart:developer';
+import 'package:aqua/model/associate_view_model.dart';
 import 'fs_utils.dart';
+import 'package:aqua/model/global_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:aqua/external/menu/menu.dart';
-import 'package:aqua/page/file_manager/search_bar.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:aqua/common/widget/inner_drawer.dart';
-import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/page/file_manager/file_list.dart';
-import 'package:aqua/model/global_model.dart';
-import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:unicons/unicons.dart';
-import 'package:aqua/page/file_manager/path_breadcrumb.dart';
 import 'package:path/path.dart' as pathLib;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AssociateView extends StatefulWidget {
   final String? appointPath;
@@ -41,19 +31,16 @@ class AssociateView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return Associatetate();
+    return AssociateViewState();
   }
 }
 
-class Associatetate extends State<AssociateView>
+class AssociateViewState extends State<AssociateView>
     with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
-  late FileManagerModel _fmModel;
-
-  // late Directory? _rootDir;
+  late FileManagerModel _fm;
+  late AssociateViewModel _avm;
+  late GlobalModel _gm;
   late bool _initMutex;
-  // late
 
   @override
   bool get wantKeepAlive => true;
@@ -69,45 +56,61 @@ class Associatetate extends State<AssociateView>
   }
 
   @override
+  dispose() {
+    super.dispose();
+    BackButtonInterceptor.remove(_willPopFileRoute);
+  }
+
+  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
-    _fmModel = Provider.of<FileManagerModel>(context);
 
-    await _fmModel
-        .setFirstList(context, _fmModel.entryDir!, update: true)
-        .then((value) {
-      _fmModel.setCurrentDir(_fmModel.entryDir!);
-    });
+    _fm = Provider.of<FileManagerModel>(context);
+    _avm = Provider.of<AssociateViewModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
+
+    if (_initMutex) {
+      _initMutex = false;
+      await _avm.setFirstList(context, getEntryDir!, update: true).then((_) {
+        _avm.setCurrentDir(getEntryDir!);
+      });
+    }
   }
 
-  LayoutMode getLayoutMode() {
-    return _fmModel.layoutMode;
-  }
+  LayoutMode get getLayoutMode => _fm.layoutMode;
+
+  Directory? get getEntryDir => _fm.entryDir;
+
+  Directory? get getCurrentDir => _avm.currentDir;
+
+  bool get isRelativeRoot =>
+      pathLib.equals(getEntryDir!.path, getCurrentDir!.path);
+
+  bool get isRelativeParentRoot =>
+      pathLib.equals(getEntryDir!.path, getCurrentDir!.parent.path);
 
   /// 拦截返回
   Future<bool> _willPopFileRoute(
       bool stopDefaultButtonEvent, RouteInfo routeInfo) async {
-    if (_fmModel.isRelativeParentRoot) {
-      _fmModel.setSecondListDirectly(context, null, update: true);
-      _fmModel.setCurrentDir(_fmModel.currentDir!.parent);
+    if (isRelativeParentRoot) {
+      _avm.setSecondListDirectly(context, null, update: true);
+      _avm.setCurrentDir(_avm.currentDir!.parent);
       return false;
     }
 
-    if (_fmModel.isRelativeRoot) {
+    if (isRelativeRoot) {
       return false;
     }
 
-    if (!_fmModel.isRelativeRoot &&
-        !pathLib.isWithin(_fmModel.entryDir!.path, _fmModel.currentDir!.path)) {
-      await _fmModel.setFirstList(context, _fmModel.entryDir!, update: true);
+    if (!isRelativeRoot &&
+        !pathLib.isWithin(getEntryDir!.path, getCurrentDir!.path)) {
+      await _avm.setFirstList(context, getEntryDir!, update: true);
       return false;
     }
 
-    _fmModel.setCurrentDir(_fmModel.currentDir!.parent);
-    await _fmModel.setFirstList(context, _fmModel.currentDir!.parent);
-    await _fmModel.setSecondList(context, _fmModel.currentDir!, update: true);
+    _avm.setCurrentDir(_avm.currentDir!.parent);
+    await _avm.setFirstList(context, getCurrentDir!.parent);
+    await _avm.setSecondList(context, getCurrentDir!, update: true);
 
     return false;
   }
@@ -119,37 +122,33 @@ class Associatetate extends State<AssociateView>
         child: FileList(
           first: true,
           selectLimit: widget.selectLimit,
-          mode: widget.mode!,
           onChangePopLocker: (val) {},
-          list: _fmModel.firstList,
-          onChangeCurrentDir: (dynamic a) {},
+          list: _avm.firstList,
           onDirTileTap: (SelfFileEntity dir) async {
-            await _fmModel
+            await _avm
                 .setSecondList(context, dir.entity as Directory, update: true)
                 .then((value) {
-              _fmModel.setCurrentDir(dir.entity as Directory);
+              _avm.setCurrentDir(dir.entity as Directory);
             });
           },
         ),
       ),
-      if (!_fmModel.isRelativeRoot && _fmModel.secondList != null) ...[
-        if (getLayoutMode() == LayoutMode.vertical)
+      if (!isRelativeRoot && _avm.secondList != null) ...[
+        if (getLayoutMode == LayoutMode.vertical)
           Divider(color: Color(0xFF7BC4FF)),
         Expanded(
           flex: 1,
           child: FileList(
             first: false,
             selectLimit: widget.selectLimit,
-            mode: widget.mode!,
-            onChangeCurrentDir: (dynamic a) {},
             onChangePopLocker: (val) {},
-            list: _fmModel.secondList,
+            list: _avm.secondList,
             onDirTileTap: (dir) async {
-              await _fmModel
+              await _avm
                   .setSecondList(context, dir.entity as Directory)
                   .then((value) async {
-                _fmModel.setCurrentDir(dir.entity as Directory);
-                await _fmModel.setFirstList(context, dir.entity.parent,
+                _avm.setCurrentDir(dir.entity as Directory);
+                await _avm.setFirstList(context, dir.entity.parent,
                     update: true);
               });
             },
@@ -159,21 +158,35 @@ class Associatetate extends State<AssociateView>
     ];
   }
 
+  Future<bool> _handleManagerInstanceWillPop() async {
+    log((getEntryDir!.path + '--------' + getCurrentDir!.path));
+    return isRelativeRoot;
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return SafeArea(
-      child: Column(
-        children: [
-          SearchBar(),
-          Expanded(
-            child: getLayoutMode() == LayoutMode.vertical
-                ? Column(children: _createAssociateList())
-                : Row(children: _createAssociateList()),
-          ),
-        ],
-      ),
+    log(getCurrentDir != null ? getCurrentDir!.path : '', name: 'current dir');
+    log('root repaint', name: 'associcate view');
+
+    if (getCurrentDir != null && getEntryDir != null) {
+      if (isRelativeRoot) {
+        _gm.setCanPopToDesktop(true);
+      } else {
+        _gm.setCanPopToDesktop(false);
+      }
+    }
+
+    return WillPopScope(
+      onWillPop: _handleManagerInstanceWillPop,
+      child: getCurrentDir == null
+          ? Container()
+          : Expanded(
+              child: getLayoutMode == LayoutMode.vertical
+                  ? Column(children: _createAssociateList())
+                  : Row(children: _createAssociateList()),
+            ),
     );
   }
 }

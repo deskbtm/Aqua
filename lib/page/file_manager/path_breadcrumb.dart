@@ -2,7 +2,9 @@ import 'dart:io';
 import 'package:aqua/common/theme.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/external/breadcrumb/flutter_breadcrumb.dart';
+import 'package:aqua/model/associate_view_model.dart';
 import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/model/independent_view_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +23,19 @@ class PathBreadCrumb extends StatefulWidget {
 
 class _PathBreadCrumbState extends State<PathBreadCrumb> {
   late ScrollController _scrollController;
+  late ThemeModel _tm;
+  late FileManagerModel _fm;
+  late AssociateViewModel _avm;
+  late IndependentViewModel _ivm;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _scrollController = ScrollController();
+    _tm = Provider.of<ThemeModel>(context);
+    _avm = Provider.of<AssociateViewModel>(context);
+    _ivm = Provider.of<IndependentViewModel>(context);
+    _fm = Provider.of<FileManagerModel>(context);
   }
 
   @override
@@ -34,23 +44,41 @@ class _PathBreadCrumbState extends State<PathBreadCrumb> {
     _scrollController.dispose();
   }
 
+  AquaTheme get themeData => _tm.themeData;
+
   @override
   Widget build(BuildContext context) {
-    FileManagerModel fmModel =
-        Provider.of<FileManagerModel>(context, listen: false);
-
-    if (fmModel.currentDir == null || fmModel.entryDir == null) {
+    String currentPath;
+    if (_fm.entryDir == null) {
       return Container();
     }
+    switch (_fm.viewMode) {
+      case ViewMode.associate:
+        if (_avm.currentDir == null) {
+          return Container();
+        }
+        currentPath = _avm.currentDir!.path;
+        break;
+      case ViewMode.independent:
+        if (_ivm.activeWindow == IndependentActiveWindow.first) {
+          if (_ivm.firstCurrentDir == null) {
+            return Container();
+          }
+          currentPath = _ivm.firstCurrentDir!.path;
+        } else {
+          if (_ivm.secondCurrentDir == null) {
+            return Container();
+          }
+          currentPath = _ivm.secondCurrentDir!.path;
+        }
 
-    ThemeModel themeModel = Provider.of<ThemeModel>(context, listen: false);
-    AquaTheme themeData = themeModel.themeData;
+        break;
+      default:
+        throw Exception('unkown view mode');
+    }
 
-    String currentPath = fmModel.currentDir!.path;
-    List<String> paths = pathLib
-        .split(pathLib.relative(currentPath, from: fmModel.entryDir!.path));
-
-    // RenderBox? box = _key.currentContext?.findRenderObject() as RenderBox?;
+    List<String> paths =
+        pathLib.split(pathLib.relative(currentPath, from: _fm.entryDir!.path));
 
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -80,8 +108,7 @@ class _PathBreadCrumbState extends State<PathBreadCrumb> {
 
               /// 删除 '/'
               list.remove('/');
-              String absPath =
-                  pathLib.joinAll([fmModel.entryDir!.path, ...list]);
+              String absPath = pathLib.joinAll([_fm.entryDir!.path, ...list]);
               Directory target = Directory(absPath);
 
               return BreadCrumbItem(

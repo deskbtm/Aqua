@@ -11,14 +11,13 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/model/global_model.dart';
 import 'package:aqua/model/theme_model.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:provider/provider.dart';
 
 enum FileListTileType { folder, file }
 
-// ignore: must_be_immutable
+/// 单个文件项组件
 class SimpleFileListTile extends StatelessWidget {
   final String? title;
   final String? subTitle;
@@ -26,6 +25,7 @@ class SimpleFileListTile extends StatelessWidget {
   late final Widget? leading;
   late final Widget? trailing;
   final VoidCallback? onTap;
+
   final bool justDisplay;
   final bool selected;
   final Color selectedBackgroundColor;
@@ -150,7 +150,7 @@ class SimpleFileListTile extends StatelessWidget {
                               child: Column(
                                 children: [
                                   Container(
-                                    margin: EdgeInsets.only(top: 16),
+                                    margin: EdgeInsets.only(top: 14),
                                     // alignment: Alignment.topLeft,
                                     child: ThemedText(subTitle!, fontSize: 8),
                                   ),
@@ -199,10 +199,9 @@ class FileListTile extends StatefulWidget {
   final Function(LongPressStartDetails)? onLongPressStart;
 
   /// 水平滑动第一个参数为滑动方向 1为右 -1为左
-  final Function(double)? onHozDrag;
+  final Function(double)? onItemHozDrag;
 
   final Widget? leading;
-  final FileManagerMode? mode;
 
   final Widget? trailing;
   final double? height;
@@ -212,14 +211,13 @@ class FileListTile extends StatefulWidget {
     required this.index,
     this.onTap,
     this.title,
-    this.onHozDrag,
+    this.onItemHozDrag,
     this.onLongPressStart,
     this.titleSize = 12,
     this.subTitleSize = 7,
     this.justDisplay = false,
     this.withAnimation = false,
     this.leading,
-    this.mode,
     this.subTitle,
     this.leadingTitle,
     this.trailing,
@@ -240,7 +238,8 @@ class FileListTileState extends State<FileListTile>
   AnimationController? _controller;
   double _dragX = 0;
   bool _selected = false;
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
+  late FileManagerModel _fm;
   late SelectFileModel _selectFileModel;
 
   @override
@@ -263,8 +262,13 @@ class FileListTileState extends State<FileListTile>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+
+    // 允许在此处添加，在父级组件添加会导致不会从最小节点开始更新，导致性能优化失败
+    // 别处调用时可以使用 Provider.of<SelectFileModel>(context, listen: false)
     _selectFileModel = Provider.of<SelectFileModel>(context);
+
+    _fm = Provider.of<FileManagerModel>(context);
   }
 
   @override
@@ -288,8 +292,8 @@ class FileListTileState extends State<FileListTile>
     final simulation = SpringSimulation(spring, 0, 1, per.dx);
     _controller!.animateWith(simulation);
 
-    if (widget.onHozDrag != null) {
-      await widget.onHozDrag!(_dragX > 0 ? 1 : -1);
+    if (widget.onItemHozDrag != null) {
+      await widget.onItemHozDrag!(_dragX > 0 ? 1 : -1);
     }
   }
 
@@ -303,21 +307,17 @@ class FileListTileState extends State<FileListTile>
     _controller?.stop();
   }
 
-  void _handleHorizontalDragStart(DragStartDetails details) async {
-    // if (details.primaryDelta is double && details.primaryDelta! > 0) {
-    //   _dir = 1;
-    // } else {
-    //   _dir = -1;
-    // }
-  }
+  /// 创建可拖拽移动文件项，具有弹簧效果
+  Widget _createMoveableItem() {
+    AquaTheme theme = _tm.themeData;
 
-  Widget springFileListTile() {
-    AquaTheme theme = _themeModel.themeData;
-    if (widget.mode == FileManagerMode.pick) {
-      _selected = _selectFileModel.hasSelectedFile(widget.path)!;
+    // 判断文件是否被选中
+    if (_fm.visitMode == FileManagerMode.pick) {
+      _selected = _selectFileModel.hasPickedFile(widget.path)!;
     } else {
       _selected = _selectFileModel.hasSelectedFile(widget.path)!;
     }
+
     return Transform.translate(
       offset: Offset(_dragX, 0),
       child: SimpleFileListTile(
@@ -331,7 +331,6 @@ class FileListTileState extends State<FileListTile>
         backgroundColor: theme.listTileColor,
         height: widget.height,
         onTap: widget.onTap,
-        onLongPressStartDetails: _handleHorizontalDragStart,
         onLongPressStart: widget.onLongPressStart,
         onHorizontalDragDown: _handleHorizontalDragDown,
         onHorizontalDragUpdate: _handleHorizontalDragUpdate,
@@ -344,7 +343,7 @@ class FileListTileState extends State<FileListTile>
   Widget build(BuildContext context) {
     super.build(context);
 
-    Widget movableItem = springFileListTile();
+    Widget movableItem = _createMoveableItem();
 
     return widget.withAnimation
         ? AnimationConfiguration.staggeredList(

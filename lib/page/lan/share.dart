@@ -40,8 +40,8 @@
 
 // class LanSharePageState extends State<LanSharePage>
 //     with AutomaticKeepAliveClientMixin {
-//   late ThemeModel _themeModel;
-//   late GlobalModel _globalModel;
+//   late ThemeModel _tm;
+//   late GlobalModel _gm;
 
 //   HttpServer? _server;
 //   late bool _shareSwitch;
@@ -57,15 +57,15 @@
 //   @override
 //   void didChangeDependencies() async {
 //     super.didChangeDependencies();
-//     _themeModel = Provider.of<ThemeModel>(context);
-//     _globalModel = Provider.of<GlobalModel>(context);
+//     _tm = Provider.of<ThemeModel>(context);
+//     _gm = Provider.of<GlobalModel>(context);
 //   }
 
 //   Future<void> showDownloadResourceModal(BuildContext context) async {
 //     await createProotEnv(
 //       context,
-//       themeProvider: _themeModel,
-//       commonProvider: _globalModel,
+//       themeProvider: _tm,
+//       commonProvider: _gm,
 //       onSuccess: () {
 //         Fluttertoast.showToast(
 //             msg: S.of(context)!.installSuccess);
@@ -92,28 +92,28 @@
 
 //   Future<void> createStaticServer() async {
 //     try {
-//       String ip = _globalModel.internalIp ?? LOOPBACK_ADDR;
+//       String ip = _gm.internalIp ?? LOOPBACK_ADDR;
 
-//       int port = int.parse(_globalModel.filePort ?? FILE_DEFAULT_PORT);
-//       String? savePath = _globalModel.staticUploadSavePath;
+//       int port = int.parse(_gm.filePort ?? FILE_DEFAULT_PORT);
+//       String? savePath = _gm.staticUploadSavePath;
 //       FutureOr<Response> Function(Request) handlerFunc;
 //       String addr = '$ip:$port';
 
-//       if (_globalModel.selectedFiles.isNotEmpty) {
-//         SelfFileEntity first = _globalModel.selectedFiles.first;
+//       if (_gm.selectedFiles.isNotEmpty) {
+//         SelfFileEntity first = _gm.selectedFiles.first;
 
 //         if (first.isDir) {
 //           handlerFunc = createDirHandler(
 //             first.entity.path,
-//             isDark: _themeModel.isDark,
+//             isDark: _tm.isDark,
 //             uploadSavePath: '/',
 //             serverUrl: addr,
 //             onUploadResult: _uploadNotification,
 //           );
 //         } else {
 //           handlerFunc = createFilesHandler(
-//             _globalModel.selectedFiles.map((e) => e.entity.path).toList(),
-//             isDark: _themeModel.isDark,
+//             _gm.selectedFiles.map((e) => e.entity.path).toList(),
+//             isDark: _tm.isDark,
 //             serverUrl: addr,
 //             uploadSavePath: '/',
 //             onUploadResult: _uploadNotification,
@@ -121,8 +121,8 @@
 //         }
 //       } else {
 //         handlerFunc = createDirHandler(
-//           _globalModel.storageRootPath,
-//           isDark: _themeModel.isDark,
+//           _gm.storageRootPath,
+//           isDark: _tm.isDark,
 //           serverUrl: addr,
 //           uploadSavePath: '/',
 //           onUploadResult: _uploadNotification,
@@ -187,7 +187,7 @@
 //         Process result = await utils
 //             .runServer(
 //           codeAddr,
-//           pwd: _globalModel.codeSrvPwd,
+//           pwd: _gm.codeSrvPwd,
 //         )
 //             .catchError((err) {
 //           Fluttertoast.showToast(msg: S.of(context)!.setFail);
@@ -242,11 +242,11 @@
 //   Widget build(BuildContext context) {
 //     super.build(context);
 
-//     AquaTheme themeData = _themeModel.themeData;
+//     AquaTheme themeData = _tm.themeData;
 
-//     String? internalIp = _globalModel.internalIp;
-//     String filePort = _globalModel.filePort ?? FILE_DEFAULT_PORT;
-//     String codeSrvPort = _globalModel.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
+//     String? internalIp = _gm.internalIp;
+//     String filePort = _gm.filePort ?? FILE_DEFAULT_PORT;
+//     String codeSrvPort = _gm.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
 //     String fileAddr = '$internalIp:$filePort';
 //     String codeAddr = '$internalIp:$codeSrvPort';
 
@@ -295,7 +295,7 @@
 //             ),
 //             Expanded(
 //               flex: 1,
-//               child: _globalModel.selectedFiles.isEmpty
+//               child: _gm.selectedFiles.isEmpty
 //                   ? Center(
 //                       child: Column(
 //                         mainAxisAlignment: MainAxisAlignment.center,
@@ -312,17 +312,17 @@
 //                     )
 //                   : ListView.builder(
 //                       physics: BouncingScrollPhysics(),
-//                       itemCount: _globalModel.selectedFiles.length,
+//                       itemCount: _gm.selectedFiles.length,
 //                       itemBuilder: (BuildContext context, int index) {
 //                         SelfFileEntity file =
-//                             _globalModel.selectedFiles.elementAt(index);
+//                             _gm.selectedFiles.elementAt(index);
 
 //                         Widget previewIcon = getPreviewIcon(context, file);
 //                         return Dismissible(
 //                           key: ObjectKey(file),
 //                           onDismissed: (direction) async {
-//                             await _globalModel.removeSelectedFile(file);
-//                             if (_globalModel.selectedFiles.isEmpty) {
+//                             await _gm.removeSelectedFile(file);
+//                             if (_gm.selectedFiles.isEmpty) {
 //                               setState(() {});
 //                             }
 //                           },

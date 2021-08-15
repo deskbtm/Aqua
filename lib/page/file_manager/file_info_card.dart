@@ -36,7 +36,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
   SelfFileEntity get file => widget.file;
   bool get showSize => widget.showSize;
   late StreamSubscription<FileSystemEntity>? _listener;
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
   late int _totalSize;
   late int _fileCount;
   late bool _mutex;
@@ -59,7 +59,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
 
     if (showSize) {
       if (file.isDir) {
@@ -86,7 +86,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
     List<List> info = [
       [S.of(context)!.filename, file.filename],

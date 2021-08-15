@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:aqua/page/file_manager/fs_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:aqua/constant/constant.dart';
@@ -27,57 +26,6 @@ class GlobalModel extends ChangeNotifier {
 
   void setCanPopToDesktop(bool val) {
     _canPopToDesktop = val;
-  }
-
-  List<SelfFileEntity> _selectedFiles = [];
-  List<SelfFileEntity> get selectedFiles => _selectedFiles;
-
-  Future<void> addSelectedFile(SelfFileEntity value,
-      {bool update = false}) async {
-    if (!_selectedFiles.any((ele) => ele.entity.path == value.entity.path)) {
-      _selectedFiles.add(value);
-    }
-    if (update) notifyListeners();
-  }
-
-  Future<void> removeSelectedFile(SelfFileEntity value,
-      {bool update = false}) async {
-    _selectedFiles.removeWhere((ele) => ele.entity.path == value.entity.path);
-    if (update) notifyListeners();
-  }
-
-  bool? hasSelectedFile(String path) {
-    return _selectedFiles.any((ele) => ele.entity.path == path);
-  }
-
-  Future<void> clearSelectedFiles({bool update = false}) async {
-    _selectedFiles = [];
-    if (update) notifyListeners();
-  }
-
-  List<SelfFileEntity> _pickFiles = [];
-  List<SelfFileEntity> get pickedFiles => _pickFiles;
-
-  Future<void> addPickedFile(SelfFileEntity value,
-      {bool update = false}) async {
-    if (!_pickFiles.any((ele) => ele.entity.path == value.entity.path))
-      _pickFiles.add(value);
-    if (update) notifyListeners();
-  }
-
-  Future<void> removePickedFile(SelfFileEntity value,
-      {bool update = false}) async {
-    _pickFiles.removeWhere((ele) => ele.entity.path == value.entity.path);
-    if (update) notifyListeners();
-  }
-
-  bool? hasPickFile(String path) {
-    return _pickFiles.any((ele) => ele.entity.path == path);
-  }
-
-  Future<void> clearPickedFiles({bool update = false}) async {
-    _pickFiles = [];
-    if (update) notifyListeners();
   }
 
   ///[f]

@@ -48,8 +48,8 @@ class AquaWrapper extends StatefulWidget {
 }
 
 class _AquaWrapperState extends State<AquaWrapper> {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
   late bool _envPrepared;
 
   late StreamSubscription<ConnectivityResult> _connectSubscription;
@@ -70,9 +70,9 @@ class _AquaWrapperState extends State<AquaWrapper> {
 
   // Future<void> _setInternalIp(ConnectivityResult? result) async {
   //   try {
-  //     if (_globalModel.enableConnect != null) {
+  //     if (_gm.enableConnect != null) {
   //       String internalIp = await Connectivity().getWifiIP() ?? LOOPBACK_ADDR;
-  //       await _globalModel.setInternalIp(internalIp);
+  //       await _gm.setInternalIp(internalIp);
   //     }
   //   } catch (e) {}
   // }
@@ -80,8 +80,8 @@ class _AquaWrapperState extends State<AquaWrapper> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
     await _preparedAppEnv().then((value) {
       if (!_envPrepared) {
         setState(() {
@@ -95,19 +95,19 @@ class _AquaWrapperState extends State<AquaWrapper> {
   void dispose() {
     super.dispose();
     _connectSubscription.cancel();
-    _globalModel.setAppInit(false);
+    _gm.setAppInit(false);
   }
 
   Future<void> _preparedAppEnv() async {
     bool hasError = false;
-    await _globalModel.init().catchError((e, s) async {
+    await _gm.init().catchError((e, s) async {
       hasError = true;
       await Sentry.captureException(
         e,
         stackTrace: s,
       );
     });
-    await _themeModel.init().catchError((e, s) async {
+    await _tm.init().catchError((e, s) async {
       hasError = true;
       await Sentry.captureException(
         e,
@@ -123,7 +123,7 @@ class _AquaWrapperState extends State<AquaWrapper> {
   @override
   Widget build(BuildContext context) {
     log("root render ======");
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
     return _envPrepared
         ? AnnotatedRegion<SystemUiOverlayStyle>(
@@ -143,7 +143,7 @@ class _AquaWrapperState extends State<AquaWrapper> {
                 const Locale('zh'),
                 const Locale('en'),
               ],
-              locale: Locale(_globalModel.language ?? 'zh'),
+              locale: Locale(_gm.language ?? 'zh'),
               navigatorObservers: [
                 SentryNavigatorObserver(),
               ],
@@ -158,7 +158,7 @@ class _AquaWrapperState extends State<AquaWrapper> {
               ),
               // home: HomePage(),
               home: DoublePop(
-                globalModel: _globalModel,
+                globalModel: _gm,
                 child: HomePage(),
               ),
             ),

@@ -453,38 +453,38 @@ class _CupertinoNavigationBarState extends State<CupertinoNavigationBar> {
       ),
     );
 
-    if (!widget.transitionBetweenRoutes || !_isTransitionable(context)) {
-      // Lint ignore to maintain backward compatibility.
-      return navBar;
-    }
+    return navBar;
+    // if (!widget.transitionBetweenRoutes || !_isTransitionable(context)) {
+    //   // Lint ignore to maintain backward compatibility.
+    // }
 
-    return Builder(
-      // Get the context that might have a possibly changed CupertinoTheme.
-      builder: (BuildContext context) {
-        return Hero(
-          tag: widget.heroTag == _defaultHeroTag
-              ? _HeroTag(Navigator.of(context))
-              : widget.heroTag,
-          createRectTween: _linearTranslateWithLargestRectSizeTween,
-          placeholderBuilder: _navBarHeroLaunchPadBuilder,
-          flightShuttleBuilder: _navBarHeroFlightShuttleBuilder,
-          transitionOnUserGestures: true,
-          child: _TransitionableNavigationBar(
-            componentsKeys: keys,
-            backgroundColor: backgroundColor,
-            backButtonTextStyle:
-                CupertinoTheme.of(context).textTheme.navActionTextStyle,
-            titleTextStyle:
-                CupertinoTheme.of(context).textTheme.navTitleTextStyle,
-            largeTitleTextStyle: null,
-            border: widget.border,
-            hasUserMiddle: widget.middle != null,
-            largeExpanded: false,
-            child: navBar,
-          ),
-        );
-      },
-    );
+    // return Builder(
+    //   // Get the context that might have a possibly changed CupertinoTheme.
+    //   builder: (BuildContext context) {
+    //     return Hero(
+    //       tag: widget.heroTag == _defaultHeroTag
+    //           ? _HeroTag(Navigator.of(context))
+    //           : widget.heroTag,
+    //       createRectTween: _linearTranslateWithLargestRectSizeTween,
+    //       placeholderBuilder: _navBarHeroLaunchPadBuilder,
+    //       flightShuttleBuilder: _navBarHeroFlightShuttleBuilder,
+    //       transitionOnUserGestures: true,
+    //       child: _TransitionableNavigationBar(
+    //         componentsKeys: keys,
+    //         backgroundColor: backgroundColor,
+    //         backButtonTextStyle:
+    //             CupertinoTheme.of(context).textTheme.navActionTextStyle,
+    //         titleTextStyle:
+    //             CupertinoTheme.of(context).textTheme.navTitleTextStyle,
+    //         largeTitleTextStyle: null,
+    //         border: widget.border,
+    //         hasUserMiddle: widget.middle != null,
+    //         largeExpanded: false,
+    //         child: navBar,
+    //       ),
+    //     );
+    //   },
+    // );
   }
 }
 
@@ -847,36 +847,36 @@ class _LargeTitleNavigationBarSliverDelegate
       ),
     );
 
-    if (!transitionBetweenRoutes || !_isTransitionable(context)) {
-      return navBar;
-    }
+    // if (!transitionBetweenRoutes || !_isTransitionable(context)) {
+    return navBar;
+    // }
 
-    return Hero(
-      tag: heroTag == _defaultHeroTag
-          ? _HeroTag(Navigator.of(context))
-          : heroTag,
-      createRectTween: _linearTranslateWithLargestRectSizeTween,
-      flightShuttleBuilder: _navBarHeroFlightShuttleBuilder,
-      placeholderBuilder: _navBarHeroLaunchPadBuilder,
-      transitionOnUserGestures: true,
-      // This is all the way down here instead of being at the top level of
-      // CupertinoSliverNavigationBar like CupertinoNavigationBar because it
-      // needs to wrap the top level RenderBox rather than a RenderSliver.
-      child: _TransitionableNavigationBar(
-        componentsKeys: keys,
-        backgroundColor:
-            CupertinoDynamicColor.resolve(backgroundColor, context),
-        backButtonTextStyle:
-            CupertinoTheme.of(context).textTheme.navActionTextStyle,
-        titleTextStyle: CupertinoTheme.of(context).textTheme.navTitleTextStyle,
-        largeTitleTextStyle:
-            CupertinoTheme.of(context).textTheme.navLargeTitleTextStyle,
-        border: border,
-        hasUserMiddle: userMiddle != null,
-        largeExpanded: showLargeTitle,
-        child: navBar,
-      ),
-    );
+    // return Hero(
+    //   tag: heroTag == _defaultHeroTag
+    //       ? _HeroTag(Navigator.of(context))
+    //       : heroTag,
+    //   createRectTween: _linearTranslateWithLargestRectSizeTween,
+    //   flightShuttleBuilder: _navBarHeroFlightShuttleBuilder,
+    //   placeholderBuilder: _navBarHeroLaunchPadBuilder,
+    //   transitionOnUserGestures: true,
+    //   // This is all the way down here instead of being at the top level of
+    //   // CupertinoSliverNavigationBar like CupertinoNavigationBar because it
+    //   // needs to wrap the top level RenderBox rather than a RenderSliver.
+    //   child: _TransitionableNavigationBar(
+    //     componentsKeys: keys,
+    //     backgroundColor:
+    //         CupertinoDynamicColor.resolve(backgroundColor, context),
+    //     backButtonTextStyle:
+    //         CupertinoTheme.of(context).textTheme.navActionTextStyle,
+    //     titleTextStyle: CupertinoTheme.of(context).textTheme.navTitleTextStyle,
+    //     largeTitleTextStyle:
+    //         CupertinoTheme.of(context).textTheme.navLargeTitleTextStyle,
+    //     border: border,
+    //     hasUserMiddle: userMiddle != null,
+    //     largeExpanded: showLargeTitle,
+    //     child: navBar,
+    //   ),
+    // );
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/model/select_file_model.dart';
 import 'package:aqua/plugin/archive/archive.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,8 +47,9 @@ class SettingPage extends StatefulWidget {
 }
 
 class SettingPageState extends State<SettingPage> {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
+  late SelectFileModel _sfm;
   late bool _willUpdate;
   late Map _mSetting;
   late String _version;
@@ -67,12 +69,11 @@ class SettingPageState extends State<SettingPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
+    _sfm = Provider.of<SelectFileModel>(context);
 
-    _mSetting = _globalModel.gWebData['mobile'] != null
-        ? _globalModel.gWebData['mobile']
-        : {};
+    _mSetting = _gm.gWebData['mobile'] != null ? _gm.gWebData['mobile'] : {};
     if (_updateLocker) {
       _updateLocker = false;
       await checkUpdate();
@@ -82,9 +83,9 @@ class SettingPageState extends State<SettingPage> {
 
   Future setTheme(bool val) async {
     if (val) {
-      _themeModel.setTheme(DARK_THEME);
+      _tm.setTheme(DARK_THEME);
     } else {
-      _themeModel.setTheme(LIGHT_THEME);
+      _tm.setTheme(LIGHT_THEME);
     }
   }
 
@@ -108,10 +109,10 @@ class SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
     List<Widget> settingList = [
-      if (!_globalModel.isPurchased)
+      if (!_gm.isPurchased)
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -140,7 +141,7 @@ class SettingPageState extends State<SettingPage> {
             ),
           ],
         ),
-      if (_globalModel.username != null)
+      if (_gm.username != null)
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -150,7 +151,7 @@ class SettingPageState extends State<SettingPage> {
             ListTile(
               title: ThemedText(S.of(context)!.username),
               subtitle: ThemedText(
-                '${_globalModel.username}',
+                '${_gm.username}',
                 small: true,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
@@ -162,7 +163,7 @@ class SettingPageState extends State<SettingPage> {
                     title: S.of(context)!.exit,
                     tip: S.of(context)!.exitTip,
                     onOk: () async {
-                      await _globalModel.logout();
+                      await _gm.logout();
                     },
                     onCancel: () {},
                   );
@@ -181,7 +182,7 @@ class SettingPageState extends State<SettingPage> {
             title: ThemedText(S.of(context)!.dark),
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: AquaSwitch(
-              value: _themeModel.isDark,
+              value: _tm.isDark,
               onChanged: (val) async {
                 await setTheme(val);
               },
@@ -194,8 +195,7 @@ class SettingPageState extends State<SettingPage> {
             contentPadding: EdgeInsets.only(left: 15, right: 10),
             trailing: Container(
               width: 42,
-              child: ThemedText(_themeModel.isDark ? 'dark' : 'light',
-                  small: true),
+              child: ThemedText(_tm.isDark ? 'dark' : 'light', small: true),
             ),
           ),
         ],
@@ -210,7 +210,7 @@ class SettingPageState extends State<SettingPage> {
             onTap: () {},
             child: ListTile(
               title: ThemedText(S.of(context)!.savePath),
-              subtitle: ThemedText('${_globalModel.staticUploadSavePath}'),
+              subtitle: ThemedText('${_gm.staticUploadSavePath}'),
               contentPadding: EdgeInsets.only(left: 15, right: 10),
               trailing: CupertinoButton(
                 child: NoResizeText('更换'),
@@ -218,8 +218,8 @@ class SettingPageState extends State<SettingPage> {
                   showSingleTextFieldModal(
                     context,
                     title: S.of(context)!.savePath,
-                    initText: _globalModel.storageRootPath + '/',
-                    placeholder: '以 ${_globalModel.storageRootPath}/ 开头',
+                    initText: _gm.storageRootPath + '/',
+                    placeholder: '以 ${_gm.storageRootPath}/ 开头',
                     onOk: (String? val) async {
                       try {
                         if (val != null) {
@@ -228,7 +228,7 @@ class SettingPageState extends State<SettingPage> {
                         if (!Directory(val!).existsSync()) {
                           await Directory(val).create(recursive: true);
                         }
-                        await _globalModel.setStaticUploadSavePath(val.trim());
+                        await _gm.setStaticUploadSavePath(val.trim());
                       } catch (e, s) {
                         await Sentry.captureException(
                           e,
@@ -257,8 +257,9 @@ class SettingPageState extends State<SettingPage> {
                   maintainState: false,
                   builder: (BuildContext context) {
                     return FileManagerPage(
-                      appointPath: _globalModel.storageRootPath,
+                      appointPath: _gm.storageRootPath,
                       selectLimit: 1,
+                      displayLeading: false,
                       mode: FileManagerMode.pick,
                       // 这里是FileManager的context
                       trailingBuilder: (fileCtx) {
@@ -267,19 +268,19 @@ class SettingPageState extends State<SettingPage> {
                           child: InkWell(
                             onTap: () async {
                               MixUtils.safePop(fileCtx);
-                              if (!_globalModel.isPurchased) {
+                              if (!_gm.isPurchased) {
                                 Fluttertoast.showToast(
                                     msg: '请先购买 "IOS管理器" for developer');
                                 return;
                               }
 
-                              if (_globalModel.pickedFiles.isEmpty) {
+                              if (_sfm.pickedFiles.isEmpty) {
                                 Fluttertoast.showToast(msg: '请先选中资源');
                                 return;
                               }
-                              SelfFileEntity file = _globalModel.pickedFiles[0];
+                              SelfFileEntity file = _sfm.pickedFiles[0];
 
-                              _globalModel.clearPickedFiles();
+                              _sfm.clearPickedFiles();
 
                               CodeSrvUtils cutils = await CodeSrvUtils().init();
                               await cutils.rmAllResource().catchError((err) {
@@ -393,10 +394,9 @@ class SettingPageState extends State<SettingPage> {
               await showSingleTextFieldModal(
                 context,
                 title: S.of(context)!.webDavServer,
-                placeholder: _globalModel.webDavAddr,
+                placeholder: _gm.webDavAddr,
                 onOk: (val) {
-                  _globalModel
-                      .setWebDavAddr(val.replaceFirst(RegExp(r'/*$'), ''));
+                  _gm.setWebDavAddr(val.replaceFirst(RegExp(r'/*$'), ''));
                   Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () {},
@@ -405,9 +405,9 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
               trailing: Icon(Icons.hdr_weak, color: themeData.itemFontColor),
               title: ThemedText(S.of(context)!.webDavServer),
-              subtitle: ThemedText(_globalModel.webDavAddr == null
+              subtitle: ThemedText(_gm.webDavAddr == null
                   ? S.of(context)!.notSetting
-                  : _globalModel.webDavAddr!),
+                  : _gm.webDavAddr!),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
           ),
@@ -416,9 +416,9 @@ class SettingPageState extends State<SettingPage> {
               showSingleTextFieldModal(
                 context,
                 title: S.of(context)!.webDavAccount,
-                placeholder: _globalModel.webDavUsername,
+                placeholder: _gm.webDavUsername,
                 onOk: (val) {
-                  _globalModel.setWebDavUsername(val);
+                  _gm.setWebDavUsername(val);
                   Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () {},
@@ -430,9 +430,9 @@ class SettingPageState extends State<SettingPage> {
                 S.of(context)!.webDavAccount,
               ),
               subtitle: ThemedText(
-                _globalModel.webDavUsername == null
+                _gm.webDavUsername == null
                     ? S.of(context)!.notSetting
-                    : _globalModel.webDavUsername!,
+                    : _gm.webDavUsername!,
               ),
               contentPadding: EdgeInsets.only(left: 15, right: 25),
             ),
@@ -443,7 +443,7 @@ class SettingPageState extends State<SettingPage> {
                 context,
                 title: S.of(context)!.password,
                 onOk: (val) {
-                  _globalModel.setWebDavPwd(val);
+                  _gm.setWebDavPwd(val);
                   Fluttertoast.showToast(msg: S.of(context)!.setSuccess);
                 },
                 onCancel: () {},
@@ -452,10 +452,9 @@ class SettingPageState extends State<SettingPage> {
             child: ListTile(
               title: ThemedText(S.of(context)!.password),
               subtitle: ThemedText(
-                _globalModel.webDavPwd == null
+                _gm.webDavPwd == null
                     ? S.of(context)!.notSetting
-                    : List.filled(_globalModel.webDavPwd!.length, null,
-                            growable: false)
+                    : List.filled(_gm.webDavPwd!.length, null, growable: false)
                         .map((e) => '*')
                         .toList()
                         .join(''),
@@ -497,7 +496,7 @@ class SettingPageState extends State<SettingPage> {
                   ),
                 ),
                 onSelected: (index, data) async {
-                  _globalModel.setLanguage(data['code']);
+                  _gm.setLanguage(data['code']);
                 },
               );
             },
@@ -540,8 +539,8 @@ class SettingPageState extends State<SettingPage> {
             onTap: () async {
               await showUpdateModal(
                 context,
-                _themeModel,
-                _globalModel.gWebData,
+                _tm,
+                _gm.gWebData,
                 tipRemember: false,
               );
             },

@@ -30,8 +30,8 @@ class PurchasePage extends StatefulWidget {
 }
 
 class _PurchasePageState extends State<PurchasePage> {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
   late Map _qrcodeData;
   late bool _mutex;
 
@@ -45,9 +45,9 @@ class _PurchasePageState extends State<PurchasePage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
-    if (_globalModel.username != null) {
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
+    if (_gm.username != null) {
       if (_mutex) {
         _mutex = false;
         _qrcodeData = await _fetchQrcode();
@@ -114,17 +114,17 @@ class _PurchasePageState extends State<PurchasePage> {
                 dynamic data = value.data;
                 if (data['data'] != null) {
                   if (data['data']['purchased']) {
-                    _globalModel.setPurchase(true);
+                    _gm.setPurchase(true);
                     Fluttertoast.showToast(msg: '购买成功, 即将前往下载pc端');
 
                     MixUtils.safePop(context);
 
                     Timer(Duration(seconds: 1), () async {
                       String url;
-                      if (_globalModel.gWebData['pc'] == null) {
+                      if (_gm.gWebData['pc'] == null) {
                         url = PC_BAK_DOWNLOAD_URL;
                       } else {
-                        url = _globalModel.gWebData['pc']['latest']['url'];
+                        url = _gm.gWebData['pc']['latest']['url'];
                       }
 
                       if (await canLaunch(url)) {
@@ -194,7 +194,7 @@ class _PurchasePageState extends State<PurchasePage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -245,8 +245,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                     ThemedText('for developer', fontSize: 12),
                                   ],
                                 ),
-                                ThemedText(
-                                    _globalModel.isPurchased ? '已购买' : '暂未购买',
+                                ThemedText(_gm.isPurchased ? '已购买' : '暂未购买',
                                     small: true),
                               ],
                             )
@@ -280,7 +279,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                   ),
                                   CupertinoButton(
                                     onPressed: () async {
-                                      await _globalModel.setPurchase(true);
+                                      await _gm.setPurchase(true);
                                       Fluttertoast.showToast(
                                           msg: '无限试用 但每次使用都需要重新操作');
                                     },
@@ -348,7 +347,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                     MainAxisAlignment.spaceAround,
                                 children: [
                                   payButton(),
-                                  _followBilibiliButton(_themeModel)
+                                  _followBilibiliButton(_tm)
                                 ],
                               ),
                               SizedBox(height: 10),
@@ -372,7 +371,7 @@ class _PurchasePageState extends State<PurchasePage> {
                           SizedBox(height: 10),
                           activeButton(context),
                         ],
-                        if (_globalModel.username == null) ...[
+                        if (_gm.username == null) ...[
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -419,7 +418,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                           // 如果注册 存jwt 否则 二位码无法请求
                                           await Store.setString(LOGIN_TOKEN,
                                               data['data']['access_token']);
-                                          await _globalModel.setUsernameGlobal(
+                                          await _gm.setUsernameGlobal(
                                               data['data']['username']);
                                         }
                                       }).catchError((err) {

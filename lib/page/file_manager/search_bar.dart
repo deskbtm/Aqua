@@ -22,7 +22,7 @@ class SearchBar extends StatefulWidget {
 class _SearchBarState extends State<SearchBar> {
   TextEditingController _textEditingController = TextEditingController();
   FocusNode _focusNode = FocusNode();
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
   bool _recursiveSearch = false;
 
   @override
@@ -46,7 +46,7 @@ class _SearchBarState extends State<SearchBar> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
   }
 
   void setRecursiveSearch() {
@@ -57,7 +57,7 @@ class _SearchBarState extends State<SearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
     return Container(
       margin: EdgeInsets.only(left: 5, right: 5, top: 6, bottom: 5),

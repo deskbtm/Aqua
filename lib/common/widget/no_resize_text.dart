@@ -60,17 +60,17 @@ class ThemedText extends StatefulWidget {
 }
 
 class ThemedTextState extends State<ThemedText> {
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic themeData = _themeModel.themeData;
+    dynamic themeData = _tm.themeData;
 
     return Container(
       constraints: BoxConstraints(maxWidth: widget.maxWidth),

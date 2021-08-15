@@ -1,11 +1,11 @@
-import 'dart:io';
 import 'dart:ui';
 
+import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/model/select_file_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:aqua/common/theme.dart';
 import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/common/widget/static_utils.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:aqua/common/widget/cloud_header.dart';
@@ -16,26 +16,21 @@ import 'package:aqua/page/file_manager/file_operation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:aqua/page/file_manager/file_list_tile.dart';
 import 'package:aqua/common/widget/images.dart';
-import 'package:aqua/model/global_model.dart';
 import 'package:provider/provider.dart';
-import 'fs_ui_utils.dart';
 import 'fs_utils.dart';
 
 class FileList extends StatefulWidget {
-  final List<SelfFileEntity>? list;
-  final Function(SelfFileEntity)? onDirTileTap;
-  final FileManagerMode mode;
-
-  final Color? itemBgColor;
-
-  final VoidCallback? onTapEmpty;
-
-  // final FileManagerModel fileModel;
-
-  final Function(Directory) onChangeCurrentDir;
-  final Function(bool) onChangePopLocker;
-  final int? selectLimit;
   final bool first;
+  final int? selectLimit;
+  final Color? itemBgColor;
+  final List<SelfFileEntity>? list;
+
+  final VoidCallback? onScorll;
+  final Function()? onItemHozDrag;
+  final VoidCallback? onTapEmpty;
+  final Function(bool) onChangePopLocker;
+  final Function(SelfFileEntity)? onDirTileTap;
+  final Function()? onItemLongPressStart;
 
   const FileList({
     Key? key,
@@ -44,12 +39,11 @@ class FileList extends StatefulWidget {
     this.onDirTileTap,
     this.selectLimit,
     required this.list,
-    required this.mode,
     required this.first,
-    required this.onChangeCurrentDir,
     required this.onChangePopLocker,
-
-    // required this.fileModel,
+    this.onScorll,
+    this.onItemHozDrag,
+    this.onItemLongPressStart,
   }) : super(key: key);
 
   @override
@@ -59,12 +53,10 @@ class FileList extends StatefulWidget {
 }
 
 class _FileListState extends State<FileList> {
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
   late FileOperation _fileOperation;
-  late GlobalModel _globalModel;
   EasyRefreshController _controller = EasyRefreshController();
   ScrollController _scrollController = ScrollController();
-  late FileManagerModel _fmModel;
 
   @override
   void initState() {
@@ -73,18 +65,18 @@ class _FileListState extends State<FileList> {
     _fileOperation = FileOperation(
       context: context,
       selectLimit: widget.selectLimit,
-      mode: widget.mode,
       left: widget.first,
     );
 
-    _globalModel = Provider.of<GlobalModel>(context, listen: false);
+    if (widget.onScorll != null) {
+      _scrollController.addListener(widget.onScorll!);
+    }
   }
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _fmModel = Provider.of<FileManagerModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
   }
 
   @override
@@ -94,18 +86,36 @@ class _FileListState extends State<FileList> {
     _scrollController.dispose();
   }
 
-  AquaTheme getTheme() {
-    return _themeModel.themeData;
+  Future<void> _handleHozDragItem(
+      BuildContext context, SelfFileEntity file, double dir) async {
+    SelectFileModel sfm = Provider.of<SelectFileModel>(context, listen: false);
+    FileManagerModel fm = Provider.of<FileManagerModel>(context, listen: false);
+    if (widget.onItemHozDrag != null) {
+      widget.onItemHozDrag!();
+    }
+    if (dir == 1) {
+      if (fm.visitMode == FileManagerMode.pick) {
+        await sfm.addPickedFile(file, update: true);
+      } else {
+        await sfm.addSelectedFile(file, update: true);
+      }
+    } else if (dir == -1) {
+      if (fm.visitMode == FileManagerMode.pick) {
+        await sfm.removePickedFile(file, update: true);
+      } else {
+        await sfm.removeSelectedFile(file, update: true);
+      }
+    }
   }
 
-  Directory getDirectory() {
-    return widget.first && !_fmModel.isRelativeRoot
-        ? _fmModel.currentDir!.parent
-        : _fmModel.currentDir!;
+  AquaTheme getTheme() {
+    return _tm.themeData;
   }
 
   Future<void> _showOptionsWhenPressedEmpty(BuildContext context) async {
-    bool sharedNotEmpty = _globalModel.selectedFiles.isNotEmpty;
+    SelectFileModel sfm = Provider.of<SelectFileModel>(context, listen: false);
+
+    bool sharedNotEmpty = sfm.selectedFiles.isNotEmpty;
     showCupertinoModal(
       context: context,
       filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
@@ -116,19 +126,19 @@ class _FileListState extends State<FileList> {
               ActionButton(
                 content: S.of(context)!.archiveHere,
                 onTap: () async {
-                  await _fileOperation.showCreateArchiveModal(
-                    context,
-                    mounted: mounted,
-                  );
+                  // await _fileOperation.showCreateArchiveModal(
+                  //   context,
+                  //   mounted: mounted,
+                  // );
                 },
               ),
             if (sharedNotEmpty)
               ActionButton(
                 content: S.of(context)!.moveHere,
                 onTap: () async {
-                  await _fileOperation.handleMove(
-                    mounted: mounted,
-                  );
+                  // await _fileOperation.handleMove(
+                  //   mounted: mounted,
+                  // );
                 },
               ),
           ],
@@ -137,26 +147,26 @@ class _FileListState extends State<FileList> {
               ActionButton(
                 content: S.of(context)!.copyHere,
                 onTap: () async {
-                  await _fileOperation.copyModal(
-                    context,
-                    mounted: mounted,
-                  );
+                  // await _fileOperation.copyModal(
+                  //   context,
+                  //   mounted: mounted,
+                  // );
                 },
               ),
               ActionButton(
                 content: S.of(context)!.extractHere,
                 onTap: () async {
-                  await _fileOperation.handleExtractArchive(
-                    context,
-                    mounted: mounted,
-                  );
+                  // await _fileOperation.handleExtractArchive(
+                  //   context,
+                  //   mounted: mounted,
+                  // );
                 },
               ),
             ],
             ActionButton(
               content: S.of(context)!.create,
               onTap: () async {
-                await _fileOperation.showCreateFileModal(context);
+                // await _fileOperation.showCreateFileModal(context);
               },
             ),
           ],
@@ -183,11 +193,14 @@ class _FileListState extends State<FileList> {
   }
 
   Future<void> _handleLongPressStart(SelfFileEntity file) async {
-    return _fileOperation.showFileActionModal(
-      file: file,
-      onChangeCurrentDir: widget.onChangeCurrentDir,
-      mounted: mounted,
-    );
+    if (widget.onItemLongPressStart != null) {
+      widget.onItemLongPressStart!();
+    }
+    // return _fileOperation.showFileActionModal(
+    //   file: file,
+    //   onChangeCurrentDir: widget.onChangeCurrentDir,
+    //   mounted: mounted,
+    // );
   }
 
   Widget validFileList(List<SelfFileEntity> list) {
@@ -197,12 +210,16 @@ class _FileListState extends State<FileList> {
               await _showOptionsWhenPressedEmpty(context);
             },
             onTap: widget.onTapEmpty,
-            child: EmptyBoard(),
+            child: Container(
+              color: Colors.transparent,
+              child: EmptyBoard(),
+            ),
           )
         : GestureDetector(
             onLongPressStart: (details) async {
               await _showOptionsWhenPressedEmpty(context);
             },
+            onTap: widget.onTapEmpty,
             child: AnimationLimiter(
               child: CupertinoScrollbar(
                 controller: _scrollController,
@@ -221,7 +238,6 @@ class _FileListState extends State<FileList> {
                             path: file.path,
                             title: file.filename,
                             subTitle: file.humanModified,
-                            mode: widget.mode,
                             leading: leading,
                             height: 72,
                             titleStyle:
@@ -240,9 +256,8 @@ class _FileListState extends State<FileList> {
                               await _handleLongPressStart(file);
                             },
                             onTap: () => _handleTileTap(file, index, list),
-                            onHozDrag: (dir) async {
-                              await FsUIUtils.handleHozDragItem(
-                                  context, file, dir);
+                            onItemHozDrag: (dir) async {
+                              await _handleHozDragItem(context, file, dir);
                             },
                           );
                         },

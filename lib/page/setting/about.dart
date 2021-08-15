@@ -23,8 +23,8 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
   late String _version;
   late bool _locker;
   late String _qqGroupNumber;
@@ -42,16 +42,14 @@ class _AboutPageState extends State<AboutPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
 
-    if (_globalModel.gWebData.isNotEmpty) {
-      _authorEmail = _globalModel.gWebData['mobile']['config']['author_email'];
-      _qqGroupNumber =
-          _globalModel.gWebData['mobile']['config']['qq_group_num'];
-      _qqGroupKey = _globalModel.gWebData['mobile']['config']['qq_group_key'];
-      _authorAvatar =
-          _globalModel.gWebData['mobile']['config']['author_avatar'];
+    if (_gm.gWebData.isNotEmpty) {
+      _authorEmail = _gm.gWebData['mobile']['config']['author_email'];
+      _qqGroupNumber = _gm.gWebData['mobile']['config']['qq_group_num'];
+      _qqGroupKey = _gm.gWebData['mobile']['config']['qq_group_key'];
+      _authorAvatar = _gm.gWebData['mobile']['config']['author_avatar'];
     } else {
       _authorEmail = DEFAULT_AUTHOR_EMAIL;
       _qqGroupNumber = DEFAULT_QQ_GROUP_NUM;
@@ -70,7 +68,7 @@ class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:aqua/common/widget/no_resize_text.dart';
 import 'package:aqua/common/widget/switch.dart';
 import 'package:aqua/constant/constant_var.dart';
@@ -18,8 +20,8 @@ class LeftQuickBoard extends StatefulWidget {
 }
 
 class LeftQuickBoardState extends State<LeftQuickBoard> {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
 
   @override
   void initState() {
@@ -29,12 +31,14 @@ class LeftQuickBoardState extends State<LeftQuickBoard> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    log('left quick board painting', name: 'Paint');
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         automaticallyImplyLeading: false,

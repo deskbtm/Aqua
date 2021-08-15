@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
@@ -41,9 +42,9 @@ class RightQuickBoard extends StatefulWidget {
 
 class RightQuickBoardState extends State<RightQuickBoard>
     with AutomaticKeepAliveClientMixin {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
-  late SelectFileModel _selectFileModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
+  late SelectFileModel _sfm;
 
   HttpServer? _server;
   late bool _shareSwitch;
@@ -59,16 +60,16 @@ class RightQuickBoardState extends State<RightQuickBoard>
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
-    _selectFileModel = Provider.of<SelectFileModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
+    _sfm = Provider.of<SelectFileModel>(context);
   }
 
   Future<void> showDownloadResourceModal(BuildContext context) async {
     await createProotEnv(
       context,
-      themeProvider: _themeModel,
-      commonProvider: _globalModel,
+      themeProvider: _tm,
+      commonProvider: _gm,
       onSuccess: () {
         Fluttertoast.showToast(msg: S.of(context)!.installSuccess);
         MixUtils.safePop(context);
@@ -94,28 +95,28 @@ class RightQuickBoardState extends State<RightQuickBoard>
 
   Future<void> createStaticServer() async {
     try {
-      String ip = _globalModel.internalIp ?? LOOPBACK_ADDR;
+      String ip = _gm.internalIp ?? LOOPBACK_ADDR;
 
-      int port = int.parse(_globalModel.filePort ?? FILE_DEFAULT_PORT);
-      String? savePath = _globalModel.staticUploadSavePath;
+      int port = int.parse(_gm.filePort ?? FILE_DEFAULT_PORT);
+      String? savePath = _gm.staticUploadSavePath;
       FutureOr<Response> Function(Request) handlerFunc;
       String addr = '$ip:$port';
 
-      if (_globalModel.selectedFiles.isNotEmpty) {
-        SelfFileEntity first = _globalModel.selectedFiles.first;
+      if (_sfm.selectedFiles.isNotEmpty) {
+        SelfFileEntity first = _sfm.selectedFiles.first;
 
         if (first.isDir) {
           handlerFunc = createDirHandler(
             first.entity.path,
-            isDark: _themeModel.isDark,
+            isDark: _tm.isDark,
             uploadSavePath: '/',
             serverUrl: addr,
             onUploadResult: _uploadNotification,
           );
         } else {
           handlerFunc = createFilesHandler(
-            _globalModel.selectedFiles.map((e) => e.entity.path).toList(),
-            isDark: _themeModel.isDark,
+            _sfm.selectedFiles.map((e) => e.entity.path).toList(),
+            isDark: _tm.isDark,
             serverUrl: addr,
             uploadSavePath: '/',
             onUploadResult: _uploadNotification,
@@ -123,8 +124,8 @@ class RightQuickBoardState extends State<RightQuickBoard>
         }
       } else {
         handlerFunc = createDirHandler(
-          _globalModel.storageRootPath,
-          isDark: _themeModel.isDark,
+          _gm.storageRootPath,
+          isDark: _tm.isDark,
           serverUrl: addr,
           uploadSavePath: '/',
           onUploadResult: _uploadNotification,
@@ -189,7 +190,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
         Process result = await utils
             .runServer(
           codeAddr,
-          pwd: _globalModel.codeSrvPwd,
+          pwd: _gm.codeSrvPwd,
         )
             .catchError((err) {
           Fluttertoast.showToast(msg: S.of(context)!.setFail);
@@ -241,12 +242,13 @@ class RightQuickBoardState extends State<RightQuickBoard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    log('right quick board painting', name: 'Paint');
 
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
-    String? internalIp = _globalModel.internalIp;
-    String filePort = _globalModel.filePort ?? FILE_DEFAULT_PORT;
-    String codeSrvPort = _globalModel.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
+    String? internalIp = _gm.internalIp;
+    String filePort = _gm.filePort ?? FILE_DEFAULT_PORT;
+    String codeSrvPort = _gm.codeSrvPort ?? CODE_SERVER_DEFAULT_PORT;
     String fileAddr = '$internalIp:$filePort';
     String codeAddr = '$internalIp:$codeSrvPort';
 
@@ -294,7 +296,7 @@ class RightQuickBoardState extends State<RightQuickBoard>
             ),
             Expanded(
               flex: 1,
-              child: _selectFileModel.selectedFiles.isEmpty
+              child: _sfm.selectedFiles.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -311,17 +313,16 @@ class RightQuickBoardState extends State<RightQuickBoard>
                     )
                   : ListView.builder(
                       physics: BouncingScrollPhysics(),
-                      itemCount: _selectFileModel.selectedFiles.length,
+                      itemCount: _sfm.selectedFiles.length,
                       itemBuilder: (BuildContext context, int index) {
                         SelfFileEntity file =
-                            _selectFileModel.selectedFiles.elementAt(index);
+                            _sfm.selectedFiles.elementAt(index);
 
                         Widget previewIcon = getPreviewIcon(context, file);
                         return Dismissible(
                           key: ObjectKey(file),
                           onDismissed: (direction) async {
-                            await _selectFileModel.removeSelectedFile(file,
-                                update: true);
+                            await _sfm.removeSelectedFile(file, update: true);
                           },
                           child: SimpleFileListTile(
                             title: file.filename,

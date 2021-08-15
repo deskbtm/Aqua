@@ -1,36 +1,77 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
-
-import 'package:fluttertoast/fluttertoast.dart';
-
-import 'fs_utils.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:aqua/page/file_manager/path_breadcrumb.dart';
+import 'package:flutter/services.dart';
+import 'package:unicons/unicons.dart';
+import 'package:provider/provider.dart';
+import 'package:aqua/model/model.dart';
+import 'package:aqua/common/theme.dart';
+import 'package:aqua/model/associate_view_model.dart';
+import 'package:aqua/model/independent_view_model.dart';
+import 'package:aqua/model/select_file_model.dart';
+import 'package:aqua/page/file_manager/associate_view.dart';
+import 'package:aqua/page/file_manager/independent_view.dart';
+import 'package:aqua/page/file_manager/nav_bar.dart';
 import 'package:aqua/external/menu/menu.dart';
 import 'package:aqua/page/file_manager/search_bar.dart';
-import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:aqua/common/widget/inner_drawer.dart';
 import 'package:aqua/common/widget/no_resize_text.dart';
-import 'package:aqua/model/file_manager_model.dart';
-import 'package:aqua/page/file_manager/file_list.dart';
-import 'package:aqua/model/global_model.dart';
-import 'package:aqua/model/theme_model.dart';
-import 'package:aqua/common/theme.dart';
-import 'package:provider/provider.dart';
-import 'package:unicons/unicons.dart';
-import 'package:aqua/page/file_manager/path_breadcrumb.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter/cupertino.dart' hide CupertinoNavigationBar;
 
-class FileManagerPage extends StatefulWidget {
+class FileManager extends StatelessWidget {
   final String? appointPath;
   final Widget Function(BuildContext)? trailingBuilder;
   final int? selectLimit;
   final FileManagerMode? mode;
   final GlobalKey<InnerDrawerState>? innerDrawerKey;
+  final bool displayLeading;
 
-  ///  * [appointPath] 默认外存的根目录
+  const FileManager({
+    Key? key,
+    this.appointPath,
+    this.selectLimit = 1,
+    this.trailingBuilder,
+    this.mode = FileManagerMode.normal,
+    this.innerDrawerKey,
+    this.displayLeading = true,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<FileManagerModel>(
+          create: (_) => FileManagerModel(),
+        ),
+        ChangeNotifierProvider.value(
+          value: selectFileModel,
+        ),
+      ],
+      child: FileManagerPage(
+        key: key,
+        innerDrawerKey: innerDrawerKey,
+        appointPath: appointPath,
+        selectLimit: selectLimit,
+        trailingBuilder: trailingBuilder,
+        mode: mode,
+        displayLeading: displayLeading,
+      ),
+    );
+  }
+}
+
+class FileManagerPage extends StatefulWidget {
+  ///   指定目录
+  final String? appointPath;
+  final Widget Function(BuildContext)? trailingBuilder;
+  final int? selectLimit;
+  final FileManagerMode? mode;
+  final GlobalKey<InnerDrawerState>? innerDrawerKey;
+  final bool displayLeading;
+
   const FileManagerPage({
     Key? key,
     this.appointPath,
@@ -38,23 +79,22 @@ class FileManagerPage extends StatefulWidget {
     this.trailingBuilder,
     this.mode = FileManagerMode.normal,
     this.innerDrawerKey,
+    required this.displayLeading,
   }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _FileManagerPageState();
+    return FileManagerPageState();
   }
 }
 
-class _FileManagerPageState extends State<FileManagerPage>
+class FileManagerPageState extends State<FileManagerPage>
     with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
-  late FileManagerModel _fmModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
+  late FileManagerModel _fm;
 
-  // late Directory? _rootDir;
   late bool _initMutex;
-  // late
 
   @override
   bool get wantKeepAlive => true;
@@ -67,28 +107,30 @@ class _FileManagerPageState extends State<FileManagerPage>
 
     WidgetsBinding.instance?.addObserver(this);
     // _modalKey = GlobalKey<SplitSelectionModalState>();
-
-    BackButtonInterceptor.add(_willPopFileRoute);
   }
+
+  // GlobalKey _associateKey = GlobalKey<AssociateViewState>();
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
-    _fmModel = Provider.of<FileManagerModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
+    _fm = Provider.of<FileManagerModel>(context);
 
     if (_initMutex) {
       _initMutex = false;
 
       // 初始化阻塞UI
-      await _fmModel.storageInit();
+      await _fm.init();
 
-      String initialPath = getInitialPath();
-      _fmModel.setVisitMode(widget.mode);
-      _fmModel.setEntryDir(Directory(initialPath));
+      // 设置访问模式
+      _setVisitMode();
 
-      await _intiMangerDirectory(initialPath);
+      String entryPath = getStorageEntryPath();
+      _fm.setEntryDir(Directory(entryPath));
+      _fm.notifyListeners();
+      // setState(() {});
     }
   }
 
@@ -96,7 +138,6 @@ class _FileManagerPageState extends State<FileManagerPage>
   dispose() {
     super.dispose();
     WidgetsBinding.instance?.removeObserver(this);
-    BackButtonInterceptor.remove(_willPopFileRoute);
   }
 
   @override
@@ -104,239 +145,311 @@ class _FileManagerPageState extends State<FileManagerPage>
     super.didChangeAppLifecycleState(state);
     //从后台切回来刷新界面
     if (state == AppLifecycleState.resumed) {
-      if (mounted) _fmModel.notifyListeners();
+      if (mounted) _fm.notifyListeners();
     }
   }
 
-  Future<void> _intiMangerDirectory(String initialPath) async {
-    if (_fmModel.viewMode == ViewMode.independent) {
-      await _fmModel
-          .setFirstList(context, Directory(initialPath))
-          .then((value) {
-        _fmModel.setFirstCurrentDir(Directory(initialPath));
-      });
-      await _fmModel
-          .setSecondList(context, Directory(initialPath))
-          .then((value) {
-        _fmModel.setSecondCurrentDir(Directory(initialPath), update: true);
-      });
+  // Future<void> _intiMangerDirectory(String initialPath) async {
+  //   if (getViewMode == ViewMode.independent) {
+  //     await _fm
+  //         .setFirstList(context, Directory(initialPath))
+  //         .then((value) {
+  //       _fm.setFirstCurrentDir(Directory(initialPath));
+  //     });
+  //     await _fm
+  //         .setSecondList(context, Directory(initialPath))
+  //         .then((value) {
+  //       _fm.setSecondCurrentDir(Directory(initialPath), update: true);
+  //     });
+  //   } else {
+  //     await _fm
+  //         .setFirstList(context, Directory(initialPath), update: true)
+  //         .then((value) {
+  //       _fm.setCurrentDir(Directory(initialPath));
+  //     });
+  //   }
+  // }
+
+  String getStorageEntryPath() {
+    switch (widget.mode) {
+      case FileManagerMode.normal:
+        return _gm.storageRootPath;
+      case FileManagerMode.pick:
+        return widget.appointPath!;
+      default:
+        return _gm.storageRootPath;
+    }
+  }
+
+  LayoutMode get getLayoutMode => _fm.layoutMode;
+
+  ViewMode get getViewMode => _fm.viewMode;
+
+  AquaTheme get getTheme => _tm.themeData;
+
+  void _setVisitMode() {
+    if (widget.appointPath == null && widget.mode == FileManagerMode.pick) {
+      _fm.setVisitMode(FileManagerMode.normal);
     } else {
-      await _fmModel
-          .setFirstList(context, Directory(initialPath), update: true)
-          .then((value) {
-        _fmModel.setCurrentDir(Directory(initialPath));
-      });
+      _fm.setVisitMode(widget.mode);
     }
   }
 
-  String getInitialPath() {
-    if (widget.mode == FileManagerMode.normal || widget.appointPath == null) {
-      return _globalModel.storageRootPath;
-    } else {
-      return widget.appointPath!;
-    }
-  }
+  // /// 拦截返回
+  // Future<bool> _willPopFileRoute(
+  //     bool stopDefaultButtonEvent, RouteInfo routeInfo) async {
+  //   if (_fm.isRelativeParentRoot) {
+  //     _fm.setSecondListDirectly(context, null, update: true);
+  //     _fm.setCurrentDir(_fm.currentDir!.parent);
+  //     return false;
+  //   }
 
-  LayoutMode getLayoutMode() {
-    return _fmModel.layoutMode;
-  }
+  //   if (_fm.isRelativeRoot) {
+  //     return false;
+  //   }
 
-  AquaTheme getTheme() {
-    return _themeModel.themeData;
-  }
+  //   if (!_fm.isRelativeRoot &&
+  //       !pathLib.isWithin(_fm.entryDir!.path, _fm.currentDir!.path)) {
+  //     await _fm.setFirstList(context, _fm.entryDir!, update: true);
+  //     return false;
+  //   }
 
-  /// 拦截返回
-  Future<bool> _willPopFileRoute(
-      bool stopDefaultButtonEvent, RouteInfo routeInfo) async {
-    if (_fmModel.isRelativeParentRoot) {
-      _fmModel.setSecondListDirectly(context, null, update: true);
-      _fmModel.setCurrentDir(_fmModel.currentDir!.parent);
-      return false;
-    }
+  //   _fm.setCurrentDir(_fm.currentDir!.parent);
+  //   await _fm.setFirstList(context, _fm.currentDir!.parent);
+  //   await _fm.setSecondList(context, _fm.currentDir!, update: true);
 
-    if (_fmModel.isRelativeRoot) {
-      return false;
-    }
+  //   return false;
+  // }
 
-    if (!_fmModel.isRelativeRoot &&
-        !pathLib.isWithin(_fmModel.entryDir!.path, _fmModel.currentDir!.path)) {
-      await _fmModel.setFirstList(context, _fmModel.entryDir!, update: true);
-      return false;
-    }
-
-    _fmModel.setCurrentDir(_fmModel.currentDir!.parent);
-    await _fmModel.setFirstList(context, _fmModel.currentDir!.parent);
-    await _fmModel.setSecondList(context, _fmModel.currentDir!, update: true);
-
-    return false;
-  }
-
-  List<Widget> _createAssociateWindow() {
-    return <Widget>[
-      Expanded(
-        flex: 1,
-        child: FileList(
-          first: true,
-          selectLimit: widget.selectLimit,
-          mode: widget.mode!,
-          onChangePopLocker: (val) {},
-          list: _fmModel.firstList,
-          onChangeCurrentDir: (dynamic a) {},
-          onDirTileTap: (SelfFileEntity dir) async {
-            await _fmModel
-                .setSecondList(context, dir.entity as Directory, update: true)
-                .then((value) {
-              _fmModel.setCurrentDir(dir.entity as Directory);
-            });
-          },
-        ),
-      ),
-      if (!_fmModel.isRelativeRoot && _fmModel.secondList != null) ...[
-        if (getLayoutMode() == LayoutMode.vertical)
-          Divider(color: Color(0xFF7BC4FF)),
-        Expanded(
-          flex: 1,
-          child: FileList(
-            first: false,
-            selectLimit: widget.selectLimit,
-            mode: widget.mode!,
-            onChangeCurrentDir: (dynamic a) {},
-            onChangePopLocker: (val) {},
-            list: _fmModel.secondList,
-            onDirTileTap: (dir) async {
-              await _fmModel
-                  .setSecondList(context, dir.entity as Directory)
-                  .then((value) async {
-                _fmModel.setCurrentDir(dir.entity as Directory);
-                await _fmModel.setFirstList(context, dir.entity.parent,
-                    update: true);
-              });
-            },
-          ),
-        ),
-      ]
-    ];
-  }
+  // List<Widget> _createAssociateWindow() {
+  //   return <Widget>[
+  //     Expanded(
+  //       flex: 1,
+  //       child: FileList(
+  //         first: true,
+  //         selectLimit: widget.selectLimit,
+  //         mode: widget.mode!,
+  //         onChangePopLocker: (val) {},
+  //         list: _fm.firstList,
+  //
+  //         onDirTileTap: (SelfFileEntity dir) async {
+  //           await _fm
+  //               .setSecondList(context, dir.entity as Directory, update: true)
+  //               .then((value) {
+  //             _fm.setCurrentDir(dir.entity as Directory);
+  //           });
+  //         },
+  //       ),
+  //     ),
+  //     if (!_fm.isRelativeRoot && _fm.secondList != null) ...[
+  //       if (getLayoutMode == LayoutMode.vertical)
+  //         Divider(color: Color(0xFF7BC4FF)),
+  //       Expanded(
+  //         flex: 1,
+  //         child: FileList(
+  //           first: false,
+  //           selectLimit: widget.selectLimit,
+  //           mode: widget.mode!,
+  //
+  //           onChangePopLocker: (val) {},
+  //           list: _fm.secondList,
+  //           onDirTileTap: (dir) async {
+  //             await _fm
+  //                 .setSecondList(context, dir.entity as Directory)
+  //                 .then((value) async {
+  //               _fm.setCurrentDir(dir.entity as Directory);
+  //               await _fm.setFirstList(context, dir.entity.parent,
+  //                   update: true);
+  //             });
+  //           },
+  //         ),
+  //       ),
+  //     ]
+  //   ];
+  // }
 
   Future<void> _handlePathNavigate(Directory dir) async {
-    if (pathLib.equals(dir.path, _fmModel.entryDir?.path ?? '')) {
-      await _fmModel.setSecondListDirectly(context, null);
-      await _fmModel.setFirstList(context, dir, update: true);
-    } else if (pathLib.isWithin(_fmModel.entryDir?.path ?? '', dir.path)) {
-      _fmModel.setSecondList(context, dir).then((value) async {
-        await _fmModel.setFirstList(context, dir.parent, update: true);
-      });
-    }
+    // if (pathLib.equals(dir.path, _fm.entryDir?.path ?? '')) {
+    //   await _fm.setSecondListDirectly(context, null);
+    //   await _fm.setFirstList(context, dir, update: true);
+    // } else if (pathLib.isWithin(_fm.entryDir?.path ?? '', dir.path)) {
+    //   _fm.setSecondList(context, dir).then((value) async {
+    //     await _fm.setFirstList(context, dir.parent, update: true);
+    //   });
+    // }
 
-    _fmModel.setCurrentDir(dir);
+    // _fm.setCurrentDir(dir);
   }
 
-  bool get isInitSuccess {
-    bool condition = _fmModel.firstList != null && _fmModel.entryDir != null;
+  // bool get isInitSuccess {
+  //   bool condition = _fm.entryDir != null;
 
-    if (_fmModel.viewMode == ViewMode.independent) {
-      return condition &&
-          _fmModel.firstCurrentDir != null &&
-          _fmModel.secondCurrentDir != null &&
-          _fmModel.secondList != null;
-    } else {
-      return condition && _fmModel.currentDir != null;
-    }
-  }
+  //   if (getViewMode == ViewMode.independent) {
+  //     return condition &&
+  //         _fm.firstCurrentDir != null &&
+  //         _fm.secondCurrentDir != null &&
+  //         _fm.secondList != null;
+  //   } else {
+  //     return condition && _fm.currentDir != null;
+  //   }
+  // }
 
   Widget _createBarRightMenu() {
     return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setBuilerState) {
-      bool isAssociate = _fmModel.viewMode == ViewMode.associate;
-      return FocusedMenuHolder(
-        menuWidth: MediaQuery.of(context).size.width * 0.37,
-        menuItemExtent: 45,
-        duration: Duration(milliseconds: 100),
-        maskColor: Color(0x00FFFFFF),
-        menuItems: <FocusedMenuItem>[
-          FocusedMenuItem(
-            trailingIcon: Icon(
-              UniconsLine.dice_one,
-              size: 18,
-            ),
-            title: isAssociate
-                ? ThemedText(S.of(context)!.independent + S.of(context)!.mode)
-                : ThemedText(S.of(context)!.associate + S.of(context)!.mode),
-            onPressed: () {
-              if (isAssociate) {
-                _fmModel.setViewMode(ViewMode.independent);
-              } else {
-                _fmModel.setViewMode(ViewMode.associate);
-              }
+      builder: (BuildContext context, StateSetter setBuilderState) {
+        bool isAssociate = getViewMode == ViewMode.associate;
+        bool isHorizontal = getLayoutMode == LayoutMode.horizontal;
 
-              setBuilerState(() {});
-
-              Fluttertoast.showToast(
-                msg: (isAssociate
-                        ? S.of(context)!.independent
-                        : S.of(context)!.associate) +
-                    S.of(context)!.mode,
-              );
-            },
-          ),
-          FocusedMenuItem(
-            // backgroundColor: ,
-            trailingIcon: Icon(
-              UniconsLine.location_arrow,
-              size: 18,
+        return FocusedMenuHolder(
+          menuWidth: MediaQuery.of(context).size.width * 0.37,
+          menuItemExtent: 45,
+          duration: Duration(milliseconds: 100),
+          maskColor: Color(0x00FFFFFF),
+          menuItems: <FocusedMenuItem>[
+            FocusedMenuItem(
+              trailingIcon: Icon(
+                isHorizontal
+                    ? UniconsLine.border_vertical
+                    : UniconsLine.border_horizontal,
+                color: Color(0xFF007AFF),
+                size: 19,
+              ),
+              title: isHorizontal
+                  ? ThemedText(S.of(context)!.vertical)
+                  : ThemedText(S.of(context)!.hoz),
+              onPressed: () {
+                LayoutMode mode =
+                    isHorizontal ? LayoutMode.vertical : LayoutMode.horizontal;
+                _fm.setLayoutMode(mode, update: true);
+              },
             ),
-            title: ThemedText('网络'),
-            onPressed: () {
-              widget.innerDrawerKey?.currentState
-                  ?.open(direction: InnerDrawerDirection.end);
-            },
+            FocusedMenuItem(
+              trailingIcon: Icon(
+                UniconsLine.dice_one,
+                size: 18,
+              ),
+              title: isAssociate
+                  ? ThemedText(S.of(context)!.independent)
+                  : ThemedText(S.of(context)!.associate),
+              onPressed: () {
+                if (isAssociate) {
+                  _fm.setViewMode(ViewMode.independent);
+                } else {
+                  _fm.setViewMode(ViewMode.associate);
+                }
+
+                setBuilderState(() {});
+
+                if (mounted) _fm.notifyListeners();
+
+                Fluttertoast.showToast(
+                  msg: (isAssociate
+                          ? S.of(context)!.independent
+                          : S.of(context)!.associate) +
+                      S.of(context)!.mode,
+                );
+              },
+            ),
+            FocusedMenuItem(
+              // backgroundColor: ,
+              trailingIcon: Icon(
+                UniconsLine.check_circle,
+                size: 19,
+              ),
+              title: ThemedText('全选'),
+              onPressed: () async {
+                await Navigator.of(context, rootNavigator: true).push(
+                  CupertinoPageRoute<void>(
+                    maintainState: false,
+                    builder: (BuildContext context) {
+                      return FileManager(
+                        appointPath: _gm.storageRootPath,
+                        selectLimit: 1,
+                        mode: FileManagerMode.pick,
+                        displayLeading: false,
+                        // 这里是FileManager的context
+                        trailingBuilder: (fileCtx) {
+                          return Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () async {
+                                print(fileCtx);
+                              },
+                              child: NoResizeText(
+                                S.of(context)!.sure,
+                                style: TextStyle(
+                                  color: Color(0xFF007AFF),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+                // setBuilderState(() {});
+              },
+            ),
+            FocusedMenuItem(
+              // backgroundColor: ,
+              trailingIcon: Icon(
+                UniconsLine.exit,
+                size: 18,
+              ),
+              title: ThemedText('退出'),
+              onPressed: () {
+                SystemNavigator.pop();
+              },
+            ),
+          ],
+          child: Icon(
+            UniconsLine.ellipsis_v,
+            size: 23,
           ),
-        ],
-        child: Icon(
-          UniconsLine.ellipsis_v,
-          size: 23,
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
-  void _toggleSplitWindowMode() {
-    LayoutMode mode = _fmModel.layoutMode;
-    mode = mode == LayoutMode.horizontal
-        ? LayoutMode.vertical
-        : LayoutMode.horizontal;
-    _fmModel.setLayoutMode(mode, update: true);
+  void showRightQuickBoard() {
+    widget.innerDrawerKey?.currentState
+        ?.open(direction: InnerDrawerDirection.end);
+  }
+
+  void showLeftQuickBoard() {
+    widget.innerDrawerKey?.currentState
+        ?.open(direction: InnerDrawerDirection.end);
   }
 
   ObstructingPreferredSizeWidget _createNavbar() {
     return CupertinoNavigationBar(
-      backgroundColor: _themeModel.themeData.systemNavigationBarColor,
+      backgroundColor: _tm.themeData.systemNavigationBarColor,
       trailing: widget.trailingBuilder != null
           ? widget.trailingBuilder!(context)
           : Wrap(
               children: [
                 GestureDetector(
-                  onTap: _toggleSplitWindowMode,
+                  onTap: showRightQuickBoard,
                   child: Icon(
-                    getLayoutMode() == LayoutMode.horizontal
-                        ? UniconsLine.border_vertical
-                        : UniconsLine.border_horizontal,
-                    color: Color(0xFF007AFF),
-                    size: 25,
+                    UniconsLine.location_arrow,
+                    size: 22,
                   ),
                 ),
                 SizedBox(width: 20),
                 _createBarRightMenu()
               ],
             ),
-      leading: GestureDetector(
-        onTap: () {},
-        child: Icon(
-          UniconsLine.bars,
-          color: Color(0xFF007AFF),
-          size: 26,
-        ),
-      ),
+      leading: widget.displayLeading
+          ? GestureDetector(
+              onTap: () {},
+              child: Icon(
+                UniconsLine.bars,
+                color: Color(0xFF007AFF),
+                size: 26,
+              ),
+            )
+          : Container(),
       border: null,
       middle: PathBreadCrumb(onTap: _handlePathNavigate),
     );
@@ -346,47 +459,40 @@ class _FileManagerPageState extends State<FileManagerPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    log(_fmModel.currentDir != null ? _fmModel.currentDir!.path : '',
-        name: 'current dir');
-
-    if (widget.mode == FileManagerMode.normal) {
-      if (_fmModel.currentDir != null && _fmModel.entryDir != null) {
-        if (_fmModel.isRelativeRoot) {
-          _globalModel.setCanPopToDesktop(true);
-        } else {
-          _globalModel.setCanPopToDesktop(false);
-        }
-      }
-    }
-
-    // bool shouldLoad = _fmModel.
-
-    return isInitSuccess
+    return _fm.entryDir != null
         ? GestureDetector(
             onTap: () {
               FocusScope.of(context).requestFocus(FocusNode());
             },
-            child: CupertinoPageScaffold(
-              backgroundColor:
-                  getTheme().scaffoldBackgroundColor.withOpacity(1),
-              navigationBar: _createNavbar(),
-              child: SafeArea(
-                child: Column(
-                  children: [
-                    SearchBar(),
-                    Expanded(
-                      child: getLayoutMode() == LayoutMode.vertical
-                          ? Column(children: _createAssociateWindow())
-                          : Row(children: _createAssociateWindow()),
-                    ),
-                  ],
+            child: MultiProvider(
+              providers: [
+                ChangeNotifierProvider<AssociateViewModel>(
+                  create: (_) => AssociateViewModel(),
+                ),
+                ChangeNotifierProvider<IndependentViewModel>(
+                  create: (_) => IndependentViewModel(),
+                ),
+              ],
+              child: CupertinoPageScaffold(
+                backgroundColor:
+                    getTheme.scaffoldBackgroundColor.withOpacity(1),
+                navigationBar: _createNavbar(),
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      SearchBar(),
+                      getViewMode == ViewMode.independent
+                          ? IndependentView()
+                          : AssociateView(),
+                    ],
+                  ),
                 ),
               ),
             ),
           )
         : CupertinoPageScaffold(
             child: Container(
-              color: getTheme().scaffoldBackgroundColor,
+              color: getTheme.scaffoldBackgroundColor,
             ),
           );
   }

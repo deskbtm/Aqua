@@ -28,13 +28,13 @@
 // }
 
 // class _NotSupportPageState extends State<NotSupportPage> {
-//   ThemeModel _themeModel;
+//   ThemeModel _tm;
 //   Timer _timer;
 
 //   @override
 //   void didChangeDependencies() {
 //     super.didChangeDependencies();
-//     _themeModel = Provider.of<ThemeModel>(context);
+//     _tm = Provider.of<ThemeModel>(context);
 //     if (widget.withOpenWay) {
 //       _timer = Timer(Duration(milliseconds: 1500), () {
 //         OpenFile.open(widget.path);
@@ -51,7 +51,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     AquaTheme themeData = _themeModel.themeData;
+//     AquaTheme themeData = _tm.themeData;
 //     return CupertinoPageScaffold(
 //       backgroundColor: themeData.scaffoldBackgroundColor,
 //       child: Center(

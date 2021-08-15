@@ -27,7 +27,7 @@ class VideoPage extends StatefulWidget {
 }
 
 class _VideoPageState extends State<VideoPage> {
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
   late StreamSubscription _playerEventSub;
   final _purePlayerController = PurePlayerController(
     controlsStyle: ControlsStyle.primary,
@@ -70,7 +70,7 @@ class _VideoPageState extends State<VideoPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
   }
 
   @override
@@ -85,7 +85,7 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
     return CupertinoPageScaffold(
       backgroundColor: themeData.scaffoldBackgroundColor,
       child: Center(

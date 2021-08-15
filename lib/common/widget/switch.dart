@@ -62,17 +62,17 @@ class AquaSwitch extends StatelessWidget {
 // }
 
 // class _AquaSwitchState extends State<AquaSwitch> {
-//   ThemeModel _themeModel;
+//   ThemeModel _tm;
 
 //   @override
 //   void didChangeDependencies() {
 //     super.didChangeDependencies();
-//     _themeModel = Provider.of<ThemeModel>(context);
+//     _tm = Provider.of<ThemeModel>(context);
 //   }
 
 //   @override
 //   Widget build(BuildContext context) {
-//     dynamic themeData = _themeModel?.themeData;
+//     dynamic themeData = _tm?.themeData;
 //     print(themeData.switchColor);
 //     return Transform.scale(
 //       scale: 0.9,

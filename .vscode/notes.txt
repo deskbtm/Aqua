@@ -5,7 +5,7 @@ ListView.builder(
   itemBuilder: (BuildContext context, int index) {
     SelfFileEntity file = widget.fileList[index];
     ListFileItemInfo item = ListFileItemInfo(
-      leading: getPreviewIcon(context, _themeModel, file),
+      leading: getPreviewIcon(context, _tm, file),
       file: file,
     );
 
@@ -24,9 +24,9 @@ ListView.builder(
       onTap: () {
         if (widget.onItemTap != null) widget.onItemTap(index);
       },
-      onHozDrag: (dir) async {
+      onItemHozDrag: (dir) async {
         /// [index] 位数 [dir] 方向 1 向右 -1 左
-        await widget.onHozDrag(index, dir);
+        await widget.onItemHozDrag(index, dir);
       },
     );
   },

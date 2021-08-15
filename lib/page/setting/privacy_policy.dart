@@ -21,7 +21,7 @@ class PrivacyPolicyPage extends StatefulWidget {
 }
 
 class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
-  late ThemeModel _themeModel;
+  late ThemeModel _tm;
   late bool _mutex;
   late String _html;
 
@@ -34,7 +34,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
     if (_mutex) {
       try {
         dio.Response res = await req().get('/assets/privacy.html');
@@ -51,7 +51,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -69,7 +69,7 @@ class PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
         border: null,
       ),
       child: _html == null
-          ? Center(child: loadingIndicator(context, _themeModel))
+          ? Center(child: loadingIndicator(context, _tm))
           : ListView.builder(
               physics: BouncingScrollPhysics(),
               itemCount: 1,

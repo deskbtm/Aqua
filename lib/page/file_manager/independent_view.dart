@@ -1,346 +1,251 @@
-// import 'dart:developer';
-// import 'dart:io';
-// import 'dart:ui';
+import 'dart:io';
+import 'dart:ui';
+import 'fs_utils.dart';
+import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:aqua/model/independent_view_model.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:aqua/common/widget/inner_drawer.dart';
+import 'package:aqua/model/file_manager_model.dart';
+import 'package:aqua/page/file_manager/file_list.dart';
+import 'package:aqua/model/global_model.dart';
+import 'package:provider/provider.dart';
+import 'package:path/path.dart' as pathLib;
 
-// import 'package:fluttertoast/fluttertoast.dart';
+class IndependentView extends StatefulWidget {
+  final int? selectLimit;
 
-// import 'fs_utils.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter/cupertino.dart';
-// import 'package:aqua/external/menu/menu.dart';
-// import 'package:aqua/page/file_manager/search_bar.dart';
-// import 'package:back_button_interceptor/back_button_interceptor.dart';
-// import 'package:aqua/common/widget/inner_drawer.dart';
-// import 'package:aqua/common/widget/no_resize_text.dart';
-// import 'package:aqua/model/file_manager_model.dart';
-// import 'package:aqua/page/file_manager/file_list.dart';
-// import 'package:aqua/model/global_model.dart';
-// import 'package:aqua/model/theme_model.dart';
-// import 'package:aqua/common/theme.dart';
-// import 'package:provider/provider.dart';
-// import 'package:unicons/unicons.dart';
-// import 'package:aqua/page/file_manager/path_breadcrumb.dart';
-// import 'package:path/path.dart' as pathLib;
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+  final GlobalKey<InnerDrawerState>? innerDrawerKey;
 
-// class IndependentView extends StatefulWidget {
-//   final String? appointPath;
-//   final Widget Function(BuildContext)? trailingBuilder;
-//   final int? selectLimit;
-//   final FileManagerMode? mode;
-//   final GlobalKey<InnerDrawerState>? innerDrawerKey;
+  ///  * [appointPath] 默认外存的根目录
+  const IndependentView({
+    Key? key,
+    this.selectLimit = 1,
+    this.innerDrawerKey,
+  }) : super(key: key);
 
-//   ///  * [appointPath] 默认外存的根目录
-//   const IndependentView({
-//     Key? key,
-//     this.appointPath,
-//     this.selectLimit = 1,
-//     this.trailingBuilder,
-//     this.mode = FileManagerMode.normal,
-//     this.innerDrawerKey,
-//   }) : super(key: key);
+  @override
+  State<StatefulWidget> createState() {
+    return IndependentViewState();
+  }
+}
 
-//   @override
-//   State<StatefulWidget> createState() {
-//     return _IndependentViewState();
-//   }
-// }
+class IndependentViewState extends State<IndependentView>
+    with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
+  late GlobalModel _gm;
+  late IndependentViewModel _ivm;
+  late FileManagerModel _fm;
+  late bool _initMutex;
 
-// class _IndependentViewState extends State<IndependentView>
-//     with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
-//   late ThemeModel _themeModel;
-//   late GlobalModel _globalModel;
-//   late FileManagerModel _fmModel;
+  @override
+  bool get wantKeepAlive => true;
 
-//   // late Directory? _rootDir;
-//   late bool _initMutex;
-//   // late
+  @override
+  void initState() {
+    super.initState();
+    _initMutex = true;
+    BackButtonInterceptor.add(_willPopFileRoute);
+  }
 
-//   @override
-//   bool get wantKeepAlive => true;
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    _gm = Provider.of<GlobalModel>(context);
+    _ivm = Provider.of<IndependentViewModel>(context);
+    _fm = Provider.of<FileManagerModel>(context);
 
-//   @override
-//   void initState() {
-//     super.initState();
+    if (_initMutex) {
+      _initMutex = false;
+      await _ivm.setFirstList(context, getEntryDir!).then((_) {
+        _ivm.setFirstCurrentDir(getEntryDir!);
+      });
 
-//     _initMutex = true;
+      await _ivm.setSecondList(context, getEntryDir!, update: true).then((_) {
+        _ivm.setSecondCurrentDir(getEntryDir!);
+      });
+    }
+  }
 
-//     WidgetsBinding.instance?.addObserver(this);
-//     BackButtonInterceptor.add(_willPopFileRoute);
-//   }
+  @override
+  dispose() {
+    super.dispose();
+    BackButtonInterceptor.remove(_willPopFileRoute);
+  }
 
-//   @override
-//   void didChangeDependencies() async {
-//     super.didChangeDependencies();
-//     _themeModel = Provider.of<ThemeModel>(context);
-//     _globalModel = Provider.of<GlobalModel>(context);
-//     _fmModel = Provider.of<FileManagerModel>(context);
-//   }
+  LayoutMode get getLayoutMode => _fm.layoutMode;
 
-//   Future<void> _intiMangerDirectory(String initialPath) async {
-//     if (_fmModel.viewMode == ViewMode.independent) {
-//       await _fmModel
-//           .setFirstList(context, Directory(initialPath))
-//           .then((value) {
-//         _fmModel.setFirstCurrentDir(Directory(initialPath));
-//       });
-//       await _fmModel
-//           .setSecondList(context, Directory(initialPath))
-//           .then((value) {
-//         _fmModel.setSecondCurrentDir(Directory(initialPath), update: true);
-//       });
-//     } else {
-//       await _fmModel
-//           .setFirstList(context, Directory(initialPath), update: true)
-//           .then((value) {
-//         _fmModel.setCurrentDir(Directory(initialPath));
-//       });
-//     }
-//   }
+  Directory? get getEntryDir => _fm.entryDir;
 
-//   /// 拦截返回
-//   Future<bool> _willPopFileRoute(
-//       bool stopDefaultButtonEvent, RouteInfo routeInfo) async {
-//     if (_fmModel.isRelativeParentRoot) {
-//       _fmModel.setSecondListDirectly(context, null, update: true);
-//       _fmModel.setCurrentDir(_fmModel.currentDir!.parent);
-//       return false;
-//     }
+  Directory? get getFirstCurrentDir => _ivm.firstCurrentDir;
 
-//     if (_fmModel.isRelativeRoot) {
-//       return false;
-//     }
+  Directory? get getSecondCurrentDir => _ivm.secondCurrentDir;
 
-//     if (!_fmModel.isRelativeRoot &&
-//         !pathLib.isWithin(_fmModel.entryDir!.path, _fmModel.currentDir!.path)) {
-//       await _fmModel.setFirstList(context, _fmModel.entryDir!, update: true);
-//       return false;
-//     }
+  FileManagerMode get getVisitMode => _fm.visitMode;
 
-//     _fmModel.setCurrentDir(_fmModel.currentDir!.parent);
-//     await _fmModel.setFirstList(context, _fmModel.currentDir!.parent);
-//     await _fmModel.setSecondList(context, _fmModel.currentDir!, update: true);
+  bool get isFirstRelativeParentRoot =>
+      pathLib.equals(getEntryDir!.path, getFirstCurrentDir!.parent.path);
 
-//     return false;
-//   }
+  bool get isSecondRelativeParentRoot =>
+      pathLib.equals(getEntryDir!.path, getFirstCurrentDir!.parent.path);
 
-//   List<Widget> _createAssociateWindow() {
-//     return <Widget>[
-//       Expanded(
-//         flex: 1,
-//         child: FileList(
-//           first: true,
-//           selectLimit: widget.selectLimit,
-//           mode: widget.mode!,
-//           onChangePopLocker: (val) {},
-//           list: _fmModel.firstList,
-//           onChangeCurrentDir: (dynamic a) {},
-//           onDirTileTap: (SelfFileEntity dir) async {
-//             await _fmModel
-//                 .setSecondList(context, dir.entity as Directory, update: true)
-//                 .then((value) {
-//               _fmModel.setCurrentDir(dir.entity as Directory);
-//             });
-//           },
-//         ),
-//       ),
-//       if (!_fmModel.isRelativeRoot && _fmModel.secondList != null) ...[
-//         if (getLayoutMode() == LayoutMode.vertical)
-//           Divider(color: Color(0xFF7BC4FF)),
-//         Expanded(
-//           flex: 1,
-//           child: FileList(
-//             first: false,
-//             selectLimit: widget.selectLimit,
-//             mode: widget.mode!,
-//             onChangeCurrentDir: (dynamic a) {},
-//             onChangePopLocker: (val) {},
-//             list: _fmModel.secondList,
-//             onDirTileTap: (dir) async {
-//               await _fmModel
-//                   .setSecondList(context, dir.entity as Directory)
-//                   .then((value) async {
-//                 _fmModel.setCurrentDir(dir.entity as Directory);
-//                 await _fmModel.setFirstList(context, dir.entity.parent,
-//                     update: true);
-//               });
-//             },
-//           ),
-//         ),
-//       ]
-//     ];
-//   }
+  // 第一个窗口是否相对是相对根目录
+  bool get isFirstRelativeRoot =>
+      pathLib.equals(getEntryDir!.path, getFirstCurrentDir!.path);
 
-//   Future<void> _handlePathNavigate(Directory dir) async {
-//     if (pathLib.equals(dir.path, _fmModel.entryDir?.path ?? '')) {
-//       await _fmModel.setSecondListDirectly(context, null);
-//       await _fmModel.setFirstList(context, dir, update: true);
-//     } else if (pathLib.isWithin(_fmModel.entryDir?.path ?? '', dir.path)) {
-//       _fmModel.setSecondList(context, dir).then((value) async {
-//         await _fmModel.setFirstList(context, dir.parent, update: true);
-//       });
-//     }
+  // 第二个窗口是否相对是相对根目录
+  bool get isSecondRelativeRoot =>
+      pathLib.equals(getEntryDir!.path, getSecondCurrentDir!.path);
 
-//     _fmModel.setCurrentDir(dir);
-//   }
+  /// 拦截返回
+  Future<bool> _willPopFileRoute(
+      bool stopDefaultButtonEvent, RouteInfo routeInfo) async {
+    print(_ivm.activeWindow);
+    if (_ivm.activeWindow == IndependentActiveWindow.first) {
+      if (isFirstRelativeRoot) {
+        return false;
+      }
 
-//   bool get initSuccess {
-//     bool condition = _fmModel.firstList != null && _fmModel.entryDir != null;
+      if (!isFirstRelativeRoot &&
+          !pathLib.isWithin(getEntryDir!.path, getFirstCurrentDir!.path)) {
+        await _ivm.setFirstList(context, getEntryDir!, update: true);
+        return false;
+      }
 
-//     if (_fmModel.viewMode == ViewMode.independent) {
-//       return condition &&
-//           _fmModel.firstCurrentDir != null &&
-//           _fmModel.secondCurrentDir != null &&
-//           _fmModel.secondList != null;
-//     } else {
-//       return condition && _fmModel.currentDir != null;
-//     }
-//   }
+      await _ivm
+          .setFirstList(context, getFirstCurrentDir!.parent, update: true)
+          .then((_) {
+        _ivm.setFirstCurrentDir(getFirstCurrentDir!.parent);
+      });
+    }
 
-//   Widget _createBarRightMenu() {
-//     return StatefulBuilder(
-//         builder: (BuildContext context, StateSetter setBuilerState) {
-//       bool isAssociate = _fmModel.viewMode == ViewMode.associate;
-//       return FocusedMenuHolder(
-//         menuWidth: MediaQuery.of(context).size.width * 0.37,
-//         menuItemExtent: 45,
-//         duration: Duration(milliseconds: 100),
-//         maskColor: Color(0x00FFFFFF),
-//         menuItems: <FocusedMenuItem>[
-//           FocusedMenuItem(
-//             trailingIcon: Icon(
-//               UniconsLine.dice_one,
-//               size: 18,
-//             ),
-//             title: isAssociate
-//                 ? ThemedText(S.of(context)!.independent + S.of(context)!.mode)
-//                 : ThemedText(S.of(context)!.associate + S.of(context)!.mode),
-//             onPressed: () {
-//               if (isAssociate) {
-//                 _fmModel.setViewMode(ViewMode.independent);
-//               } else {
-//                 _fmModel.setViewMode(ViewMode.associate);
-//               }
+    if (_ivm.activeWindow == IndependentActiveWindow.second) {
+      if (isSecondRelativeRoot) {
+        return false;
+      }
 
-//               setBuilerState(() {});
+      if (!isSecondRelativeRoot &&
+          !pathLib.isWithin(getEntryDir!.path, getSecondCurrentDir!.path)) {
+        await _ivm.setSecondList(context, getEntryDir!, update: true);
+        return false;
+      }
 
-//               Fluttertoast.showToast(
-//                 msg: (isAssociate
-//                         ? S.of(context)!.independent
-//                         : S.of(context)!.associate) +
-//                     S.of(context)!.mode,
-//               );
-//             },
-//           ),
-//           FocusedMenuItem(
-//             // backgroundColor: ,
-//             trailingIcon: Icon(
-//               UniconsLine.location_arrow,
-//               size: 18,
-//             ),
-//             title: ThemedText('网络'),
-//             onPressed: () {
-//               widget.innerDrawerKey?.currentState
-//                   ?.open(direction: InnerDrawerDirection.end);
-//             },
-//           ),
-//         ],
-//         child: Icon(
-//           UniconsLine.ellipsis_v,
-//           size: 23,
-//         ),
-//       );
-//     });
-//   }
+      await _ivm
+          .setSecondList(context, getSecondCurrentDir!.parent, update: true)
+          .then((_) {
+        _ivm.setSecondCurrentDir(getSecondCurrentDir!.parent);
+      });
+    }
 
-//   void _toggleSplitWindowMode() {
-//     LayoutMode mode = _fmModel.layoutMode;
-//     mode = mode == LayoutMode.horizontal
-//         ? LayoutMode.vertical
-//         : LayoutMode.horizontal;
-//     _fmModel.setLayoutMode(mode, update: true);
-//   }
+    return false;
+  }
 
-//   ObstructingPreferredSizeWidget _createNavbar() {
-//     return CupertinoNavigationBar(
-//       backgroundColor: _themeModel.themeData.systemNavigationBarColor,
-//       trailing: widget.trailingBuilder != null
-//           ? widget.trailingBuilder!(context)
-//           : Wrap(
-//               children: [
-//                 GestureDetector(
-//                   onTap: _toggleSplitWindowMode,
-//                   child: Icon(
-//                     getLayoutMode() == LayoutMode.horizontal
-//                         ? UniconsLine.border_vertical
-//                         : UniconsLine.border_horizontal,
-//                     color: Color(0xFF007AFF),
-//                     size: 25,
-//                   ),
-//                 ),
-//                 SizedBox(width: 20),
-//                 _createBarRightMenu()
-//               ],
-//             ),
-//       leading: GestureDetector(
-//         onTap: () {},
-//         child: Icon(
-//           UniconsLine.bars,
-//           color: Color(0xFF007AFF),
-//           size: 26,
-//         ),
-//       ),
-//       border: null,
-//       middle: PathBreadCrumb(onTap: _handlePathNavigate),
-//     );
-//   }
+  List<Widget> _createIndependentList() {
+    return <Widget>[
+      Expanded(
+        flex: 1,
+        child: FileList(
+          first: true,
+          selectLimit: widget.selectLimit,
+          onChangePopLocker: (val) {},
+          list: _ivm.firstList,
+          onTapEmpty: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.first);
+          },
+          onScorll: () {
+            if (IndependentActiveWindow.second == _ivm.activeWindow) {
+              _ivm.setActiveWindow(IndependentActiveWindow.first);
+            }
+          },
+          onItemHozDrag: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.first);
+          },
+          onItemLongPressStart: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.first);
+          },
+          onDirTileTap: (SelfFileEntity dir) async {
+            _ivm.setActiveWindow(IndependentActiveWindow.first);
+            await _ivm
+                .setFirstList(context, dir.entity as Directory, update: true)
+                .then((value) {
+              _ivm.setFirstCurrentDir(dir.entity as Directory);
+            });
+          },
+        ),
+      ),
+      if (getLayoutMode == LayoutMode.vertical)
+        Divider(color: Color(0xFF7BC4FF)),
+      Expanded(
+        flex: 1,
+        child: FileList(
+          first: false,
+          selectLimit: widget.selectLimit,
+          list: _ivm.secondList,
+          onChangePopLocker: (val) {},
+          onTapEmpty: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.second);
+          },
+          onScorll: () {
+            if (IndependentActiveWindow.first == _ivm.activeWindow) {
+              _ivm.setActiveWindow(IndependentActiveWindow.second);
+            }
+          },
+          onItemHozDrag: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.second);
+          },
+          onItemLongPressStart: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.second);
+          },
+          onDirTileTap: (dir) async {
+            _ivm.setActiveWindow(IndependentActiveWindow.second);
+            await _ivm
+                .setSecondList(context, dir.entity as Directory, update: true)
+                .then((value) async {
+              _ivm.setSecondCurrentDir(dir.entity as Directory);
+            });
+          },
+        ),
+      ),
+    ];
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     super.build(context);
+  Future<void> _handlePathNavigate(Directory dir) async {
+    if (pathLib.equals(dir.path, getEntryDir?.path ?? '')) {
+      await _ivm.setFirstList(context, dir, update: true);
+    } else if (pathLib.isWithin(getEntryDir?.path ?? '', dir.path)) {
+      _ivm.setSecondList(context, dir).then((value) async {
+        await _ivm.setFirstList(context, dir.parent, update: true);
+      });
+    }
 
-//     log(_fmModel.currentDir != null ? _fmModel.currentDir!.path : '',
-//         name: 'current dir');
+    _ivm.setCurrentDir(dir);
+  }
 
-//     if (widget.mode == FileManagerMode.normal) {
-//       if (_fmModel.currentDir != null && _fmModel.entryDir != null) {
-//         if (_fmModel.isRelativeRoot) {
-//           _globalModel.setCanPopToDesktop(true);
-//         } else {
-//           _globalModel.setCanPopToDesktop(false);
-//         }
-//       }
-//     }
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    log('root repaint', name: 'independent view');
 
-//     // bool shouldLoad = _fmModel.
+    if (getVisitMode == FileManagerMode.normal) {
+      if (_ivm.firstCurrentDir != null &&
+          _ivm.secondCurrentDir != null &&
+          getEntryDir != null) {
+        if (isFirstRelativeRoot && isSecondRelativeRoot) {
+          _gm.setCanPopToDesktop(true);
+        } else {
+          _gm.setCanPopToDesktop(false);
+        }
+      }
+    }
 
-//     return initSuccess
-//         ? GestureDetector(
-//             onTap: () {
-//               FocusScope.of(context).requestFocus(FocusNode());
-//             },
-//             child: CupertinoPageScaffold(
-//               backgroundColor:
-//                   getTheme().scaffoldBackgroundColor.withOpacity(1),
-//               navigationBar: _createNavbar(),
-//               child: SafeArea(
-//                 child: Column(
-//                   children: [
-//                     SearchBar(),
-//                     Expanded(
-//                       child: getLayoutMode() == LayoutMode.vertical
-//                           ? Column(children: _createAssociateWindow())
-//                           : Row(children: _createAssociateWindow()),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           )
-//         : CupertinoPageScaffold(
-//             child: Container(
-//               color: getTheme().scaffoldBackgroundColor,
-//             ),
-//           );
-//   }
-// }
+    // bool shouldLoad = _ivm.
+
+    return _ivm.currentDir == null
+        ? Container()
+        : Expanded(
+            child: getLayoutMode == LayoutMode.vertical
+                ? Column(children: _createIndependentList())
+                : Row(children: _createIndependentList()),
+          );
+  }
+}

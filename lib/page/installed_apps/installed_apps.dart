@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:aqua/model/file_manager_model.dart';
 import 'package:aqua/model/global_model.dart';
+import 'package:aqua/model/select_file_model.dart';
 import 'package:aqua/utils/mix_utils.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,8 +26,9 @@ class InstalledAppsPage extends StatefulWidget {
 }
 
 class _InstalledAppsPageState extends State<InstalledAppsPage> {
-  late ThemeModel _themeModel;
-  late GlobalModel _globalModel;
+  late ThemeModel _tm;
+  late GlobalModel _gm;
+  late SelectFileModel _sfm;
   bool _showSystemApps = false;
   List<Application>? _apps = [];
   bool _mutex = true;
@@ -34,8 +36,9 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _themeModel = Provider.of<ThemeModel>(context);
-    _globalModel = Provider.of<GlobalModel>(context);
+    _tm = Provider.of<ThemeModel>(context);
+    _sfm = Provider.of<SelectFileModel>(context);
+    _gm = Provider.of<GlobalModel>(context);
 
     if (_mutex) {
       _mutex = false;
@@ -99,7 +102,7 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
 
   @override
   Widget build(BuildContext context) {
-    AquaTheme themeData = _themeModel.themeData;
+    AquaTheme themeData = _tm.themeData;
 
     return Material(
       child: CupertinoPageScaffold(
@@ -214,12 +217,12 @@ class _InstalledAppsPageState extends State<InstalledAppsPage> {
 
                           // path: app.apkFilePath,
                           // filename: '${app.appName} (${app.packageName})',
-                          onHozDrag: (dir) async {
+                          onItemHozDrag: (dir) async {
                             if (await file.exists()) {
                               if (dir == 1) {
-                                _globalModel.addSelectedFile(fileEntity);
+                                _sfm.addSelectedFile(fileEntity);
                               } else if (dir == -1) {
-                                _globalModel.removeSelectedFile(fileEntity);
+                                _sfm.removeSelectedFile(fileEntity);
                               }
                             }
                           },

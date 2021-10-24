@@ -421,8 +421,7 @@ class _PhotoViewState extends State<PhotoView> {
       _scaleStateController = widget.scaleStateController!;
     }
 
-    _scaleStateController.outputScaleStateStream
-        .listen(scaleStateListener as void Function(dynamic)?);
+    _scaleStateController.outputScaleStateStream.listen(scaleStateListener);
   }
 
   @override

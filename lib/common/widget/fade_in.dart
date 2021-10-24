@@ -58,7 +58,7 @@ class FadeInController {
 
 class _FadeInState extends State<FadeIn> with TickerProviderStateMixin {
   late AnimationController _controller;
-  late StreamSubscription<FadeInAction>? _listener;
+  StreamSubscription<FadeInAction>? _listener;
 
   @override
   void initState() {

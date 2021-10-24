@@ -300,6 +300,8 @@ class InnerDrawerState extends State<InnerDrawer>
       case InnerDrawerDirection.start:
         delta = -delta;
         break;
+      default:
+        break;
     }
     switch (Directionality.of(context)) {
       case TextDirection.rtl:
@@ -435,10 +437,16 @@ class InnerDrawerState extends State<InnerDrawer>
 
     final Widget? invC = _invisibleCover();
 
+    List<Widget> children = <Widget>[
+      widget.scaffold,
+    ];
+
+    if (invC != null) {
+      children.add(invC);
+    }
+
     final Widget scaffoldChild = Stack(
-      children: <Widget?>[widget.scaffold, invC != null ? invC : null]
-          .where((a) => a != null)
-          .toList() as List<Widget>,
+      children: <Widget>[widget.scaffold],
     );
 
     Widget container = Container(
@@ -601,7 +609,7 @@ class InnerDrawerState extends State<InnerDrawer>
             excludeFromSemantics: true,
             child: RepaintBoundary(
               child: Stack(
-                children: <Widget?>[
+                children: <Widget>[
                   ///Gradient
                   Container(
                     width: _controller.value == 0 ||
@@ -621,7 +629,7 @@ class InnerDrawerState extends State<InnerDrawer>
                   ///Trigger
                   // _trigger(AlignmentDirectional(0, 0), _leftChild),
                   // _trigger(AlignmentDirectional.centerEnd, _rightChild),
-                ].where((a) => a != null).toList() as List<Widget>,
+                ],
               ),
             ),
           ),

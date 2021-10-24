@@ -33,7 +33,6 @@ class LocalNotification {
     var android = AndroidNotificationDetails(
       id,
       name,
-      'CHANNEL DESCRIPTION',
       priority: Priority.high,
       importance: Importance.max,
       ongoing: ongoing,

@@ -100,7 +100,6 @@ class IndependentViewState extends State<IndependentView>
   /// 拦截返回
   Future<bool> _willPopFileRoute(
       bool stopDefaultButtonEvent, RouteInfo routeInfo) async {
-    print(_ivm.activeWindow);
     if (_ivm.activeWindow == IndependentActiveWindow.first) {
       if (isFirstRelativeRoot) {
         return false;

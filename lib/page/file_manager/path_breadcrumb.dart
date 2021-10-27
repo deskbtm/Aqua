@@ -77,12 +77,12 @@ class _PathBreadCrumbState extends State<PathBreadCrumb> {
         throw Exception('unkown view mode');
     }
 
-    List<String> paths =
-        pathLib.split(pathLib.relative(currentPath, from: _fm.entryDir!.path));
-
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
+
+    List<String> paths =
+        pathLib.split(pathLib.relative(currentPath, from: _fm.entryDir!.path));
 
     /// 如果相对路径第一个值替换成'/' ， 没有 '.' 则添加一个
     if (paths.first == '.') {

@@ -446,7 +446,7 @@ class InnerDrawerState extends State<InnerDrawer>
     }
 
     final Widget scaffoldChild = Stack(
-      children: <Widget>[widget.scaffold],
+      children: children,
     );
 
     Widget container = Container(

@@ -14,13 +14,18 @@ void main() async {
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
   }
 
-  if (await Permission.storage.request().isGranted) {
+  if (Platform.isWindows) {
     runApp(Aqua());
-    // await SentryFlutter.init(
-    //   (options) {
-    //     options.dsn = SENTRY_DNS;
-    //   },
-    //   appRunner: () => runApp(Aqua()),
-    // );
+  } else {
+    if (await Permission.storage.request().isGranted) {
+      runApp(Aqua());
+    }
   }
+
+  // await SentryFlutter.init(
+  //   (options) {
+  //     options.dsn = SENTRY_DNS;
+  //   },
+  //   appRunner: () => runApp(Aqua()),
+  // );
 }

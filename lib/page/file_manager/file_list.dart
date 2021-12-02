@@ -31,6 +31,7 @@ class FileList extends StatefulWidget {
   final Function(bool) onChangePopLocker;
   final Function(SelfFileEntity)? onDirTileTap;
   final Function()? onItemLongPressStart;
+  final bool shadowLeft;
 
   const FileList({
     Key? key,
@@ -44,6 +45,7 @@ class FileList extends StatefulWidget {
     this.onScorll,
     this.onItemHozDrag,
     this.onItemLongPressStart,
+    this.shadowLeft = true,
   }) : super(key: key);
 
   @override
@@ -204,71 +206,85 @@ class _FileListState extends State<FileList> {
   }
 
   Widget validFileList(List<SelfFileEntity> list) {
-    return list.isEmpty
-        ? GestureDetector(
-            onLongPressStart: (details) async {
-              await _showOptionsWhenPressedEmpty(context);
-            },
-            onTap: widget.onTapEmpty,
-            child: Container(
-              color: Colors.transparent,
-              child: EmptyBoard(),
-            ),
-          )
-        : GestureDetector(
-            onLongPressStart: (details) async {
-              await _showOptionsWhenPressedEmpty(context);
-            },
-            onTap: widget.onTapEmpty,
-            child: AnimationLimiter(
-              child: CupertinoScrollbar(
-                controller: _scrollController,
-                child: EasyRefresh.custom(
-                  controller: _controller,
-                  scrollController: _scrollController,
-                  header: CloudHeader(),
-                  onRefresh: () async => setState(() {}),
-                  slivers: [
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          SelfFileEntity file = list[index];
-                          Widget leading = getPreviewIcon(context, file);
-                          return FileListTile(
-                            path: file.path,
-                            title: file.filename,
-                            subTitle: file.humanModified,
-                            leading: leading,
-                            height: 72,
-                            titleStyle:
-                                TextStyle(color: getTheme().itemFontColor),
-                            leadingTitle: file.isDir ? file.humanSize : null,
-                            trailing: file.isDir
-                                ? Icon(
-                                    Icons.arrow_right,
-                                    size: 16,
-                                    color: getTheme().itemFontColor,
-                                  )
-                                : null,
-                            withAnimation: index < 15,
-                            index: index,
-                            onLongPressStart: (details) async {
-                              await _handleLongPressStart(file);
-                            },
-                            onTap: () => _handleTileTap(file, index, list),
-                            onItemHozDrag: (dir) async {
-                              await _handleHozDragItem(context, file, dir);
-                            },
-                          );
-                        },
-                        childCount: list.length,
+    return Container(
+      padding: EdgeInsets.only(left: 100),
+      decoration: BoxDecoration(
+        color: _tm.themeData.scaffoldBackgroundColor,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x63313131),
+            spreadRadius: 1.0,
+            blurRadius: 3,
+            offset: Offset(10, 5),
+          ),
+        ],
+      ),
+      child: list.isEmpty
+          ? GestureDetector(
+              onLongPressStart: (details) async {
+                await _showOptionsWhenPressedEmpty(context);
+              },
+              onTap: widget.onTapEmpty,
+              child: Container(
+                color: Colors.transparent,
+                child: EmptyBoard(),
+              ),
+            )
+          : GestureDetector(
+              onLongPressStart: (details) async {
+                await _showOptionsWhenPressedEmpty(context);
+              },
+              onTap: widget.onTapEmpty,
+              child: AnimationLimiter(
+                child: CupertinoScrollbar(
+                  controller: _scrollController,
+                  child: EasyRefresh.custom(
+                    controller: _controller,
+                    scrollController: _scrollController,
+                    header: CloudHeader(),
+                    onRefresh: () async => setState(() {}),
+                    slivers: [
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            SelfFileEntity file = list[index];
+                            Widget leading = getPreviewIcon(context, file);
+                            return FileListTile(
+                              path: file.path,
+                              title: file.filename,
+                              subTitle: file.humanModified,
+                              leading: leading,
+                              height: 72,
+                              titleStyle:
+                                  TextStyle(color: getTheme().itemFontColor),
+                              leadingTitle: file.isDir ? file.humanSize : null,
+                              trailing: file.isDir
+                                  ? Icon(
+                                      Icons.arrow_right,
+                                      size: 16,
+                                      color: getTheme().itemFontColor,
+                                    )
+                                  : null,
+                              withAnimation: index < 15,
+                              index: index,
+                              onLongPressStart: (details) async {
+                                await _handleLongPressStart(file);
+                              },
+                              onTap: () => _handleTileTap(file, index, list),
+                              onItemHozDrag: (dir) async {
+                                await _handleHozDragItem(context, file, dir);
+                              },
+                            );
+                          },
+                          childCount: list.length,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          );
+    );
   }
 
   @override

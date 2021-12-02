@@ -30,6 +30,12 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def debugKeystoreProperties = new Properties()
+def debugKeystorePropertiesFile = rootProject.file('debug.properties')
+if (debugKeystorePropertiesFile.exists()) {
+    debugKeystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     compileSdkVersion 31
 
@@ -39,7 +45,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.sewerganger.pure_manager"
+        applicationId "com.deskbtm.aqua"
         minSdkVersion 24
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
@@ -56,10 +62,10 @@ android {
             storePassword keystoreProperties['storePassword']
         }
         debug {
-            // keyAlias keystoreProperties['keyAlias']
-            // keyPassword keystoreProperties['keyPassword']
-            // storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            // storePassword keystoreProperties['storePassword']
+            keyAlias debugKeystoreProperties['keyAlias']
+            keyPassword debugKeystoreProperties['keyPassword']
+            storeFile debugKeystoreProperties['storeFile'] ? file(debugKeystoreProperties['storeFile']) : null
+            storePassword debugKeystoreProperties['storePassword']
         }
     }
 

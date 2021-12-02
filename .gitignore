@@ -17,6 +17,7 @@ temp
 *.iws
 .idea/
 android/debug.jks
+android/r.jks
 android/key.properties
 
 

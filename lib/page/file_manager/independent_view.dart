@@ -173,40 +173,40 @@ class IndependentViewState extends State<IndependentView>
           },
         ),
       ),
-      // if (getLayoutMode == LayoutMode.vertical)
-      //   Divider(color: Color(0xFF7BC4FF)),
-      // Expanded(
-      //   flex: 1,
-      //   child: FileList(
-      //     first: false,
-      //     selectLimit: widget.selectLimit,
-      //     list: _ivm.secondList,
-      //     shadowLeft: IndependentActiveWindow.second == _ivm.activeWindow,
-      //     onChangePopLocker: (val) {},
-      //     onTapEmpty: () {
-      //       _ivm.setActiveWindow(IndependentActiveWindow.second);
-      //     },
-      //     onScorll: () {
-      //       if (IndependentActiveWindow.first == _ivm.activeWindow) {
-      //         _ivm.setActiveWindow(IndependentActiveWindow.second);
-      //       }
-      //     },
-      //     onItemHozDrag: () {
-      //       _ivm.setActiveWindow(IndependentActiveWindow.second);
-      //     },
-      //     onItemLongPressStart: () {
-      //       _ivm.setActiveWindow(IndependentActiveWindow.second);
-      //     },
-      //     onDirTileTap: (dir) async {
-      //       _ivm.setActiveWindow(IndependentActiveWindow.second);
-      //       await _ivm
-      //           .setSecondList(context, dir.entity as Directory, update: true)
-      //           .then((value) async {
-      //         _ivm.setSecondCurrentDir(dir.entity as Directory);
-      //       });
-      //     },
-      //   ),
-      // ),
+      if (getLayoutMode == LayoutMode.vertical)
+        Divider(color: Color(0xFF7BC4FF)),
+      Expanded(
+        flex: 1,
+        child: FileList(
+          first: false,
+          selectLimit: widget.selectLimit,
+          list: _ivm.secondList,
+          shadowLeft: IndependentActiveWindow.second == _ivm.activeWindow,
+          onChangePopLocker: (val) {},
+          onTapEmpty: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.second);
+          },
+          onScorll: () {
+            if (IndependentActiveWindow.first == _ivm.activeWindow) {
+              _ivm.setActiveWindow(IndependentActiveWindow.second);
+            }
+          },
+          onItemHozDrag: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.second);
+          },
+          onItemLongPressStart: () {
+            _ivm.setActiveWindow(IndependentActiveWindow.second);
+          },
+          onDirTileTap: (dir) async {
+            _ivm.setActiveWindow(IndependentActiveWindow.second);
+            await _ivm
+                .setSecondList(context, dir.entity as Directory, update: true)
+                .then((value) async {
+              _ivm.setSecondCurrentDir(dir.entity as Directory);
+            });
+          },
+        ),
+      ),
     ];
   }
 

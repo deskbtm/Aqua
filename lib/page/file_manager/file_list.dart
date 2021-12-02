@@ -207,7 +207,6 @@ class _FileListState extends State<FileList> {
 
   Widget validFileList(List<SelfFileEntity> list) {
     return Container(
-      padding: EdgeInsets.only(left: 100),
       decoration: BoxDecoration(
         color: _tm.themeData.scaffoldBackgroundColor,
         boxShadow: [

@@ -38,6 +38,7 @@ if (debugKeystorePropertiesFile.exists()) {
 
 android {
     compileSdkVersion 31
+    ndkVersion "20.1.5948944"
 
     lintOptions {
         disable 'InvalidPackage'

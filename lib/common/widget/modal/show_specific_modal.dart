@@ -10,8 +10,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
-import 'package:intent/intent.dart' as intent;
-import 'package:intent/action.dart' as action;
+// import 'package:intent/intent.dart' as intent;
+// import 'package:intent/action.dart' as action;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> showUpdateModal(
@@ -81,10 +81,10 @@ Future<void> showUpdateModal(
           ),
       ],
       onCancel: () async {
-        intent.Intent()
-          ..setAction(action.Action.ACTION_VIEW)
-          ..setData(Uri.parse('market://details?id=' + packageName))
-          ..startActivity().catchError((e) => print(e));
+        // intent.Intent()
+        //   ..setAction(action.Action.ACTION_VIEW)
+        //   ..setData(Uri.parse('market://details?id=' + packageName))
+        //   ..startActivity().catchError((e) => print(e));
       },
       onOk: () async {
         if (await canLaunch(url)) {

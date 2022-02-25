@@ -486,7 +486,7 @@ class _PurchasePageState extends State<PurchasePage> {
                               },
                             ),
                             SizedBox(height: 10),
-                            NoResizeText('打赏大于等于购买价, 可直接联系本人激活')
+                            NoResizeText('打赏大于等于购买价, 请联系作者')
                           ],
                         ),
                         SizedBox(height: 20),

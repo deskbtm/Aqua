@@ -65,10 +65,10 @@ dependencies:
   flutter_easyrefresh: ^2.2.1
   unicons: ^2.0.2
   sliver_tools: ^0.2.5
-  intent:
-    path: plugins/intent
-  android_intent:
-    path: plugins/android_intent
+  # intent:
+  #   path: plugins/intent
+  # android_intent:
+  #   path: plugins/android_intent
 
 dev_dependencies:
   integration_test:

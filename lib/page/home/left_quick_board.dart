@@ -37,7 +37,7 @@ class LeftQuickBoardState extends State<LeftQuickBoard> {
 
   @override
   Widget build(BuildContext context) {
-    log('left quick board painting', name: 'Paint');
+    debugPrint('RightQuickBoard Painted...');
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(

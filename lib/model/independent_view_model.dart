@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:aqua/page/file_manager/fs_utils.dart';
 
 // 正在使用的窗口
-enum IndependentActiveWindow { first, second }
+enum IndependentActiveWindow { major, minor }
 
 /// 处理独立模式
 ///
@@ -31,7 +31,7 @@ class IndependentViewModel extends ChangeNotifier {
   }
 
   // 当前正在使用的窗口
-  IndependentActiveWindow _activeWindow = IndependentActiveWindow.first;
+  IndependentActiveWindow _activeWindow = IndependentActiveWindow.major;
   IndependentActiveWindow get activeWindow => _activeWindow;
 
   void setActiveWindow(IndependentActiveWindow active, {update: false}) {

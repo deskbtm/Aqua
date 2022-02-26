@@ -13,33 +13,33 @@ class AssociateViewModel extends ChangeNotifier {
     if (update) notifyListeners();
   }
 
-  List<SelfFileEntity>? _firstList;
-  List<SelfFileEntity>? get firstList => _firstList;
+  List<SelfFileEntity>? _majorList;
+  List<SelfFileEntity>? get majorList => _majorList;
 
-  Future<void> setFirstList(context, Directory dir, {update = false}) async {
+  Future<void> setMajorList(context, Directory dir, {update = false}) async {
     await FsUIUtils.readdir(context, dir).then((list) {
-      _firstList = list;
+      _majorList = list;
       if (update) notifyListeners();
     }).catchError((err) {
       throw Exception(err);
     });
   }
 
-  List<SelfFileEntity>? _secondList;
-  List<SelfFileEntity>? get secondList => _secondList;
+  List<SelfFileEntity>? _minorList;
+  List<SelfFileEntity>? get minorList => _minorList;
 
-  Future<void> setSecondList(context, Directory? dir, {update = false}) async {
+  Future<void> setMinorList(context, Directory? dir, {update = false}) async {
     await FsUIUtils.readdir(context, dir!).then((list) {
-      _secondList = list;
+      _minorList = list;
       if (update) notifyListeners();
     }).catchError((err) {
       throw Exception(err);
     });
   }
 
-  Future<void> setSecondListDirectly(context, List<SelfFileEntity>? list,
+  Future<void> setMinorListDirectly(context, List<SelfFileEntity>? list,
       {update = false}) async {
-    _secondList = list;
+    _minorList = list;
 
     if (update) notifyListeners();
   }

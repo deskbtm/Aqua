@@ -294,7 +294,7 @@ class FileManagerPageState extends State<FileManagerPage>
   //   }
   // }
 
-  Widget _createBarRightMenu() {
+  Widget _createRightMenu() {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setBuilderState) {
         bool isAssociate = getViewMode == ViewMode.associate;
@@ -437,7 +437,7 @@ class FileManagerPageState extends State<FileManagerPage>
                   ),
                 ),
                 SizedBox(width: 20),
-                _createBarRightMenu()
+                _createRightMenu()
               ],
             ),
       leading: widget.displayLeading

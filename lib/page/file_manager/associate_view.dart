@@ -71,7 +71,7 @@ class AssociateViewState extends State<AssociateView>
 
     if (_initMutex) {
       _initMutex = false;
-      await _avm.setFirstList(context, getEntryDir!, update: true).then((_) {
+      await _avm.setMajorList(context, getEntryDir!, update: true).then((_) {
         _avm.setCurrentDir(getEntryDir!);
       });
     }
@@ -93,7 +93,7 @@ class AssociateViewState extends State<AssociateView>
   Future<bool> _willPopFileRoute(
       bool stopDefaultButtonEvent, RouteInfo routeInfo) async {
     if (isRelativeParentRoot) {
-      _avm.setSecondListDirectly(context, null, update: true);
+      _avm.setMinorListDirectly(context, null, update: true);
       _avm.setCurrentDir(_avm.currentDir!.parent);
       return false;
     }
@@ -104,13 +104,13 @@ class AssociateViewState extends State<AssociateView>
 
     if (!isRelativeRoot &&
         !pathLib.isWithin(getEntryDir!.path, getCurrentDir!.path)) {
-      await _avm.setFirstList(context, getEntryDir!, update: true);
+      await _avm.setMajorList(context, getEntryDir!, update: true);
       return false;
     }
 
     _avm.setCurrentDir(_avm.currentDir!.parent);
-    await _avm.setFirstList(context, getCurrentDir!.parent);
-    await _avm.setSecondList(context, getCurrentDir!, update: true);
+    await _avm.setMajorList(context, getCurrentDir!.parent);
+    await _avm.setMajorList(context, getCurrentDir!, update: true);
 
     return false;
   }
@@ -120,35 +120,35 @@ class AssociateViewState extends State<AssociateView>
       Expanded(
         flex: 1,
         child: FileList(
-          first: true,
+          major: true,
           selectLimit: widget.selectLimit,
           onChangePopLocker: (val) {},
-          list: _avm.firstList,
+          list: _avm.majorList,
           onDirTileTap: (SelfFileEntity dir) async {
             await _avm
-                .setSecondList(context, dir.entity as Directory, update: true)
+                .setMajorList(context, dir.entity as Directory, update: true)
                 .then((value) {
               _avm.setCurrentDir(dir.entity as Directory);
             });
           },
         ),
       ),
-      if (!isRelativeRoot && _avm.secondList != null) ...[
+      if (!isRelativeRoot && _avm.minorList != null) ...[
         if (getLayoutMode == LayoutMode.vertical)
           Divider(color: Color(0xFF7BC4FF)),
         Expanded(
           flex: 1,
           child: FileList(
-            first: false,
+            major: false,
             selectLimit: widget.selectLimit,
             onChangePopLocker: (val) {},
-            list: _avm.secondList,
+            list: _avm.minorList,
             onDirTileTap: (dir) async {
               await _avm
-                  .setSecondList(context, dir.entity as Directory)
+                  .setMajorList(context, dir.entity as Directory)
                   .then((value) async {
                 _avm.setCurrentDir(dir.entity as Directory);
-                await _avm.setFirstList(context, dir.entity.parent,
+                await _avm.setMajorList(context, dir.entity.parent,
                     update: true);
               });
             },
@@ -159,7 +159,7 @@ class AssociateViewState extends State<AssociateView>
   }
 
   Future<bool> _handleManagerInstanceWillPop() async {
-    log((getEntryDir!.path + '--------' + getCurrentDir!.path));
+    debugPrint((getEntryDir!.path + '--------' + getCurrentDir!.path));
     return isRelativeRoot;
   }
 
@@ -167,8 +167,9 @@ class AssociateViewState extends State<AssociateView>
   Widget build(BuildContext context) {
     super.build(context);
 
-    log(getCurrentDir != null ? getCurrentDir!.path : '', name: 'current dir');
-    log('root repaint', name: 'associcate view');
+    debugPrint(
+        "Current Dir: ${getCurrentDir != null ? getCurrentDir!.path : ''}");
+    debugPrint("AssocicateView: Repainted");
 
     if (getCurrentDir != null && getEntryDir != null) {
       if (isRelativeRoot) {

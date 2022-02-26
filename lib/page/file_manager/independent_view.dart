@@ -100,7 +100,7 @@ class IndependentViewState extends State<IndependentView>
   /// 拦截返回
   Future<bool> _willPopFileRoute(
       bool stopDefaultButtonEvent, RouteInfo routeInfo) async {
-    if (_ivm.activeWindow == IndependentActiveWindow.first) {
+    if (_ivm.activeWindow == IndependentActiveWindow.major) {
       if (isFirstRelativeRoot) {
         return false;
       }
@@ -118,7 +118,7 @@ class IndependentViewState extends State<IndependentView>
       });
     }
 
-    if (_ivm.activeWindow == IndependentActiveWindow.second) {
+    if (_ivm.activeWindow == IndependentActiveWindow.minor) {
       if (isSecondRelativeRoot) {
         return false;
       }
@@ -144,27 +144,27 @@ class IndependentViewState extends State<IndependentView>
       Expanded(
         flex: 1,
         child: FileList(
-          first: true,
+          major: true,
           selectLimit: widget.selectLimit,
-          shadowLeft: IndependentActiveWindow.first == _ivm.activeWindow,
+          shadowLeft: IndependentActiveWindow.major == _ivm.activeWindow,
           onChangePopLocker: (val) {},
           list: _ivm.firstList,
           onTapEmpty: () {
-            _ivm.setActiveWindow(IndependentActiveWindow.first);
+            _ivm.setActiveWindow(IndependentActiveWindow.major);
           },
           onScorll: () {
-            if (IndependentActiveWindow.second == _ivm.activeWindow) {
-              _ivm.setActiveWindow(IndependentActiveWindow.first);
+            if (IndependentActiveWindow.minor == _ivm.activeWindow) {
+              _ivm.setActiveWindow(IndependentActiveWindow.major);
             }
           },
           onItemHozDrag: () {
-            _ivm.setActiveWindow(IndependentActiveWindow.first);
+            _ivm.setActiveWindow(IndependentActiveWindow.major);
           },
           onItemLongPressStart: () {
-            _ivm.setActiveWindow(IndependentActiveWindow.first);
+            _ivm.setActiveWindow(IndependentActiveWindow.major);
           },
           onDirTileTap: (SelfFileEntity dir) async {
-            _ivm.setActiveWindow(IndependentActiveWindow.first);
+            _ivm.setActiveWindow(IndependentActiveWindow.major);
             await _ivm
                 .setFirstList(context, dir.entity as Directory, update: true)
                 .then((value) {
@@ -178,27 +178,27 @@ class IndependentViewState extends State<IndependentView>
       Expanded(
         flex: 1,
         child: FileList(
-          first: false,
+          major: false,
           selectLimit: widget.selectLimit,
           list: _ivm.secondList,
-          shadowLeft: IndependentActiveWindow.second == _ivm.activeWindow,
+          shadowLeft: IndependentActiveWindow.minor == _ivm.activeWindow,
           onChangePopLocker: (val) {},
           onTapEmpty: () {
-            _ivm.setActiveWindow(IndependentActiveWindow.second);
+            _ivm.setActiveWindow(IndependentActiveWindow.minor);
           },
           onScorll: () {
-            if (IndependentActiveWindow.first == _ivm.activeWindow) {
-              _ivm.setActiveWindow(IndependentActiveWindow.second);
+            if (IndependentActiveWindow.major == _ivm.activeWindow) {
+              _ivm.setActiveWindow(IndependentActiveWindow.minor);
             }
           },
           onItemHozDrag: () {
-            _ivm.setActiveWindow(IndependentActiveWindow.second);
+            _ivm.setActiveWindow(IndependentActiveWindow.minor);
           },
           onItemLongPressStart: () {
-            _ivm.setActiveWindow(IndependentActiveWindow.second);
+            _ivm.setActiveWindow(IndependentActiveWindow.minor);
           },
           onDirTileTap: (dir) async {
-            _ivm.setActiveWindow(IndependentActiveWindow.second);
+            _ivm.setActiveWindow(IndependentActiveWindow.minor);
             await _ivm
                 .setSecondList(context, dir.entity as Directory, update: true)
                 .then((value) async {

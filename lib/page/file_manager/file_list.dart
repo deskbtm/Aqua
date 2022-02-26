@@ -20,7 +20,7 @@ import 'package:provider/provider.dart';
 import 'fs_utils.dart';
 
 class FileList extends StatefulWidget {
-  final bool first;
+  final bool major;
   final int? selectLimit;
   final Color? itemBgColor;
   final List<SelfFileEntity>? list;
@@ -40,7 +40,7 @@ class FileList extends StatefulWidget {
     this.onDirTileTap,
     this.selectLimit,
     required this.list,
-    required this.first,
+    required this.major,
     required this.onChangePopLocker,
     this.onScorll,
     this.onItemHozDrag,
@@ -67,7 +67,7 @@ class _FileListState extends State<FileList> {
     _fileOperation = FileOperation(
       context: context,
       selectLimit: widget.selectLimit,
-      left: widget.first,
+      left: widget.major,
     );
 
     if (widget.onScorll != null) {

@@ -60,7 +60,7 @@ class _PathBreadCrumbState extends State<PathBreadCrumb> {
         currentPath = _avm.currentDir!.path;
         break;
       case ViewMode.independent:
-        if (_ivm.activeWindow == IndependentActiveWindow.first) {
+        if (_ivm.activeWindow == IndependentActiveWindow.major) {
           if (_ivm.firstCurrentDir == null) {
             return Container();
           }

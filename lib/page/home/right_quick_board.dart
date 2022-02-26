@@ -242,7 +242,8 @@ class RightQuickBoardState extends State<RightQuickBoard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    log('right quick board painting', name: 'Paint');
+
+    debugPrint('RightQuickBoard Painted...');
 
     AquaTheme themeData = _tm.themeData;
 

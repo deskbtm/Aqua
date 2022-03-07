@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:aqua/page/home/home.dart';
 import 'package:aqua/third_party/connectivity/connectivity.dart';
-
 import 'package:flutter/services.dart';
 import 'package:aqua/common/widget/double_pop.dart';
 import 'package:aqua/common/theme.dart';

@@ -1,6 +1,6 @@
 ## WIP
 
-下载 [https://www.coolapk.com/apk/281057](https://www.coolapk.com/apk/281057)
+下载
 
 欢迎 star fork
 

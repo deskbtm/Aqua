@@ -1,8 +1,10 @@
+## WIP
+
 下载 [https://www.coolapk.com/apk/281057](https://www.coolapk.com/apk/281057)
 
 欢迎 star fork
 
-v1.0.5 [重构中](./CHANGELOG.md)
+v1.0.5 [refactor](./CHANGELOG.md)
 
 <div>
 <img src="./image/QQE59BBEE7898720210105161527-281004-o_1er8v8kudfdb1i715l3eoi1bf215-uid-1111781@1080x1920.jpg" width=200 >
